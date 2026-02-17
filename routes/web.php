@@ -15,6 +15,7 @@ use App\Http\Controllers\Superadmin\TipeZakatController;
 use App\Http\Controllers\Admin_masjid\AmilController;
 use App\Http\Controllers\Admin_masjid\MustahikController;
 use App\Http\Controllers\Amil\TransaksiPenerimaanController;
+use App\Http\Controllers\Amil\ProfilAmilController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -311,6 +312,14 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         Route::post('/{uuid}/update-penjemputan', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'updatePenjemputan'])
             ->name('update-penjemputan');
     });
+
+    Route::prefix('profil')->name('profil.')->group(function () {
+    Route::get('/',         [ProfilAmilController::class, 'show'])           ->name('show');
+    Route::get('/edit',     [ProfilAmilController::class, 'edit'])           ->name('edit');
+    Route::put('/update',   [ProfilAmilController::class, 'update'])         ->name('update');
+    Route::put('/password', [ProfilAmilController::class, 'updatePassword']) ->name('password');
+});
+
 });
 
 Route::post('/midtrans/callback', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'midtransCallback'])

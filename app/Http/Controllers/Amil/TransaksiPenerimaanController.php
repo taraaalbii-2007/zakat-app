@@ -743,7 +743,9 @@ class TransaksiPenerimaanController extends Controller
     public function printKwitansi($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid', 'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna', 'verifiedBy'
+            'masjid', 'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna', 'verifiedBy','amil' => function($query) {
+            $query->with('pengguna'); 
+        }, 
         ])
             ->where('uuid', $uuid)
             ->byMasjid($this->masjid->id)

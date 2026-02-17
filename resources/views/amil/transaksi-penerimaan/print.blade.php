@@ -238,6 +238,22 @@
             color: #6b7280;
             margin-bottom: 2px;
         }
+        
+        /* Container untuk tanda tangan */
+        .signature-image-container {
+            min-height: 70px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .signature-image-container img {
+            max-width: 150px;
+            max-height: 60px;
+            object-fit: contain;
+            border: none;
+        }
+        
         .stamp-circle {
             width: 72px; height: 72px;
             border: 1.5px dashed #cbd5e1;
@@ -366,6 +382,12 @@
                 print-color-adjust: exact;
             }
             .no-print, .action-bar { display: none !important; }
+            .signature-image-container img {
+                max-width: 150px;
+                max-height: 60px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             @page { size: A4 portrait; margin: 0; }
         }
     </style>
@@ -657,16 +679,30 @@
                         {{ $transaksi->tanggal_transaksi->format('d F Y') }}
                     </div>
                     <div class="position">Amil Penerima,</div>
-                    <div class="stamp-circle">
-                        <span>Stempel &<br>Tanda Tangan</span>
+                    
+                    {{-- Tanda Tangan Image (jika ada) --}}
+                    <div class="signature-image-container">
+                        @if($transaksi->amil && $transaksi->amil->tanda_tangan_url)
+                            <img src="{{ $transaksi->amil->tanda_tangan_url }}" 
+                                 alt="Tanda Tangan Amil"
+                                 style="max-width: 150px; max-height: 60px; object-fit: contain;">
+                        @else
+                            <div class="stamp-circle">
+                                <span>Stempel &<br>Tanda Tangan</span>
+                            </div>
+                        @endif
                     </div>
+                    
                     <div class="name">
                         {{ optional($transaksi->amil)->nama_lengkap
                             ?? optional(optional($transaksi->amil)->pengguna)->name
                             ?? '_____________________' }}
                     </div>
+                    @if($transaksi->amil && $transaksi->amil->kode_amil)
+                    <div class="nik">Kode Amil: {{ $transaksi->amil->kode_amil }}</div>
+                    @endif
                     @if($transaksi->amil && $transaksi->amil->nik)
-                    <div class="nik">NIK. {{ $transaksi->amil->nik }}</div>
+                    <div class="nik">NIK: {{ $transaksi->amil->nik }}</div>
                     @endif
                 </div>
             </div>
@@ -705,6 +741,8 @@
                     backgroundColor: '#ffffff',
                     windowWidth    : element.scrollWidth,
                     windowHeight   : element.scrollHeight,
+                    allowTaint      : false,
+                    foreignObjectRendering: false
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
@@ -746,7 +784,7 @@
 
             } catch (err) {
                 console.error('Gagal generate PDF:', err);
-                alert('Gagal mengunduh PDF. Silakan coba lagi.');
+                alert('Gagal mengunduh PDF. Silakan coba lagi. Error: ' + err.message);
             } finally {
                 btn.disabled          = false;
                 spinner.style.display = 'none';

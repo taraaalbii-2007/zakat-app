@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-
 class Amil extends Model
 {
     use HasFactory;
@@ -28,6 +27,7 @@ class Amil extends Model
         'telepon',
         'email',
         'foto',
+        'tanda_tangan',          // ← TAMBAHAN
         'tanggal_mulai_tugas',
         'tanggal_selesai_tugas',
         'status',
@@ -36,19 +36,23 @@ class Amil extends Model
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date',
-        'tanggal_mulai_tugas' => 'date',
+        'tanggal_lahir'         => 'date',
+        'tanggal_mulai_tugas'   => 'date',
         'tanggal_selesai_tugas' => 'date',
     ];
 
     protected static function booted(): void
-{
-    static::creating(function ($amil) {
-        if (empty($amil->uuid)) {
-            $amil->uuid = (string) Str::uuid();
-        }
-    });
-}
+    {
+        static::creating(function ($amil) {
+            if (empty($amil->uuid)) {
+                $amil->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
+    // ===============================
+    // RELATIONSHIPS
+    // ===============================
 
     public function pengguna()
     {
@@ -59,6 +63,15 @@ class Amil extends Model
     {
         return $this->belongsTo(Masjid::class);
     }
+
+    public function transaksiPenerimaan()
+    {
+        return $this->hasMany(TransaksiPenerimaan::class, 'amil_id');
+    }
+
+    // ===============================
+    // SCOPES
+    // ===============================
 
     public function scopeAktif($query)
     {
@@ -73,44 +86,59 @@ class Amil extends Model
         return $query;
     }
 
+    // ===============================
+    // ACCESSORS
+    // ===============================
+
     public function getUmurAttribute()
     {
-        if (!$this->tanggal_lahir) {
-            return null;
-        }
+        if (!$this->tanggal_lahir) return null;
         return $this->tanggal_lahir->age;
     }
 
     public function getMasaTugasAttribute()
     {
-        if (!$this->tanggal_mulai_tugas) {
-            return null;
-        }
+        if (!$this->tanggal_mulai_tugas) return null;
 
-        $start = $this->tanggal_mulai_tugas;
-        $end = $this->tanggal_selesai_tugas ?? now();
-
-        $years = $end->diffInYears($start);
+        $start  = $this->tanggal_mulai_tugas;
+        $end    = $this->tanggal_selesai_tugas ?? now();
+        $years  = $end->diffInYears($start);
         $months = $end->diffInMonths($start) % 12;
 
         if ($years > 0) {
             return $years . ' tahun' . ($months > 0 ? ' ' . $months . ' bulan' : '');
         }
-
         return $months . ' bulan';
     }
 
-    public function getFotoUrlAttribute()
-{
-    if ($this->foto && Storage::disk('public')->exists($this->foto)) {
-        return Storage::url($this->foto);
+    public function getFotoUrlAttribute(): string
+    {
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
+            return Storage::url($this->foto);
+        }
+        return $this->jenis_kelamin === 'P'
+            ? asset('images/default-avatar-female.png')
+            : asset('images/default-avatar-male.png');
     }
-    
-    // Default avatar berdasarkan jenis kelamin
-    if ($this->jenis_kelamin === 'P') {
-        return asset('images/default-avatar-female.png');
+
+    /**
+     * URL tanda tangan — null jika belum diupload
+     */
+    public function getTandaTanganUrlAttribute(): ?string
+    {
+        if ($this->tanda_tangan && Storage::disk('public')->exists($this->tanda_tangan)) {
+            return Storage::url($this->tanda_tangan);
+        }
+        return null;
     }
-    
-    return asset('images/default-avatar-male.png');
-}
+
+    public function getInitialAttribute(): string
+    {
+        return strtoupper(substr($this->nama_lengkap, 0, 1));
+    }
+
+    public function getJenisKelaminLabelAttribute(): string
+    {
+        return $this->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
+    }
 }
