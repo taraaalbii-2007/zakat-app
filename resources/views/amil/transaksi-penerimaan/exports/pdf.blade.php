@@ -92,19 +92,7 @@
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         
-        /* Badge Styles */
-        .badge {
-            display: inline-block;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 8.5px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .badge-success { background-color: #e1f5fe; color: #01579b; border: 0.5px solid #01579b; }
-        .badge-warning { background-color: #fffde7; color: #f57f17; border: 0.5px solid #f57f17; }
-        .badge-danger { background-color: #ffebee; color: #b71c1c; border: 0.5px solid #b71c1c; }
-        .badge-secondary { background-color: #f5f5f5; color: #616161; border: 0.5px solid #616161; }
+        /* No badges - all text normal */
         
         /* Footer & Signature */
         .footer-container {
@@ -223,7 +211,7 @@
             <div class="info-value">: 
                 <strong>{{ number_format($totalTransaksi, 0, ',', '.') }}</strong> Total | 
                 <span style="color: #01579b;">{{ $totalVerified }} Terverifikasi</span> | 
-                <span style="color: #f57f17;">{{ $totalPending }} Pending</span> | 
+                <span style="color: #f57f17;">{{ $totalPending }} Menunggu Konfirmasi</span> | 
                 <strong>Rp {{ number_format($totalNominal, 0, ',', '.') }}</strong>
             </div>
         </div>
@@ -252,31 +240,25 @@
                 <th>Program</th>
                 <th style="width: 70px;">Jumlah (Rp)</th>
                 <th>Metode</th>
-                <th>Tipe Pay</th>
+                <th>No. Referensi</th>
                 <th>Verif</th>
-                <th>Pay</th>
+                <th>Konfirmasi</th>
             </tr>
         </thead>
         <tbody>
             @forelse($transaksis as $index => $transaksi)
                 @php
-                    $statusClass = match($transaksi->status) {
-                        'verified' => 'badge-success',
-                        'pending' => 'badge-warning',
-                        'rejected' => 'badge-danger',
-                        default => 'badge-secondary'
+                    $statusText = match($transaksi->status) {
+                        'verified' => 'Verified',
+                        'pending' => 'Pending',
+                        'rejected' => 'Rejected',
+                        default => strtoupper($transaksi->status)
                     };
-                    $paymentStatusClass = match($transaksi->payment_status) {
-                        'berhasil' => 'badge-success',
-                        'menunggu_pembayaran' => 'badge-warning',
-                        'kadaluarsa', 'dibatalkan' => 'badge-danger',
-                        default => 'badge-secondary'
-                    };
-                    $paymentStatusText = match($transaksi->payment_status) {
-                        'berhasil' => 'SUKSES',
-                        'menunggu_pembayaran' => 'PENDING',
-                        'kadaluarsa' => 'EXPIRED',
-                        'dibatalkan' => 'BATAL',
+                    
+                    $konfirmasiStatusText = match($transaksi->konfirmasi_status) {
+                        'dikonfirmasi' => 'Dikonfirmasi',
+                        'menunggu_konfirmasi' => 'Menunggu',
+                        'ditolak' => 'Ditolak',
                         default => '-'
                     };
                 @endphp
@@ -290,19 +272,24 @@
                     <td class="text-left" style="font-size: 8px;">{{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}</td>
                     <td class="text-right">{{ $transaksi->jumlah > 0 ? number_format($transaksi->jumlah, 0, ',', '.') : '-' }}</td>
                     <td class="text-center">{{ $transaksi->metode_pembayaran ? ucfirst($transaksi->metode_pembayaran) : '-' }}</td>
-                    <td class="text-center">{{ $transaksi->payment_type ?? '-' }}</td>
-                    <td class="text-center"><span class="badge {{ $statusClass }}">{{ strtoupper($transaksi->status) }}</span></td>
-                    <td class="text-center"><span class="badge {{ $paymentStatusClass }}">{{ $paymentStatusText }}</span></td>
+                    <td class="text-center" style="font-size: 8px;">{{ $transaksi->no_referensi_transfer ?? '-' }}</td>
+                    <td class="text-center">{{ $statusText }}</td>
+                    <td class="text-center">{{ $konfirmasiStatusText }}</td>
                     <td class="text-left">{{ $transaksi->amil->pengguna->name ?? $transaksi->amil->nama_lengkap ?? '-' }}</td>
                 </tr>
 
-                @if($transaksi->jumlah_beras_kg || $transaksi->jumlah_jiwa || $transaksi->nilai_harta || $transaksi->keterangan)
+                @if($transaksi->jumlah_beras_kg || $transaksi->jumlah_jiwa || $transaksi->nilai_harta || $transaksi->keterangan || $transaksi->bukti_transfer)
                 <tr style="background-color: #fafafa;">
                     <td colspan="13" style="padding: 4px 8px; font-size: 8px; color: #636e72; border-top: none;">
                         <span style="font-weight: bold; color: #2d3436;">Rincian:</span> 
                         @if($transaksi->jumlah_beras_kg) Beras: {{ $transaksi->jumlah_beras_kg }} kg (@ Rp {{ number_format($transaksi->harga_beras_per_kg ?? 0, 0, ',', '.') }}) | @endif
                         @if($transaksi->jumlah_jiwa) Jiwa: {{ $transaksi->jumlah_jiwa }} orang | @endif
                         @if($transaksi->nilai_harta) Nilai Harta: Rp {{ number_format($transaksi->nilai_harta, 0, ',', '.') }} | @endif
+                        @if($transaksi->bukti_transfer) 
+                            <span style="color: #01579b;">
+                                Ada bukti transfer
+                            </span> | 
+                        @endif
                         @if($transaksi->keterangan) Ket: {{ $transaksi->keterangan }} @endif
                     </td>
                 </tr>
@@ -336,6 +323,7 @@
 
     <div class="footer-note">
         <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $masjid->nama ?? 'Masjid' }}.</p>
+        <p>*Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
         <p>Dicetak pada: {{ $tanggalExport }}</p>
     </div>
 </body>
