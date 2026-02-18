@@ -168,22 +168,19 @@ class TransaksiPenyaluran extends Model
     {
         return match ($this->status) {
             'draft'      => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">Draft</span>',
-            'disetujui'  => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">✓ Disetujui</span>',
-            'disalurkan' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">✓ Disalurkan</span>',
-            'dibatalkan' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">✕ Dibatalkan</span>',
+            'disetujui'  => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">Disetujui</span>',
+            'disalurkan' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700 border border-green-200">Disalurkan</span>',
+            'dibatalkan' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200">Dibatalkan</span>',
             default      => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">-</span>',
         };
     }
 
-    /**
-     * HTML badge metode penyaluran
-     */
     public function getMetodePenyaluranBadgeAttribute(): string
     {
         return match ($this->metode_penyaluran) {
-            'tunai'    => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">💵 Tunai</span>',
-            'transfer' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">🏦 Transfer</span>',
-            'barang'   => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">📦 Barang</span>',
+            'tunai'    => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">Tunai</span>',
+            'transfer' => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">Transfer</span>',
+            'barang'   => '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">Barang</span>',
             default    => '',
         };
     }

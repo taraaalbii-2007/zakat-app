@@ -367,13 +367,17 @@ Route::middleware(['auth', 'active.user', 'role:admin_masjid,amil', 'masjid.acce
         Route::get('/', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'create'])->name('create');
         Route::post('/', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'store'])->name('store');
+        Route::get('/export/pdf',   [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'exportPdf'])->name('export.pdf');
+        Route::get('/export/excel', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'exportExcel'])->name('export.excel');
         Route::get('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'show'])->name('show');
         Route::get('/{transaksiPenyaluran:uuid}/edit', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'edit'])->name('edit');
         Route::put('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'update'])->name('update');
         Route::delete('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'destroy'])->name('destroy');
         Route::post('/{transaksiPenyaluran:uuid}/konfirmasi-disalurkan', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'konfirmasiDisalurkan'])->name('konfirmasi-disalurkan');
         Route::delete('/dokumentasi/{dokumentasi}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'hapusDokumentasi'])->name('dokumentasi.destroy');
+        Route::get('/{transaksiPenyaluran:uuid}/cetak', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'cetak'])->name('cetak');
     });
+    
 
     // approve/reject tetap di sini juga (pindahkan dari blok admin_masjid)
     Route::prefix('transaksi-penyaluran')->name('transaksi-penyaluran.')->group(function () {

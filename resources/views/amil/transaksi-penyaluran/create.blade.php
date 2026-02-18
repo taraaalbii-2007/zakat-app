@@ -32,6 +32,8 @@
         <form id="formPenyaluran" action="{{ route('transaksi-penyaluran.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
             @csrf
             <input type="hidden" name="no_transaksi" value="{{ $noTransaksiPreview }}">
+            {{-- Hidden input untuk tanda tangan hasil remove background (base64 PNG) --}}
+            <input type="hidden" name="tanda_tangan_base64" id="tanda_tangan_base64">
 
             {{-- Error Summary --}}
             @if($errors->any())
@@ -366,26 +368,81 @@
                             </div>
                         </div>
 
-                        {{-- Tanda Tangan Digital --}}
+                        {{-- ── Tanda Tangan Digital dengan Auto Remove Background ── --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Tanda Tangan Digital Mustahik</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Tanda Tangan Digital Mustahik
+                            </label>
                             <div class="space-y-3">
-                                <div id="tandaTanganPreview" class="h-32 w-full rounded-xl bg-white flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
-                                    <div class="text-center">
+
+                                {{-- Preview area dengan checkerboard (transparan indicator) --}}
+                                <div id="tandaTanganPreview"
+                                    class="h-32 w-full rounded-xl flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative"
+                                    style="background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%); background-size: 12px 12px; background-position: 0 0, 0 6px, 6px -6px, -6px 0px; background-color: #f9fafb;">
+                                    <div id="ttPlaceholder" class="text-center">
                                         <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                         <p class="mt-1 text-xs text-gray-500">Tanda tangan mustahik</p>
                                     </div>
+                                    {{-- Hasil remove background ditampilkan di sini --}}
+                                    <img id="ttProcessedImg" class="hidden absolute inset-0 w-full h-full object-contain p-2" alt="Tanda Tangan">
+                                    {{-- Loading spinner --}}
+                                    <div id="ttLoading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/80 rounded-xl">
+                                        <svg class="animate-spin w-6 h-6 text-primary mb-1" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                        </svg>
+                                        <p class="text-xs text-gray-500">Menghapus background...</p>
+                                    </div>
                                 </div>
-                                <input type="file" name="tanda_tangan" id="tanda_tangan_input" accept="image/jpeg,image/png,image/jpg,image/svg+xml" class="hidden" onchange="previewFoto(this, 'tandaTanganPreview')">
-                                <label for="tanda_tangan_input" class="inline-flex items-center justify-center w-full px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
-                                    </svg>
-                                    Upload Tanda Tangan
-                                </label>
-                                <p class="text-xs text-gray-500">PNG/JPG/SVG. Maks 2MB</p>
+
+                                {{-- Badge status --}}
+                                <div id="ttStatusBadge" class="hidden">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Background berhasil dihapus otomatis
+                                    </span>
+                                </div>
+
+                                {{-- Slider threshold --}}
+                                <div id="ttThresholdSection" class="hidden">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-xs text-gray-600 font-medium">Sensitivitas hapus background</label>
+                                        <span id="ttThresholdValue" class="text-xs font-semibold text-primary">220</span>
+                                    </div>
+                                    <input type="range" id="ttThreshold" min="100" max="254" value="220" step="5"
+                                        class="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-primary"
+                                        oninput="onThresholdChange(this.value)">
+                                    <div class="flex justify-between text-xs text-gray-400 mt-0.5">
+                                        <span>Ketat (tinta gelap)</span>
+                                        <span>Longgar (tinta terang)</span>
+                                    </div>
+                                </div>
+
+                                <input type="file" name="tanda_tangan" id="tanda_tangan_input"
+                                    accept="image/jpeg,image/png,image/jpg,image/svg+xml"
+                                    class="hidden"
+                                    onchange="handleTandaTanganUpload(this)">
+
+                                <div class="flex gap-2">
+                                    <label for="tanda_tangan_input" class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
+                                        </svg>
+                                        Upload Tanda Tangan
+                                    </label>
+                                    <button type="button" id="ttResetBtn" onclick="resetTandaTangan()"
+                                        class="hidden px-3 py-2 border border-red-200 text-xs font-medium rounded-lg text-red-600 bg-white hover:bg-red-50 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <p class="text-xs text-gray-500">PNG/JPG. Maks 2MB. Background putih akan dihapus otomatis.</p>
                             </div>
                         </div>
 
@@ -452,7 +509,162 @@
 
 @push('scripts')
 <script>
-// ── Metode Penyaluran ──
+// ════════════════════════════════════════════════════════
+// TANDA TANGAN — AUTO REMOVE BACKGROUND
+// ════════════════════════════════════════════════════════
+
+let _ttOriginalFile   = null;   // File object asli
+let _ttCurrentThresh  = 220;    // Threshold saat ini
+let _ttOriginalImage  = null;   // HTMLImageElement dari file
+
+/**
+ * Dipanggil saat user memilih file tanda tangan
+ */
+function handleTandaTanganUpload(input) {
+    if (!input.files?.[0]) return;
+
+    const file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran file maksimal 2MB');
+        input.value = '';
+        return;
+    }
+
+    _ttOriginalFile = file;
+
+    // Tampilkan loading
+    showTTLoading(true);
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            _ttOriginalImage = img;
+            processRemoveBackground(_ttCurrentThresh);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Core: hapus background menggunakan Canvas API
+ * Algoritma: setiap piksel yang brightness-nya >= threshold → alpha = 0 (transparan)
+ * Tambahan: feathering di tepi untuk hasil lebih halus
+ */
+function processRemoveBackground(threshold) {
+    if (!_ttOriginalImage) return;
+
+    showTTLoading(true);
+
+    // Gunakan setTimeout agar UI sempat update (loading spinner muncul)
+    setTimeout(function () {
+        try {
+            const canvas  = document.createElement('canvas');
+            const ctx     = canvas.getContext('2d');
+
+            canvas.width  = _ttOriginalImage.naturalWidth  || _ttOriginalImage.width;
+            canvas.height = _ttOriginalImage.naturalHeight || _ttOriginalImage.height;
+
+            ctx.drawImage(_ttOriginalImage, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data      = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+
+                // Brightness perceptual (luminance)
+                const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+                if (brightness >= threshold) {
+                    // Piksel terang → transparan
+                    // Feathering: semakin dekat ke threshold, semakin transparan tapi tidak langsung 0
+                    const feather = Math.min(255, Math.round(((brightness - threshold) / (255 - threshold)) * 255));
+                    data[i + 3]   = Math.max(0, data[i + 3] - feather);
+                } else {
+                    // Piksel gelap (tinta) → pertahankan, tapi tingkatkan kontras sedikit
+                    // Gelapkan piksel yang agak abu supaya tinta lebih jelas
+                    const darken = Math.max(0, 1 - (brightness / threshold) * 0.3);
+                    data[i]     = Math.round(r * (1 - darken));
+                    data[i + 1] = Math.round(g * (1 - darken));
+                    data[i + 2] = Math.round(b * (1 - darken));
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Konversi ke PNG base64 (transparan hanya bisa PNG)
+            const resultBase64 = canvas.toDataURL('image/png');
+
+            // Simpan ke hidden input (akan dikirim ke server)
+            document.getElementById('tanda_tangan_base64').value = resultBase64;
+
+            // Tampilkan preview
+            const previewImg = document.getElementById('ttProcessedImg');
+            previewImg.src   = resultBase64;
+            previewImg.classList.remove('hidden');
+
+            document.getElementById('ttPlaceholder').classList.add('hidden');
+            document.getElementById('ttStatusBadge').classList.remove('hidden');
+            document.getElementById('ttThresholdSection').classList.remove('hidden');
+            document.getElementById('ttResetBtn').classList.remove('hidden');
+
+        } catch (err) {
+            console.error('Remove background error:', err);
+            // Fallback: pakai gambar original
+            const reader2 = new FileReader();
+            reader2.onload = e2 => {
+                document.getElementById('ttProcessedImg').src = e2.target.result;
+                document.getElementById('ttProcessedImg').classList.remove('hidden');
+                document.getElementById('ttPlaceholder').classList.add('hidden');
+            };
+            reader2.readAsDataURL(_ttOriginalFile);
+        } finally {
+            showTTLoading(false);
+        }
+    }, 50);
+}
+
+/**
+ * Dipanggil saat slider threshold digeser
+ */
+function onThresholdChange(val) {
+    _ttCurrentThresh = parseInt(val);
+    document.getElementById('ttThresholdValue').textContent = val;
+    processRemoveBackground(_ttCurrentThresh);
+}
+
+/**
+ * Reset tanda tangan
+ */
+function resetTandaTangan() {
+    _ttOriginalFile  = null;
+    _ttOriginalImage = null;
+    _ttCurrentThresh = 220;
+
+    document.getElementById('tanda_tangan_input').value   = '';
+    document.getElementById('tanda_tangan_base64').value  = '';
+    document.getElementById('ttProcessedImg').src         = '';
+    document.getElementById('ttProcessedImg').classList.add('hidden');
+    document.getElementById('ttPlaceholder').classList.remove('hidden');
+    document.getElementById('ttStatusBadge').classList.add('hidden');
+    document.getElementById('ttThresholdSection').classList.add('hidden');
+    document.getElementById('ttResetBtn').classList.add('hidden');
+    document.getElementById('ttThreshold').value          = 220;
+    document.getElementById('ttThresholdValue').textContent = '220';
+}
+
+function showTTLoading(show) {
+    const el = document.getElementById('ttLoading');
+    show ? el.classList.remove('hidden') : el.classList.add('hidden');
+}
+
+// ════════════════════════════════════════════════════════
+// METODE PENYALURAN
+// ════════════════════════════════════════════════════════
 document.querySelectorAll('.metode-radio').forEach(radio => {
     radio.addEventListener('change', function () {
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
@@ -466,9 +678,7 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         const isBarang = this.value === 'barang';
         document.getElementById('barangSection').classList.toggle('hidden', !isBarang);
         document.getElementById('nominalSection').classList.toggle('hidden', isBarang);
-        if (isBarang) {
-            document.getElementById('jumlah').value = 0;
-        }
+        if (isBarang) document.getElementById('jumlah').value = 0;
     });
 });
 
@@ -489,7 +699,9 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
     }
 })();
 
-// ── Auto-fill kategori dari mustahik ──
+// ════════════════════════════════════════════════════════
+// AUTO-FILL MUSTAHIK
+// ════════════════════════════════════════════════════════
 function onMustahikChange() {
     const sel     = document.getElementById('mustahik_id');
     const opt     = sel.options[sel.selectedIndex];
@@ -512,7 +724,9 @@ function onMustahikChange() {
     }
 }
 
-// ── Preview Foto ──
+// ════════════════════════════════════════════════════════
+// PREVIEW FOTO BIASA
+// ════════════════════════════════════════════════════════
 function previewFoto(input, previewId) {
     const el = document.getElementById(previewId);
     if (!input.files?.[0]) return;
@@ -545,7 +759,9 @@ function previewMultipleFoto(input) {
     });
 }
 
-// ── Form Submit ──
+// ════════════════════════════════════════════════════════
+// FORM SUBMIT
+// ════════════════════════════════════════════════════════
 document.getElementById('formPenyaluran').addEventListener('submit', function (e) {
     const mustahik = document.getElementById('mustahik_id').value;
     const kategori = document.getElementById('kategori_mustahik_id').value;
@@ -565,6 +781,12 @@ document.getElementById('formPenyaluran').addEventListener('submit', function (e
         if (nilai <= 0) { e.preventDefault(); alert('Nilai estimasi barang harus diisi.'); return; }
     }
 
+    // Jika ada tanda tangan base64, nonaktifkan file input supaya tidak double-submit
+    const base64Val = document.getElementById('tanda_tangan_base64').value;
+    if (base64Val) {
+        document.getElementById('tanda_tangan_input').disabled = true;
+    }
+
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Menyimpan...';
@@ -572,9 +794,7 @@ document.getElementById('formPenyaluran').addEventListener('submit', function (e
 
 // Init mustahik info jika ada old value
 document.addEventListener('DOMContentLoaded', function () {
-    if (document.getElementById('mustahik_id').value) {
-        onMustahikChange();
-    }
+    if (document.getElementById('mustahik_id').value) onMustahikChange();
 });
 </script>
 @endpush

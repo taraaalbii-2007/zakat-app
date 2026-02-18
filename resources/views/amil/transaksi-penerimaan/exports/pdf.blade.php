@@ -71,10 +71,11 @@
             table-layout: fixed;
         }
         table.data-table th {
-            background-color: #f8f9fa;
+            background-color: #1a7a4a;
+            color: #ffffff;
             font-weight: bold;
             text-align: center;
-            border: 1px solid #2d3436;
+            border: 1px solid #155d38;
             padding: 8px 4px;
             text-transform: uppercase;
         }
@@ -91,8 +92,6 @@
         .text-left { text-align: left; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        
-        /* No badges - all text normal */
         
         /* Footer & Signature */
         .footer-container {
@@ -138,7 +137,7 @@
 <body>
     <div class="header">
         <h1>{{ strtoupper($masjid->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}</h1>
-        <h2>Laporan Detail Transaksi</h2>
+        <h2>Laporan Detail Transaksi Penerimaan Zakat</h2>
         <div class="subtitle">
             {{ $masjid->alamat ?? '' }}
             {{ $masjid->kelurahan_nama ? ', Kel. ' . $masjid->kelurahan_nama : '' }}
@@ -159,28 +158,23 @@
                 @php
                     $appliedFilters = [];
                     
-                    // Filter Keyword (q)
                     if(!empty($filters['q'])) {
                         $appliedFilters[] = "Pencarian: '" . $filters['q'] . "'";
                     }
 
-                    // Filter Periode (start_date & end_date)
                     if(!empty($filters['start_date']) && !empty($filters['end_date'])) {
                         $appliedFilters[] = "Periode: " . \Carbon\Carbon::parse($filters['start_date'])->format('d/m/Y') . " - " . \Carbon\Carbon::parse($filters['end_date'])->format('d/m/Y');
                     }
 
-                    // Filter Jenis Zakat (jenis_zakat_id)
                     if(!empty($filters['jenis_zakat_id'])) {
                         $jenis = $jenisZakatList->firstWhere('id', $filters['jenis_zakat_id']);
                         $appliedFilters[] = "Jenis: " . ($jenis->nama ?? 'Zakat');
                     }
 
-                    // Filter Metode Pembayaran
                     if(!empty($filters['metode_pembayaran'])) {
                         $appliedFilters[] = "Metode Bayar: " . ucfirst($filters['metode_pembayaran']);
                     }
 
-                    // Filter Status
                     if(!empty($filters['status'])) {
                         $statusText = match($filters['status']) {
                             'verified' => 'Terverifikasi',
@@ -191,7 +185,6 @@
                         $appliedFilters[] = "Status: " . $statusText;
                     }
 
-                    // Filter Metode Penerimaan
                     if(!empty($filters['metode_penerimaan'])) {
                         $penerimaanText = $filters['metode_penerimaan'] == 'datang_langsung' ? 'Datang Langsung' : 'Dijemput';
                         $appliedFilters[] = "Penerimaan: " . $penerimaanText;
@@ -278,18 +271,17 @@
                     <td class="text-left">{{ $transaksi->amil->pengguna->name ?? $transaksi->amil->nama_lengkap ?? '-' }}</td>
                 </tr>
 
-                @if($transaksi->jumlah_beras_kg || $transaksi->jumlah_jiwa || $transaksi->nilai_harta || $transaksi->keterangan || $transaksi->bukti_transfer)
+                @php
+                    $adaRincian = $transaksi->jumlah_beras_kg || $transaksi->jumlah_jiwa || $transaksi->nilai_harta || $transaksi->keterangan || $transaksi->bukti_transfer;
+                @endphp
+                @if($adaRincian)
                 <tr style="background-color: #fafafa;">
                     <td colspan="13" style="padding: 4px 8px; font-size: 8px; color: #636e72; border-top: none;">
-                        <span style="font-weight: bold; color: #2d3436;">Rincian:</span> 
+                        <span style="font-weight: bold; color: #2d3436;">Rincian:</span>
                         @if($transaksi->jumlah_beras_kg) Beras: {{ $transaksi->jumlah_beras_kg }} kg (@ Rp {{ number_format($transaksi->harga_beras_per_kg ?? 0, 0, ',', '.') }}) | @endif
                         @if($transaksi->jumlah_jiwa) Jiwa: {{ $transaksi->jumlah_jiwa }} orang | @endif
                         @if($transaksi->nilai_harta) Nilai Harta: Rp {{ number_format($transaksi->nilai_harta, 0, ',', '.') }} | @endif
-                        @if($transaksi->bukti_transfer) 
-                            <span style="color: #01579b;">
-                                Ada bukti transfer
-                            </span> | 
-                        @endif
+                        @if($transaksi->bukti_transfer) <span style="color: #01579b;">Ada bukti transfer</span> | @endif
                         @if($transaksi->keterangan) Ket: {{ $transaksi->keterangan }} @endif
                     </td>
                 </tr>
