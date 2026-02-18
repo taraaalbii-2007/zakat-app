@@ -177,20 +177,21 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
     //     Route::put('/update', [AdminMasjidController::class, 'update'])->name('update');
     // });
 
-        Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
+
+    Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])->name('show');
         Route::get('/edit', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'edit'])->name('edit');
         Route::post('/update', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'update'])->name('update');
-        
+
         // Testing endpoints
         Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])->name('test-whatsapp');
         Route::post('/test-midtrans', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testMidtrans'])->name('test-midtrans');
-        
+
         // Toggle status
         Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])->name('toggle-whatsapp');
         Route::post('/toggle-midtrans', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleMidtransStatus'])->name('toggle-midtrans');
     });
-    
+
     Route::prefix('program-zakat')->name('program-zakat.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin_masjid\ProgramZakatController::class, 'index'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin_masjid\ProgramZakatController::class, 'create'])->name('create');
@@ -250,8 +251,6 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
             Route::get('/', [\App\Http\Controllers\Admin_masjid\LaporanKeuanganController::class, 'publicIndex'])->name('index');
             Route::get('/{uuid}', [\App\Http\Controllers\Admin_masjid\LaporanKeuanganController::class, 'publicShow'])->name('show');
         });
-
-
     });
 
     // NOTE: Tambahkan route untuk:
@@ -271,7 +270,7 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
     // - Data Muzaki
     // - Data Mustahik (view only)
     // - Laporan Harian
-// Transaksi Penerimaan
+    // Transaksi Penerimaan
     Route::prefix('transaksi-penerimaan')->name('transaksi-penerimaan.')->group(function () {
         Route::get('/', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'index'])
             ->name('index');
@@ -290,10 +289,10 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
             ->name('destroy');
 
         Route::get('/export/pdf', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'exportPdf'])
-        ->name('export.pdf');
+            ->name('export.pdf');
         Route::get('/export/excel', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'exportExcel'])
-        ->name('export.excel');
-        
+            ->name('export.excel');
+
         // API Routes untuk AJAX - PERBAIKI INI
         Route::get('/get-tipe-zakat', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'getTipeZakat'])
             ->name('get-tipe-zakat');
@@ -301,7 +300,7 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
             ->name('get-nisab-info');
         Route::post('/create-midtrans', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'createMidtransTransaction'])
             ->name('create-midtrans');
-        
+
         // Status update routes
         Route::post('/{uuid}/verify', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'verify'])
             ->name('verify');
@@ -314,11 +313,11 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
     });
 
     Route::prefix('profil')->name('profil.')->group(function () {
-    Route::get('/',         [ProfilAmilController::class, 'show'])           ->name('show');
-    Route::get('/edit',     [ProfilAmilController::class, 'edit'])           ->name('edit');
-    Route::put('/update',   [ProfilAmilController::class, 'update'])         ->name('update');
-    Route::put('/password', [ProfilAmilController::class, 'updatePassword']) ->name('password');
-});
+        Route::get('/',         [ProfilAmilController::class, 'show'])->name('show');
+        Route::get('/edit',     [ProfilAmilController::class, 'edit'])->name('edit');
+        Route::put('/update',   [ProfilAmilController::class, 'update'])->name('update');
+        Route::put('/password', [ProfilAmilController::class, 'updatePassword'])->name('password');
+    });
 
 });
 
@@ -361,11 +360,27 @@ Route::middleware(['auth', 'active.user', 'role:admin_masjid', 'masjid.access'])
 // ============================================
 // ROUTES UNTUK ADMIN MASJID DAN AMIL (BOTH)
 // ============================================
+// SESUDAH — tambahkan ke blok ini yang sudah ada
 Route::middleware(['auth', 'active.user', 'role:admin_masjid,amil', 'masjid.access'])->group(function () {
-    // Route yang bisa diakses oleh admin masjid dan amil
-    // Contoh: Laporan, Data Transaksi, dll
-});
 
+    Route::prefix('transaksi-penyaluran')->name('transaksi-penyaluran.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'store'])->name('store');
+        Route::get('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'show'])->name('show');
+        Route::get('/{transaksiPenyaluran:uuid}/edit', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'edit'])->name('edit');
+        Route::put('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'update'])->name('update');
+        Route::delete('/{transaksiPenyaluran:uuid}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'destroy'])->name('destroy');
+        Route::post('/{transaksiPenyaluran:uuid}/konfirmasi-disalurkan', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'konfirmasiDisalurkan'])->name('konfirmasi-disalurkan');
+        Route::delete('/dokumentasi/{dokumentasi}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'hapusDokumentasi'])->name('dokumentasi.destroy');
+    });
+
+    // approve/reject tetap di sini juga (pindahkan dari blok admin_masjid)
+    Route::prefix('transaksi-penyaluran')->name('transaksi-penyaluran.')->group(function () {
+        Route::post('/{transaksiPenyaluran}/approve', [App\Http\Controllers\Admin_masjid\ApprovalPenyaluranController::class, 'approve'])->name('approve');
+        Route::post('/{transaksiPenyaluran}/reject', [App\Http\Controllers\Admin_masjid\ApprovalPenyaluranController::class, 'reject'])->name('reject');
+    });
+});
 // ============================================
 // API ROUTES (PUBLIC & PROTECTED)
 // ============================================

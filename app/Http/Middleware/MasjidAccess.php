@@ -14,7 +14,7 @@ class MasjidAccess
      * Middleware untuk memastikan user memiliki akses ke masjid
      * Digunakan untuk route yang membutuhkan data masjid
      */
-   public function handle(Request $request, Closure $next): Response
+public function handle(Request $request, Closure $next): Response
 {
     $user = Auth::user();
 
@@ -22,36 +22,39 @@ class MasjidAccess
         return redirect()->route('login');
     }
 
-    // Superadmin tidak perlu akses ke masjid tertentu
     if ($user->peran === 'superadmin') {
         return $next($request);
     }
 
-    // Admin masjid: ambil dari kolom masjid_id
+    $masjid = null; // ← inisialisasi dulu
+
     if ($user->peran === 'admin_masjid') {
         $masjid = Masjid::find($user->masjid_id);
-        
-        // if (!$masjid) {
-        //     return redirect()->route('admin.konfigurasi.index')
-        //         ->with('warning', 'Silakan lengkapi profil masjid terlebih dahulu.');
-        // }
+
+        if (!$masjid) {
+            return redirect()->route('admin.konfigurasi.index')
+                ->with('warning', 'Silakan lengkapi profil masjid terlebih dahulu.');
+        }
     }
-    
-    // Amil: ambil dari tabel amil
+
     if ($user->peran === 'amil') {
         $amil = \App\Models\Amil::where('pengguna_id', $user->id)
             ->where('status', 'aktif')
             ->first();
-        
+
         if (!$amil) {
             return redirect()->route('dashboard')
                 ->with('error', 'Anda belum ditugaskan sebagai amil aktif.');
         }
-        
+
         $masjid = $amil->masjid;
     }
 
-    // Attach masjid ke request
+    if (!$masjid) {
+        return redirect()->route('dashboard')
+            ->with('error', 'Tidak dapat menentukan masjid Anda.');
+    }
+
     $request->attributes->set('masjid', $masjid);
 
     return $next($request);
