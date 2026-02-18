@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin_masjid;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProgramZakat;
+use App\Models\TransaksiPenerimaan;
+use App\Models\TransaksiPenyaluran;
 use App\Models\Masjid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,32 +14,37 @@ use Illuminate\Support\Facades\DB;
 
 class ProgramZakatController extends Controller
 {
+    // ============================================================
+    // INDEX
+    // ============================================================
+
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user     = auth()->user();
         $masjidId = $user->masjid_id;
 
         $query = ProgramZakat::byMasjid($masjidId)
             ->orderBy('created_at', 'desc');
 
-        // Search
         if ($request->has('q') && $request->q) {
             $query->search($request->q);
         }
-
-        // Filter by status
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
         }
-
-        // Filter by periode
         if ($request->has('tahun') && $request->tahun) {
             $query->whereYear('tanggal_mulai', $request->tahun);
         }
 
-        $programs = $query->paginate(10);
+        // Eager-load relasi transaksi agar progress_dana & progress_mustahik
+        // dihitung via collection (tanpa N+1 query di index).
+        // PENTING: sertakan kolom 'id' agar eager load bekerja dengan benar,
+        // dan semua kolom yang dipakai accessor.
+        $programs = $query->with([
+            'transaksiPenerimaan' => fn ($q) => $q->select('id', 'program_zakat_id', 'jumlah', 'status'),
+            'transaksiPenyaluran' => fn ($q) => $q->select('id', 'program_zakat_id', 'mustahik_id', 'status'),
+        ])->paginate(10);
 
-        // Get available years for filter
         $tahunList = ProgramZakat::byMasjid($masjidId)
             ->selectRaw('YEAR(tanggal_mulai) as tahun')
             ->distinct()
@@ -47,70 +54,73 @@ class ProgramZakatController extends Controller
         return view('admin-masjid.program.index', compact('programs', 'tahunList'));
     }
 
+    // ============================================================
+    // CREATE
+    // ============================================================
+
     public function create()
     {
-        $user = auth()->user();
-        $masjid = $user->masjid;
-        
-        // Generate kode program
+        $user        = auth()->user();
+        $masjid      = $user->masjid;
         $kodeProgram = ProgramZakat::generateKodeProgram($user->masjid_id);
 
         return view('admin-masjid.program.create', compact('masjid', 'kodeProgram'));
     }
 
+    // ============================================================
+    // STORE
+    // ============================================================
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_program' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
+            'nama_program'    => 'required|string|max:255',
+            'deskripsi'       => 'nullable|string',
+            'tanggal_mulai'   => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
-            'target_dana' => 'nullable|numeric|min:0',
+            'target_dana'     => 'nullable|numeric|min:0',
             'target_mustahik' => 'nullable|integer|min:0',
-            'foto_poster' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'status' => 'required|in:draft,aktif',
+            'foto_poster'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'status'          => 'required|in:draft,aktif',
         ], [
-            'nama_program.required' => 'Nama program harus diisi',
-            'tanggal_mulai.required' => 'Tanggal mulai harus diisi',
-            'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai',
-            'foto_poster.image' => 'File harus berupa gambar',
-            'foto_poster.max' => 'Ukuran foto maksimal 2MB',
+            'nama_program.required'             => 'Nama program harus diisi',
+            'tanggal_mulai.required'            => 'Tanggal mulai harus diisi',
+            'tanggal_selesai.after_or_equal'    => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai',
+            'foto_poster.image'                 => 'File harus berupa gambar',
+            'foto_poster.max'                   => 'Ukuran foto maksimal 2MB',
         ]);
 
         DB::beginTransaction();
         try {
-            $user = auth()->user();
+            $user                    = auth()->user();
             $validated['masjid_id'] = $user->masjid_id;
-            
+
             // Generate kode program unik
-            $kodeBase = ProgramZakat::generateKodeProgram($user->masjid_id);
-            $counter = 1;
+            $kodeBase    = ProgramZakat::generateKodeProgram($user->masjid_id);
+            $counter     = 1;
             $kodeProgram = $kodeBase;
-            
             while (ProgramZakat::where('kode_program', $kodeProgram)->exists()) {
                 $kodeProgram = $kodeBase . '-' . str_pad($counter, 3, '0', STR_PAD_LEFT);
                 $counter++;
             }
-            
             $validated['kode_program'] = $kodeProgram;
 
             // Upload foto poster jika ada
             $fotoKegiatan = [];
             if ($request->hasFile('foto_poster')) {
-                $file = $request->file('foto_poster');
+                $file     = $request->file('foto_poster');
                 $filename = time() . '_poster_' . $file->getClientOriginalName();
-                $path = $file->storeAs('program-zakat/poster', $filename, 'public');
+                $path     = $file->storeAs('program-zakat/poster', $filename, 'public');
                 $fotoKegiatan[] = $path;
             }
-            
             $validated['foto_kegiatan'] = $fotoKegiatan;
 
             $program = ProgramZakat::create($validated);
 
             DB::commit();
 
-            $message = $validated['status'] === 'draft' 
-                ? 'Program berhasil disimpan sebagai draft' 
+            $message = $validated['status'] === 'draft'
+                ? 'Program berhasil disimpan sebagai draft'
                 : 'Program berhasil dibuat dan diaktifkan';
 
             return redirect()->route('program-zakat.index', $program->uuid)
@@ -123,28 +133,74 @@ class ProgramZakatController extends Controller
         }
     }
 
+    // ============================================================
+    // SHOW
+    // ============================================================
+
     public function show($uuid)
     {
         $user = auth()->user();
+
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
 
-        // TODO: Get related transactions when transaksi table is ready
-        // $penerimaanTerkait = Penerimaan::where('program_id', $program->id)->get();
-        // $penyaluranTerkait = Penyaluran::where('program_id', $program->id)->get();
+        // ── Penerimaan Dana ──────────────────────────────────────────────────
+        // Semua transaksi penerimaan yang memilih program ini, diurutkan terbaru.
+        $penerimaanList = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'amil.pengguna'])
+            ->where('program_zakat_id', $program->id)
+            ->orderByDesc('tanggal_transaksi')
+            ->orderByDesc('created_at')
+            ->get();
 
-        return view('admin-masjid.program.show', compact('program'));
+        // Ringkasan penerimaan
+        $totalPenerimaanVerified = $penerimaanList->where('status', 'verified')->sum('jumlah');
+        $totalPenerimaanPending  = $penerimaanList->where('status', 'pending')->count();
+        $totalPenerimaanTrx      = $penerimaanList->count();
+
+        // ── Penyaluran ───────────────────────────────────────────────────────
+        // Semua transaksi penyaluran yang terhubung program ini.
+        $penyaluranList = TransaksiPenyaluran::with(['mustahik', 'kategoriMustahik', 'amil.pengguna'])
+            ->where('program_zakat_id', $program->id)
+            ->orderByDesc('tanggal_penyaluran')
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Ringkasan penyaluran
+        $totalPenyaluranNominal = $penyaluranList
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->sum(fn ($t) => $t->metode_penyaluran === 'barang' ? ($t->nilai_barang ?? 0) : ($t->jumlah ?? 0));
+        $totalMustahikUnik      = $penyaluranList
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->pluck('mustahik_id')
+            ->unique()
+            ->count();
+        $totalPenyaluranTrx     = $penyaluranList->count();
+
+        return view('admin-masjid.program.show', compact(
+            'program',
+            'penerimaanList',
+            'totalPenerimaanVerified',
+            'totalPenerimaanPending',
+            'totalPenerimaanTrx',
+            'penyaluranList',
+            'totalPenyaluranNominal',
+            'totalMustahikUnik',
+            'totalPenyaluranTrx',
+        ));
     }
+
+    // ============================================================
+    // EDIT
+    // ============================================================
 
     public function edit($uuid)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
 
-        // Tidak bisa edit program yang sudah selesai atau dibatalkan
         if (in_array($program->status, ['selesai', 'dibatalkan'])) {
             return back()->with('error', 'Program dengan status ' . $program->status . ' tidak dapat diedit');
         }
@@ -152,53 +208,52 @@ class ProgramZakatController extends Controller
         return view('admin-masjid.program.edit', compact('program'));
     }
 
+    // ============================================================
+    // UPDATE
+    // ============================================================
+
     public function update(Request $request, $uuid)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
 
-        // Tidak bisa edit program yang sudah selesai atau dibatalkan
         if (in_array($program->status, ['selesai', 'dibatalkan'])) {
             return back()->with('error', 'Program dengan status ' . $program->status . ' tidak dapat diedit');
         }
 
         $validated = $request->validate([
-            'nama_program' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
-            'target_dana' => 'nullable|numeric|min:0',
-            'target_mustahik' => 'nullable|integer|min:0',
-            'catatan' => 'nullable|string',
-            'status' => 'required|in:draft,aktif,selesai,dibatalkan',
-            'foto_kegiatan.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'nama_program'       => 'required|string|max:255',
+            'deskripsi'          => 'nullable|string',
+            'tanggal_mulai'      => 'required|date',
+            'tanggal_selesai'    => 'nullable|date|after_or_equal:tanggal_mulai',
+            'target_dana'        => 'nullable|numeric|min:0',
+            'target_mustahik'    => 'nullable|integer|min:0',
+            'catatan'            => 'nullable|string',
+            'status'             => 'required|in:draft,aktif,selesai,dibatalkan',
+            'foto_kegiatan.*'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ], [
-            'nama_program.required' => 'Nama program harus diisi',
-            'tanggal_mulai.required' => 'Tanggal mulai harus diisi',
+            'nama_program.required'          => 'Nama program harus diisi',
+            'tanggal_mulai.required'         => 'Tanggal mulai harus diisi',
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai harus setelah atau sama dengan tanggal mulai',
-            'foto_kegiatan.*.image' => 'File harus berupa gambar',
-            'foto_kegiatan.*.max' => 'Ukuran foto maksimal 2MB',
+            'foto_kegiatan.*.image'          => 'File harus berupa gambar',
+            'foto_kegiatan.*.max'            => 'Ukuran foto maksimal 2MB',
         ]);
 
         DB::beginTransaction();
         try {
-            // Upload foto kegiatan tambahan jika ada
             $fotoKegiatan = $program->foto_kegiatan ?? [];
-            
             if ($request->hasFile('foto_kegiatan')) {
                 foreach ($request->file('foto_kegiatan') as $file) {
-                    $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-                    $path = $file->storeAs('program-zakat/kegiatan', $filename, 'public');
+                    $filename       = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+                    $path           = $file->storeAs('program-zakat/kegiatan', $filename, 'public');
                     $fotoKegiatan[] = $path;
                 }
             }
-            
             $validated['foto_kegiatan'] = $fotoKegiatan;
 
             $program->update($validated);
-
             DB::commit();
 
             return redirect()->route('program-zakat.show', $program->uuid)
@@ -211,29 +266,29 @@ class ProgramZakatController extends Controller
         }
     }
 
+    // ============================================================
+    // DESTROY
+    // ============================================================
+
     public function destroy($uuid)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
 
-        // Hanya bisa hapus program dengan status draft
         if ($program->status !== 'draft') {
             return back()->with('error', 'Hanya program dengan status draft yang dapat dihapus');
         }
 
         DB::beginTransaction();
         try {
-            // Hapus foto-foto
             if ($program->foto_kegiatan) {
                 foreach ($program->foto_kegiatan as $foto) {
                     Storage::disk('public')->delete($foto);
                 }
             }
-
             $program->delete();
-
             DB::commit();
 
             return redirect()->route('program-zakat.index')
@@ -245,9 +300,13 @@ class ProgramZakatController extends Controller
         }
     }
 
+    // ============================================================
+    // UPLOAD FOTO
+    // ============================================================
+
     public function uploadFoto(Request $request, $uuid)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
@@ -256,21 +315,19 @@ class ProgramZakatController extends Controller
             'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ], [
             'foto.required' => 'Foto harus dipilih',
-            'foto.image' => 'File harus berupa gambar',
-            'foto.max' => 'Ukuran foto maksimal 2MB',
+            'foto.image'    => 'File harus berupa gambar',
+            'foto.max'      => 'Ukuran foto maksimal 2MB',
         ]);
 
         DB::beginTransaction();
         try {
-            $fotoKegiatan = $program->foto_kegiatan ?? [];
-            
-            $file = $request->file('foto');
-            $filename = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('program-zakat/kegiatan', $filename, 'public');
+            $fotoKegiatan   = $program->foto_kegiatan ?? [];
+            $file           = $request->file('foto');
+            $filename       = time() . '_' . uniqid() . '_' . $file->getClientOriginalName();
+            $path           = $file->storeAs('program-zakat/kegiatan', $filename, 'public');
             $fotoKegiatan[] = $path;
-            
-            $program->update(['foto_kegiatan' => $fotoKegiatan]);
 
+            $program->update(['foto_kegiatan' => $fotoKegiatan]);
             DB::commit();
 
             return back()->with('success', 'Foto berhasil diunggah');
@@ -281,9 +338,13 @@ class ProgramZakatController extends Controller
         }
     }
 
+    // ============================================================
+    // DELETE FOTO
+    // ============================================================
+
     public function deleteFoto($uuid, $index)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
@@ -291,74 +352,55 @@ class ProgramZakatController extends Controller
         DB::beginTransaction();
         try {
             $fotoKegiatan = $program->foto_kegiatan ?? [];
-            
             if (isset($fotoKegiatan[$index])) {
                 Storage::disk('public')->delete($fotoKegiatan[$index]);
                 unset($fotoKegiatan[$index]);
-                $fotoKegiatan = array_values($fotoKegiatan); // Re-index array
-                
+                $fotoKegiatan = array_values($fotoKegiatan);
                 $program->update(['foto_kegiatan' => $fotoKegiatan]);
             }
-
             DB::commit();
 
-            // Return JSON response for AJAX request
             if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Foto berhasil dihapus'
-                ]);
+                return response()->json(['success' => true, 'message' => 'Foto berhasil dihapus']);
             }
-
             return back()->with('success', 'Foto berhasil dihapus');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            // Return JSON response for AJAX request
             if (request()->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan saat menghapus foto: ' . $e->getMessage()
-                ], 500);
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
             }
-            
             return back()->with('error', 'Terjadi kesalahan saat menghapus foto: ' . $e->getMessage());
         }
     }
 
+    // ============================================================
+    // CHANGE STATUS
+    // ============================================================
+
     public function changeStatus(Request $request, $uuid)
     {
-        $user = auth()->user();
+        $user    = auth()->user();
         $program = ProgramZakat::where('uuid', $uuid)
             ->byMasjid($user->masjid_id)
             ->firstOrFail();
 
         $request->validate([
-            'status' => 'required|in:draft,aktif,selesai,dibatalkan',
+            'status'  => 'required|in:draft,aktif,selesai,dibatalkan',
             'catatan' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
             $updateData = ['status' => $request->status];
-            
             if ($request->catatan) {
                 $updateData['catatan'] = $request->catatan;
             }
-
             $program->update($updateData);
-
             DB::commit();
 
-            $statusLabels = [
-                'draft' => 'draft',
-                'aktif' => 'aktif',
-                'selesai' => 'selesai',
-                'dibatalkan' => 'dibatalkan',
-            ];
-
-            return back()->with('success', 'Status program berhasil diubah menjadi ' . $statusLabels[$request->status]);
+            $label = ['draft' => 'draft', 'aktif' => 'aktif', 'selesai' => 'selesai', 'dibatalkan' => 'dibatalkan'];
+            return back()->with('success', 'Status program berhasil diubah menjadi ' . ($label[$request->status] ?? $request->status));
 
         } catch (\Exception $e) {
             DB::rollBack();
