@@ -319,6 +319,35 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         Route::put('/password', [ProfilAmilController::class, 'updatePassword'])->name('password');
     });
 
+    Route::prefix('kas-harian')->name('kas-harian.')->group(function () {
+        // Index — lihat kas hari ini (bisa dengan ?tanggal=YYYY-MM-DD)
+        Route::get('/', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'index'])
+            ->name('index');
+
+        // Buka kas baru hari ini
+        Route::post('/buka', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'bukaKas'])
+            ->name('buka');
+
+        // Tutup kas hari ini
+        Route::post('/tutup', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'tutupKas'])
+            ->name('tutup');
+
+        // Buka kembali kas (reopen — hanya kas hari ini)
+        Route::post('/{uuid}/buka-kembali', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'bukaKembali'])
+            ->name('buka-kembali');
+
+        // Simpan catatan saja (tanpa tutup kas)
+        Route::post('/simpan-catatan', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'simpanCatatan'])
+            ->name('simpan-catatan');
+
+        // Riwayat kas harian (history page)
+        Route::get('/history', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'history'])
+            ->name('history');
+
+        // Export Excel history
+        Route::get('/export-excel', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'exportExcel'])
+            ->name('export-excel');
+    });
 });
 
 Route::post('/midtrans/callback', [App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'midtransCallback'])
@@ -377,7 +406,7 @@ Route::middleware(['auth', 'active.user', 'role:admin_masjid,amil', 'masjid.acce
         Route::delete('/dokumentasi/{dokumentasi}', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'hapusDokumentasi'])->name('dokumentasi.destroy');
         Route::get('/{transaksiPenyaluran:uuid}/cetak', [App\Http\Controllers\Amil\TransaksiPenyaluranController::class, 'cetak'])->name('cetak');
     });
-    
+
 
     // approve/reject tetap di sini juga (pindahkan dari blok admin_masjid)
     Route::prefix('transaksi-penyaluran')->name('transaksi-penyaluran.')->group(function () {
