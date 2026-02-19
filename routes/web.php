@@ -16,6 +16,8 @@ use App\Http\Controllers\Admin_masjid\AmilController;
 use App\Http\Controllers\Admin_masjid\MustahikController;
 use App\Http\Controllers\Amil\TransaksiPenerimaanController;
 use App\Http\Controllers\Amil\ProfilAmilController;
+use App\Http\Controllers\Amil\SetorKasController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -221,8 +223,6 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         Route::patch('/{rekeningMasjid:uuid}/set-primary', [\App\Http\Controllers\Admin_masjid\RekeningMasjidController::class, 'setPrimary'])->name('set-primary');
     });
 
-
-
     // Ubah bagian route amil menjadi:
     Route::prefix('amil')->name('amil.')->group(function () {
         Route::get('/', [AmilController::class, 'index'])->name('index');
@@ -253,6 +253,12 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         });
     });
 
+Route::prefix('admin-setor-kas')->name('admin-masjid.setor-kas.')->group(function () {
+    Route::get('/pending', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'pending'])->name('pending');
+    Route::get('/riwayat', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'riwayat'])->name('riwayat');
+    Route::get('/{setorKas}', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'show'])->name('show')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+    Route::post('/{setorKas}/proses', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'proses'])->name('proses')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+});
     // NOTE: Tambahkan route untuk:
     // - Program Zakat
     // - Mustahik
@@ -347,6 +353,19 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         // Export Excel history
         Route::get('/export-excel', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'exportExcel'])
             ->name('export-excel');
+    });
+
+    Route::prefix('setor-kas')->name('amil.setor-kas.')->group(function () {
+        Route::get('/', [SetorKasController::class, 'index'])->name('index');
+        Route::get('/create', [SetorKasController::class, 'create'])->name('create');
+        Route::post('/', [SetorKasController::class, 'store'])->name('store');
+        Route::post('/api/hitung-rekap', [SetorKasController::class, 'hitungRekapApi'])->name('api.hitung-rekap');
+
+        // Tambahkan ->whereUuid() di semua wildcard
+        Route::get('/{setorKas}', [SetorKasController::class, 'show'])->name('show')->whereUuid('setorKas');
+        Route::get('/{setorKas}/edit', [SetorKasController::class, 'edit'])->name('edit')->whereUuid('setorKas');
+        Route::put('/{setorKas}', [SetorKasController::class, 'update'])->name('update')->whereUuid('setorKas');
+        Route::delete('/{setorKas}', [SetorKasController::class, 'destroy'])->name('destroy')->whereUuid('setorKas');
     });
 });
 
