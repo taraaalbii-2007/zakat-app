@@ -253,12 +253,12 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         });
     });
 
-Route::prefix('admin-setor-kas')->name('admin-masjid.setor-kas.')->group(function () {
-    Route::get('/pending', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'pending'])->name('pending');
-    Route::get('/riwayat', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'riwayat'])->name('riwayat');
-    Route::get('/{setorKas}', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'show'])->name('show')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
-    Route::post('/{setorKas}/proses', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'proses'])->name('proses')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
-});
+    Route::prefix('admin-setor-kas')->name('admin-masjid.setor-kas.')->group(function () {
+        Route::get('/pending', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'pending'])->name('pending');
+        Route::get('/riwayat', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'riwayat'])->name('riwayat');
+        Route::get('/{setorKas}', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'show'])->name('show')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+        Route::post('/{setorKas}/proses', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'proses'])->name('proses')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+    });
     // NOTE: Tambahkan route untuk:
     // - Program Zakat
     // - Mustahik
@@ -366,6 +366,65 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         Route::get('/{setorKas}/edit', [SetorKasController::class, 'edit'])->name('edit')->whereUuid('setorKas');
         Route::put('/{setorKas}', [SetorKasController::class, 'update'])->name('update')->whereUuid('setorKas');
         Route::delete('/{setorKas}', [SetorKasController::class, 'destroy'])->name('destroy')->whereUuid('setorKas');
+    });
+
+    Route::prefix('kunjungan')->name('amil.kunjungan.')->group(function () {
+
+        // Kalender (index)
+        Route::get('/', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'index'])
+            ->name('index');
+
+        // API Events untuk FullCalendar
+        Route::get('/events', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'events'])
+            ->name('events');
+
+        // API List view toggle
+        Route::get('/list-data', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'listData'])
+            ->name('list-data');
+
+        // API Autocomplete mustahik
+        Route::get('/search-mustahik', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'searchMustahik'])
+            ->name('search-mustahik');
+
+        // CRUD
+        Route::get('/create', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{uuid}', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'show'])
+            ->name('show')
+            ->whereUuid('uuid');
+
+        Route::get('/{uuid}/edit', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'edit'])
+            ->name('edit')
+            ->whereUuid('uuid');
+
+        Route::put('/{uuid}', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'update'])
+            ->name('update')
+            ->whereUuid('uuid');
+
+        Route::delete('/{uuid}', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'destroy'])
+            ->name('destroy')
+            ->whereUuid('uuid');
+
+        // Actions
+        Route::post('/{uuid}/cancel', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'cancel'])
+            ->name('cancel')
+            ->whereUuid('uuid');
+
+        Route::get('/{uuid}/finish', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'finish'])
+            ->name('finish')
+            ->whereUuid('uuid');
+
+        Route::post('/{uuid}/complete', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'complete'])
+            ->name('complete')
+            ->whereUuid('uuid');
+
+        Route::delete('/{uuid}/foto', [\App\Http\Controllers\Amil\KunjunganMustahikController::class, 'hapusFoto'])
+            ->name('hapus-foto')
+            ->whereUuid('uuid');
     });
 });
 

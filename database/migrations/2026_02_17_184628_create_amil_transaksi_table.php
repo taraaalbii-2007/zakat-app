@@ -212,8 +212,6 @@ return new class extends Migration
             $table->time('waktu_mulai')->nullable();
             $table->time('waktu_selesai')->nullable();
             $table->enum('tujuan', ['verifikasi', 'penyaluran', 'monitoring', 'lainnya']);
-            $table->decimal('latitude', 10, 8)->nullable();
-            $table->decimal('longitude', 11, 8)->nullable();
             $table->text('hasil_kunjungan')->nullable();
             $table->json('foto_dokumentasi')->nullable();
             $table->enum('status', ['direncanakan', 'selesai', 'dibatalkan'])->default('direncanakan');
