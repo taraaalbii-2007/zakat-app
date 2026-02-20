@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\Loggable;
 
 class KategoriMustahik extends Model
 {
     use HasFactory;
+    use Loggable;
 
     protected $table = 'kategori_mustahik';
 

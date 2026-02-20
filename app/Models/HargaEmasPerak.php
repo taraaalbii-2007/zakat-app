@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class HargaEmasPerak extends Model
 {
     use HasFactory;
+    use Loggable;
 
     protected $table = 'harga_emas_perak';
     

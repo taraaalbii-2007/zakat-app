@@ -10,10 +10,12 @@ use Laravolt\Indonesia\Models\Province;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
+use App\Traits\Loggable;
 
 class Masjid extends Model
 {
     use HasFactory;
+    use Loggable;
 
     protected $table = 'masjid';
 
