@@ -2,12 +2,25 @@
     <!-- Logo & Brand -->
     <div class="px-4 py-5 border-b border-white/10">
         <div class="flex items-center space-x-3">
-            <div class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
-                <span class="text-base font-bold text-white">NZ</span>
-            </div>
-            <div>
-                <h1 class="text-base font-bold tracking-tight text-white">Niat Zakata</h1>
-                <p class="text-xs text-white/60 mt-0.5">Dari Niat Timbul Manfaat</p>
+            {{-- Jika ada logo, tampilkan gambar. Jika tidak, tampilkan inisial --}}
+            @if(!empty($appConfig->logo_aplikasi))
+                <img src="{{ asset('storage/' . $appConfig->logo_aplikasi) }}"
+                     alt="{{ $appConfig->nama_aplikasi }}"
+                     class="w-11 h-11 rounded-full object-cover flex-shrink-0 ring-2 ring-white/20">
+            @else
+                <div class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+                    <span class="text-base font-bold text-white">
+                        {{ strtoupper(substr($appConfig->nama_aplikasi ?? 'App', 0, 2)) }}
+                    </span>
+                </div>
+            @endif
+            <div class="min-w-0">
+                <h1 class="text-base font-bold tracking-tight text-white truncate">
+                    {{ $appConfig->nama_aplikasi ?? 'Aplikasi Zakat' }}
+                </h1>
+                <p class="text-xs text-white/60 mt-0.5 truncate">
+                    {{ $appConfig->tagline ?? '' }}
+                </p>
             </div>
         </div>
     </div>
@@ -270,20 +283,6 @@
                     </a>
                 </li>
 
-                <!-- LOGOUT -->
-                <li class="mt-4">
-                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span>Keluar</span>
-                        </button>
-                    </form>
-                </li>
-
             @endif
 
             <!-- ============================================ -->
@@ -294,7 +293,6 @@
                     <p class="{{ $sectionLabel }}">Menu Utama</p>
                 </li>
 
-                <!-- Dashboard -->
                 <li>
                     <a href="{{ route('dashboard') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
@@ -309,7 +307,6 @@
                     <p class="{{ $sectionLabel }}">Admin Masjid</p>
                 </li>
 
-                <!-- Data Master Admin -->
                 <li>
                     <details class="group" {{ $isAdminMasterOpen ? 'open' : '' }}>
                         <summary class="{{ $summaryClass }} text-[13px]">
@@ -344,7 +341,6 @@
                     </details>
                 </li>
 
-                <!-- Kelola Amil -->
                 <li>
                     <a href="{{ route('amil.index') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'amil') ? $activeClass : $inactiveClass }}">
@@ -355,7 +351,6 @@
                     </a>
                 </li>
 
-                <!-- Laporan Keuangan -->
                 <li class="mt-3 mb-1">
                     <p class="{{ $sectionLabel }}">Laporan</p>
                 </li>
@@ -369,7 +364,6 @@
                     </a>
                 </li>
 
-                <!-- Pengaturan -->
                 <li class="mt-3 mb-1">
                     <p class="{{ $sectionLabel }}">Pengaturan</p>
                 </li>
@@ -383,20 +377,6 @@
                         <span>Konfigurasi Masjid</span>
                     </a>
                 </li>
-
-                <!-- Logout -->
-                <li class="mt-4">
-                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span>Keluar</span>
-                        </button>
-                    </form>
-                </li>
             @endif
 
             <!-- ============================================ -->
@@ -407,7 +387,6 @@
                     <p class="{{ $sectionLabel }}">Menu Utama</p>
                 </li>
 
-                <!-- Dashboard -->
                 <li>
                     <a href="{{ route('dashboard') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
@@ -422,7 +401,6 @@
                     <p class="{{ $sectionLabel }}">Data Penerima</p>
                 </li>
 
-                <!-- Mustahik -->
                 <li>
                     <a href="{{ route('mustahik.index') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'mustahik') ? $activeClass : $inactiveClass }}">
@@ -493,7 +471,6 @@
                     </a>
                 </li>
 
-                <!-- Pengaturan -->
                 <li class="mt-3 mb-1">
                     <p class="{{ $sectionLabel }}">Pengaturan</p>
                 </li>
@@ -506,20 +483,6 @@
                         <span>Profil Saya</span>
                     </a>
                 </li>
-
-                <!-- Logout -->
-                <li class="mt-4">
-                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span>Keluar</span>
-                        </button>
-                    </form>
-                </li>
             @endif
 
         </ul>
@@ -528,8 +491,8 @@
     <!-- Sidebar Footer -->
     <div class="px-4 py-3 border-t border-white/10">
         <div class="text-center">
-            <p class="text-xs text-white/40">© {{ date('Y') }} Niat Zakata</p>
-            <p class="text-xs text-white/40 mt-0.5">v1.0.0</p>
+            <p class="text-xs text-white/40">© {{ date('Y') }} {{ $appConfig->nama_aplikasi ?? 'Niat Zakat' }}</p>
+            <p class="text-xs text-white/40 mt-0.5">v{{ $appConfig->versi ?? '1.0.0' }}</p>
         </div>
     </div>
 </aside>

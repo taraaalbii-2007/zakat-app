@@ -249,6 +249,8 @@
     @stack('styles')
 </head>
 <body class="min-h-screen animated-bg overflow-x-hidden {{ request()->routeIs('complete-profile.*') ? 'complete-profile-layout' : '' }}">
+
+    @include('partials.splash-screen')
     
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
