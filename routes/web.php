@@ -21,6 +21,7 @@ use App\Http\Controllers\Superadmin\SuperadminAmilController;
 use App\Http\Controllers\Superadmin\SuperadminMustahikController;
 use App\Http\Controllers\Superadmin\SuperadminTransaksiPenerimaanController;
 use App\Http\Controllers\Superadmin\SuperadminTransaksiPenyaluranController;
+use App\Http\Controllers\Superadmin\ProfilSuperadminController;
 
 
 Route::get('/', function () {
@@ -202,6 +203,16 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         Route::get('/', [LaporanKonsolidasiController::class, 'index'])->name('index');
         Route::get('/{masjidId}', [LaporanKonsolidasiController::class, 'show'])->name('detail');
         Route::get('/{masjidId}/export', [LaporanKonsolidasiController::class, 'export'])->name('export');
+    });
+
+    Route::prefix('superadmin-profil')->name('superadmin.profil.')->group(function () {
+        Route::get('/',                     [ProfilSuperadminController::class, 'show'])->name('show');
+        Route::get('/edit',                 [ProfilSuperadminController::class, 'edit'])->name('edit');
+        Route::put('/update',                [ProfilSuperadminController::class, 'update'])->name('update');
+
+        // Routes khusus untuk password
+        Route::get('/ubah-password',         [ProfilSuperadminController::class, 'editPassword'])->name('password.edit');
+        Route::put('/ubah-password',          [ProfilSuperadminController::class, 'updatePassword'])->name('password.update');
     });
 });
 
