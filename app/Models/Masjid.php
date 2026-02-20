@@ -14,27 +14,27 @@ use Laravolt\Indonesia\Models\Village;
 class Masjid extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'masjid';
-    
+
     // Konstanta untuk maksimal foto
     public const MAX_FOTO = 5;
-    
+
     protected $fillable = [
         'uuid',
-        
+
         // DATA ADMIN MASJID - TAMBAHKAN INI
         'admin_nama',
         'admin_telepon',
         'admin_email',
         'admin_foto',
-        
+
         // DATA SEJARAH - TAMBAHKAN INI
         'sejarah',
         'tahun_berdiri',
         'pendiri',
         'kapasitas_jamaah',
-        
+
         // DATA MASJID
         'nama',
         'kode_masjid',
@@ -51,10 +51,10 @@ class Masjid extends Model
         'telepon',
         'email',
         'deskripsi',
-        
+
         // FOTO MASJID
         'foto',
-        
+
         'is_active'
     ];
 
@@ -83,16 +83,16 @@ class Masjid extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($model) {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
-            
+
             if (empty($model->kode_masjid)) {
                 $model->kode_masjid = self::generateKodeMasjid();
             }
-            
+
             $model->syncWilayahNames();
             $model->validateFotoCount();
         });
@@ -103,30 +103,30 @@ class Masjid extends Model
             }
             $model->validateFotoCount();
         });
-        
+
         static::updated(function ($model) {
             $originalFotos = $model->getOriginal('foto') ?? [];
             $currentFotos = $model->foto ?? [];
-            
+
             $deletedFotos = array_diff($originalFotos, $currentFotos);
-            
+
             foreach ($deletedFotos as $foto) {
                 if (Storage::disk('public')->exists($foto)) {
                     Storage::disk('public')->delete($foto);
                 }
             }
-            
+
             // TAMBAHKAN INI: Handle hapus foto admin
             $originalAdminFoto = $model->getOriginal('admin_foto');
             $currentAdminFoto = $model->admin_foto;
-            
+
             if ($originalAdminFoto && $originalAdminFoto !== $currentAdminFoto) {
                 if (Storage::disk('public')->exists($originalAdminFoto)) {
                     Storage::disk('public')->delete($originalAdminFoto);
                 }
             }
         });
-        
+
         static::deleted(function ($model) {
             $fotos = $model->foto ?? [];
             foreach ($fotos as $foto) {
@@ -134,7 +134,7 @@ class Masjid extends Model
                     Storage::disk('public')->delete($foto);
                 }
             }
-            
+
             // TAMBAHKAN INI: Hapus foto admin
             if ($model->admin_foto && Storage::disk('public')->exists($model->admin_foto)) {
                 Storage::disk('public')->delete($model->admin_foto);
@@ -146,18 +146,18 @@ class Masjid extends Model
     {
         $prefix = 'MSJ';
         $year = date('Y');
-        
+
         $lastMasjid = self::whereYear('created_at', $year)
             ->orderBy('id', 'desc')
             ->first();
-        
+
         if ($lastMasjid) {
             $lastNumber = (int) substr($lastMasjid->kode_masjid, -4);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
-        
+
         return $prefix . $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
@@ -182,7 +182,7 @@ class Masjid extends Model
         if ($this->kelurahan_kode) {
             $village = Village::where('code', $this->kelurahan_kode)->first();
             $this->kelurahan_nama = $village ? $village->name : null;
-            
+
             if ($village && isset($village->meta) && is_array($village->meta)) {
                 $meta = $village->meta;
                 if (isset($meta['postal_code']) && empty($this->kode_pos)) {
@@ -205,76 +205,76 @@ class Masjid extends Model
     public function addFoto(string $path): bool
     {
         $fotos = $this->foto ?? [];
-        
+
         if (count($fotos) >= self::MAX_FOTO) {
             return false;
         }
-        
+
         $fotos[] = $path;
         $this->foto = $fotos;
         return $this->save();
     }
-    
+
     public function removeFoto(string $path): bool
     {
         $fotos = $this->foto ?? [];
-        
+
         $index = array_search($path, $fotos);
-        
+
         if ($index !== false) {
             unset($fotos[$index]);
-            
+
             if (Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
             }
-            
+
             $this->foto = array_values($fotos);
             return $this->save();
         }
-        
+
         return false;
     }
-    
+
     public function removeFotoByIndex(int $index): bool
     {
         $fotos = $this->foto ?? [];
-        
+
         if (isset($fotos[$index])) {
             $path = $fotos[$index];
-            
+
             unset($fotos[$index]);
-            
+
             if (Storage::disk('public')->exists($path)) {
                 Storage::disk('public')->delete($path);
             }
-            
+
             $this->foto = array_values($fotos);
             return $this->save();
         }
-        
+
         return false;
     }
-    
+
     public function clearAllFotos(): bool
     {
         $fotos = $this->foto ?? [];
-        
+
         foreach ($fotos as $foto) {
             if (Storage::disk('public')->exists($foto)) {
                 Storage::disk('public')->delete($foto);
             }
         }
-        
+
         $this->foto = [];
         return $this->save();
     }
-    
+
     public function canAddMoreFotos(): bool
     {
         $currentCount = count($this->foto ?? []);
         return $currentCount < self::MAX_FOTO;
     }
-    
+
     public function getRemainingFotoSlots(): int
     {
         $currentCount = count($this->foto ?? []);
@@ -287,31 +287,31 @@ class Masjid extends Model
     public function getAlamatLengkapAttribute()
     {
         $parts = [];
-        
+
         if ($this->alamat) {
             $parts[] = $this->alamat;
         }
-        
+
         if ($this->kelurahan_nama) {
             $parts[] = 'Kel. ' . $this->kelurahan_nama;
         }
-        
+
         if ($this->kecamatan_nama) {
             $parts[] = 'Kec. ' . $this->kecamatan_nama;
         }
-        
+
         if ($this->kota_nama) {
             $parts[] = $this->kota_nama;
         }
-        
+
         if ($this->provinsi_nama) {
             $parts[] = 'Prov. ' . $this->provinsi_nama;
         }
-        
+
         if ($this->kode_pos) {
             $parts[] = $this->kode_pos;
         }
-        
+
         return implode(', ', $parts);
     }
 
@@ -319,34 +319,34 @@ class Masjid extends Model
     {
         $urls = [];
         $fotos = $this->foto ?? [];
-        
+
         foreach ($fotos as $foto) {
             $urls[] = asset('storage/' . $foto);
         }
-        
+
         if (empty($urls)) {
             return [asset('images/default-masjid.jpg')];
         }
-        
+
         return $urls;
     }
-    
+
     public function getFotoUtamaUrlAttribute()
     {
         $fotos = $this->foto ?? [];
-        
+
         if (!empty($fotos) && isset($fotos[0])) {
             return asset('storage/' . $fotos[0]);
         }
-        
+
         return asset('images/default-masjid.jpg');
     }
-    
+
     public function getFotoCountAttribute()
     {
         return count($this->foto ?? []);
     }
-    
+
     /**
      * TAMBAHKAN ATTRIBUTE UNTUK FOTO ADMIN
      */
@@ -355,10 +355,10 @@ class Masjid extends Model
         if ($this->admin_foto && Storage::disk('public')->exists($this->admin_foto)) {
             return asset('storage/' . $this->admin_foto);
         }
-        
+
         return asset('images/default-admin.jpg');
     }
-    
+
     /**
      * TAMBAHKAN ATTRIBUTE UNTUK TAHUN BERDIRI YANG SUDAH DIFORMAT
      */
@@ -367,10 +367,10 @@ class Masjid extends Model
         if ($this->tahun_berdiri) {
             return $this->tahun_berdiri;
         }
-        
+
         return '-';
     }
-    
+
     /**
      * TAMBAHKAN ATTRIBUTE UNTUK USIA MASJID
      */
@@ -380,7 +380,7 @@ class Masjid extends Model
             $currentYear = date('Y');
             return $currentYear - $this->tahun_berdiri;
         }
-        
+
         return null;
     }
 
@@ -417,16 +417,16 @@ class Masjid extends Model
 
     public function scopeSearch($query, $term)
     {
-        return $query->where(function($q) use ($term) {
+        return $query->where(function ($q) use ($term) {
             $q->where('nama', 'like', "%{$term}%")
-              ->orWhere('kode_masjid', 'like', "%{$term}%")
-              ->orWhere('alamat', 'like', "%{$term}%")
-              ->orWhere('admin_nama', 'like', "%{$term}%") // TAMBAHKAN INI
-              ->orWhere('pendiri', 'like', "%{$term}%") // TAMBAHKAN INI
-              ->orWhere('provinsi_nama', 'like', "%{$term}%")
-              ->orWhere('kota_nama', 'like', "%{$term}%")
-              ->orWhere('kecamatan_nama', 'like', "%{$term}%")
-              ->orWhere('kelurahan_nama', 'like', "%{$term}%");
+                ->orWhere('kode_masjid', 'like', "%{$term}%")
+                ->orWhere('alamat', 'like', "%{$term}%")
+                ->orWhere('admin_nama', 'like', "%{$term}%") // TAMBAHKAN INI
+                ->orWhere('pendiri', 'like', "%{$term}%") // TAMBAHKAN INI
+                ->orWhere('provinsi_nama', 'like', "%{$term}%")
+                ->orWhere('kota_nama', 'like', "%{$term}%")
+                ->orWhere('kecamatan_nama', 'like', "%{$term}%")
+                ->orWhere('kelurahan_nama', 'like', "%{$term}%");
         });
     }
 
@@ -439,7 +439,7 @@ class Masjid extends Model
     {
         return $query->where('kota_kode', $kotaKode);
     }
-    
+
     /**
      * TAMBAHKAN SCOPES BARU
      */
@@ -447,14 +447,37 @@ class Masjid extends Model
     {
         return $query->where('tahun_berdiri', $tahun);
     }
-    
+
     public function scopeBerdiriSebelum($query, $tahun)
     {
         return $query->where('tahun_berdiri', '<=', $tahun);
     }
-    
+
     public function scopeBerdiriSetelah($query, $tahun)
     {
         return $query->where('tahun_berdiri', '>=', $tahun);
+    }
+
+    public function amils()
+    {
+        return $this->hasMany(\App\Models\Amil::class, 'masjid_id');
+    }
+
+    // Relasi ke Mustahik
+    public function mustahiks()
+    {
+        return $this->hasMany(\App\Models\Mustahik::class, 'masjid_id');
+    }
+
+    // Relasi ke Transaksi Penerimaan
+    public function transaksiPenerimaan()
+    {
+        return $this->hasMany(\App\Models\TransaksiPenerimaan::class, 'masjid_id');
+    }
+
+    // Relasi ke Transaksi Penyaluran
+    public function transaksiPenyaluran()
+    {
+        return $this->hasMany(\App\Models\TransaksiPenyaluran::class, 'masjid_id');
     }
 }

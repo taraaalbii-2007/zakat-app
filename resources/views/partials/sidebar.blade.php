@@ -21,9 +21,14 @@
                 $isAdminMasjid = auth()->user() && auth()->user()->peran === 'admin_masjid';
                 $isAmil = auth()->user() && auth()->user()->peran === 'amil';
 
+                // Superadmin dropdown states
                 $dataMasterSuperadminRoutes = ['jenis-zakat', 'tipe-zakat', 'kategori-mustahik', 'harga-emas-perak'];
                 $isSuperadminMasterOpen = collect($dataMasterSuperadminRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
 
+                $dataTransaksiRoutes = ['transaksi-penerimaan', 'transaksi-penyaluran'];
+                $isSuperadminTransaksiOpen = collect($dataTransaksiRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
+
+                // Admin Masjid dropdown states
                 $dataMasterAdminRoutes = ['program-zakat', 'rekening-masjid'];
                 $isAdminMasterOpen = collect($dataMasterAdminRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
 
@@ -39,36 +44,29 @@
                 $subBorder      = 'ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-white/15';
             @endphp
 
-            <!-- Dashboard -->
-            <li>
-                <a href="{{ route('dashboard') }}"
-                   class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                    </svg>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-
+            <!-- ============================================ -->
             <!-- SUPERADMIN MENU -->
+            <!-- ============================================ -->
             @if($isSuperadmin)
-                <li class="mt-3 mb-1">
-                    <p class="{{ $sectionLabel }}">Superadmin</p>
-                </li>
 
-                <!-- Konfigurasi Aplikasi -->
+                <!-- DASHBOARD -->
+                <li class="mb-1">
+                    <p class="{{ $sectionLabel }}">Dashboard</p>
+                </li>
                 <li>
-                    <a href="{{ route('konfigurasi-global.show') }}"
-                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'konfigurasi-global') ? $activeClass : $inactiveClass }}">
+                    <a href="{{ route('dashboard') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
-                        <span>Konfigurasi Aplikasi</span>
+                        <span>Dashboard</span>
                     </a>
                 </li>
 
-                <!-- Data Master Superadmin -->
+                <!-- DATA MASTER (Dropdown) -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Master</p>
+                </li>
                 <li>
                     <details class="group" {{ $isSuperadminMasterOpen ? 'open' : '' }}>
                         <summary class="{{ $summaryClass }} text-[13px]">
@@ -121,7 +119,24 @@
                     </details>
                 </li>
 
-                <!-- Kelola Masjid -->
+                <!-- DATA PENGGUNA -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Pengguna</p>
+                </li>
+                <li>
+                    <a href="{{ route('pengguna.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'pengguna') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <span>Pengguna</span>
+                    </a>
+                </li>
+
+                <!-- DATA MASJID -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Masjid</p>
+                </li>
                 <li>
                     <a href="{{ route('masjid.index') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'masjid') ? $activeClass : $inactiveClass }}">
@@ -132,7 +147,89 @@
                     </a>
                 </li>
 
-                <!-- Log Aktivitas -->
+                <!-- DATA AMIL -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Amil</p>
+                </li>
+                <li>
+                    <a href="{{ route('superadmin.amil.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'amil') && !str_contains($currentRoute, 'profil') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span>Kelola Amil</span>
+                    </a>
+                </li>
+
+                <!-- DATA MUSTAHIK -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Mustahik</p>
+                </li>
+                <li>
+                    <a href="{{ route('superadmin.mustahik.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'mustahik') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Kelola Mustahik</span>
+                    </a>
+                </li>
+
+                <!-- DATA MUZAKI -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Muzaki</p>
+                </li>
+                <li>
+                    <a href="{{ route('muzaki.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'muzaki') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <span>Kelola Muzaki</span>
+                    </a>
+                </li>
+
+                <!-- DATA TRANSAKSI -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Data Transaksi</p>
+                </li>
+                <li>
+                    <a href="{{ route('superadmin.transaksi-penerimaan.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <span>Transaksi Penerimaan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('superadmin.transaksi-penyaluran.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        <span>Transaksi Penyaluran</span>
+                    </a>
+                </li>
+
+                <!-- LAPORAN KEUANGAN -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Laporan Keuangan</p>
+                </li>
+                <li>
+                    <a href="{{ route('laporan-konsolidasi.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'laporan-konsolidasi') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>Keuangan Seluruh Masjid</span>
+                    </a>
+                </li>
+
+                <!-- RIWAYAT -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Riwayat</p>
+                </li>
                 <li>
                     <a href="{{ route('log-aktivitas.index') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'log-aktivitas') ? $activeClass : $inactiveClass }}">
@@ -143,20 +240,56 @@
                     </a>
                 </li>
 
-                <!-- Laporan Konsolidasi -->
+                <!-- PENGATURAN -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Pengaturan</p>
+                </li>
                 <li>
-                    <a href="{{ route('laporan-konsolidasi.index') }}"
-                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'laporan-konsolidasi') ? $activeClass : $inactiveClass }}">
+                    <a href="{{ route('konfigurasi-global.show') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'konfigurasi-global') ? $activeClass : $inactiveClass }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        <span>Laporan Konsolidasi</span>
+                        <span>Konfigurasi Aplikasi</span>
                     </a>
                 </li>
+
+                <!-- LOGOUT -->
+                <li class="mt-4">
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span>Keluar</span>
+                        </button>
+                    </form>
+                </li>
+
             @endif
 
+            <!-- ============================================ -->
             <!-- ADMIN MASJID MENU -->
+            <!-- ============================================ -->
             @if($isAdminMasjid)
+                <li class="mb-1">
+                    <p class="{{ $sectionLabel }}">Menu Utama</p>
+                </li>
+
+                <!-- Dashboard -->
+                <li>
+                    <a href="{{ route('dashboard') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
                 <li class="mt-3 mb-1">
                     <p class="{{ $sectionLabel }}">Admin Masjid</p>
                 </li>
@@ -206,15 +339,25 @@
                         <span>Kelola Amil</span>
                     </a>
                 </li>
-            @endif
 
-            <!-- AMIL MENU (Tampil untuk Amil dan Admin Masjid) -->
-            @if($isAmil || $isAdminMasjid)
-
+                <!-- Laporan Keuangan -->
                 <li class="mt-3 mb-1">
-                    <p class="{{ $sectionLabel }}">Konfigurasi</p>
+                    <p class="{{ $sectionLabel }}">Laporan</p>
+                </li>
+                <li>
+                    <a href="{{ route('laporan-keuangan.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'laporan-keuangan') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <span>Laporan Keuangan</span>
+                    </a>
                 </li>
 
+                <!-- Pengaturan -->
+                <li class="mt-3 mb-1">
+                    <p class="{{ $sectionLabel }}">Pengaturan</p>
+                </li>
                 <li>
                     <a href="{{ route('konfigurasi-integrasi.show') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'konfigurasi-integrasi') ? $activeClass : $inactiveClass }}">
@@ -223,6 +366,40 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                         <span>Konfigurasi Masjid</span>
+                    </a>
+                </li>
+
+                <!-- Logout -->
+                <li class="mt-4">
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span>Keluar</span>
+                        </button>
+                    </form>
+                </li>
+            @endif
+
+            <!-- ============================================ -->
+            <!-- AMIL MENU -->
+            <!-- ============================================ -->
+            @if($isAmil)
+                <li class="mb-1">
+                    <p class="{{ $sectionLabel }}">Menu Utama</p>
+                </li>
+
+                <!-- Dashboard -->
+                <li>
+                    <a href="{{ route('dashboard') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        <span>Dashboard</span>
                     </a>
                 </li>
 
@@ -235,7 +412,7 @@
                     <a href="{{ route('mustahik.index') }}"
                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'mustahik') ? $activeClass : $inactiveClass }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                         <span>Data Mustahik</span>
                     </a>
@@ -245,47 +422,91 @@
                     <p class="{{ $sectionLabel }}">Transaksi Zakat</p>
                 </li>
 
-                <!-- Input Transaksi -->
                 <li>
-                    <details class="group" {{ $isInputTransaksiOpen ? 'open' : '' }}>
-                        <summary class="{{ $summaryClass }} text-[13px]">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                            <span class="flex-1 ml-2.5">Input Transaksi</span>
-                            <svg class="w-3.5 h-3.5 flex-shrink-0 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                            </svg>
-                        </summary>
-                        <ul class="{{ $subBorder }}">
-                            {{-- tambahkan sub-menu transaksi di sini --}}
-                        </ul>
-                    </details>
+                    <a href="{{ route('transaksi-penerimaan.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <span>Transaksi Penerimaan</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('transaksi-penyaluran.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        <span>Transaksi Penyaluran</span>
+                    </a>
                 </li>
 
-                <!-- Laporan -->
                 <li class="mt-3 mb-1">
-                    <p class="{{ $sectionLabel }}">Laporan</p>
+                    <p class="{{ $sectionLabel }}">Kas</p>
+                </li>
+
+                <li>
+                    <a href="{{ route('kas-harian.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'kas-harian') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <span>Kas Harian</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('amil.setor-kas.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'setor-kas') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+                        </svg>
+                        <span>Setor Kas</span>
+                    </a>
+                </li>
+
+                <li class="mt-3 mb-1">
+                    <p class="{{ $sectionLabel }}">Kunjungan</p>
+                </li>
+                <li>
+                    <a href="{{ route('amil.kunjungan.index') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'kunjungan') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Kunjungan Mustahik</span>
+                    </a>
+                </li>
+
+                <!-- Pengaturan -->
+                <li class="mt-3 mb-1">
+                    <p class="{{ $sectionLabel }}">Pengaturan</p>
+                </li>
+                <li>
+                    <a href="{{ route('profil.show') }}"
+                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'profil') ? $activeClass : $inactiveClass }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        <span>Profil Saya</span>
+                    </a>
+                </li>
+
+                <!-- Logout -->
+                <li class="mt-4">
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            <span>Keluar</span>
+                        </button>
+                    </form>
                 </li>
             @endif
 
-            <!-- Pengaturan Umum -->
-            <li class="mt-3 mb-1">
-                <p class="{{ $sectionLabel }}">Pengaturan</p>
-            </li>
-
-            <li>
-                <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                    @csrf
-                    <button type="submit"
-                            class="w-full flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-left text-[13px] text-white/80 hover:bg-white/10 hover:text-white">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        <span>Keluar</span>
-                    </button>
-                </form>
-            </li>
         </ul>
     </nav>
 

@@ -17,6 +17,10 @@ use App\Http\Controllers\Admin_masjid\MustahikController;
 use App\Http\Controllers\Amil\TransaksiPenerimaanController;
 use App\Http\Controllers\Amil\ProfilAmilController;
 use App\Http\Controllers\Amil\SetorKasController;
+use App\Http\Controllers\Superadmin\SuperadminAmilController;
+use App\Http\Controllers\Superadmin\SuperadminMustahikController;
+use App\Http\Controllers\Superadmin\SuperadminTransaksiPenerimaanController;
+use App\Http\Controllers\Superadmin\SuperadminTransaksiPenyaluranController;
 
 
 Route::get('/', function () {
@@ -78,6 +82,39 @@ Route::middleware(['auth', 'active.user', 'masjid.access'])->group(function () {
 // SUPERADMIN ROUTES
 // ============================================
 Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
+Route::prefix('superadmin-amil')->name('superadmin.amil.')->group(function () {
+    Route::get('/', [SuperadminAmilController::class, 'index'])->name('index');
+});
+
+Route::prefix('superadmin-mustahik')->name('superadmin.mustahik.')->group(function () {
+    Route::get('/', [SuperadminMustahikController::class, 'index'])->name('index');
+});
+
+Route::prefix('superadmin-transaksi-penerimaan')->name('superadmin.transaksi-penerimaan.')->group(function () {
+    Route::get('/', [SuperadminTransaksiPenerimaanController::class, 'index'])->name('index');
+});
+
+Route::prefix('superadmin-transaksi-penyaluran')->name('superadmin.transaksi-penyaluran.')->group(function () {
+    Route::get('/', [SuperadminTransaksiPenyaluranController::class, 'index'])->name('index');
+});
+
+    Route::prefix('pengguna')->name('pengguna.')->group(function () {
+        Route::get('/',                     [\App\Http\Controllers\Superadmin\PenggunaController::class, 'index'])->name('index');
+        Route::get('/create',               [\App\Http\Controllers\Superadmin\PenggunaController::class, 'create'])->name('create');
+        Route::post('/',                    [\App\Http\Controllers\Superadmin\PenggunaController::class, 'store'])->name('store');
+        Route::get('/{uuid}',               [\App\Http\Controllers\Superadmin\PenggunaController::class, 'show'])->name('show');
+        Route::get('/{uuid}/edit',          [\App\Http\Controllers\Superadmin\PenggunaController::class, 'edit'])->name('edit');
+        Route::put('/{uuid}',               [\App\Http\Controllers\Superadmin\PenggunaController::class, 'update'])->name('update');
+        Route::delete('/{uuid}',            [\App\Http\Controllers\Superadmin\PenggunaController::class, 'destroy'])->name('destroy');
+        Route::patch('/{uuid}/toggle-status', [\App\Http\Controllers\Superadmin\PenggunaController::class, 'toggleStatus'])->name('toggle-status');
+        Route::post('/{uuid}/reset-password', [\App\Http\Controllers\Superadmin\PenggunaController::class, 'resetPassword'])->name('reset-password');
+    });
+
+    Route::prefix('muzaki')->name('muzaki.')->group(function () {
+        Route::get('/',       [App\Http\Controllers\Superadmin\MuzakiController::class, 'index'])->name('index');
+        Route::get('/detail', [App\Http\Controllers\Superadmin\MuzakiController::class, 'show'])->name('show');
+        // Route::get('/export', [App\Http\Controllers\Superadmin\MuzakiController::class, 'export'])->name('export'); // opsional
+    });
     // Konfigurasi Aplikasi (global)
     Route::prefix('konfigurasi-global')->name('konfigurasi-global.')->group(function () {
         Route::get('/', [KonfigurasiGlobalController::class, 'show'])->name('show');
