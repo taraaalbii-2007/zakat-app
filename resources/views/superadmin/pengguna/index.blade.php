@@ -178,13 +178,37 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {!! $user->peran !!}
+                                        @php
+                                            $peranLabel = match($user->peran) {
+                                                'superadmin' => 'Super Admin',
+                                                'admin_masjid' => 'Admin Masjid',
+                                                'amil' => 'Amil',
+                                                default => ucfirst($user->peran)
+                                            };
+                                            $peranColor = match($user->peran) {
+                                                'superadmin' => 'bg-purple-100 text-purple-800',
+                                                'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                                'amil' => 'bg-green-100 text-green-800',
+                                                default => 'bg-gray-100 text-gray-800'
+                                            };
+                                        @endphp
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">
+                                            {{ $peranLabel }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900">{{ $user->masjid->nama ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        {!! $user->status_badge !!}
+                                        @if($user->is_active)
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                                Nonaktif
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                                         {{ $user->created_at->format('d M Y') }}
@@ -224,8 +248,32 @@
                                         </h3>
                                         <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
                                         <div class="flex flex-wrap gap-1.5 mt-2">
-                                            {!! $user->peran_badge !!}
-                                            {!! $user->status_badge !!}
+                                            @php
+                                                $peranLabel = match($user->peran) {
+                                                    'superadmin' => 'Super Admin',
+                                                    'admin_masjid' => 'Admin Masjid',
+                                                    'amil' => 'Amil',
+                                                    default => ucfirst($user->peran)
+                                                };
+                                                $peranColor = match($user->peran) {
+                                                    'superadmin' => 'bg-purple-100 text-purple-800',
+                                                    'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                                    'amil' => 'bg-green-100 text-green-800',
+                                                    default => 'bg-gray-100 text-gray-800'
+                                                };
+                                            @endphp
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">
+                                                {{ $peranLabel }}
+                                            </span>
+                                            @if($user->is_active)
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                                    Aktif
+                                                </span>
+                                            @else
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+                                                    Nonaktif
+                                                </span>
+                                            @endif
                                         </div>
                                         @if($user->masjid)
                                             <p class="text-xs text-gray-500 mt-1.5">{{ $user->masjid->nama }}</p>
@@ -400,15 +448,33 @@
                 // Posisi dropdown
                 const rect      = toggle.getBoundingClientRect();
                 const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                const dropdownH = 160;
-                let top  = rect.bottom + window.scrollY;
-                let left = rect.left + window.scrollX;
-
-                if (rect.left + dropdownW > window.innerWidth) {
-                    left = window.innerWidth - dropdownW - 10 + window.scrollX;
+                const dropdownH = 180; // Tinggi dropdown menu (disesuaikan dengan konten)
+                
+                // Hitung ruang yang tersedia di bawah dan di atas
+                const spaceBelow = window.innerHeight - rect.bottom;
+                const spaceAbove = rect.top;
+                
+                // Tentukan posisi vertikal
+                let top;
+                if (spaceBelow >= dropdownH || spaceBelow >= spaceAbove) {
+                    // Tampilkan di bawah
+                    top = rect.bottom + window.scrollY + 5;
+                } else {
+                    // Tampilkan di atas
+                    top = rect.top + window.scrollY - dropdownH - 5;
                 }
-                if (rect.bottom + dropdownH > window.innerHeight) {
-                    top = rect.top - dropdownH + window.scrollY;
+                
+                // Tentukan posisi horizontal
+                let left = rect.right + window.scrollX - dropdownW;
+                
+                // Pastikan tidak keluar dari viewport kanan
+                if (left < window.scrollX + 10) {
+                    left = window.scrollX + 10;
+                }
+                
+                // Pastikan tidak keluar dari viewport kiri
+                if (left + dropdownW > window.innerWidth + window.scrollX) {
+                    left = window.innerWidth + window.scrollX - dropdownW - 10;
                 }
 
                 dropdownContainer.style.top  = top + 'px';
