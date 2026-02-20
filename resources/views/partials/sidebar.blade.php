@@ -189,27 +189,42 @@
                     </a>
                 </li>
 
-                <!-- DATA TRANSAKSI -->
+                <!-- DATA TRANSAKSI (Dropdown) -->
                 <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Data Transaksi</p>
                 </li>
                 <li>
-                    <a href="{{ route('superadmin.transaksi-penerimaan.index') }}"
-                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                        </svg>
-                        <span>Transaksi Penerimaan</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('superadmin.transaksi-penyaluran.index') }}"
-                       class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                        </svg>
-                        <span>Transaksi Penyaluran</span>
-                    </a>
+                    <details class="group" {{ $isSuperadminTransaksiOpen ? 'open' : '' }}>
+                        <summary class="{{ $summaryClass }} text-[13px]">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                            <span class="flex-1 ml-2.5">Transaksi</span>
+                            <svg class="w-3.5 h-3.5 flex-shrink-0 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <ul class="{{ $subBorder }}">
+                            <li>
+                                <a href="{{ route('superadmin.transaksi-penerimaan.index') }}"
+                                   class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                                    </svg>
+                                    <span>Transaksi Penerimaan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('superadmin.transaksi-penyaluran.index') }}"
+                                   class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                    </svg>
+                                    <span>Transaksi Penyaluran</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
                 </li>
 
                 <!-- LAPORAN KEUANGAN -->

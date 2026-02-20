@@ -82,21 +82,21 @@ Route::middleware(['auth', 'active.user', 'masjid.access'])->group(function () {
 // SUPERADMIN ROUTES
 // ============================================
 Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
-Route::prefix('superadmin-amil')->name('superadmin.amil.')->group(function () {
-    Route::get('/', [SuperadminAmilController::class, 'index'])->name('index');
-});
+    Route::prefix('superadmin-amil')->name('superadmin.amil.')->group(function () {
+        Route::get('/', [SuperadminAmilController::class, 'index'])->name('index');
+    });
 
-Route::prefix('superadmin-mustahik')->name('superadmin.mustahik.')->group(function () {
-    Route::get('/', [SuperadminMustahikController::class, 'index'])->name('index');
-});
+    Route::prefix('superadmin-mustahik')->name('superadmin.mustahik.')->group(function () {
+        Route::get('/', [SuperadminMustahikController::class, 'index'])->name('index');
+    });
 
-Route::prefix('superadmin-transaksi-penerimaan')->name('superadmin.transaksi-penerimaan.')->group(function () {
-    Route::get('/', [SuperadminTransaksiPenerimaanController::class, 'index'])->name('index');
-});
+    Route::prefix('superadmin-transaksi-penerimaan')->name('superadmin.transaksi-penerimaan.')->group(function () {
+        Route::get('/', [SuperadminTransaksiPenerimaanController::class, 'index'])->name('index');
+    });
 
-Route::prefix('superadmin-transaksi-penyaluran')->name('superadmin.transaksi-penyaluran.')->group(function () {
-    Route::get('/', [SuperadminTransaksiPenyaluranController::class, 'index'])->name('index');
-});
+    Route::prefix('superadmin-transaksi-penyaluran')->name('superadmin.transaksi-penyaluran.')->group(function () {
+        Route::get('/', [SuperadminTransaksiPenyaluranController::class, 'index'])->name('index');
+    });
 
     Route::prefix('pengguna')->name('pengguna.')->group(function () {
         Route::get('/',                     [\App\Http\Controllers\Superadmin\PenggunaController::class, 'index'])->name('index');
