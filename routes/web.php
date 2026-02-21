@@ -238,11 +238,9 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
 
         // Testing endpoints
         Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])->name('test-whatsapp');
-        Route::post('/test-midtrans', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testMidtrans'])->name('test-midtrans');
 
         // Toggle status
         Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])->name('toggle-whatsapp');
-        Route::post('/toggle-midtrans', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleMidtransStatus'])->name('toggle-midtrans');
     });
 
     Route::prefix('program-zakat')->name('program-zakat.')->group(function () {
