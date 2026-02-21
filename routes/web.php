@@ -226,7 +226,10 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
     //     Route::get('/edit', [AdminMasjidController::class, 'edit'])->name('edit');
     //     Route::put('/update', [AdminMasjidController::class, 'update'])->name('update');
     // });
-
+    Route::prefix('admin-masjid-muzaki')->name('admin-masjid.muzaki.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin_masjid\AdminMasjidMuzakiController::class, 'index'])->name('index');
+        Route::get('/amil/{amilId}/muzaki', [App\Http\Controllers\Admin_masjid\AdminMasjidMuzakiController::class, 'getMuzakiByAmil'])->name('amil.muzaki');
+    });
 
     Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])->name('show');
@@ -307,6 +310,8 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         Route::get('/{setorKas}', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'show'])->name('show')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
         Route::post('/{setorKas}/proses', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'proses'])->name('proses')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
     });
+
+
     // NOTE: Tambahkan route untuk:
     // - Program Zakat
     // - Mustahik

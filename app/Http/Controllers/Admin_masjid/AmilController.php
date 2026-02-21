@@ -15,6 +15,7 @@ use App\Mail\AmilRegistrationMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class AmilController extends Controller
@@ -230,10 +231,10 @@ class AmilController extends Controller
                 // Kirim email dengan password default (plain text untuk ditampilkan)
                 Mail::to($amil->email)->send(new \App\Mail\AmilRegistrationMail($amil, $username, $defaultPassword));
 
-                \Log::info('Email registrasi amil berhasil dikirim ke: ' . $amil->email);
+                Log::info('Email registrasi amil berhasil dikirim ke: ' . $amil->email);
                 $emailSuccess = true;
             } catch (\Exception $mailException) {
-                \Log::error('Gagal mengirim email ke amil: ' . $mailException->getMessage());
+                Log::error('Gagal mengirim email ke amil: ' . $mailException->getMessage());
                 $emailSuccess = false;
             }
 
@@ -249,7 +250,7 @@ class AmilController extends Controller
             return redirect()->route('amil.index')->with('success', $message);
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error store amil: ' . $e->getMessage());
+            Log::error('Error store amil: ' . $e->getMessage());
 
             return back()->withInput()
                 ->with('error', 'Gagal menambahkan data amil: ' . $e->getMessage());
@@ -463,7 +464,7 @@ class AmilController extends Controller
                 $pengguna = Pengguna::find($amil->pengguna_id);
                 if ($pengguna) {
                     $pengguna->delete();
-                    \Log::info("Pengguna terkait amil berhasil dihapus: {$amilEmail}");
+                    Log::info("Pengguna terkait amil berhasil dihapus: {$amilEmail}");
                 }
             }
 
@@ -472,13 +473,13 @@ class AmilController extends Controller
 
             DB::commit();
 
-            \Log::info("Amil berhasil dihapus: {$amilName} ({$amilEmail})");
+            Log::info("Amil berhasil dihapus: {$amilName} ({$amilEmail})");
 
             return redirect()->route('amil.index')
                 ->with('success', "Data amil {$amilName} berhasil dihapus.");
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error delete amil: ' . $e->getMessage());
+            Log::error('Error delete amil: ' . $e->getMessage());
 
             return back()
                 ->with('error', 'Gagal menghapus data amil: ' . $e->getMessage());

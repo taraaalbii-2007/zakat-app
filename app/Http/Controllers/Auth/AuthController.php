@@ -24,6 +24,7 @@ use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 use App\Traits\LogsActivity;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -96,24 +97,24 @@ class AuthController extends Controller
                 $recaptchaConfig = RecaptchaConfig::first();
                 $secretKey = $recaptchaConfig?->RECAPTCHA_SECRET_KEY ?? null;
             } catch (\Exception $e) {
-                \Log::warning('RecaptchaConfig Error: ' . $e->getMessage());
+                Log::warning('RecaptchaConfig Error: ' . $e->getMessage());
             }
         }
 
         // Jika masih tidak ada, allow (development mode)
         if (!$secretKey) {
-            \Log::warning('reCAPTCHA Secret Key not configured - allowing request');
+            Log::warning('reCAPTCHA Secret Key not configured - allowing request');
             return true;
         }
 
         // Token MUST exist
         if (!$token) {
-            \Log::warning('reCAPTCHA token is missing');
+            Log::warning('reCAPTCHA token is missing');
             return false;
         }
 
         try {
-            \Log::info('Verifying reCAPTCHA token', ['action' => $expectedAction]);
+            Log::info('Verifying reCAPTCHA token', ['action' => $expectedAction]);
 
             $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret' => $secretKey,
@@ -123,7 +124,7 @@ class AuthController extends Controller
 
             $result = $response->json();
 
-            \Log::info('reCAPTCHA Response', [
+            Log::info('reCAPTCHA Response', [
                 'success' => $result['success'] ?? false,
                 'score' => $result['score'] ?? 0,
                 'action' => $result['action'] ?? null,
@@ -133,21 +134,21 @@ class AuthController extends Controller
 
             // Check 1: Must be successful
             if (!($result['success'] ?? false)) {
-                \Log::warning('reCAPTCHA failed: success=false, errors=' . json_encode($result['error-codes'] ?? []));
+                Log::warning('reCAPTCHA failed: success=false, errors=' . json_encode($result['error-codes'] ?? []));
                 return false;
             }
 
             // Check 2: Score >= 0.5 (0 = bot, 1 = human)
             $score = $result['score'] ?? 0;
             if ($score < 0.5) {
-                \Log::warning('reCAPTCHA score too low: ' . $score);
+                Log::warning('reCAPTCHA score too low: ' . $score);
                 return false;
             }
 
-            \Log::info('reCAPTCHA verification SUCCESS', ['score' => $score]);
+            Log::info('reCAPTCHA verification SUCCESS', ['score' => $score]);
             return true;
         } catch (\Throwable $e) {
-            \Log::error('reCAPTCHA Exception: ' . $e->getMessage());
+            Log::error('reCAPTCHA Exception: ' . $e->getMessage());
             return false;
         }
     }
@@ -498,7 +499,7 @@ class AuthController extends Controller
                 ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('OTP Verification Error: ' . $e->getMessage());
+            Log::error('OTP Verification Error: ' . $e->getMessage());
 
             return redirect()->back()
                 ->with('email', $request->email)
@@ -684,7 +685,6 @@ class AuthController extends Controller
             }
 
             $request->session()->put('email', $email);
-            $request->session()->flash('email', $email);
 
             return redirect()->route('password.reset-sent')
                 ->with('email', $email)
@@ -736,7 +736,6 @@ class AuthController extends Controller
         }
 
         $request->session()->put('email', $email);
-        $request->session()->flash('email', $email);
 
         // Mask email untuk tampilan seperti pada gambar
         $maskedEmail = $this->maskEmail($email);
@@ -884,14 +883,14 @@ class AuthController extends Controller
                             ->subject('Reset Password - Niat Zakat');
                     });
                 } catch (\Exception $mailEx) {
-                    \Log::error('Gagal mengirim email reset: ' . $mailEx->getMessage());
+                    Log::error('Gagal mengirim email reset: ' . $mailEx->getMessage());
                     return response()->json([
                         'success' => false,
                         'message' => 'Gagal mengirim email. Silakan coba lagi.'
                     ], 500);
                 }
             } else {
-                \Log::warning('Konfigurasi email tidak ditemukan');
+                Log::warning('Konfigurasi email tidak ditemukan');
                 return response()->json([
                     'success' => false,
                     'message' => 'Konfigurasi email belum lengkap.'
@@ -904,7 +903,7 @@ class AuthController extends Controller
                 'canResendIn' => 60 // 60 detik cooldown
             ]);
         } catch (\Exception $e) {
-            \Log::error('Exception di resendResetLink: ' . $e->getMessage());
+            Log::error('Exception di resendResetLink: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan. Silakan coba lagi.'
@@ -1296,7 +1295,7 @@ class AuthController extends Controller
                 });
             } catch (\Exception $mailEx) {
                 // Silent fail untuk email - tidak perlu rollback
-                \Log::warning('Email registrasi gagal dikirim: ' . $mailEx->getMessage());
+                Log::warning('Email registrasi gagal dikirim: ' . $mailEx->getMessage());
             }
 
             // =====================================================
@@ -1318,7 +1317,7 @@ class AuthController extends Controller
             // =====================================================
             DB::rollBack();
 
-            \Log::error('Complete Profile Error: ' . $e->getMessage());
+            Log::error('Complete Profile Error: ' . $e->getMessage());
 
             return back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
