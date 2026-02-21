@@ -12,7 +12,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Edit Profil</h1>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Perbarui data akun, admin, masjid dan sejarah</p>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Perbarui data admin masjid, data masjid, dan sejarah</p>
                 </div>
                 <a href="{{ route('admin-masjid.profil.show') }}"
                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
@@ -31,52 +31,7 @@
             <div class="p-4 sm:p-6 space-y-8">
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 1 — DATA AKUN
-                ══════════════════════════════════ --}}
-                <div>
-                    <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        Data Akun
-                    </h2>
-
-                    {{-- Peringatan email --}}
-                    <div class="mb-5 p-3 sm:p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
-                            <p class="text-xs sm:text-sm text-amber-700">
-                                Jika Anda mengubah email, Anda akan <strong>otomatis logout</strong> dan harus login ulang menggunakan email baru.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
-                        <div>
-                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Username <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="username" id="username"
-                                value="{{ old('username', $user->username) }}"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('username') border-red-500 @enderror"
-                                placeholder="Username" required>
-                            @error('username') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Email <span class="text-red-500">*</span>
-                            </label>
-                            <input type="email" name="email" id="email"
-                                value="{{ old('email', $user->email) }}"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('email') border-red-500 @enderror"
-                                placeholder="email@contoh.com" required>
-                            @error('email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-                </div>
-
-                {{-- ══════════════════════════════════
-                     BAGIAN 2 — DATA ADMIN MASJID
+                     BAGIAN 1 — DATA ADMIN MASJID
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -146,7 +101,7 @@
                 </div>
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 3 — DATA MASJID
+                     BAGIAN 2 — DATA MASJID
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -279,43 +234,36 @@
                         </div>
                         <div>
                             <label for="kota_kode" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Kota/Kabupaten <span class="text-red-500">*</span>
+                                Kabupaten/Kota <span class="text-red-500">*</span>
                             </label>
                             <select name="kota_kode" id="kota_kode"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('kota_kode') border-red-500 @enderror"
                                 required>
-                                <option value="">-- Pilih Kota --</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city->code }}" {{ old('kota_kode', $masjid->kota_kode) == $city->code ? 'selected' : '' }}>
-                                        {{ $city->name }}
-                                    </option>
-                                @endforeach
+                                <option value="">-- Pilih Kabupaten/Kota --</option>
                             </select>
                             @error('kota_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label for="kecamatan_kode" class="block text-sm font-medium text-gray-700 mb-1.5">Kecamatan</label>
+                            <label for="kecamatan_kode" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                Kecamatan <span class="text-red-500">*</span>
+                            </label>
                             <select name="kecamatan_kode" id="kecamatan_kode"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('kecamatan_kode') border-red-500 @enderror"
+                                required>
                                 <option value="">-- Pilih Kecamatan --</option>
-                                @foreach($districts as $dist)
-                                    <option value="{{ $dist->code }}" {{ old('kecamatan_kode', $masjid->kecamatan_kode) == $dist->code ? 'selected' : '' }}>
-                                        {{ $dist->name }}
-                                    </option>
-                                @endforeach
                             </select>
+                            @error('kecamatan_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label for="kelurahan_kode" class="block text-sm font-medium text-gray-700 mb-1.5">Kelurahan</label>
+                            <label for="kelurahan_kode" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                Kelurahan/Desa <span class="text-red-500">*</span>
+                            </label>
                             <select name="kelurahan_kode" id="kelurahan_kode"
-                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition">
-                                <option value="">-- Pilih Kelurahan --</option>
-                                @foreach($villages as $vil)
-                                    <option value="{{ $vil->code }}" {{ old('kelurahan_kode', $masjid->kelurahan_kode) == $vil->code ? 'selected' : '' }}>
-                                        {{ $vil->name }}
-                                    </option>
-                                @endforeach
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('kelurahan_kode') border-red-500 @enderror"
+                                required>
+                                <option value="">-- Pilih Kelurahan/Desa --</option>
                             </select>
+                            @error('kelurahan_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
@@ -329,7 +277,7 @@
                 </div>
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 4 — SEJARAH MASJID
+                     BAGIAN 3 — SEJARAH MASJID
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -440,72 +388,124 @@ document.querySelectorAll('.foto-hapus-cb').forEach(cb => {
     });
 });
 
-// ── AJAX: Cascade dropdown wilayah ──────────────────────────
-const baseUrl = '{{ url("") }}';
+// ── Data wilayah dari controller ──────────────────────────────
+const provinces = @json($provinces);
+const cities = @json($cities);
+const districts = @json($districts);
+const villages = @json($villages);
 
-function fetchAndPopulate(url, selectEl, emptyText) {
-    selectEl.innerHTML = `<option value="">${emptyText}</option>`;
-    selectEl.disabled = true;
+// ── Inisialisasi dropdown ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const provinsiSelect = document.getElementById('provinsi_kode');
+    const kotaSelect = document.getElementById('kota_kode');
+    const kecamatanSelect = document.getElementById('kecamatan_kode');
+    const kelurahanSelect = document.getElementById('kelurahan_kode');
 
-    fetch(url)
-        .then(r => r.json())
-        .then(data => {
-            data.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.code;
-                opt.textContent = item.name;
-                selectEl.appendChild(opt);
-            });
-            selectEl.disabled = false;
-        })
-        .catch(() => { selectEl.disabled = false; });
-}
+    // Load kota berdasarkan provinsi yang dipilih
+    function loadCities(provinceCode, selectedCityCode = null) {
+        kotaSelect.innerHTML = '<option value="">-- Pilih Kabupaten/Kota --</option>';
+        kecamatanSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
 
-document.getElementById('provinsi_kode').addEventListener('change', function () {
-    const kota     = document.getElementById('kota_kode');
-    const kec      = document.getElementById('kecamatan_kode');
-    const kel      = document.getElementById('kelurahan_kode');
-    kec.innerHTML  = '<option value="">-- Pilih Kecamatan --</option>';
-    kel.innerHTML  = '<option value="">-- Pilih Kelurahan --</option>';
+        if (!provinceCode) return;
 
-    if (this.value) {
-        fetchAndPopulate(`${baseUrl}/api/wilayah/cities/${this.value}`, kota, '-- Pilih Kota --');
-    } else {
-        kota.innerHTML = '<option value="">-- Pilih Kota --</option>';
-    }
-});
-
-document.getElementById('kota_kode').addEventListener('change', function () {
-    const kec     = document.getElementById('kecamatan_kode');
-    const kel     = document.getElementById('kelurahan_kode');
-    kel.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
-
-    if (this.value) {
-        fetchAndPopulate(`${baseUrl}/api/wilayah/districts/${this.value}`, kec, '-- Pilih Kecamatan --');
-    } else {
-        kec.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
-    }
-});
-
-document.getElementById('kecamatan_kode').addEventListener('change', function () {
-    const kel = document.getElementById('kelurahan_kode');
-    if (this.value) {
-        fetchAndPopulate(`${baseUrl}/api/wilayah/villages/${this.value}`, kel, '-- Pilih Kelurahan --');
-    } else {
-        kel.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
-    }
-});
-
-document.getElementById('kelurahan_kode').addEventListener('change', function () {
-    if (!this.value) return;
-    fetch(`${baseUrl}/api/wilayah/postal-code/${this.value}`)
-        .then(r => r.json())
-        .then(data => {
-            if (data.kode_pos) {
-                document.getElementById('kode_pos').value = data.kode_pos;
+        // Filter cities berdasarkan province_code
+        const filteredCities = cities.filter(city => city.province_code === provinceCode);
+        
+        filteredCities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city.code;
+            option.textContent = city.name;
+            if (selectedCityCode && city.code === selectedCityCode) {
+                option.selected = true;
             }
-        })
-        .catch(() => {});
+            kotaSelect.appendChild(option);
+        });
+
+        // Jika ada kota yang dipilih, load kecamatannya
+        if (selectedCityCode) {
+            loadDistricts(selectedCityCode);
+        }
+    }
+
+    // Load kecamatan berdasarkan kota yang dipilih
+    function loadDistricts(cityCode, selectedDistrictCode = null) {
+        kecamatanSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+        kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+
+        if (!cityCode) return;
+
+        // Filter districts berdasarkan city_code
+        const filteredDistricts = districts.filter(dist => dist.city_code === cityCode);
+        
+        filteredDistricts.forEach(dist => {
+            const option = document.createElement('option');
+            option.value = dist.code;
+            option.textContent = dist.name;
+            if (selectedDistrictCode && dist.code === selectedDistrictCode) {
+                option.selected = true;
+            }
+            kecamatanSelect.appendChild(option);
+        });
+
+        // Jika ada kecamatan yang dipilih, load kelurahannya
+        if (selectedDistrictCode) {
+            loadVillages(selectedDistrictCode);
+        }
+    }
+
+    // Load kelurahan berdasarkan kecamatan yang dipilih
+    function loadVillages(districtCode, selectedVillageCode = null) {
+        kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
+
+        if (!districtCode) return;
+
+        // Filter villages berdasarkan district_code
+        const filteredVillages = villages.filter(vil => vil.district_code === districtCode);
+        
+        filteredVillages.forEach(vil => {
+            const option = document.createElement('option');
+            option.value = vil.code;
+            option.textContent = vil.name;
+            if (selectedVillageCode && vil.code === selectedVillageCode) {
+                option.selected = true;
+            }
+            kelurahanSelect.appendChild(option);
+        });
+    }
+
+    // Event listener untuk perubahan provinsi
+    provinsiSelect.addEventListener('change', function() {
+        loadCities(this.value);
+    });
+
+    // Event listener untuk perubahan kota
+    kotaSelect.addEventListener('change', function() {
+        loadDistricts(this.value);
+    });
+
+    // Event listener untuk perubahan kecamatan
+    kecamatanSelect.addEventListener('change', function() {
+        loadVillages(this.value);
+    });
+
+    // Inisialisasi awal dengan nilai yang sudah dipilih
+    const selectedProvince = provinsiSelect.value;
+    const selectedCity = '{{ $masjid->kota_kode }}';
+    const selectedDistrict = '{{ $masjid->kecamatan_kode }}';
+    const selectedVillage = '{{ $masjid->kelurahan_kode }}';
+
+    if (selectedProvince) {
+        loadCities(selectedProvince, selectedCity);
+    }
+    
+    if (selectedCity) {
+        loadDistricts(selectedCity, selectedDistrict);
+    }
+    
+    if (selectedDistrict) {
+        loadVillages(selectedDistrict, selectedVillage);
+    }
 });
 </script>
 @endpush

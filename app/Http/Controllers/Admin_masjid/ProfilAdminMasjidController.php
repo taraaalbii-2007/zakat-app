@@ -47,27 +47,24 @@ class ProfilAdminMasjidController extends Controller
     }
 
     // ---------------------------------------------------------------
-    // EDIT — form edit profil (username, admin data, masjid, sejarah)
-    //         Email TIDAK ada di sini — dipisah ke halaman ubah-email
+    // EDIT — form edit profil (hanya data admin masjid, masjid, sejarah)
     // ---------------------------------------------------------------
     public function edit()
     {
         $user   = $this->user;
         $masjid = $this->masjid;
 
+        // Ambil semua provinsi
         $provinces = Province::orderBy('name')->get();
-
-        $cities = $masjid->provinsi_kode
-            ? City::where('province_code', $masjid->provinsi_kode)->orderBy('name')->get()
-            : collect();
-
-        $districts = $masjid->kota_kode
-            ? District::where('city_code', $masjid->kota_kode)->orderBy('name')->get()
-            : collect();
-
-        $villages = $masjid->kecamatan_kode
-            ? Village::where('district_code', $masjid->kecamatan_kode)->orderBy('name')->get()
-            : collect();
+        
+        // Ambil semua kota (untuk keperluan JavaScript)
+        $cities = City::orderBy('name')->get();
+        
+        // Ambil semua kecamatan (untuk keperluan JavaScript)
+        $districts = District::orderBy('name')->get();
+        
+        // Ambil semua kelurahan (untuk keperluan JavaScript)
+        $villages = Village::orderBy('name')->get();
 
         return view('admin-masjid.profil.edit', compact(
             'user', 'masjid', 'provinces', 'cities', 'districts', 'villages'
@@ -95,7 +92,7 @@ class ProfilAdminMasjidController extends Controller
     }
 
     // ---------------------------------------------------------------
-    // UPDATE — simpan perubahan profil (TANPA email)
+    // UPDATE — simpan perubahan profil (TANPA username dan email)
     // ---------------------------------------------------------------
     public function update(Request $request)
     {
@@ -103,7 +100,6 @@ class ProfilAdminMasjidController extends Controller
         $masjid = $this->masjid;
 
         $validator = Validator::make($request->all(), [
-            'username'         => 'required|string|max:255|unique:pengguna,username,' . $user->id,
             'admin_nama'       => 'nullable|string|max:255',
             'admin_telepon'    => 'nullable|string|max:20',
             'admin_email'      => 'nullable|email|max:255',
@@ -113,8 +109,8 @@ class ProfilAdminMasjidController extends Controller
             'alamat'           => 'required|string',
             'provinsi_kode'    => 'required|string|max:5',
             'kota_kode'        => 'required|string|max:10',
-            'kecamatan_kode'   => 'nullable|string|max:15',
-            'kelurahan_kode'   => 'nullable|string|max:20',
+            'kecamatan_kode'   => 'required|string|max:15',
+            'kelurahan_kode'   => 'required|string|max:20',
             'kode_pos'         => 'nullable|string|max:10',
             'telepon'          => 'nullable|string|max:20',
             'email_masjid'     => 'nullable|email|max:255',
@@ -135,10 +131,6 @@ class ProfilAdminMasjidController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update username
-            $user->username = $request->username;
-            $user->save();
-
             // Handle foto admin
             $adminFotoPath = $masjid->admin_foto;
             if ($request->boolean('hapus_admin_foto', false)) {
