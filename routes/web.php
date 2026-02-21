@@ -23,11 +23,10 @@ use App\Http\Controllers\Superadmin\SuperadminTransaksiPenerimaanController;
 use App\Http\Controllers\Superadmin\SuperadminTransaksiPenyaluranController;
 use App\Http\Controllers\Superadmin\ProfilSuperadminController;
 use App\Http\Controllers\Admin_masjid\ProfilAdminMasjidController;
+use App\Http\Controllers\LandingController;
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');
 
 // ============================================
 // AUTHENTICATION ROUTES (PUBLIC)
