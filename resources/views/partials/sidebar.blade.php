@@ -505,10 +505,19 @@
             <!-- AMIL MENU -->
             <!-- ============================================ -->
             @if ($isAmil)
+                @php
+                    // Dropdown states untuk Amil
+                    $transaksiRoutes = ['transaksi-penerimaan', 'transaksi-penyaluran'];
+                    $isTransaksiOpen = collect($transaksiRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
+
+                    $kasRoutes = ['kas-harian', 'setor-kas'];
+                    $isKasOpen = collect($kasRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
+                @endphp
+
+                <!-- MENU UTAMA -->
                 <li class="mb-1">
                     <p class="{{ $sectionLabel }}">Menu Utama</p>
                 </li>
-
                 <li>
                     <a href="{{ route('dashboard') }}"
                         class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'dashboard') ? $activeClass : $inactiveClass }}">
@@ -520,10 +529,10 @@
                     </a>
                 </li>
 
-                <li class="mt-3 mb-1">
+                <!-- DATA PENERIMA -->
+                <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Data Penerima</p>
                 </li>
-
                 <li>
                     <a href="{{ route('mustahik.index') }}"
                         class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'mustahik') ? $activeClass : $inactiveClass }}">
@@ -535,57 +544,100 @@
                     </a>
                 </li>
 
-                <li class="mt-3 mb-1">
+                <!-- TRANSAKSI ZAKAT (Dropdown) -->
+                <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Transaksi Zakat</p>
                 </li>
-
                 <li>
-                    <a href="{{ route('transaksi-penerimaan.index') }}"
-                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                        <span>Transaksi Penerimaan</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('transaksi-penyaluran.index') }}"
-                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                        <span>Transaksi Penyaluran</span>
-                    </a>
-                </li>
-
-                <li class="mt-3 mb-1">
-                    <p class="{{ $sectionLabel }}">Kas</p>
-                </li>
-
-                <li>
-                    <a href="{{ route('kas-harian.index') }}"
-                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'kas-harian') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span>Kas Harian</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('amil.setor-kas.index') }}"
-                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'setor-kas') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
-                        </svg>
-                        <span>Setor Kas</span>
-                    </a>
+                    <details class="group" {{ $isTransaksiOpen ? 'open' : '' }}>
+                        <summary class="{{ $summaryClass }} text-[13px]">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            <span class="flex-1 ml-2.5">Kelola Transaksi</span>
+                            <svg class="w-3.5 h-3.5 flex-shrink-0 transform group-open:rotate-180 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <ul class="{{ $subBorder }}">
+                            <li>
+                                <a href="{{ route('transaksi-penerimaan.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                    </svg>
+                                    <span>Transaksi Penerimaan</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('transaksi-penyaluran.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                    </svg>
+                                    <span>Transaksi Penyaluran</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
                 </li>
 
-                <li class="mt-3 mb-1">
+                <!-- KAS ANDA (Dropdown) -->
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Kas Anda</p>
+                </li>
+                <li>
+                    <details class="group" {{ $isKasOpen ? 'open' : '' }}>
+                        <summary class="{{ $summaryClass }} text-[13px]">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span class="flex-1 ml-2.5">Kas</span>
+                            <svg class="w-3.5 h-3.5 flex-shrink-0 transform group-open:rotate-180 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <ul class="{{ $subBorder }}">
+                            <li>
+                                <a href="{{ route('kas-harian.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'kas-harian') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <span>Kas Harian</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('amil.setor-kas.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'setor-kas') ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                                    </svg>
+                                    <span>Setor Kas</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+
+                <!-- KUNJUNGAN -->
+                <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Kunjungan</p>
                 </li>
                 <li>
@@ -598,20 +650,6 @@
                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span>Kunjungan Mustahik</span>
-                    </a>
-                </li>
-
-                <li class="mt-3 mb-1">
-                    <p class="{{ $sectionLabel }}">Pengaturan</p>
-                </li>
-                <li>
-                    <a href="{{ route('profil.show') }}"
-                        class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'profil') ? $activeClass : $inactiveClass }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <span>Profil Saya</span>
                     </a>
                 </li>
             @endif

@@ -2,6 +2,81 @@
 @extends('layouts.app')
 @section('title', 'Tambah Jadwal Kunjungan')
 
+@push('styles')
+<style>
+    /* ── TUJUAN CARDS ── */
+    .tujuan-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: .75rem .5rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: border-color .15s, background .15s, transform .15s, box-shadow .15s;
+        user-select: none;
+    }
+
+    .tujuan-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 12px -2px rgba(0,0,0,.10);
+    }
+
+    /* Verifikasi */
+    .tujuan-card[data-val="verifikasi"]:hover,
+    .tujuan-card[data-val="verifikasi"].is-selected {
+        border-color: #6366f1;
+        background: #eef2ff;
+    }
+
+    /* Penyaluran */
+    .tujuan-card[data-val="penyaluran"]:hover,
+    .tujuan-card[data-val="penyaluran"].is-selected {
+        border-color: #22c55e;
+        background: #f0fdf4;
+    }
+
+    /* Monitoring */
+    .tujuan-card[data-val="monitoring"]:hover,
+    .tujuan-card[data-val="monitoring"].is-selected {
+        border-color: #eab308;
+        background: #fefce8;
+    }
+
+    /* Lainnya */
+    .tujuan-card[data-val="lainnya"]:hover,
+    .tujuan-card[data-val="lainnya"].is-selected {
+        border-color: #9ca3af;
+        background: #f9fafb;
+    }
+
+    .tujuan-card.is-selected {
+        transform: scale(1.03);
+        box-shadow: 0 4px 12px -2px rgba(0,0,0,.10);
+    }
+
+    /* Checkmark badge */
+    .tujuan-check {
+        display: none;
+        position: absolute;
+        top: 5px; right: 5px;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        background: #22c55e;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tujuan-card.is-selected .tujuan-check { display: flex; }
+
+    .tujuan-icon { transition: transform .15s; }
+    .tujuan-card.is-selected .tujuan-icon,
+    .tujuan-card:hover .tujuan-icon { transform: scale(1.1); }
+</style>
+@endpush
+
 @section('content')
 <div class="space-y-4 sm:space-y-6">
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
@@ -11,7 +86,7 @@
             <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Isi detail rencana kunjungan mustahik</p>
         </div>
 
-        <form action="{{ route('amil.kunjungan.store') }}" method="POST" class="p-4 sm:p-6 space-y-5">
+        <form action="{{ route('amil.kunjungan.store') }}" method="POST" class="px-4 sm:px-6 pb-4 sm:pb-6 pt-3 space-y-5">
             @csrf
 
             {{-- SECTION 1: Mustahik --}}
@@ -21,8 +96,7 @@
                     Pilih Mustahik
                 </h3>
 
-                <div class="space-y-3">
-                    {{-- Select Dropdown --}}
+                <div class="space-y-3 mt-2">
                     <div>
                         <label for="mustahik_id" class="block text-sm font-medium text-gray-700 mb-1.5">
                             Nama Mustahik <span class="text-red-500">*</span>
@@ -43,7 +117,6 @@
                                     </option>
                                 @endforeach
                             </select>
-                            {{-- Chevron icon --}}
                             <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -55,7 +128,6 @@
                         @enderror
                     </div>
 
-                    {{-- Info mustahik terpilih --}}
                     <div id="mustahik-info" class="{{ old('mustahik_id') ? '' : 'hidden' }} bg-blue-50 border border-blue-200 rounded-xl p-3">
                         <div class="flex items-start gap-3">
                             <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center flex-shrink-0">
@@ -87,7 +159,6 @@
                 </h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {{-- Tanggal --}}
                     <div class="sm:col-span-2">
                         <label for="tanggal_kunjungan" class="block text-sm font-medium text-gray-700 mb-1.5">
                             Tanggal Kunjungan <span class="text-red-500">*</span>
@@ -98,7 +169,6 @@
                         @error('tanggal_kunjungan')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
-                    {{-- Waktu Mulai --}}
                     <div>
                         <label for="waktu_mulai" class="block text-sm font-medium text-gray-700 mb-1.5">Waktu Mulai</label>
                         <input type="time" name="waktu_mulai" id="waktu_mulai"
@@ -107,7 +177,6 @@
                         @error('waktu_mulai')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
 
-                    {{-- Waktu Selesai --}}
                     <div>
                         <label for="waktu_selesai" class="block text-sm font-medium text-gray-700 mb-1.5">Waktu Selesai (Est.)</label>
                         <input type="time" name="waktu_selesai" id="waktu_selesai"
@@ -121,22 +190,24 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Tujuan Kunjungan <span class="text-red-500">*</span>
                         </label>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="tujuan-grid">
                             @foreach([
-                                'verifikasi' => ['label' => 'Verifikasi',  'color' => 'indigo', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
-                                'penyaluran' => ['label' => 'Penyaluran', 'color' => 'green',  'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                                'monitoring'  => ['label' => 'Monitoring',  'color' => 'yellow', 'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'],
-                                'lainnya'     => ['label' => 'Lainnya',     'color' => 'gray',   'icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                                'verifikasi' => ['label' => 'Verifikasi',  'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',   'color' => '#6366f1'],
+                                'penyaluran' => ['label' => 'Penyaluran', 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#22c55e'],
+                                'monitoring'  => ['label' => 'Monitoring',  'icon' => 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'color' => '#eab308'],
+                                'lainnya'     => ['label' => 'Lainnya',     'icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => '#9ca3af'],
                             ] as $val => $opt)
-                            <label class="tujuan-card relative flex flex-col items-center gap-1.5 p-3 border-2 rounded-xl cursor-pointer
-                                transition-all duration-150 select-none
-                                border-gray-200
-                                hover:scale-[1.03] hover:shadow-md
-                                hover:border-{{ $opt['color'] }}-400 hover:bg-{{ $opt['color'] }}-50
-                                has-[:checked]:border-{{ $opt['color'] }}-500 has-[:checked]:bg-{{ $opt['color'] }}-50 has-[:checked]:shadow-md has-[:checked]:scale-[1.03]">
+                            <label class="tujuan-card {{ old('tujuan') === $val ? 'is-selected' : '' }}" data-val="{{ $val }}">
                                 <input type="radio" name="tujuan" value="{{ $val }}" class="sr-only"
                                     {{ old('tujuan') === $val ? 'checked' : '' }}>
-                                <svg class="w-5 h-5 text-{{ $opt['color'] }}-500 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                {{-- Checkmark --}}
+                                <span class="tujuan-check">
+                                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <svg class="tujuan-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    style="color:{{ $opt['color'] }}">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $opt['icon'] }}"/>
                                 </svg>
                                 <span class="text-xs font-medium text-gray-700">{{ $opt['label'] }}</span>
@@ -188,27 +259,38 @@
 
 @push('scripts')
 <script>
+// ── Tujuan card selection ────────────────────────────────────────────────────
+document.querySelectorAll('.tujuan-card').forEach(card => {
+    card.addEventListener('click', function () {
+        // Hapus selected dari semua card
+        document.querySelectorAll('.tujuan-card').forEach(c => c.classList.remove('is-selected'));
+        // Tandai card ini
+        this.classList.add('is-selected');
+        // Centang radio di dalamnya
+        const radio = this.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+    });
+});
+
+// ── Mustahik info box ────────────────────────────────────────────────────────
 function onMustahikChange(select) {
-    const option   = select.options[select.selectedIndex];
-    const infoBox  = document.getElementById('mustahik-info');
+    const option  = select.options[select.selectedIndex];
+    const infoBox = document.getElementById('mustahik-info');
 
     if (!select.value) {
         infoBox.classList.add('hidden');
         return;
     }
 
-    document.getElementById('info-nama').textContent      = option.dataset.nama    || '-';
-    document.getElementById('info-no-reg').textContent    = 'No. Reg: ' + (option.dataset.noreg || '-');
+    document.getElementById('info-nama').textContent       = option.dataset.nama   || '-';
+    document.getElementById('info-no-reg').textContent     = 'No. Reg: ' + (option.dataset.noreg || '-');
     document.getElementById('info-alamat-text').textContent = option.dataset.alamat || '-';
     infoBox.classList.remove('hidden');
 }
 
-// Restore state on page load (jika ada old value)
 document.addEventListener('DOMContentLoaded', function () {
     const select = document.getElementById('mustahik_id');
-    if (select && select.value) {
-        onMustahikChange(select);
-    }
+    if (select && select.value) onMustahikChange(select);
 });
 </script>
 @endpush

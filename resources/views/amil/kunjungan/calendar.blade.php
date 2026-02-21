@@ -301,7 +301,7 @@ function renderListTable(rows) {
             </td>
             <td class="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">${waktu}</td>
             <td class="px-4 py-3 text-right">
-                <a href="/amil/kunjungan/${k.uuid}" class="text-xs text-primary font-medium hover:underline">Detail</a>
+                <a href="/kunjungan/${k.uuid}" class="text-xs text-primary font-medium hover:underline">Detail</a>
             </td>
         </tr>`;
     }).join('');

@@ -76,10 +76,10 @@ class DashboardController extends Controller
             ->map(fn($item) => ['nama' => $item->provinsi_nama, 'jumlah' => $item->jumlah]);
 
         $trendMasjid = Masjid::select(
-                DB::raw('MONTH(created_at) as bulan'),
-                DB::raw('YEAR(created_at) as tahun'),
-                DB::raw('COUNT(*) as jumlah')
-            )
+            DB::raw('MONTH(created_at) as bulan'),
+            DB::raw('YEAR(created_at) as tahun'),
+            DB::raw('COUNT(*) as jumlah')
+        )
             ->where('created_at', '>=', Carbon::now()->subMonths(6))
             ->groupBy('tahun', 'bulan')
             ->orderBy('tahun')->orderBy('bulan')
@@ -92,9 +92,14 @@ class DashboardController extends Controller
         $logTerbaru = LogAktivitas::with('pengguna')->latest()->take(10)->get();
 
         return view('dashboard.superadmin', compact(
-            'breadcrumbs', 'user', 'stats',
-            'masjidTerbaru', 'penggunaTerbaru',
-            'masjidPerProvinsi', 'trendMasjid', 'logTerbaru'
+            'breadcrumbs',
+            'user',
+            'stats',
+            'masjidTerbaru',
+            'penggunaTerbaru',
+            'masjidPerProvinsi',
+            'trendMasjid',
+            'logTerbaru'
         ));
     }
 
@@ -244,43 +249,94 @@ class DashboardController extends Controller
         }
 
         $masjid      = $amil->masjid;
+        $masjidId    = $masjid->id;
         $breadcrumbs = [['name' => 'Dashboard Amil', 'url' => null]];
-        $bulanIni    = now()->month;
-        $tahunIni    = now()->year;
 
-        $laporanBulanIni = ViewLaporanKonsolidasi::where('masjid_id', $masjid->id)
-            ->where('tahun', $tahunIni)
-            ->where('bulan', $bulanIni)
-            ->first();
+        $periodeAwal  = now()->startOfMonth();
+        $periodeAkhir = now()->endOfMonth();
 
+        // ── Keuangan Bulan Ini ───────────────────────────────────────────────
+        $totalPenerimaanBulanIni = TransaksiPenerimaan::where('masjid_id', $masjidId)
+            ->where('status', 'verified')
+            ->whereBetween('tanggal_transaksi', [$periodeAwal, $periodeAkhir])
+            ->sum('jumlah');
+
+        $totalPenyaluranBulanIni = TransaksiPenyaluran::where('masjid_id', $masjidId)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->whereBetween('tanggal_penyaluran', [$periodeAwal, $periodeAkhir])
+            ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+
+        $saldoSaatIni = TransaksiPenerimaan::where('masjid_id', $masjidId)
+            ->where('status', 'verified')
+            ->sum('jumlah')
+            -
+            TransaksiPenyaluran::where('masjid_id', $masjidId)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+
+        // ── SDM ──────────────────────────────────────────────────────────────
+        $jumlahMuzakki = TransaksiPenerimaan::where('masjid_id', $masjidId)
+            ->where('status', 'verified')
+            ->distinct('muzakki_nama')
+            ->count('muzakki_nama');
+
+        $jumlahMustahik = Mustahik::where('masjid_id', $masjidId)
+            ->where('status_verifikasi', 'verified')
+            ->where('is_active', true)
+            ->count();
+
+        // ── Statistik utama ──────────────────────────────────────────────────
         $stats = [
-            'nama_masjid'                => $masjid->nama,
-            'total_penerimaan_bulan_ini' => $laporanBulanIni->total_penerimaan ?? 0,
-            'total_penyaluran_bulan_ini' => $laporanBulanIni->total_penyaluran ?? 0,
-            'saldo_saat_ini'             => $laporanBulanIni->saldo_akhir ?? 0,
-            'jumlah_muzakki'             => $laporanBulanIni->jumlah_muzakki ?? 0,
-            'jumlah_mustahik'            => $laporanBulanIni->jumlah_mustahik ?? 0,
+            'total_penerimaan_bulan_ini' => $totalPenerimaanBulanIni,
+            'total_penyaluran_bulan_ini' => $totalPenyaluranBulanIni,
+            'saldo_saat_ini'             => $saldoSaatIni,
         ];
-
-        $hargaTerkini = HargaEmasPerak::where('is_active', true)->latest('tanggal')->first();
-        $jenisZakat   = JenisZakat::all();
 
         $quickStats = [
-            ['label' => 'Muzakki Terdaftar',  'value' => $stats['jumlah_muzakki'],  'icon' => 'users'],
-            ['label' => 'Mustahik Terdaftar', 'value' => $stats['jumlah_mustahik'], 'icon' => 'user-group'],
-            ['label' => 'Saldo Zakat',        'value' => 'Rp ' . number_format($stats['saldo_saat_ini'], 0, ',', '.'), 'icon' => 'cash'],
+            [
+                'label' => 'Muzakki Aktif',
+                'value' => $jumlahMuzakki,
+                'icon'  => 'users',
+            ],
+            [
+                'label' => 'Mustahik Terdaftar',
+                'value' => $jumlahMustahik,
+                'icon'  => 'user-group',
+            ],
         ];
 
-        $reminders = [
-            'Verifikasi muzakki baru',
-            'Update data mustahik',
-            'Laporan harian zakat',
-            'Cek stok formulir',
-        ];
+        // ── Trend 6 Bulan ────────────────────────────────────────────────────
+        $trendData = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $bulan        = now()->subMonths($i);
+            $startOfMonth = $bulan->copy()->startOfMonth();
+            $endOfMonth   = $bulan->copy()->endOfMonth();
+
+            $penerimaan = TransaksiPenerimaan::where('masjid_id', $masjidId)
+                ->where('status', 'verified')
+                ->whereBetween('tanggal_transaksi', [$startOfMonth, $endOfMonth])
+                ->sum('jumlah');
+
+            $penyaluran = TransaksiPenyaluran::where('masjid_id', $masjidId)
+                ->whereIn('status', ['disetujui', 'disalurkan'])
+                ->whereBetween('tanggal_penyaluran', [$startOfMonth, $endOfMonth])
+                ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+
+            $trendData->push([
+                'bulan'      => $bulan->translatedFormat('M Y'),
+                'penerimaan' => (float) $penerimaan,
+                'penyaluran' => (float) $penyaluran,
+            ]);
+        }
 
         return view('dashboard.amil', compact(
-            'breadcrumbs', 'user', 'masjid', 'stats',
-            'hargaTerkini', 'jenisZakat', 'quickStats', 'reminders'
+            'breadcrumbs',
+            'user',
+            'amil',
+            'masjid',
+            'stats',
+            'quickStats',
+            'trendData'
         ));
     }
 }
