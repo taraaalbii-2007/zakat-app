@@ -1,404 +1,401 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Laporan Keuangan Masjid</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keuangan Masjid - {{ $laporan->masjid->nama }}</title>
     <style>
-        /* Reset dan base styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'DejaVu Sans', 'Helvetica', Arial, sans-serif;
-            font-size: 12px;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11px;
             line-height: 1.5;
-            color: #333;
-            background: #fff;
+            color: #2d3436;
+            margin: 20px;
         }
         
-        .container {
-            width: 100%;
-            padding: 20px;
-        }
-        
-        /* Header */
+        /* Header Styles */
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #3b82f6;
+            margin-bottom: 25px;
+            border-bottom: 2.5px solid #2d3436;
+            padding-bottom: 12px;
         }
-        
-        .header-logo {
-            height: 80px;
-            margin-bottom: 10px;
-        }
-        
         .header h1 {
-            font-size: 24px;
-            color: #1f2937;
-            margin-bottom: 5px;
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #000;
         }
-        
         .header h2 {
-            font-size: 18px;
-            color: #6b7280;
+            margin: 4px 0;
+            font-size: 14px;
             font-weight: normal;
+            color: #636e72;
+        }
+        .header .subtitle {
+            margin: 2px 0;
+            font-size: 11px;
+            font-style: italic;
         }
         
-        /* Summary Cards */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+        /* Info Section */
+        .info-section {
+            margin-bottom: 20px;
+            width: 100%;
         }
-        
-        .summary-card {
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
+        .info-row {
+            width: 100%;
+            margin-bottom: 2px;
         }
-        
-        .summary-label {
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 5px;
+        .info-row:after {
+            content: "";
+            display: table;
+            clear: both;
         }
-        
-        .summary-value {
-            font-size: 18px;
+        .info-label {
+            float: left;
+            width: 140px;
+            padding: 4px 0;
             font-weight: bold;
+            color: #2d3436;
+        }
+        .info-value {
+            padding: 4px 0;
+            padding-left: 150px;
+            border-bottom: 1px solid #f1f2f6;
         }
         
-        .saldo-awal {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        
-        .penerimaan {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .penyaluran {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .saldo-akhir {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-        
-        /* Tables */
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1f2937;
-            margin: 25px 0 15px 0;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        table {
+        /* Table Styles */
+        table.data-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-size: 9.5px;
+            table-layout: fixed;
+        }
+        table.data-table th {
+            background-color: #1a7a4a;
+            color: #ffffff;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #155d38;
+            padding: 8px 4px;
+            text-transform: uppercase;
+        }
+        table.data-table td {
+            border: 1px solid #2d3436;
+            padding: 6px 4px;
+            word-wrap: break-word;
+        }
+
+        table.data-table tr {
+            page-break-inside: avoid;
+        }
+
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-green { color: #065f46; }
+        .text-red { color: #991b1b; }
+        .text-blue { color: #1e40af; }
+        .text-bold { font-weight: bold; }
+        .text-uppercase { text-transform: uppercase; }
+        
+        /* Footer & Signature */
+        .footer-container {
+            margin-top: 30px;
+            width: 100%;
+            page-break-inside: avoid;
+        }
+
+        .footer-container:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .signature-wrapper {
+            float: right;
+            width: 250px;
+            text-align: center;
+        }
+
+        .signature-space {
+            height: 70px;
+        }
+        
+        .signature-space {
+            height: 70px;
+        }
+
+        .signature-name {
+            font-weight: bold;
+            margin-top: 0px;
+            margin-bottom: 1px;
+        }
+
+        .signature-line-table {
+            width: 210px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-weight: bold;
             font-size: 11px;
         }
-        
-        th {
-            background-color: #f3f4f6;
-            color: #374151;
-            font-weight: bold;
+
+        .signature-line-table td {
+            border: none;
+            padding: 0;
+            padding-top: 0;
+            border-bottom: 1px solid #2d3436;
+            line-height: 1.4;
+        }
+
+        .paren-left {
             text-align: left;
-            padding: 10px;
-            border: 1px solid #e5e7eb;
+            width: 10px;
         }
-        
-        td {
-            padding: 8px 10px;
-            border: 1px solid #e5e7eb;
+
+        .paren-mid {
+            text-align: center;
         }
-        
-        .text-right {
+
+        .paren-right {
             text-align: right;
+            width: 10px;
         }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-green {
-            color: #065f46;
-        }
-        
-        .text-red {
-            color: #991b1b;
-        }
-        
-        /* Status badge */
-        .status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 10px;
+
+        .signature-title {
             font-weight: bold;
+            margin-bottom: 5px;
         }
-        
-        .status-draft {
-            background-color: #f3f4f6;
-            color: #6b7280;
-        }
-        
-        .status-published {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        
-        /* Footer */
-        .footer {
-            margin-top: 40px;
+
+        .footer-note {
+            clear: both;
             padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            font-size: 10px;
-            color: #6b7280;
             text-align: center;
-        }
-        
-        .signature-section {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .signature {
-            text-align: center;
-            width: 200px;
-        }
-        
-        .signature-line {
-            margin-top: 60px;
-            border-top: 1px solid #333;
-            width: 100%;
-        }
-        
-        .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px;
-            color: rgba(0, 0, 0, 0.1);
-            z-index: -1;
-            font-weight: bold;
+            font-size: 8px;
+            color: #b2bec3;
+            border-top: 1px dashed #dfe6e9;
         }
         
         .page-break {
             page-break-before: always;
         }
-        
-        /* Print styles */
-        @media print {
-            body {
-                font-size: 10pt;
-            }
-            
-            .no-print {
-                display: none;
-            }
-            
-            .page-break {
-                page-break-before: always;
-            }
+
+        .ringkasan-value {
+            font-weight: bold;
+        }
+
+        .status-text {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-draft-text {
+            color: #6b7280;
+        }
+
+        .status-published-text {
+            color: #065f46;
         }
     </style>
 </head>
 <body>
-    {{-- Watermark --}}
-    @if($laporan->status === 'published')
-        <div class="watermark">OFFICIAL REPORT</div>
-    @endif
-
-    <div class="container">
-        {{-- Header --}}
-        <div class="header">
-            @if($logo)
-                <img src="{{ $logo }}" alt="Logo Masjid" class="header-logo">
+    <div class="header">
+        <h1>{{ strtoupper($laporan->masjid->nama ?? 'LAPORAN KEUANGAN MASJID') }}</h1>
+        <h2>Laporan Keuangan Bulanan</h2>
+        <div class="subtitle">
+            {{ $laporan->masjid->alamat ?? '' }}
+            @if(isset($laporan->masjid->kelurahan_nama) && $laporan->masjid->kelurahan_nama)
+                , Kel. {{ $laporan->masjid->kelurahan_nama }}
             @endif
-            <h1>LAPORAN KEUANGAN MASJID</h1>
-            <h2>{{ $laporan->masjid->nama }}</h2>
-            <p>Periode: {{ $laporan->periode_mulai->format('d F Y') }} - {{ $laporan->periode_selesai->format('d F Y') }}</p>
-            <p>Status: <span class="status-badge status-{{ $laporan->status }}">{{ strtoupper($laporan->status) }}</span></p>
-        </div>
-
-        {{-- Summary Cards --}}
-        <div class="summary-grid">
-            <div class="summary-card saldo-awal">
-                <div class="summary-label">SALDO AWAL</div>
-                <div class="summary-value">Rp {{ number_format($laporan->saldo_awal, 0, ',', '.') }}</div>
-            </div>
-            
-            <div class="summary-card penerimaan">
-                <div class="summary-label">TOTAL PENERIMAAN</div>
-                <div class="summary-value">Rp {{ number_format($laporan->total_penerimaan, 0, ',', '.') }}</div>
-                <div style="font-size: 10px; margin-top: 5px;">
-                    {{ $laporan->jumlah_muzakki }} Muzakki • {{ $laporan->jumlah_transaksi_masuk }} Transaksi
-                </div>
-            </div>
-            
-            <div class="summary-card penyaluran">
-                <div class="summary-label">TOTAL PENYALURAN</div>
-                <div class="summary-value">Rp {{ number_format($laporan->total_penyaluran, 0, ',', '.') }}</div>
-                <div style="font-size: 10px; margin-top: 5px;">
-                    {{ $laporan->jumlah_mustahik }} Mustahik • {{ $laporan->jumlah_transaksi_keluar }} Transaksi
-                </div>
-            </div>
-            
-            <div class="summary-card saldo-akhir">
-                <div class="summary-label">SALDO AKHIR</div>
-                <div class="summary-value">Rp {{ number_format($laporan->saldo_akhir, 0, ',', '.') }}</div>
-            </div>
-        </div>
-
-        {{-- Detail Penerimaan --}}
-        <div class="section-title">DETAIL PENERIMAAN PER JENIS ZAKAT</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Jenis Zakat</th>
-                    <th class="text-center">Jumlah Transaksi</th>
-                    <th class="text-right">Total</th>
-                    <th class="text-center">Persentase</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalPenerimaan = $laporan->total_penerimaan;
-                @endphp
-                @foreach($detailPenerimaan as $item)
-                    <tr>
-                        <td>{{ $item['jenis_zakat'] }}</td>
-                        <td class="text-center">{{ $item['count'] }}</td>
-                        <td class="text-right text-green">Rp {{ number_format($item['jumlah'], 0, ',', '.') }}</td>
-                        <td class="text-center">
-                            @if($totalPenerimaan > 0)
-                                {{ number_format(($item['jumlah'] / $totalPenerimaan) * 100, 1) }}%
-                            @else
-                                0%
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-                @if(count($detailPenerimaan) > 0)
-                    <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td>TOTAL</td>
-                        <td class="text-center">{{ $laporan->jumlah_transaksi_masuk }}</td>
-                        <td class="text-right">Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}</td>
-                        <td class="text-center">100%</td>
-                    </tr>
-                @else
-                    <tr>
-                        <td colspan="4" class="text-center">Tidak ada data penerimaan</td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
-
-        {{-- Detail Penyaluran --}}
-        <div class="section-title">DETAIL PENYALURAN PER KATEGORI MUSTAHIK</div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategori Mustahik</th>
-                    <th class="text-center">Jumlah Mustahik</th>
-                    <th class="text-right">Total</th>
-                    <th class="text-center">Persentase</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalPenyaluran = $laporan->total_penyaluran;
-                @endphp
-                @foreach($detailPenyaluran as $item)
-                    <tr>
-                        <td>{{ $item['kategori'] }}</td>
-                        <td class="text-center">{{ $item['count'] }}</td>
-                        <td class="text-right text-red">Rp {{ number_format($item['jumlah'], 0, ',', '.') }}</td>
-                        <td class="text-center">
-                            @if($totalPenyaluran > 0)
-                                {{ number_format(($item['jumlah'] / $totalPenyaluran) * 100, 1) }}%
-                            @else
-                                0%
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-                @if(count($detailPenyaluran) > 0)
-                    <tr style="font-weight: bold; background-color: #f9fafb;">
-                        <td>TOTAL</td>
-                        <td class="text-center">{{ $laporan->jumlah_mustahik }}</td>
-                        <td class="text-right">Rp {{ number_format($totalPenyaluran, 0, ',', '.') }}</td>
-                        <td class="text-center">100%</td>
-                    </tr>
-                @else
-                    <tr>
-                        <td colspan="4" class="text-center">Tidak ada data penyaluran</td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
-
-        {{-- Informasi Tambahan --}}
-        <div class="section-title">INFORMASI LAINNYA</div>
-        <table>
-            <tbody>
-                <tr>
-                    <td width="30%"><strong>Dibuat Oleh</strong></td>
-                    <td>: {{ $laporan->creator->nama_lengkap ?? 'System' }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Tanggal Generate</strong></td>
-                    <td>: {{ $laporan->created_at->format('d F Y, H:i') }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Tanggal Publikasi</strong></td>
-                    <td>: {{ $laporan->published_at ? $laporan->published_at->format('d F Y, H:i') : 'Belum dipublikasi' }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Nomor Laporan</strong></td>
-                    <td>: {{ $laporan->uuid }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- Signature Section --}}
-        <div class="signature-section">
-            <div class="signature">
-                <p>Mengetahui,</p>
-                <p><strong>BENDAHARA</strong></p>
-                <div class="signature-line"></div>
-                <p style="margin-top: 5px;">(................................)</p>
-            </div>
-            
-            <div class="signature">
-                <p>Yang Membuat Laporan,</p>
-                <p><strong>ADMIN MASJID</strong></p>
-                <div class="signature-line"></div>
-                <p style="margin-top: 5px;">({{ $laporan->creator->nama_lengkap ?? '................................' }})</p>
-            </div>
-        </div>
-
-        {{-- Footer --}}
-        <div class="footer">
-            <p>Dokumen ini dicetak pada: {{ $tanggalCetak }}</p>
-            <p>Laporan ini {{ $laporan->status === 'published' ? 'telah dipublikasi secara resmi' : 'masih dalam status draft' }}</p>
-            <p>© {{ date('Y') }} Sistem Manajemen Zakat Masjid</p>
+            @if(isset($laporan->masjid->kecamatan_nama) && $laporan->masjid->kecamatan_nama)
+                , Kec. {{ $laporan->masjid->kecamatan_nama }}
+            @endif
+            @if(isset($laporan->masjid->kota_nama) && $laporan->masjid->kota_nama)
+                , {{ $laporan->masjid->kota_nama }}
+            @endif
         </div>
     </div>
+
+    <div class="info-section">
+        <div class="info-row">
+            <div class="info-label">Periode Laporan</div>
+            <div class="info-value">: {{ \Carbon\Carbon::parse($laporan->periode_mulai)->locale('id')->translatedFormat('l, d F Y') }} - {{ \Carbon\Carbon::parse($laporan->periode_selesai)->locale('id')->translatedFormat('l, d F Y') }}</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Bulan / Tahun</div>
+            <div class="info-value">: {{ \Carbon\Carbon::createFromDate($laporan->tahun, $laporan->bulan, 1)->locale('id')->translatedFormat('F Y') }}</div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Status Laporan</div>
+            <div class="info-value">: 
+                <span class="status-text status-{{ $laporan->status }}-text">{{ strtoupper($laporan->status) }}</span>
+            </div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Ringkasan Data</div>
+            <div class="info-value">: 
+                <span class="text-blue"><strong>Rp {{ number_format($laporan->saldo_awal, 0, ',', '.') }}</strong> Saldo Awal</span> | 
+                <span class="text-green"><strong>Rp {{ number_format($laporan->total_penerimaan, 0, ',', '.') }}</strong> Penerimaan</span> | 
+                <span class="text-red"><strong>Rp {{ number_format($laporan->total_penyaluran, 0, ',', '.') }}</strong> Penyaluran</span> | 
+                <strong>Rp {{ number_format($laporan->saldo_akhir, 0, ',', '.') }}</strong> Saldo Akhir
+            </div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Statistik Transaksi</div>
+            <div class="info-value">: 
+                <strong>{{ $laporan->jumlah_muzakki }}</strong> Muzakki | 
+                <strong>{{ $laporan->jumlah_transaksi_masuk }}</strong> Transaksi Masuk | 
+                <strong>{{ $laporan->jumlah_mustahik }}</strong> Mustahik | 
+                <strong>{{ $laporan->jumlah_transaksi_keluar }}</strong> Transaksi Keluar
+            </div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Petugas Ekspor</div>
+            <div class="info-value">: {{ $laporan->creator->nama_lengkap ?? $laporan->creator->username ?? 'System' }}</div>
+        </div>
+    </div>
+
+    {{-- Detail Penerimaan --}}
+    <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">DETAIL PENERIMAAN PER JENIS ZAKAT</h3>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Jenis Zakat</th>
+                <th style="width: 20%;">Jumlah Transaksi</th>
+                <th style="width: 25%;">Total (Rp)</th>
+                <th style="width: 15%;">Persentase</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalPenerimaan = $laporan->total_penerimaan;
+            @endphp
+            @forelse($detailPenerimaan as $item)
+                <tr>
+                    <td class="text-left">{{ $item['jenis_zakat'] }}</td>
+                    <td class="text-center">{{ $item['count'] }}</td>
+                    <td class="text-right text-green">Rp {{ number_format($item['jumlah'], 0, ',', '.') }}</td>
+                    <td class="text-center">
+                        @if($totalPenerimaan > 0)
+                            {{ number_format(($item['jumlah'] / $totalPenerimaan) * 100, 1) }}%
+                        @else
+                            0%
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penerimaan</td>
+                </tr>
+            @endforelse
+            @if(count($detailPenerimaan) > 0)
+                <tr style="font-weight: bold; background-color: #f1f2f6;">
+                    <td class="text-left">TOTAL</td>
+                    <td class="text-center">{{ $laporan->jumlah_transaksi_masuk }}</td>
+                    <td class="text-right">Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}</td>
+                    <td class="text-center">100%</td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
+
+    {{-- Detail Penyaluran --}}
+    <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">DETAIL PENYALURAN PER KATEGORI MUSTAHIK</h3>
+    
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Kategori Mustahik</th>
+                <th style="width: 20%;">Jumlah Mustahik</th>
+                <th style="width: 25%;">Total (Rp)</th>
+                <th style="width: 15%;">Persentase</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalPenyaluran = $laporan->total_penyaluran;
+            @endphp
+            @forelse($detailPenyaluran as $item)
+                <tr>
+                    <td class="text-left">{{ $item['kategori'] }}</td>
+                    <td class="text-center">{{ $item['count'] }}</td>
+                    <td class="text-right text-red">Rp {{ number_format($item['jumlah'], 0, ',', '.') }}</td>
+                    <td class="text-center">
+                        @if($totalPenyaluran > 0)
+                            {{ number_format(($item['jumlah'] / $totalPenyaluran) * 100, 1) }}%
+                        @else
+                            0%
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penyaluran</td>
+                </tr>
+            @endforelse
+            @if(count($detailPenyaluran) > 0)
+                <tr style="font-weight: bold; background-color: #f1f2f6;">
+                    <td class="text-left">TOTAL</td>
+                    <td class="text-center">{{ $laporan->jumlah_mustahik }}</td>
+                    <td class="text-right">Rp {{ number_format($totalPenyaluran, 0, ',', '.') }}</td>
+                    <td class="text-center">100%</td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
+
+    {{-- Informasi Tambahan --}}
+    <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">INFORMASI LAPORAN</h3>
+    
+    <table class="data-table">
+        <tbody>
+            <tr>
+                <td style="background-color: #f1f2f6; width: 35%;"><strong>Dibuat Oleh</strong></td>
+                <td>{{ $laporan->creator->nama_lengkap ?? $laporan->creator->username ?? 'System' }}</td>
+            </tr>
+            <tr>
+                <td style="background-color: #f1f2f6;"><strong>Tanggal Generate</strong></td>
+                <td>{{ \Carbon\Carbon::parse($laporan->created_at)->locale('id')->translatedFormat('l, d F Y H:i') }} WIB</td>
+            </tr>
+            @if($laporan->published_at)
+            <tr>
+                <td style="background-color: #f1f2f6;"><strong>Tanggal Publikasi</strong></td>
+                <td>{{ \Carbon\Carbon::parse($laporan->published_at)->locale('id')->translatedFormat('l, d F Y H:i') }} WIB</td>
+            </tr>
+            @endif
+        </tbody>
+    </table>
+
+    {{-- Signature Section - Rata Kanan --}}
+    <div class="footer-container">
+        <div class="signature-wrapper">
+            <div>{{ $laporan->masjid->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
+            <div style="margin-top: 15px;">Yang Membuat Laporan,</div>
+            <div class="signature-title">ADMIN MASJID</div>
+            <div class="signature-space"></div>
+            <table class="signature-line-table" style="margin-top: 0;">
+                <tr>
+                    <td colspan="3" style="border: none; text-align: center; font-weight: bold; padding: 0; line-height: 1.3;">
+                        {{ $laporan->creator->nama_lengkap ?? '' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="paren-left">(</td>
+                    <td class="paren-mid">&nbsp;</td>
+                    <td class="paren-right">)</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
 </body>
 </html>

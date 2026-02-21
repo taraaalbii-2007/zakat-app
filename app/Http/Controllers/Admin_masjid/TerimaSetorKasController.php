@@ -32,7 +32,7 @@ class TerimaSetorKasController extends Controller
             $query->search($request->q);
         }
 
-        $setorans = $query->paginate(15)->withQueryString();
+        $setorans = $query->paginate(10);
 
         // Summary
         $summary = SetorKas::byMasjid($masjidId)
@@ -136,7 +136,7 @@ class TerimaSetorKasController extends Controller
             $query->search($request->q);
         }
 
-        $setorans = $query->paginate(15)->withQueryString();
+        $setorans = $query->paginate(10);
 
         $summary = SetorKas::byMasjid($masjidId)
             ->selectRaw('status, COUNT(*) as total, SUM(jumlah_disetor) as jumlah')

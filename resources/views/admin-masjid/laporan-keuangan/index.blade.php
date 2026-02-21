@@ -60,7 +60,7 @@
                     @foreach($laporanTahunan as $laporan)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $laporan->nama_bulan }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ $laporan->nama_bulan ?? \Carbon\Carbon::createFromDate($laporan->tahun, $laporan->bulan, 1)->translatedFormat('F') }}</div>
                                 <div class="text-xs text-gray-500">{{ $laporan->tahun }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -76,7 +76,17 @@
                                 Rp {{ number_format($laporan->saldo_akhir, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                {!! $laporan->status_badge !!}
+                                @if(isset($laporan->status_badge))
+                                    {!! $laporan->status_badge !!}
+                                @else
+                                    @if($laporan->status == 'draft')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Draft</span>
+                                    @elseif($laporan->status == 'published')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Published</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Belum dibuat</span>
+                                    @endif
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                 @if($laporan->uuid)
@@ -84,7 +94,7 @@
                                        class="text-primary hover:text-primary-600">View Detail</a>
                                 @endif
                                 
-                                @if($laporan->can_generate)
+                                @if(isset($laporan->can_generate) && $laporan->can_generate && !$laporan->uuid)
                                     <form action="{{ route('laporan-keuangan.generate', ['tahun' => $laporan->tahun, 'bulan' => $laporan->bulan]) }}" 
                                           method="POST" class="inline">
                                         @csrf
@@ -92,13 +102,18 @@
                                     </form>
                                 @endif
                                 
-                                @if($laporan->can_publish && $laporan->uuid)
-    <form action="{{ route('laporan-keuangan.publish', $laporan->uuid) }}"
-          method="POST" class="inline">
-        @csrf
-        <button type="submit" class="text-green-600 hover:text-green-800">Publish</button>
-    </form>
-@endif
+                                @if($laporan->uuid && $laporan->status == 'draft')
+                                    <form action="{{ route('laporan-keuangan.publish', $laporan->uuid) }}"
+                                          method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 hover:text-green-800">Publish</button>
+                                    </form>
+                                @endif
+
+                                @if($laporan->uuid)
+                                    <a href="{{ route('laporan-keuangan.download.pdf', $laporan->uuid) }}" 
+                                       class="text-purple-600 hover:text-purple-800">Download</a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -133,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                     label: 'Penyaluran',
-                    data: chartData.penerimaan,
+                    data: chartData.penyaluran,
                     borderColor: '#EF4444',
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     borderWidth: 2,
