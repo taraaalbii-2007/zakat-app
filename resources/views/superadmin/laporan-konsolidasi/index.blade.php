@@ -5,117 +5,98 @@
 @section('content')
     <div class="space-y-4 sm:space-y-6">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+
+            {{-- ── Header ─────────────────────────────────────────────────────── --}}
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Laporan Konsolidasi</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $laporan->total() }} Laporan</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1">
+                            {{ $grandTotal['masjid'] }} Masjid · Tahun {{ $tahun }}
+                        </p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <button type="button" onclick="toggleFilter()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        {{-- Buka/Tutup Semua --}}
+                        <button type="button" onclick="expandAll()"
+                            class="inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                Filter
-                            </span>
+                            Buka Semua
                         </button>
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('search') ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('search') ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <button type="button" onclick="collapseAll()"
+                            class="inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                            </svg>
+                            Tutup Semua
+                        </button>
+
+                        {{-- Search --}}
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
-                                <span id="search-button-text"
-                                    class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                    Cari
-                                </span>
-                            </button>
-                            <form method="GET" action="{{ route('laporan-konsolidasi.index') }}" id="search-form"
-                                class="{{ request('search') ? '' : 'hidden' }}">
-                                @if(request('masjid_id'))
-                                    <input type="hidden" name="masjid_id" value="{{ request('masjid_id') }}">
-                                @endif
-                                @if(request('tahun'))
-                                    <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                                @endif
-                                @if(request('bulan'))
-                                    <input type="hidden" name="bulan" value="{{ request('bulan') }}">
-                                @endif
-                                <div class="flex items-center">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="search" value="{{ request('search') }}" id="search-input"
-                                            placeholder="Cari masjid..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                </div>
+                            </div>
+                            <form method="GET" action="{{ route('laporan-konsolidasi.index') }}">
+                                <input type="hidden" name="tahun" value="{{ $tahun }}">
+                                @if($bulan)<input type="hidden" name="bulan" value="{{ $bulan }}">@endif
+                                @if($masjidId)<input type="hidden" name="masjid_id" value="{{ $masjidId }}">@endif
+                                <input type="search" name="search" value="{{ $search }}"
+                                    placeholder="Cari masjid..."
+                                    onchange="this.form.submit()"
+                                    class="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-full sm:w-56">
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Filter Panel --}}
-            <div id="filter-panel" class="{{ (request('masjid_id') || request('tahun') || request('bulan')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+            {{-- ── Filter Panel ─────────────────────────────────────────────── --}}
+            <div class="px-4 sm:px-6 py-3 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('laporan-konsolidasi.index') }}" id="filter-form">
-                    @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                    @if($search)<input type="hidden" name="search" value="{{ $search }}">@endif
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        {{-- Masjid --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Masjid</label>
-                            <select name="masjid_id" id="filter-masjid"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <select name="masjid_id" onchange="document.getElementById('filter-form').submit()"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary">
                                 <option value="">Semua Masjid</option>
-                                @foreach(\App\Models\Masjid::orderBy('nama')->get() as $masjid)
-                                    <option value="{{ $masjid->id }}" {{ request('masjid_id') == $masjid->id ? 'selected' : '' }}>
-                                        {{ $masjid->nama }}
-                                    </option>
+                                @foreach($allMasjids as $m)
+                                    <option value="{{ $m->id }}" {{ $masjidId == $m->id ? 'selected' : '' }}>{{ $m->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
+                        {{-- Tahun --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Tahun</label>
-                            <select name="tahun" id="filter-tahun"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                <option value="">Semua Tahun</option>
-                                @for($year = date('Y'); $year >= date('Y') - 5; $year--)
-                                    <option value="{{ $year }}" {{ request('tahun') == $year ? 'selected' : '' }}>
-                                        {{ $year }}
-                                    </option>
-                                @endfor
+                            <select name="tahun" onchange="document.getElementById('filter-form').submit()"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary">
+                                @foreach($availableYears as $y)
+                                    <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                @endforeach
                             </select>
                         </div>
+                        {{-- Bulan --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Bulan</label>
-                            <select name="bulan" id="filter-bulan"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <select name="bulan" onchange="document.getElementById('filter-form').submit()"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary">
                                 <option value="">Semua Bulan</option>
-                                @foreach(['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $index => $bulan)
-                                    <option value="{{ $index + 1 }}" {{ request('bulan') == ($index + 1) ? 'selected' : '' }}>
-                                        {{ $bulan }}
-                                    </option>
+                                @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $nm)
+                                    <option value="{{ $i + 1 }}" {{ $bulan == ($i + 1) ? 'selected' : '' }}>{{ $nm }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    @if(request('masjid_id') || request('tahun') || request('bulan'))
-                        <div class="mt-3 flex justify-end">
-                            <a href="{{ route('laporan-konsolidasi.index', request('search') ? ['search' => request('search')] : []) }}"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    @if($search || $masjidId || $bulan)
+                        <div class="mt-2 flex justify-end">
+                            <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}"
+                                class="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                                 Reset Filter
                             </a>
@@ -124,518 +105,334 @@
                 </form>
             </div>
 
-            @if ($laporan->count() > 0)
-                {{-- Info Filter Aktif --}}
-                @if(request('masjid_id') || request('tahun') || request('bulan') || request('search'))
-                    <div class="px-4 sm:px-6 py-2 bg-blue-50 border-b border-blue-100">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center flex-wrap gap-2">
-                                <span class="text-xs font-medium text-blue-800">Filter Aktif:</span>
-                                @if(request('search'))
-                                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        Pencarian: "{{ request('search') }}"
-                                        <button type="button" onclick="removeFilter('search')" class="ml-1.5 text-blue-600 hover:text-blue-800">
-                                            ×
-                                        </button>
-                                    </span>
-                                @endif
-                                @if(request('masjid_id'))
-                                    @php
-                                        $selectedMasjid = \App\Models\Masjid::find(request('masjid_id'));
-                                    @endphp
-                                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        Masjid: {{ $selectedMasjid->nama ?? '-' }}
-                                        <button type="button" onclick="removeFilter('masjid_id')" class="ml-1.5 text-blue-600 hover:text-blue-800">
-                                            ×
-                                        </button>
-                                    </span>
-                                @endif
-                                @if(request('tahun'))
-                                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        Tahun: {{ request('tahun') }}
-                                        <button type="button" onclick="removeFilter('tahun')" class="ml-1.5 text-blue-600 hover:text-blue-800">
-                                            ×
-                                        </button>
-                                    </span>
-                                @endif
-                                @if(request('bulan'))
-                                    @php
-                                        $bulanName = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][request('bulan') - 1];
-                                    @endphp
-                                    <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                        Bulan: {{ $bulanName }}
-                                        <button type="button" onclick="removeFilter('bulan')" class="ml-1.5 text-blue-600 hover:text-blue-800">
-                                            ×
-                                        </button>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
+            {{-- ── Grand Total Cards ─────────────────────────────────────────── --}}
+            <div class="px-4 sm:px-6 py-4 bg-gradient-to-br from-primary/5 to-primary/10 border-b border-gray-200">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Total Masjid</p>
+                        <p class="text-lg font-bold text-gray-800 mt-1">{{ number_format($grandTotal['masjid']) }}</p>
                     </div>
-                @endif
-
-                {{-- Summary Cards --}}
-                @php
-                    $totalPenerimaan = $laporan->sum('total_penerimaan');
-                    $totalPenyaluran = $laporan->sum('total_penyaluran');
-                    $totalSaldo = $laporan->sum('saldo_akhir');
-                    $totalMuzakki = $laporan->sum('jumlah_muzakki');
-                    $totalMustahik = $laporan->sum('jumlah_mustahik');
-                @endphp
-
-                <div class="px-4 sm:px-6 py-4 bg-gradient-to-br from-primary/5 to-primary/10 border-b border-gray-200">
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                        <div class="bg-white rounded-lg p-3 shadow-sm">
-                            <p class="text-xs font-medium text-gray-500 uppercase">Total Penerimaan</p>
-                            <p class="text-base sm:text-lg font-bold text-green-600 mt-1">
-                                Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-lg p-3 shadow-sm">
-                            <p class="text-xs font-medium text-gray-500 uppercase">Total Penyaluran</p>
-                            <p class="text-base sm:text-lg font-bold text-red-600 mt-1">
-                                Rp {{ number_format($totalPenyaluran, 0, ',', '.') }}
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-lg p-3 shadow-sm">
-                            <p class="text-xs font-medium text-gray-500 uppercase">Total Saldo</p>
-                            <p class="text-base sm:text-lg font-bold text-blue-600 mt-1">
-                                Rp {{ number_format($totalSaldo, 0, ',', '.') }}
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-lg p-3 shadow-sm">
-                            <p class="text-xs font-medium text-gray-500 uppercase">Muzakki</p>
-                            <p class="text-base sm:text-lg font-bold text-purple-600 mt-1">
-                                {{ number_format($totalMuzakki, 0, ',', '.') }}
-                            </p>
-                        </div>
-                        <div class="bg-white rounded-lg p-3 shadow-sm">
-                            <p class="text-xs font-medium text-gray-500 uppercase">Mustahik</p>
-                            <p class="text-base sm:text-lg font-bold text-orange-600 mt-1">
-                                {{ number_format($totalMustahik, 0, ',', '.') }}
-                            </p>
-                        </div>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Penerimaan</p>
+                        <p class="text-base font-bold text-green-600 mt-1">Rp {{ number_format($grandTotal['penerimaan'], 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Penyaluran</p>
+                        <p class="text-base font-bold text-red-600 mt-1">Rp {{ number_format($grandTotal['penyaluran'], 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Setor Kas</p>
+                        <p class="text-base font-bold text-indigo-600 mt-1">Rp {{ number_format($grandTotal['setor_kas'], 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Saldo Akhir</p>
+                        <p class="text-base font-bold text-blue-600 mt-1">Rp {{ number_format($grandTotal['saldo_akhir'], 0, ',', '.') }}</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Muzakki / Mustahik</p>
+                        <p class="text-base font-bold text-purple-600 mt-1">
+                            {{ number_format($grandTotal['muzakki']) }} / {{ number_format($grandTotal['mustahik']) }}
+                        </p>
                     </div>
                 </div>
+            </div>
 
-                {{-- Desktop View --}}
-                <div class="hidden md:block overflow-x-auto" id="table-container">
+            {{-- ── Tabel Utama (Desktop) ─────────────────────────────────────── --}}
+            @if(count($laporanPerMasjid) > 0)
+                <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="w-12 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Masjid
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Periode
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Penerimaan
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Penyaluran
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Saldo Akhir
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                                    Aksi
-                                </th>
+                                <th class="w-10 px-4 py-3"></th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masjid</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Penerimaan</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Penyaluran</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Setor Kas</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo Akhir</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Muzakki / Mustahik</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($laporan as $item)
-                                {{-- Parent Row --}}
-                                <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row" 
-                                    data-target="detail-{{ $item->uuid }}">
-                                    <td class="px-4 py-4">
-                                        <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
-                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon" 
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                            </svg>
-                                        </button>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tbody-masjid">
+                            @foreach($laporanPerMasjid as $item)
+                                @php $masjid = $item['masjid']; @endphp
+
+                                {{-- ── Baris Masjid (Parent) ── --}}
+                                <tr class="masjid-row cursor-pointer hover:bg-primary/5 transition-colors"
+                                    data-nama="{{ strtolower($masjid->nama) }}"
+                                    onclick="toggleMasjid('masjid-{{ $masjid->id }}', this)">
+                                    <td class="px-4 py-3">
+                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 masjid-chevron"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                @if($item->masjid->foto && count($item->masjid->foto) > 0)
-                                                    <img class="h-10 w-10 rounded-lg object-cover border border-gray-200"
-                                                        src="{{ asset('storage/' . $item->masjid->foto[0]) }}"
-                                                        alt="{{ $item->masjid->nama }}">
-                                                @else
-                                                    <div class="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                                        </svg>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="ml-3">
-                                                <div class="text-sm font-medium text-gray-900">{{ $item->masjid->nama }}</div>
-                                                <div class="text-xs text-gray-500 mt-0.5">{{ $item->masjid->kode_masjid }}</div>
-                                                <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
+                                    <td class="px-6 py-3">
+                                        <div class="flex items-center gap-3">
+                                            <div>
+                                                <div class="text-sm font-semibold text-gray-900">{{ $masjid->nama }}</div>
+                                                <div class="text-xs text-gray-400">{{ $masjid->kode_masjid }} · Klik untuk lihat per bulan</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ $item->bulan_nama }} {{ $item->tahun }}</div>
+                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                        <span class="text-sm font-semibold text-green-600">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <span class="text-sm font-medium text-green-600">
-                                            Rp {{ number_format($item->total_penerimaan, 0, ',', '.') }}
-                                        </span>
+                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                        <span class="text-sm font-semibold text-red-600">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <span class="text-sm font-medium text-red-600">
-                                            Rp {{ number_format($item->total_penyaluran, 0, ',', '.') }}
-                                        </span>
+                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                        <span class="text-sm font-semibold text-indigo-600">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right">
-                                        <span class="text-sm font-medium text-blue-600">
-                                            Rp {{ number_format($item->saldo_akhir, 0, ',', '.') }}
-                                        </span>
+                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                        <span class="text-sm font-bold text-blue-600">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
-                                        <a href="{{ route('laporan-konsolidasi.detail', $item->masjid->id) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    <td class="px-6 py-3 text-center whitespace-nowrap">
+                                        <span class="text-xs text-purple-700 font-semibold">{{ number_format($item['jumlah_muzakki']) }}</span>
+                                        <span class="text-xs text-gray-400 mx-1">/</span>
+                                        <span class="text-xs text-orange-600 font-semibold">{{ number_format($item['jumlah_mustahik']) }}</span>
+                                    </td>
+                                    <td class="px-6 py-3 text-center" onclick="event.stopPropagation()">
+                                        <a href="{{ route('laporan-konsolidasi.detail', $masjid->id) }}"
+                                            class="inline-flex items-center px-2.5 py-1.5 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
                                             Detail
                                         </a>
                                     </td>
                                 </tr>
-                                {{-- Expandable Content Row --}}
-                                <tr id="detail-{{ $item->uuid }}" class="hidden expandable-content">
-                                    <td colspan="7" class="px-0 py-0">
-                                        <div class="bg-gray-50 border-y border-gray-100">
-                                            <div class="px-6 py-4">
-                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                    {{-- Statistik Muzakki & Mustahik --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Statistik</h4>
-                                                        <div class="space-y-2">
-                                                            <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-200">
-                                                                <span class="text-xs text-gray-600">Jumlah Muzakki</span>
-                                                                <span class="text-sm font-semibold text-purple-600">{{ number_format($item->jumlah_muzakki, 0, ',', '.') }}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-200">
-                                                                <span class="text-xs text-gray-600">Jumlah Mustahik</span>
-                                                                <span class="text-sm font-semibold text-orange-600">{{ number_format($item->jumlah_mustahik, 0, ',', '.') }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {{-- Info Masjid --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Info Masjid</h4>
-                                                        <div class="space-y-2 text-sm">
-                                                            @if($item->masjid->alamat_lengkap)
-                                                                <div class="flex items-start">
-                                                                    <svg class="w-4 h-4 mr-2 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                    </svg>
-                                                                    <span class="text-gray-600">{{ Str::limit($item->masjid->alamat_lengkap, 60) }}</span>
-                                                                </div>
-                                                            @endif
-                                                            @if($item->masjid->telepon)
-                                                                <div class="flex items-center">
-                                                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                                    </svg>
-                                                                    <span class="text-gray-600">{{ $item->masjid->telepon }}</span>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {{-- Ringkasan Keuangan --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Ringkasan Keuangan</h4>
-                                                        <div class="space-y-2">
-                                                            <div class="flex justify-between items-center text-sm">
-                                                                <span class="text-gray-600">Penerimaan</span>
-                                                                <span class="font-medium text-green-600">Rp {{ number_format($item->total_penerimaan, 0, ',', '.') }}</span>
-                                                            </div>
-                                                            <div class="flex justify-between items-center text-sm">
-                                                                <span class="text-gray-600">Penyaluran</span>
-                                                                <span class="font-medium text-red-600">Rp {{ number_format($item->total_penyaluran, 0, ',', '.') }}</span>
-                                                            </div>
-                                                            <div class="pt-2 border-t border-gray-200">
-                                                                <div class="flex justify-between items-center text-sm">
-                                                                    <span class="font-medium text-gray-900">Saldo Akhir</span>
-                                                                    <span class="font-bold text-blue-600">Rp {{ number_format($item->saldo_akhir, 0, ',', '.') }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+
+                                {{-- ── Baris Expandable: Tabel per Bulan ── --}}
+                                <tr id="masjid-{{ $masjid->id }}" class="hidden masjid-content-row">
+                                    <td colspan="8" class="p-0">
+                                        <div class="bg-gradient-to-b from-primary/5 to-gray-50 border-y border-primary/20 px-6 py-4">
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <div class="w-1 h-5 bg-primary rounded-full"></div>
+                                                <h3 class="text-sm font-semibold text-gray-800">
+                                                    Rincian per Bulan — {{ $masjid->nama }}
+                                                </h3>
+                                            </div>
+
+                                            @if(count($item['periodes']) === 0)
+                                                <div class="text-center py-6 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
+                                                    Belum ada data transaksi untuk masjid ini pada periode yang dipilih
                                                 </div>
-                                                
-                                                {{-- Metadata --}}
-                                                <div class="mt-4 pt-4 border-t border-gray-200">
-                                                    <div class="text-xs text-gray-500 space-y-1">
-                                                        <div>Dibuat: {{ $item->created_at->format('d/m/Y H:i') }}</div>
-                                                        @if($item->updated_at != $item->created_at)
-                                                            <div>Diperbarui: {{ $item->updated_at->format('d/m/Y H:i') }}</div>
-                                                        @endif
-                                                    </div>
+                                            @else
+                                                <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                                    <table class="min-w-full divide-y divide-gray-200">
+                                                        <thead class="bg-white">
+                                                            <tr>
+                                                                <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Periode</th>
+                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Penerimaan</th>
+                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Penyaluran</th>
+                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Setor Kas</th>
+                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Saldo</th>
+                                                                <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Muzakki</th>
+                                                                <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Mustahik</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="bg-white divide-y divide-gray-100">
+                                                            @foreach($item['periodes'] as $periode)
+                                                                <tr class="hover:bg-gray-50 transition-colors">
+                                                                    <td class="px-4 py-2.5">
+                                                                        <span class="text-sm font-medium text-gray-800">{{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-right">
+                                                                        <span class="text-sm text-green-600 font-medium">Rp {{ number_format($periode['total_penerimaan'], 0, ',', '.') }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-right">
+                                                                        <span class="text-sm text-red-600 font-medium">Rp {{ number_format($periode['total_penyaluran'], 0, ',', '.') }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-right">
+                                                                        <span class="text-sm text-indigo-600 font-medium">Rp {{ number_format($periode['total_setor_kas'], 0, ',', '.') }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-right">
+                                                                        <span class="text-sm text-blue-700 font-bold">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-center">
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                                            {{ number_format($periode['jumlah_muzakki']) }}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="px-4 py-2.5 text-center">
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                                            {{ number_format($periode['jumlah_mustahik']) }}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                        <tfoot class="bg-gray-50 border-t border-gray-200">
+                                                            <tr>
+                                                                <td class="px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Subtotal</td>
+                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-green-700">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-red-700">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-indigo-700">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-blue-800">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-2.5 text-center text-sm font-bold text-purple-800">{{ number_format($item['jumlah_muzakki']) }}</td>
+                                                                <td class="px-4 py-2.5 text-center text-sm font-bold text-orange-800">{{ number_format($item['jumlah_mustahik']) }}</td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
                                                 </div>
-                                                
-                                                {{-- Tombol Aksi --}}
-                                                <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
-                                                    <a href="{{ route('laporan-konsolidasi.detail', $item->masjid->id) }}"
+
+                                                {{-- Tombol Detail --}}
+                                                <div class="mt-3 flex justify-end">
+                                                    <a href="{{ route('laporan-konsolidasi.detail', $masjid->id) }}"
                                                         class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                         </svg>
-                                                        Lihat Detail Lengkap
+                                                        Lihat Detail Lengkap (Chart & Breakdown)
                                                     </a>
                                                 </div>
-                                            </div>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
+
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                {{-- Mobile View --}}
+                {{-- ── Mobile View ───────────────────────────────────────────── --}}
                 <div class="md:hidden divide-y divide-gray-200">
-                    @foreach ($laporan as $item)
-                        <div class="expandable-card">
-                            <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
-                                data-target="detail-mobile-{{ $item->uuid }}">
+                    @foreach($laporanPerMasjid as $item)
+                        @php $masjid = $item['masjid']; @endphp
+                        <div>
+                            <div class="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+                                onclick="toggleMasjidMobile('mob-{{ $masjid->id }}', this)">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center flex-1 min-w-0">
-                                        <div class="flex-shrink-0 h-10 w-10 mr-3">
-                                            @if($item->masjid->foto && count($item->masjid->foto) > 0)
-                                                <img class="h-10 w-10 rounded-lg object-cover border border-gray-200"
-                                                    src="{{ asset('storage/' . $item->masjid->foto[0]) }}"
-                                                    alt="{{ $item->masjid->nama }}">
-                                            @else
-                                                <div class="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                                    </svg>
-                                                </div>
-                                            @endif
+                                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                                        <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                            </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <div class="flex items-center justify-between">
-                                                <h3 class="text-sm font-semibold text-gray-900 truncate mr-2">{{ $item->masjid->nama }}</h3>
-                                            </div>
-                                            <div class="flex items-center mt-1">
-                                                <span class="text-xs text-gray-500">{{ $item->bulan_nama }} {{ $item->tahun }}</span>
-                                            </div>
+                                            <p class="text-sm font-semibold text-gray-900 truncate">{{ $masjid->nama }}</p>
+                                            <p class="text-xs text-gray-500 mt-0.5">Saldo: <span class="font-semibold text-blue-600">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</span></p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-1 ml-2">
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile" 
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </div>
+                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 mob-chevron flex-shrink-0 ml-2"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
                                 </div>
                             </div>
-                            
-                            {{-- Mobile Expandable Content --}}
-                            <div id="detail-mobile-{{ $item->uuid }}" class="hidden expandable-content-mobile">
-                                <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
-                                    <div class="space-y-4">
-                                        {{-- Ringkasan Keuangan --}}
-                                        <div>
-                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Ringkasan Keuangan</h4>
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between items-center text-sm p-2 bg-white rounded-lg border border-gray-200">
-                                                    <span class="text-gray-600">Penerimaan</span>
-                                                    <span class="font-medium text-green-600">Rp {{ number_format($item->total_penerimaan, 0, ',', '.') }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm p-2 bg-white rounded-lg border border-gray-200">
-                                                    <span class="text-gray-600">Penyaluran</span>
-                                                    <span class="font-medium text-red-600">Rp {{ number_format($item->total_penyaluran, 0, ',', '.') }}</span>
-                                                </div>
-                                                <div class="flex justify-between items-center text-sm p-2 bg-white rounded-lg border border-gray-200">
-                                                    <span class="font-medium text-gray-900">Saldo Akhir</span>
-                                                    <span class="font-bold text-blue-600">Rp {{ number_format($item->saldo_akhir, 0, ',', '.') }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        {{-- Statistik --}}
-                                        <div>
-                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Statistik</h4>
-                                            <div class="grid grid-cols-2 gap-2">
-                                                <div class="p-2 bg-white rounded-lg border border-gray-200">
-                                                    <span class="text-xs text-gray-600 block">Muzakki</span>
-                                                    <span class="text-sm font-semibold text-purple-600">{{ number_format($item->jumlah_muzakki, 0, ',', '.') }}</span>
-                                                </div>
-                                                <div class="p-2 bg-white rounded-lg border border-gray-200">
-                                                    <span class="text-xs text-gray-600 block">Mustahik</span>
-                                                    <span class="text-sm font-semibold text-orange-600">{{ number_format($item->jumlah_mustahik, 0, ',', '.') }}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        {{-- Tombol Aksi --}}
-                                        <div class="pt-3 border-t border-gray-200">
-                                            <a href="{{ route('laporan-konsolidasi.detail', $item->masjid->id) }}"
-                                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                                Lihat Detail Lengkap
-                                            </a>
-                                        </div>
+
+                            <div id="mob-{{ $masjid->id }}" class="hidden bg-gray-50 border-t border-gray-100 px-4 py-4 space-y-3">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
+                                        <p class="text-xs text-gray-500">Penerimaan</p>
+                                        <p class="text-sm font-bold text-green-600 mt-0.5">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</p>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
+                                        <p class="text-xs text-gray-500">Penyaluran</p>
+                                        <p class="text-sm font-bold text-red-600 mt-0.5">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</p>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
+                                        <p class="text-xs text-gray-500">Setor Kas</p>
+                                        <p class="text-sm font-bold text-indigo-600 mt-0.5">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</p>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
+                                        <p class="text-xs text-gray-500">Muzakki / Mustahik</p>
+                                        <p class="text-sm font-bold text-purple-600 mt-0.5">{{ $item['jumlah_muzakki'] }} / {{ $item['jumlah_mustahik'] }}</p>
                                     </div>
                                 </div>
+
+                                {{-- Rincian per Bulan Mobile --}}
+                                @if(count($item['periodes']) > 0)
+                                    <div class="rounded-lg border border-gray-200 overflow-hidden">
+                                        <div class="bg-gray-100 px-3 py-2">
+                                            <p class="text-xs font-semibold text-gray-600 uppercase">Rincian per Bulan</p>
+                                        </div>
+                                        <div class="divide-y divide-gray-100">
+                                            @foreach($item['periodes'] as $periode)
+                                                <div class="px-3 py-2.5 bg-white">
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-xs font-medium text-gray-700">{{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}</span>
+                                                        <span class="text-xs font-bold text-blue-600">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
+                                                    </div>
+                                                    <div class="flex gap-3 mt-1 text-xs text-gray-500">
+                                                        <span class="text-green-600">+{{ number_format($periode['total_penerimaan'], 0, ',', '.') }}</span>
+                                                        <span class="text-red-600">-{{ number_format($periode['total_penyaluran'], 0, ',', '.') }}</span>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <a href="{{ route('laporan-konsolidasi.detail', $masjid->id) }}"
+                                    class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    Lihat Detail Lengkap
+                                </a>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                @if ($laporan->hasPages())
-                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
-                        {{ $laporan->links() }}
-                    </div>
-                @endif
             @else
-                <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                {{-- Empty State --}}
+                <div class="p-12 text-center">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
-                    @if(request('search') || request('masjid_id') || request('tahun') || request('bulan'))
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">
-                            Tidak ada laporan konsolidasi yang sesuai dengan filter yang dipilih
-                        </p>
-                        <a href="{{ route('laporan-konsolidasi.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Data</h3>
+                    <p class="text-sm text-gray-500">Tidak ada data transaksi yang ditemukan untuk filter yang dipilih.</p>
+                    @if($search || $masjidId || $bulan)
+                        <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}"
+                            class="mt-4 inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg">
                             Reset Filter
                         </a>
-                    @else
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Laporan</h3>
-                        <p class="text-sm text-gray-500 mb-6">Data laporan konsolidasi akan muncul setelah ada transaksi zakat yang dicatat.</p>
                     @endif
                 </div>
             @endif
+
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Filter elements
-            const filterMasjid = document.getElementById('filter-masjid');
-            const filterTahun = document.getElementById('filter-tahun');
-            const filterBulan = document.getElementById('filter-bulan');
-            const filterForm = document.getElementById('filter-form');
-            
-            // Handle filter changes
-            if (filterMasjid) {
-                filterMasjid.addEventListener('change', function() {
-                    filterForm.submit();
-                });
-            }
-            
-            if (filterTahun) {
-                filterTahun.addEventListener('change', function() {
-                    filterForm.submit();
-                });
-            }
-            
-            if (filterBulan) {
-                filterBulan.addEventListener('change', function() {
-                    filterForm.submit();
-                });
-            }
-            
-            // Desktop Expandable Rows
-            document.querySelectorAll('.expandable-row').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('button[type="button"]')) {
-                        if (!e.target.closest('.expand-btn')) return;
-                    }
-                    
-                    const targetId = this.getAttribute('data-target');
-                    const targetRow = document.getElementById(targetId);
-                    const icon = this.querySelector('.expand-icon');
-                    
-                    if (targetRow.classList.contains('hidden')) {
-                        targetRow.classList.remove('hidden');
-                        icon.classList.add('rotate-90');
-                    } else {
-                        targetRow.classList.add('hidden');
-                        icon.classList.remove('rotate-90');
-                    }
-                });
-            });
+<script>
+    // ── Toggle per masjid (desktop) ───────────────────────────────────────
+    function toggleMasjid(id, row) {
+        const content = document.getElementById(id);
+        const chevron = row.querySelector('.masjid-chevron');
+        const isHidden = content.classList.contains('hidden');
+        content.classList.toggle('hidden', !isHidden);
+        chevron.classList.toggle('rotate-90', isHidden);
+    }
 
-            // Mobile Expandable Cards
-            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a')) return;
-                    
-                    const targetId = this.getAttribute('data-target');
-                    const targetContent = document.getElementById(targetId);
-                    const icon = this.querySelector('.expand-icon-mobile');
-                    
-                    if (targetContent.classList.contains('hidden')) {
-                        targetContent.classList.remove('hidden');
-                        icon.classList.add('rotate-180');
-                    } else {
-                        targetContent.classList.add('hidden');
-                        icon.classList.remove('rotate-180');
-                    }
-                });
-            });
-        });
-        
-        function toggleSearch() {
-            const searchButton = document.getElementById('search-button');
-            const searchForm = document.getElementById('search-form');
-            const searchInput = document.getElementById('search-input');
-            const searchContainer = document.getElementById('search-container');
-            
-            if (searchForm.classList.contains('hidden')) {
-                searchButton.classList.add('hidden');
-                searchForm.classList.remove('hidden');
-                searchContainer.style.minWidth = '280px';
-                setTimeout(() => searchInput.focus(), 50);
-            } else {
-                const hasQuery = '{{ request('search') }}' !== '';
-                if (!hasQuery) {
-                    searchInput.value = '';
-                }
-                searchForm.classList.add('hidden');
-                searchButton.classList.remove('hidden');
-                searchContainer.style.minWidth = 'auto';
-            }
-        }
+    // ── Toggle per masjid (mobile) ────────────────────────────────────────
+    function toggleMasjidMobile(id, row) {
+        const content = document.getElementById(id);
+        const chevron = row.querySelector('.mob-chevron');
+        const isHidden = content.classList.contains('hidden');
+        content.classList.toggle('hidden', !isHidden);
+        chevron.classList.toggle('rotate-180', isHidden);
+    }
 
-        function toggleFilter() {
-            const filterPanel = document.getElementById('filter-panel');
-            filterPanel.classList.toggle('hidden');
-        }
-        
-        function removeFilter(filterName) {
-            const url = new URL(window.location.href);
-            url.searchParams.delete(filterName);
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
-        }
-    </script>
+    // ── Buka semua ────────────────────────────────────────────────────────
+    function expandAll() {
+        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.add('rotate-90'));
+    }
+
+    // ── Tutup semua ───────────────────────────────────────────────────────
+    function collapseAll() {
+        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.remove('rotate-90'));
+    }
+</script>
 @endpush
