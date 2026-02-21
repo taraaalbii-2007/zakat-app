@@ -1,4 +1,4 @@
-{{-- resources/views/superadmin/partials/header.blade.php --}}
+{{-- resources/views/partials/header.blade.php --}}
 
 <header class="sticky top-0 z-40 bg-white border-b border-neutral-200 shadow-soft">
     <div class="px-4 sm:px-6 lg:px-8">
@@ -43,9 +43,9 @@
                                         </svg>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-neutral-900">Masjid Baru Terdaftar</p>
-                                        <p class="text-xs text-neutral-600 mt-0.5">Ada masjid baru yang menunggu verifikasi</p>
-                                        <p class="text-xs text-neutral-400 mt-1">Baru saja</p>
+                                        <p class="text-sm font-medium text-neutral-900">Notifikasi</p>
+                                        <p class="text-xs text-neutral-600 mt-0.5">Tidak ada notifikasi baru</p>
+                                        <p class="text-xs text-neutral-400 mt-1">—</p>
                                     </div>
                                 </div>
                             </a>
@@ -60,28 +60,60 @@
 
                 <!-- User Menu -->
                 <div class="relative">
+                    @php
+                        $authUser   = auth()->user();
+                        $isSuperadmin  = $authUser?->isSuperadmin();
+                        $isAdminMasjid = $authUser?->isAdminMasjid();
+                        $isAmil        = $authUser?->isAmil();
+
+                        // Label peran
+                        $roleLabel = match(true) {
+                            $isSuperadmin  => 'Super Admin',
+                            $isAdminMasjid => 'Admin Masjid',
+                            $isAmil        => 'Amil',
+                            default        => 'Pengguna',
+                        };
+
+                        // Warna badge peran
+                        $badgeClass = match(true) {
+                            $isSuperadmin  => 'bg-indigo-100 text-indigo-700',
+                            $isAdminMasjid => 'bg-emerald-100 text-emerald-700',
+                            $isAmil        => 'bg-amber-100 text-amber-700',
+                            default        => 'bg-gray-100 text-gray-700',
+                        };
+
+                        // Avatar: foto masjid admin atau foto user
+                        $avatarUrl = null;
+                        if ($isAdminMasjid && $authUser?->masjid?->admin_foto) {
+                            $avatarUrl = $authUser->masjid->admin_foto_url;
+                        } elseif (isset($authUser->foto) && $authUser->foto && \Storage::disk('public')->exists($authUser->foto)) {
+                            $avatarUrl = \Storage::url($authUser->foto);
+                        }
+                    @endphp
+
                     <button onclick="toggleUserMenu()"
                             class="flex items-center space-x-3 p-2 rounded-lg hover:bg-neutral-100 transition-colors">
 
-                        {{-- Avatar: foto superadmin atau initial --}}
-                        @php $authUser = auth()->user(); @endphp
+                        {{-- Avatar --}}
                         <div class="w-8 h-8 rounded-full overflow-hidden bg-emerald-700 flex items-center justify-center flex-shrink-0">
-                            @if($authUser->foto && Storage::disk('public')->exists($authUser->foto))
-                                <img src="{{ Storage::url($authUser->foto) }}"
+                            @if($avatarUrl)
+                                <img src="{{ $avatarUrl }}"
                                      alt="{{ $authUser->username }}"
                                      class="w-full h-full object-cover">
                             @else
                                 <span class="text-white font-semibold text-sm">
-                                    {{ strtoupper(substr($authUser->username ?? 'S', 0, 1)) }}
+                                    {{ strtoupper(substr($authUser->username ?? 'U', 0, 1)) }}
                                 </span>
                             @endif
                         </div>
 
                         <div class="hidden lg:block text-left">
                             <p class="text-sm font-medium text-neutral-900 leading-tight">
-                                {{ $authUser->username ?? 'Super Admin' }}
+                                {{ $isAdminMasjid && $authUser?->masjid?->admin_nama
+                                    ? $authUser->masjid->admin_nama
+                                    : ($authUser->username ?? 'Pengguna') }}
                             </p>
-                            <p class="text-xs text-neutral-500">Super Admin</p>
+                            <p class="text-xs text-neutral-500">{{ $roleLabel }}</p>
                         </div>
 
                         <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,50 +123,94 @@
 
                     <!-- User Dropdown -->
                     <div id="user-menu-dropdown"
-                         class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-neutral-200 hidden">
+                         class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-neutral-200 hidden">
 
                         {{-- Header dropdown --}}
                         <div class="p-4 border-b border-neutral-200">
                             <p class="font-semibold text-neutral-900 text-sm truncate">
-                                {{ $authUser->username ?? 'Super Admin' }}
+                                {{ $isAdminMasjid && $authUser?->masjid?->admin_nama
+                                    ? $authUser->masjid->admin_nama
+                                    : ($authUser->username ?? 'Pengguna') }}
                             </p>
                             <p class="text-xs text-neutral-500 truncate mt-0.5">{{ $authUser->email ?? '' }}</p>
-                            <span class="inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">
-                                Super Admin
+                            <span class="inline-flex items-center mt-2 px-2 py-0.5 rounded-full text-xs font-medium {{ $badgeClass }}">
+                                {{ $roleLabel }}
                             </span>
                         </div>
 
-                        {{-- Menu items --}}
+                        {{-- ── Menu Items berdasarkan peran ── --}}
                         <div class="py-2">
-                            <a href="{{ route('superadmin.profil.show') }}"
-                               class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
-                                      {{ request()->routeIs('superadmin.profil.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <span>Profil Saya</span>
-                            </a>
 
-                            <a href="{{ route('konfigurasi-global.show') }}"
-                               class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
-                                      {{ request()->routeIs('konfigurasi-global.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                <span>Konfigurasi</span>
-                            </a>
+                            {{-- ── SUPERADMIN ── --}}
+                            @if($isSuperadmin)
+                                <a href="{{ route('superadmin.profil.show') }}"
+                                   class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
+                                          {{ request()->routeIs('superadmin.profil.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    <span>Profil Saya</span>
+                                </a>
+
+                                <a href="{{ route('konfigurasi-global.show') }}"
+                                   class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
+                                          {{ request()->routeIs('konfigurasi-global.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <span>Konfigurasi Global</span>
+                                </a>
+                            @endif
+
+                            {{-- ── ADMIN MASJID ── --}}
+                            @if($isAdminMasjid)
+                                <a href="{{ route('admin-masjid.profil.show') }}"
+                                   class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
+                                          {{ request()->routeIs('admin-masjid.profil.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    <span>Profil Saya</span>
+                                </a>
+
+                                <a href="{{ route('konfigurasi-integrasi.show') }}"
+                                   class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
+                                          {{ request()->routeIs('konfigurasi-integrasi.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <span>Konfigurasi Integrasi</span>
+                                </a>
+                            @endif
+
+                            {{-- ── AMIL ── --}}
+                            @if($isAmil)
+                                <a href="{{ route('profil.show') }}"
+                                   class="flex items-center space-x-3 px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-emerald-700 transition-colors
+                                          {{ request()->routeIs('profil.*') ? 'bg-emerald-50 text-emerald-700 font-medium' : '' }}">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    <span>Profil Saya</span>
+                                </a>
+                            @endif
+
                         </div>
 
-                        {{-- Logout --}}
+                        {{-- ── Logout ── --}}
                         <div class="py-2 border-t border-neutral-200">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
                                         class="w-full flex items-center space-x-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                                     </svg>
@@ -142,6 +218,7 @@
                                 </button>
                             </form>
                         </div>
+
                     </div>
                 </div>
 

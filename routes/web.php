@@ -22,6 +22,7 @@ use App\Http\Controllers\Superadmin\SuperadminMustahikController;
 use App\Http\Controllers\Superadmin\SuperadminTransaksiPenerimaanController;
 use App\Http\Controllers\Superadmin\SuperadminTransaksiPenyaluranController;
 use App\Http\Controllers\Superadmin\ProfilSuperadminController;
+use App\Http\Controllers\Admin_masjid\ProfilAdminMasjidController;
 
 
 Route::get('/', function () {
@@ -307,6 +308,20 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         Route::get('/riwayat', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'riwayat'])->name('riwayat');
         Route::get('/{setorKas}', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'show'])->name('show')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
         Route::post('/{setorKas}/proses', [App\Http\Controllers\Admin_masjid\TerimaSetorKasController::class, 'proses'])->name('proses')->where('setorKas', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
+    });
+
+    Route::prefix('admin-masjid-profil')->name('admin-masjid.profil.')->group(function () {
+        Route::get('/',             [ProfilAdminMasjidController::class, 'show'])->name('show');
+        Route::get('/edit',         [ProfilAdminMasjidController::class, 'edit'])->name('edit');
+        Route::put('/update',       [ProfilAdminMasjidController::class, 'update'])->name('update');
+
+        // Ubah Email (halaman tersendiri)
+        Route::get('/ubah-email',   [ProfilAdminMasjidController::class, 'editEmail'])->name('email.edit');
+        Route::put('/ubah-email',   [ProfilAdminMasjidController::class, 'updateEmail'])->name('email.update');
+
+        // Ubah Password
+        Route::get('/ubah-password', [ProfilAdminMasjidController::class, 'editPassword'])->name('password.edit');
+        Route::put('/ubah-password', [ProfilAdminMasjidController::class, 'updatePassword'])->name('password.update');
     });
 
 
