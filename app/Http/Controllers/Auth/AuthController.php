@@ -23,9 +23,11 @@ use Laravolt\Indonesia\Models\Province;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
+use App\Traits\LogsActivity;
 
 class AuthController extends Controller
 {
+    use LogsActivity;
     const OTP_EXPIRY_MINUTES = 15;
     const RESEND_COOLDOWN_SECONDS = 60;
     const PASSWORD_RESET_EXPIRY_MINUTES = 15;
@@ -235,6 +237,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
+
+            $this->logAuth('login', 'Pengguna berhasil login', [
+                'email' => $pengguna->email,
+                'login_type' => $loginType,
+            ], $pengguna->id);
 
             return redirect()->intended(route('dashboard'))
                 ->with('success', 'Selamat datang, ' . ($pengguna->username ?? $this->maskEmail($pengguna->email)) . '!');
@@ -483,6 +490,9 @@ class AuthController extends Controller
             Cache::put('token_map_' . $profileToken, $request->email, 3600);
 
             DB::commit();
+            $this->logAuth('verify_otp', 'Email berhasil diverifikasi via OTP', [
+                'email' => $request->email,
+            ], $pengguna->id);
 
             return redirect()->route('complete-profile', ['token' => $profileToken])
                 ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
@@ -977,6 +987,9 @@ class AuthController extends Controller
             }
 
             DB::commit();
+            $this->logAuth('reset_password', 'Password berhasil direset', [
+                'email' => $pengguna->email,
+            ], $pengguna->id);
 
             return redirect()->route('login')
                 ->with('success', 'Password berhasil diubah! Silakan login dengan password baru Anda.');
@@ -1290,6 +1303,12 @@ class AuthController extends Controller
             // COMMIT TRANSAKSI - SEMUA DATA TERSIMPAN
             // =====================================================
             DB::commit();
+            $this->logRegistrasi('Registrasi akun dan data masjid berhasil', [
+                'username'    => $penggunaData['username'],
+                'nama_masjid' => $request->nama_masjid,
+                'kode_masjid' => $kodeMasjid,
+                'via_google'  => $isGoogleUser,
+            ], $pengguna->id);
 
             return redirect()->route('login')
                 ->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
@@ -1432,6 +1451,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        $this->logAuth('logout', 'Pengguna berhasil logout');
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -1536,6 +1556,9 @@ class AuthController extends Controller
             Cache::put('token_map_' . $profileToken, $googleUser->email, 3600);
 
             DB::commit();
+            $this->logRegistrasi('Akun baru dibuat via Google OAuth', [
+                'email' => $googleUser->email,
+            ], $pengguna->id);
 
             return redirect()->route('complete-profile', ['token' => $profileToken])
                 ->with('success', 'Akun berhasil dibuat dengan Google. Silakan lengkapi profil Anda.');
@@ -1593,6 +1616,10 @@ class AuthController extends Controller
 
         Auth::login($pengguna);
         $request->session()->regenerate();
+        $this->logAuth('login', 'Login via Google OAuth berhasil', [
+            'email'      => $pengguna->email,
+            'login_type' => 'google',
+        ], $pengguna->id);
 
         return redirect()->intended(route('dashboard'))
             ->with('success', 'Selamat datang, ' . ($pengguna->username ?? $this->maskEmail($pengguna->email)) . '!');

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use App\Traits\Loggable;
+
 class Pengguna extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -135,7 +136,7 @@ class Pengguna extends Authenticatable
      */
     public function getNamaAttribute(): string
     {
-        return $this->username;
+        return $this->username ?? $this->email ?? '';
     }
 
     /**
@@ -143,7 +144,7 @@ class Pengguna extends Authenticatable
      */
     public function getRoleNameAttribute(): string
     {
-        return match($this->peran) {
+        return match ($this->peran) {
             'superadmin' => 'Super Admin',
             'admin_masjid' => 'Admin Masjid',
             'amil' => 'Amil',
@@ -297,7 +298,7 @@ class Pengguna extends Authenticatable
 
         return $query->where(function ($q) use ($search) {
             $q->where('username', 'like', "%{$search}%")
-              ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%");
         });
     }
 
@@ -337,7 +338,7 @@ class Pengguna extends Authenticatable
         return !is_null($this->masjid_id);
     }
 
-    
+
     /**
      * Get masjid for current role
      */
@@ -407,7 +408,7 @@ class Pengguna extends Authenticatable
     public function generateVerificationToken(int $expiryMinutes = 60): string
     {
         $token = Str::random(64);
-        
+
         $this->forceFill([
             'verification_token' => $token,
             'verification_token_expires_at' => now()->addMinutes($expiryMinutes),
@@ -422,7 +423,7 @@ class Pengguna extends Authenticatable
     public function generatePasswordResetToken(int $expiryMinutes = 60): string
     {
         $token = Str::random(64);
-        
+
         $this->forceFill([
             'password_reset_token' => $token,
             'password_reset_token_expires_at' => now()->addMinutes($expiryMinutes),
@@ -479,7 +480,7 @@ class Pengguna extends Authenticatable
     public function updateGoogleTokens(string $accessToken, ?string $refreshToken = null): bool
     {
         $data = ['google_token' => $accessToken];
-        
+
         if ($refreshToken) {
             $data['refresh_token'] = $refreshToken;
         }
