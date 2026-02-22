@@ -20,6 +20,7 @@
     </style>
 </head>
 <body class="bg-neutral-50 text-neutral-900 antialiased">
+    @include('partials.splash-screen')
 
     {{-- Navbar --}}
     @include('partials.landing.navbar')
