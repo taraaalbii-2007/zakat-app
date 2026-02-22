@@ -1,115 +1,136 @@
-{{-- partials/landing/content.blade.php --}}
+{{-- resources/views/partials/landing/content.blade.php --}}
 
-{{-- ================================================================
-     SECTION 1: FITUR UTAMA
-     ================================================================ --}}
-<section id="fitur" class="py-20 lg:py-28 bg-neutral-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+{{-- ============================================================
+     GLOBAL SCROLL ANIMATION STYLES
+     ============================================================ --}}
+<style>
+.nz-reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.nz-reveal.nz-visible { opacity: 1; transform: translateY(0); }
 
-        {{-- Section Header --}}
-        <div class="text-center mb-16">
-            <span class="inline-block text-xs font-semibold text-primary-500 bg-primary-50 border border-primary-100 px-4 py-1.5 rounded-full mb-4 tracking-wider uppercase">Fitur Unggulan</span>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-4 leading-tight">
-                Semua yang Anda Butuhkan<br class="hidden sm:block"> untuk Kelola Zakat
-            </h2>
-            <p class="text-neutral-500 text-base max-w-2xl mx-auto leading-relaxed">
-                Dari pencatatan penerimaan hingga penyaluran ke mustahik, semua terdokumentasi dengan rapi dan transparan.
-            </p>
+.nz-reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.nz-reveal-left.nz-visible { opacity: 1; transform: translateX(0); }
+
+.nz-reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.nz-reveal-right.nz-visible { opacity: 1; transform: translateX(0); }
+
+.nz-reveal-scale {
+    opacity: 0;
+    transform: scale(0.88);
+    transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+.nz-reveal-scale.nz-visible { opacity: 1; transform: scale(1); }
+</style>
+
+
+{{-- ============================================================
+     SECTION 1 — FITUR
+     Background character: Hexagon wireframe grid
+     ============================================================ --}}
+<section id="fitur" class="relative py-20 bg-white overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        <svg class="absolute inset-0 w-full h-full">
+            <defs>
+                <pattern id="hex-pat" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                    <polygon points="30,2 58,17 58,47 30,62 2,47 2,17" fill="none" stroke="rgba(45,105,54,0.07)" stroke-width="1.2"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hex-pat)"/>
+        </svg>
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse 75% 65% at 50% 50%, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 100%);"></div>
+        <div class="absolute -top-24 -right-24 w-80 h-80 rounded-full" style="background:radial-gradient(circle, rgba(45,105,54,0.06) 0%, transparent 70%);"></div>
+        <div class="absolute -bottom-24 -left-24 w-80 h-80 rounded-full" style="background:radial-gradient(circle, rgba(45,105,54,0.05) 0%, transparent 70%);"></div>
+    </div>
+
+    <div class="relative z-10 w-full px-4 sm:px-10 lg:px-20">
+        <div class="text-center mb-16 nz-reveal">
+            <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">Fitur Unggulan</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">Kenapa Memilih <span class="text-primary-600">Niat Zakat?</span></h2>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Platform zakat digital yang transparan, aman, dan mudah digunakan untuk berbagai kebutuhan ibadah Anda</p>
         </div>
 
-        {{-- Feature Grid --}}
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-            {{-- Fitur 1: Transaksi Penerimaan --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-5 group-hover:bg-primary-500 transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary-500 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Transaksi Penerimaan</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Catat penerimaan zakat fitrah, maal, infaq, dan sedekah dari muzakki dengan validasi dan verifikasi amil.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-lg font-medium">Zakat Fitrah</span>
-                    <span class="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-lg font-medium">Zakat Maal</span>
-                    <span class="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-lg font-medium">Infaq</span>
+            <div class="group nz-reveal" style="transition-delay:0.05s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">01</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Transparan & Terpercaya</h3>
+                    <p class="text-neutral-600 leading-relaxed">Setiap transaksi tercatat dengan detail dan dapat dilacak secara real-time. Laporan keuangan tersedia untuk semua donatur.</p>
                 </div>
             </div>
 
-            {{-- Fitur 2: Penyaluran Mustahik --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 bg-secondary-50 rounded-xl flex items-center justify-center mb-5 group-hover:bg-secondary-500 transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-secondary-600 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Penyaluran ke Mustahik</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Salurkan zakat ke 8 asnaf dengan metode tunai, transfer, maupun barang — lengkap alur persetujuan amil.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs bg-secondary-50 text-secondary-700 px-2.5 py-1 rounded-lg font-medium">Tunai</span>
-                    <span class="text-xs bg-secondary-50 text-secondary-700 px-2.5 py-1 rounded-lg font-medium">Transfer</span>
-                    <span class="text-xs bg-secondary-50 text-secondary-700 px-2.5 py-1 rounded-lg font-medium">Barang</span>
+            <div class="group nz-reveal" style="transition-delay:0.12s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">02</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Kalkulator Zakat Otomatis</h3>
+                    <p class="text-neutral-600 leading-relaxed">Hitung zakat mal, profesi, dan fitrah dengan mudah. Sistem kami menghitung secara otomatis berdasarkan nisab terkini.</p>
                 </div>
             </div>
 
-            {{-- Fitur 3: Harga Emas Perak --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 bg-accent-50 rounded-xl flex items-center justify-center mb-5 group-hover:bg-accent-600 transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-accent-700 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Harga Emas & Perak</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Update harga emas dan perak per gram secara berkala untuk kalkulasi nisab zakat maal yang akurat dan otomatis.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs bg-accent-50 text-accent-700 px-2.5 py-1 rounded-lg font-medium">Auto-Nisab</span>
-                    <span class="text-xs bg-accent-50 text-accent-700 px-2.5 py-1 rounded-lg font-medium">Multi Sumber</span>
+            <div class="group nz-reveal" style="transition-delay:0.19s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">03</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Pembayaran Fleksibel</h3>
+                    <p class="text-neutral-600 leading-relaxed">Berbagai metode pembayaran tersedia: transfer bank, e-wallet, QRIS, dan virtual account untuk kemudahan Anda.</p>
                 </div>
             </div>
 
-            {{-- Fitur 4: Laporan Konsolidasi --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 group-hover:bg-info transition-colors duration-300" style="background-color:#e3f2fd;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:text-white transition-colors duration-300" style="color:#1976d2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Laporan Konsolidasi</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Laporan bulanan & tahunan per masjid dengan breakdown jenis zakat, kategori mustahik. Export PDF & Excel siap cetak.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#e3f2fd;color:#1565c0;">PDF</span>
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#e3f2fd;color:#1565c0;">Excel</span>
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#e3f2fd;color:#1565c0;">Multi-Masjid</span>
+            <div class="group nz-reveal" style="transition-delay:0.26s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">04</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Laporan Real-Time</h3>
+                    <p class="text-neutral-600 leading-relaxed">Pantau penyaluran zakat Anda secara langsung. Dapatkan notifikasi dan laporan lengkap distribusi dana.</p>
                 </div>
             </div>
 
-            {{-- Fitur 5: Manajemen Mustahik --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 group-hover:bg-warning-dark transition-colors duration-300" style="background-color:#fff8e1;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:text-white transition-colors duration-300" style="color:#f57c00" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Data Mustahik & Muzakki</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Kelola data penerima dan pembayar zakat terstruktur berdasarkan kategori asnaf dengan riwayat transaksi lengkap.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#fff8e1;color:#e65100;">8 Asnaf</span>
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#fff8e1;color:#e65100;">Riwayat Lengkap</span>
+            <div class="group nz-reveal" style="transition-delay:0.33s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">05</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Penyaluran Terverifikasi</h3>
+                    <p class="text-neutral-600 leading-relaxed">Mustahik terverifikasi dan tersalurkan tepat sasaran. Kami memastikan zakat sampai ke yang berhak.</p>
                 </div>
             </div>
 
-            {{-- Fitur 6: Multi-Masjid Superadmin --}}
-            <div class="group bg-white rounded-2xl border border-neutral-200 p-6 hover:border-primary-300 hover:shadow-card-hover transition-all duration-300">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 group-hover:bg-danger-dark transition-colors duration-300" style="background-color:#fce4ec;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 group-hover:text-white transition-colors duration-300" style="color:#c62828" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                </div>
-                <h3 class="text-base font-bold text-neutral-900 mb-2">Dashboard Superadmin</h3>
-                <p class="text-sm text-neutral-500 leading-relaxed">Pantau seluruh masjid dalam satu dashboard terpusat. Konfigurasi global, manajemen user, dan audit trail lengkap.</p>
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#fce4ec;color:#b71c1c;">Multi-Masjid</span>
-                    <span class="text-xs px-2.5 py-1 rounded-lg font-medium" style="background-color:#fce4ec;color:#b71c1c;">Audit Trail</span>
+            <div class="group nz-reveal" style="transition-delay:0.40s">
+                <div class="relative h-full bg-white rounded-2xl p-8 shadow-soft hover:shadow-card-hover transition-all duration-300 border border-neutral-200 hover:border-primary-300 overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-primary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-t-2xl"></div>
+                    <div class="absolute top-4 right-4 text-6xl font-black text-primary-50 select-none pointer-events-none leading-none">06</div>
+                    <div class="w-14 h-14 bg-primary-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary-100 transition-colors duration-300">
+                        <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Bukti Digital</h3>
+                    <p class="text-neutral-600 leading-relaxed">Dapatkan bukti pembayaran dan sertifikat zakat digital yang sah untuk keperluan administrasi pajak.</p>
                 </div>
             </div>
 
@@ -118,248 +139,369 @@
 </section>
 
 
-{{-- ================================================================
-     SECTION 2: STATISTIK
-     ================================================================ --}}
-<section id="statistik" class="py-20 lg:py-24 bg-primary-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+{{-- ============================================================
+     SECTION 2 — STATISTIK
+     Background character: Dot grid + concentric decorative rings
+     Charts: scroll-triggered via IntersectionObserver
+     ============================================================ --}}
+@php
+    $fmtStat = function(int $n): string {
+        if ($n >= 1_000_000) return number_format($n / 1_000_000, 1) . 'M';
+        if ($n >= 1_000)     return number_format($n / 1_000, 0) . 'K+';
+        return (string) $n;
+    };
+    $fmtDana = function(float $n): string {
+        if ($n >= 1_000_000_000) return number_format($n / 1_000_000_000, 1) . 'M';
+        if ($n >= 1_000_000)     return number_format($n / 1_000_000, 0) . 'M';
+        if ($n >= 1_000)         return number_format($n / 1_000, 0) . 'K';
+        return number_format($n, 0);
+    };
+    $statMuzaki   = $fmtStat((int) ($totalMuzaki ?? 0));
+    $statMustahik = $fmtStat((int) ($totalMustahik ?? 0));
+    $statDana     = $fmtDana((float) ($totalDana ?? 0));
+    $statProgram  = $fmtStat((int) ($totalProgram ?? 0));
+    $rawMuzaki   = max((int)($totalMuzaki ?? 1), 1);
+    $rawMustahik = max((int)($totalMustahik ?? 1), 1);
+    $rawProgram  = max((int)($totalProgram ?? 1), 1);
+    $rawDana     = max((float)($totalDana ?? 1), 1);
+    $total4      = $rawMuzaki + $rawMustahik + $rawProgram + ($rawDana / 1_000_000);
+    $pMuzaki     = round($rawMuzaki / $total4 * 100, 1);
+    $pMustahik   = round($rawMustahik / $total4 * 100, 1);
+    $pProgram    = round($rawProgram / $total4 * 100, 1);
+    $pDana       = round(100 - $pMuzaki - $pMustahik - $pProgram, 1);
+@endphp
 
-        <div class="text-center mb-12">
-            <span class="inline-block text-xs font-semibold text-primary-200 bg-primary-600 border border-primary-400 px-4 py-1.5 rounded-full mb-4 tracking-wider uppercase">Angka Nyata</span>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-3">Dipercaya Ribuan Lembaga</h2>
-            <p class="text-primary-200 text-base max-w-xl mx-auto">Bersama kami, dana zakat tersalurkan tepat sasaran dan terdokumentasi dengan baik.</p>
+<section id="statistik" class="relative py-20 bg-white overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        {{-- Dot grid --}}
+        <svg class="absolute inset-0 w-full h-full">
+            <defs>
+                <pattern id="dot-pat" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <circle cx="2" cy="2" r="1.3" fill="rgba(45,105,54,0.09)"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#dot-pat)"/>
+        </svg>
+        {{-- Concentric decorative rings centered --}}
+        <div class="absolute" style="left:50%;top:50%;transform:translate(-50%,-50%);width:680px;height:680px;border-radius:50%;border:1.5px solid rgba(45,105,54,0.06);"></div>
+        <div class="absolute" style="left:50%;top:50%;transform:translate(-50%,-50%);width:490px;height:490px;border-radius:50%;border:1.5px solid rgba(45,105,54,0.09);"></div>
+        <div class="absolute" style="left:50%;top:50%;transform:translate(-50%,-50%);width:310px;height:310px;border-radius:50%;border:1.5px solid rgba(45,105,54,0.12);"></div>
+        {{-- White fade over rings so content stays crisp --}}
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse 60% 55% at 50% 50%, rgba(255,255,255,0.82) 0%, transparent 100%);"></div>
+    </div>
+
+    <div class="relative z-10 w-full px-4 sm:px-10 lg:px-20">
+        <div class="text-center mb-16 nz-reveal">
+            <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">Dampak Nyata</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">Pencapaian <span class="text-primary-600">Niat Zakat</span></h2>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Bersama-sama kita telah membuat perubahan positif bagi sesama</p>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-primary-600 rounded-2xl p-6 text-center border border-primary-400">
-                <p class="text-4xl font-extrabold text-white mb-1">500+</p>
-                <p class="text-sm text-primary-200 font-medium">Masjid Terdaftar</p>
-            </div>
-            <div class="bg-primary-600 rounded-2xl p-6 text-center border border-primary-400">
-                <p class="text-4xl font-extrabold text-white mb-1">Rp 2,5M</p>
-                <p class="text-sm text-primary-200 font-medium">Total Zakat Dikelola</p>
-            </div>
-            <div class="bg-primary-600 rounded-2xl p-6 text-center border border-primary-400">
-                <p class="text-4xl font-extrabold text-white mb-1">12.450</p>
-                <p class="text-sm text-primary-200 font-medium">Mustahik Dibantu</p>
-            </div>
-            <div class="bg-primary-600 rounded-2xl p-6 text-center border border-primary-400">
-                <p class="text-4xl font-extrabold text-white mb-1">99,9%</p>
-                <p class="text-sm text-primary-200 font-medium">Uptime Sistem</p>
-            </div>
-        </div>
+        <style>
+        .stat-ring-wrap { position:relative; display:inline-flex; align-items:center; justify-content:center; }
+        .stat-ring-label { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+        </style>
 
-        {{-- Jenis Zakat yang Didukung --}}
-        <div class="mt-12 bg-primary-600 rounded-2xl border border-primary-400 p-6 lg:p-8">
-            <p class="text-center text-primary-200 text-sm font-semibold mb-6 uppercase tracking-wider">Jenis Zakat yang Didukung</p>
-            <div class="flex flex-wrap justify-center gap-3">
-                @foreach(['Zakat Fitrah', 'Zakat Maal', 'Zakat Profesi', 'Zakat Perniagaan', 'Zakat Pertanian', 'Zakat Emas & Perak', 'Zakat Saham', 'Infaq', 'Sedekah', 'Wakaf'] as $jenis)
-                <span class="px-4 py-2 bg-white text-primary-700 text-sm font-semibold rounded-xl shadow-nz">{{ $jenis }}</span>
-                @endforeach
+        <div class="flex flex-col items-center gap-14">
+            <div class="stat-ring-wrap w-72 h-72 nz-reveal-scale">
+                <canvas id="statsDonutChart" width="288" height="288"></canvas>
+                <div class="stat-ring-label">
+                    <p class="text-4xl font-black text-primary-600 leading-none">{{ $statMuzaki }}</p>
+                    <p class="text-sm text-neutral-500 font-medium mt-1">Total Muzaki</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-16">
+                <div class="flex flex-col items-center gap-3 nz-reveal" style="transition-delay:0.05s">
+                    <div class="stat-ring-wrap w-32 h-32">
+                        <canvas id="ringMuzaki" width="128" height="128"></canvas>
+                        <div class="stat-ring-label"><p class="text-lg font-black text-primary-600 leading-none">{{ $statMuzaki }}</p></div>
+                    </div>
+                    <div class="text-center"><p class="text-sm font-bold text-neutral-800">Muzaki</p><p class="text-xs text-neutral-500">Terdaftar</p></div>
+                </div>
+                <div class="flex flex-col items-center gap-3 nz-reveal" style="transition-delay:0.15s">
+                    <div class="stat-ring-wrap w-32 h-32">
+                        <canvas id="ringMustahik" width="128" height="128"></canvas>
+                        <div class="stat-ring-label"><p class="text-lg font-black text-primary-600 leading-none">{{ $statMustahik }}</p></div>
+                    </div>
+                    <div class="text-center"><p class="text-sm font-bold text-neutral-800">Mustahik</p><p class="text-xs text-neutral-500">Terbantu</p></div>
+                </div>
+                <div class="flex flex-col items-center gap-3 nz-reveal" style="transition-delay:0.25s">
+                    <div class="stat-ring-wrap w-32 h-32">
+                        <canvas id="ringDana" width="128" height="128"></canvas>
+                        <div class="stat-ring-label"><p class="text-lg font-black text-primary-600 leading-none">{{ $statDana }}</p></div>
+                    </div>
+                    <div class="text-center"><p class="text-sm font-bold text-neutral-800">Dana IDR</p><p class="text-xs text-neutral-500">Tersalurkan</p></div>
+                </div>
+                <div class="flex flex-col items-center gap-3 nz-reveal" style="transition-delay:0.35s">
+                    <div class="stat-ring-wrap w-32 h-32">
+                        <canvas id="ringProgram" width="128" height="128"></canvas>
+                        <div class="stat-ring-label"><p class="text-lg font-black text-primary-600 leading-none">{{ $statProgram }}</p></div>
+                    </div>
+                    <div class="text-center"><p class="text-sm font-bold text-neutral-800">Program</p><p class="text-xs text-neutral-500">Tersalurkan</p></div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    var chartsCreated = false;
+    var donutData  = [{{ $pMuzaki }}, {{ $pMustahik }}, {{ $pDana }}, {{ $pProgram }}];
+    var statLabels = ['Muzaki: {{ $statMuzaki }}','Mustahik: {{ $statMustahik }}','Dana: Rp {{ $statDana }}','Program: {{ $statProgram }}'];
 
-{{-- ================================================================
-     SECTION 3: CARA KERJA
-     ================================================================ --}}
-<section id="cara-kerja" class="py-20 lg:py-28 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    function buildCharts() {
+        if (chartsCreated) return;
+        chartsCreated = true;
 
-        <div class="text-center mb-16">
-            <span class="inline-block text-xs font-semibold text-primary-500 bg-primary-50 border border-primary-100 px-4 py-1.5 rounded-full mb-4 tracking-wider uppercase">Cara Kerja</span>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-4 leading-tight">
-                Mulai dalam 3 Langkah Mudah
-            </h2>
-            <p class="text-neutral-500 text-base max-w-xl mx-auto leading-relaxed">
-                Tidak perlu konfigurasi rumit. Daftar, setup masjid, dan langsung kelola zakat hari ini.
-            </p>
+        var ctx = document.getElementById('statsDonutChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Muzaki','Mustahik','Dana','Program'],
+                    datasets: [{ data: donutData, backgroundColor: ['#2d6936','#7cb342','#aed581','#dcedc8'], borderColor: ['#fff','#fff','#fff','#fff'], borderWidth: 5, hoverOffset: 10 }]
+                },
+                options: {
+                    cutout: '72%', responsive: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function(c){ return ' '+statLabels[c.dataIndex]; } }, backgroundColor: '#2d6936', padding: 10, cornerRadius: 8 }
+                    },
+                    animation: { animateRotate: true, duration: 1400, easing: 'easeInOutQuart' }
+                }
+            });
+        }
+
+        function makeRing(id, pct, colors) {
+            var el = document.getElementById(id); if (!el) return;
+            new Chart(el, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [pct, 100-pct], backgroundColor: colors, borderWidth: 0, hoverOffset: 0 }] },
+                options: { cutout: '78%', responsive: false, plugins: { legend:{display:false}, tooltip:{enabled:false} }, animation: { animateRotate:true, duration:1200, easing:'easeInOutQuart' }, events: [] }
+            });
+        }
+        makeRing('ringMuzaki',   Math.min(Math.round({{ $pMuzaki }}),   99), ['#2d6936','#dcedc8']);
+        makeRing('ringMustahik', Math.min(Math.round({{ $pMustahik }}), 99), ['#7cb342','#dcedc8']);
+        makeRing('ringDana',     Math.min(Math.round({{ $pDana }}),     99), ['#aed581','#e8f5e9']);
+        makeRing('ringProgram',  Math.min(Math.round({{ $pProgram }}),  99), ['#2d6936','#dcedc8']);
+    }
+
+    // Fire charts only when section scrolls into view
+    var section = document.getElementById('statistik');
+    if (section && 'IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(e) { if (e.isIntersecting) { buildCharts(); obs.disconnect(); } });
+        }, { threshold: 0.18 });
+        obs.observe(section);
+    } else { buildCharts(); }
+})();
+</script>
+
+
+{{-- ============================================================
+     SECTION 3 — CARA KERJA
+     Background character: Diagonal dashed lines + animated floating boxes
+     ============================================================ --}}
+<style>
+@keyframes numberPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(45,105,54,0.35); }
+    50%       { box-shadow: 0 0 0 12px rgba(45,105,54,0); }
+}
+@keyframes nzFloatA {
+    0%,100% { transform: rotate(12deg) translateY(0px); }
+    50%      { transform: rotate(12deg) translateY(-9px); }
+}
+@keyframes nzFloatB {
+    0%,100% { transform: rotate(-8deg) translateY(0px); }
+    50%      { transform: rotate(-8deg) translateY(-7px); }
+}
+@keyframes nzFloatC {
+    0%,100% { transform: rotate(5deg) translateY(0px); }
+    50%      { transform: rotate(5deg) translateY(-11px); }
+}
+@keyframes nzFloatD {
+    0%,100% { transform: rotate(-14deg) translateY(0px); }
+    50%      { transform: rotate(-14deg) translateY(-6px); }
+}
+.nz-fb-a { animation: nzFloatA 5s ease-in-out infinite; }
+.nz-fb-b { animation: nzFloatB 6s ease-in-out 0.8s infinite; }
+.nz-fb-c { animation: nzFloatC 7s ease-in-out 1.6s infinite; }
+.nz-fb-d { animation: nzFloatD 5.5s ease-in-out 0.4s infinite; }
+.how-num-badge { animation: numberPulse 2.8s ease-in-out infinite; }
+.how-dot    { width:12px; height:12px; border-radius:50%; background:#aed581; display:inline-block; }
+.how-dot-sm { width:8px;  height:8px;  border-radius:50%; background:#dcedc8; display:inline-block; }
+</style>
+
+<section id="cara-kerja" class="relative py-20 bg-white overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        {{-- Diagonal dashed lines pattern --}}
+        <svg class="absolute inset-0 w-full h-full">
+            <defs>
+                <pattern id="diag-pat" x="0" y="0" width="56" height="56" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="56" x2="56" y2="0" stroke="rgba(45,105,54,0.055)" stroke-width="1" stroke-dasharray="4 7"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#diag-pat)"/>
+        </svg>
+        {{-- Floating boxes --}}
+        <div class="nz-fb-a absolute rounded-2xl border-2" style="width:88px;height:88px;top:7%;left:4%;border-color:rgba(45,105,54,0.12);background:rgba(45,105,54,0.025);transform:rotate(12deg);"></div>
+        <div class="nz-fb-b absolute rounded-xl border-2" style="width:60px;height:60px;top:15%;right:6%;border-color:rgba(45,105,54,0.09);background:rgba(45,105,54,0.02);transform:rotate(-8deg);"></div>
+        <div class="nz-fb-c absolute rounded-2xl border"  style="width:110px;height:110px;bottom:10%;left:2%;border-color:rgba(45,105,54,0.08);background:rgba(45,105,54,0.015);transform:rotate(5deg);"></div>
+        <div class="nz-fb-d absolute rounded-xl border"   style="width:68px;height:68px;bottom:18%;right:4%;border-color:rgba(45,105,54,0.1);background:rgba(45,105,54,0.02);transform:rotate(-14deg);"></div>
+        {{-- Center clarity wash --}}
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse 65% 70% at 50% 50%, rgba(255,255,255,0.78) 0%, transparent 100%);"></div>
+    </div>
+
+    <div class="relative z-10 w-full px-4 sm:px-10 lg:px-20">
+        <div class="text-center mb-16 nz-reveal">
+            <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">Mudah & Cepat</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">Cara Kerja <span class="text-primary-600">Niat Zakat</span></h2>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Mulai kelola zakat lembaga Anda hanya dalam 3 langkah</p>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-8">
-
+        <div class="max-w-4xl mx-auto space-y-12 md:space-y-0">
             {{-- Step 1 --}}
-            <div class="relative">
-                <div class="flex items-start gap-5">
-                    <div class="flex-shrink-0 w-14 h-14 bg-primary-500 rounded-2xl flex items-center justify-center shadow-nz-lg">
-                        <span class="text-white font-extrabold text-xl">1</span>
-                    </div>
-                    <div class="pt-1">
-                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Daftar & Verifikasi</h3>
-                        <p class="text-sm text-neutral-500 leading-relaxed">Daftarkan lembaga atau masjid Anda. Tim kami akan memverifikasi dan mengaktifkan akun dalam 1×24 jam.</p>
+            <div class="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+                <div class="flex-shrink-0 flex flex-col items-center md:items-end w-full md:w-1/2 md:pr-6 nz-reveal-left">
+                    <div class="flex items-center gap-4 md:flex-row-reverse">
+                        <div class="how-num-badge w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-nz">
+                            <span class="text-2xl font-black text-white">1</span>
+                        </div>
+                        <div class="flex flex-col gap-2 md:items-end"><span class="how-dot"></span><span class="how-dot-sm"></span></div>
                     </div>
                 </div>
-                {{-- Connector line --}}
-                <div class="hidden lg:block absolute top-7 left-full w-full h-px border-t-2 border-dashed border-primary-200 -translate-x-8" style="width: calc(100% - 3.5rem);"></div>
+                <div class="flex-1 bg-primary-50 rounded-2xl p-7 border border-primary-100 md:w-1/2 nz-reveal-right">
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Daftar &amp; Verifikasi</h3>
+                    <p class="text-neutral-600 leading-relaxed">Daftarkan lembaga atau masjid Anda. Tim kami akan memverifikasi dan mengaktifkan akun dalam 1&times;24 jam.</p>
+                </div>
             </div>
+            <div class="hidden md:flex justify-center"><div class="w-px h-12 bg-gradient-to-b from-primary-300 to-primary-100 opacity-60"></div></div>
 
             {{-- Step 2 --}}
-            <div class="relative">
-                <div class="flex items-start gap-5">
-                    <div class="flex-shrink-0 w-14 h-14 bg-secondary-500 rounded-2xl flex items-center justify-center shadow-nz-lg">
-                        <span class="text-white font-extrabold text-xl">2</span>
-                    </div>
-                    <div class="pt-1">
-                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Setup & Konfigurasi</h3>
-                        <p class="text-sm text-neutral-500 leading-relaxed">Atur jenis zakat, kategori mustahik, data amil, dan konfigurasi masjid sesuai kebutuhan lembaga Anda.</p>
+            <div class="flex flex-col md:flex-row-reverse items-center gap-6 md:gap-12">
+                <div class="flex-shrink-0 flex flex-col items-center md:items-start w-full md:w-1/2 md:pl-6 nz-reveal-right">
+                    <div class="flex items-center gap-4">
+                        <div class="how-num-badge w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-nz" style="animation-delay:0.7s">
+                            <span class="text-2xl font-black text-white">2</span>
+                        </div>
+                        <div class="flex flex-col gap-2"><span class="how-dot"></span><span class="how-dot-sm"></span></div>
                     </div>
                 </div>
-                <div class="hidden lg:block absolute top-7 left-full w-full h-px border-t-2 border-dashed border-primary-200 -translate-x-8" style="width: calc(100% - 3.5rem);"></div>
+                <div class="flex-1 bg-primary-50 rounded-2xl p-7 border border-primary-100 md:w-1/2 nz-reveal-left">
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Setup &amp; Konfigurasi</h3>
+                    <p class="text-neutral-600 leading-relaxed">Atur jenis zakat, kategori mustahik, data amil, dan konfigurasi masjid sesuai kebutuhan lembaga Anda.</p>
+                </div>
             </div>
+            <div class="hidden md:flex justify-center"><div class="w-px h-12 bg-gradient-to-b from-primary-300 to-primary-100 opacity-60"></div></div>
 
             {{-- Step 3 --}}
-            <div>
-                <div class="flex items-start gap-5">
-                    <div class="flex-shrink-0 w-14 h-14 bg-accent-600 rounded-2xl flex items-center justify-center shadow-nz-lg">
-                        <span class="text-white font-extrabold text-xl">3</span>
-                    </div>
-                    <div class="pt-1">
-                        <h3 class="text-lg font-bold text-neutral-900 mb-2">Kelola & Laporkan</h3>
-                        <p class="text-sm text-neutral-500 leading-relaxed">Mulai catat penerimaan, salurkan ke mustahik, dan generate laporan konsolidasi kapan saja — transparan dan akuntabel.</p>
+            <div class="flex flex-col md:flex-row items-center gap-6 md:gap-12">
+                <div class="flex-shrink-0 flex flex-col items-center md:items-end w-full md:w-1/2 md:pr-6 nz-reveal-left">
+                    <div class="flex items-center gap-4 md:flex-row-reverse">
+                        <div class="how-num-badge w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center shadow-nz" style="animation-delay:1.4s">
+                            <span class="text-2xl font-black text-white">3</span>
+                        </div>
+                        <div class="flex flex-col gap-2 md:items-end"><span class="how-dot"></span><span class="how-dot-sm"></span></div>
                     </div>
                 </div>
-            </div>
-
-        </div>
-
-        {{-- Alur Transaksi --}}
-        <div class="mt-16 bg-neutral-50 rounded-3xl border border-neutral-200 p-6 lg:p-10">
-            <h3 class="text-center text-lg font-bold text-neutral-800 mb-8">Alur Transaksi Penyaluran</h3>
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                @php
-                $steps = [
-                    ['icon' => 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', 'label' => 'Draft', 'color' => 'bg-neutral-300 text-neutral-700'],
-                    ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'label' => 'Disetujui', 'color' => 'bg-primary-100 text-primary-700'],
-                    ['icon' => 'M5 13l4 4L19 7', 'label' => 'Disalurkan', 'color' => 'bg-accent-100 text-accent-800'],
-                ];
-                @endphp
-                @foreach($steps as $i => $step)
-                    <div class="flex flex-col items-center text-center flex-1">
-                        <div class="w-12 h-12 {{ $step['color'] }} rounded-xl flex items-center justify-center mb-2 font-semibold shadow-soft">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $step['icon'] }}" />
-                            </svg>
-                        </div>
-                        <span class="text-sm font-semibold text-neutral-700">{{ $step['label'] }}</span>
-                    </div>
-                    @if($i < count($steps) - 1)
-                    <div class="hidden sm:block flex-shrink-0 w-12 h-px border-t-2 border-dashed border-neutral-300"></div>
-                    @endif
-                @endforeach
+                <div class="flex-1 bg-primary-50 rounded-2xl p-7 border border-primary-100 md:w-1/2 nz-reveal-right">
+                    <h3 class="text-xl font-bold text-neutral-900 mb-3">Kelola &amp; Laporkan</h3>
+                    <p class="text-neutral-600 leading-relaxed">Mulai catat penerimaan, salurkan ke mustahik, dan <em>generate</em> laporan konsolidasi kapan saja — transparan dan akuntabel.</p>
+                </div>
             </div>
         </div>
-
     </div>
 </section>
 
 
-{{-- ================================================================
-     SECTION 4: KEUNGGULAN / WHY US
-     ================================================================ --}}
-<section class="py-20 lg:py-24 bg-primary-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
+{{-- ============================================================
+     SECTION 4 — TESTIMONI
+     Background character: SVG wave shapes (top & bottom) + horizontal line grid
+     ============================================================ --}}
+<section id="testimoni" class="relative py-20 bg-white overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+        {{-- Horizontal line grid --}}
+        <svg class="absolute inset-0 w-full h-full">
+            <defs>
+                <pattern id="hline-pat" x="0" y="0" width="100%" height="36" patternUnits="userSpaceOnUse">
+                    <line x1="0" y1="35.5" x2="100%" y2="35.5" stroke="rgba(45,105,54,0.045)" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hline-pat)"/>
+        </svg>
+        {{-- Wave bottom --}}
+        <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 180" preserveAspectRatio="none" style="height:180px;opacity:0.055;">
+            <path fill="#2d6936" d="M0,96L60,90.7C120,85,240,75,360,80C480,85,600,107,720,106.7C840,107,960,85,1080,69.3C1200,53,1320,43,1380,37.3L1440,32L1440,180L0,180Z"/>
+        </svg>
+        {{-- Wave top (flipped) --}}
+        <svg class="absolute top-0 right-0 w-full" viewBox="0 0 1440 140" preserveAspectRatio="none" style="height:140px;opacity:0.04;transform:scaleX(-1) scaleY(-1);">
+            <path fill="#2d6936" d="M0,96L60,90.7C120,85,240,75,360,80C480,85,600,107,720,106.7C840,107,960,85,1080,69.3C1200,53,1320,43,1380,37.3L1440,32L1440,140L0,140Z"/>
+        </svg>
+        {{-- Center clarity --}}
+        <div class="absolute inset-0" style="background:radial-gradient(ellipse 80% 70% at 50% 45%, rgba(255,255,255,0.85) 0%, transparent 100%);"></div>
+    </div>
 
-            {{-- Left: Text --}}
-            <div>
-                <span class="inline-block text-xs font-semibold text-primary-500 bg-white border border-primary-200 px-4 py-1.5 rounded-full mb-5 tracking-wider uppercase">Mengapa Niat Zakat?</span>
-                <h2 class="text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-6 leading-tight">
-                    Transparansi Adalah<br>Prioritas Kami
-                </h2>
-                <p class="text-neutral-500 text-base leading-relaxed mb-8">
-                    Setiap rupiah zakat yang masuk dan keluar tercatat dengan detail. Muzakki dapat memantau, amil dapat melaporkan, dan mustahik dapat menerima dengan tepat.
-                </p>
-                <div class="space-y-4">
-                    @php
-                    $keunggulan = [
-                        ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'title' => 'Sistem Verifikasi Berlapis', 'desc' => 'Setiap transaksi melalui alur persetujuan amil sebelum terealisasi.'],
-                        ['icon' => 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', 'title' => 'Laporan Real-Time', 'desc' => 'Dashboard terupdate secara langsung. Export laporan kapan saja dalam format PDF atau Excel.'],
-                        ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'title' => 'Keamanan Data Terjamin', 'desc' => 'Enkripsi data, autentikasi berlapis, UUID pada semua entitas penting.'],
-                    ];
-                    @endphp
-                    @foreach($keunggulan as $item)
-                    <div class="flex items-start gap-4 p-4 bg-white rounded-xl border border-neutral-100 shadow-soft hover:shadow-card transition-all duration-200">
-                        <div class="flex-shrink-0 w-10 h-10 bg-primary-50 rounded-lg flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-neutral-800 mb-0.5">{{ $item['title'] }}</h4>
-                            <p class="text-xs text-neutral-500 leading-relaxed">{{ $item['desc'] }}</p>
-                        </div>
+    <div class="relative z-10 w-full px-4 sm:px-10 lg:px-20">
+        <div class="text-center mb-16 nz-reveal">
+            <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">Testimoni</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">Apa Kata <span class="text-primary-600">Mereka?</span></h2>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Cerita inspiratif dari para muzaki yang telah mempercayakan zakatnya melalui platform kami</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div class="nz-reveal" style="transition-delay:0.05s">
+                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
+                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
+                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                     </div>
-                    @endforeach
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 mb-4">
+                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
+                        </div>
+                        <p class="text-neutral-700 leading-relaxed italic">"Platform yang sangat memudahkan! Saya bisa tracking zakat saya kemana disalurkan. Transparan dan terpercaya."</p>
+                    </div>
+                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
+                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">AH</span></div>
+                        <div><h4 class="font-semibold text-neutral-900">Ahmad Hidayat</h4><p class="text-sm text-neutral-500">Pengusaha</p></div>
+                    </div>
                 </div>
             </div>
 
-            {{-- Right: Summary Card --}}
-            <div class="flex justify-center lg:justify-end">
-                <div class="w-full max-w-sm space-y-4">
-                    {{-- Saldo Card --}}
-                    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-card">
-                        <div class="flex items-center justify-between mb-4">
-                            <p class="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Ringkasan Bulan Ini</p>
-                            <span class="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-full font-semibold">Februari 2026</span>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
-                                    <span class="text-sm text-neutral-600">Total Penerimaan</span>
-                                </div>
-                                <span class="text-sm font-bold text-neutral-900">Rp 48.250.000</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-secondary-500 rounded-full"></div>
-                                    <span class="text-sm text-neutral-600">Total Penyaluran</span>
-                                </div>
-                                <span class="text-sm font-bold text-neutral-900">Rp 32.100.000</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-accent-500 rounded-full"></div>
-                                    <span class="text-sm text-neutral-600">Saldo Akhir</span>
-                                </div>
-                                <span class="text-sm font-bold text-primary-500">Rp 16.150.000</span>
-                            </div>
-                            <div class="pt-2 border-t border-neutral-100">
-                                <div class="flex justify-between text-xs text-neutral-400">
-                                    <span>Muzakki: <strong class="text-neutral-700">269</strong></span>
-                                    <span>Mustahik: <strong class="text-neutral-700">312</strong></span>
-                                    <span>Amil: <strong class="text-neutral-700">8</strong></span>
-                                </div>
-                            </div>
-                        </div>
+            <div class="nz-reveal" style="transition-delay:0.15s">
+                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
+                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
+                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
                     </div>
-
-                    {{-- Progress Card --}}
-                    <div class="bg-white rounded-2xl border border-neutral-200 p-5 shadow-card">
-                        <p class="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4">Penyaluran per Asnaf</p>
-                        <div class="space-y-3">
-                            @php
-                            $asnaf = [
-                                ['nama' => 'Fakir', 'persen' => 35, 'warna' => 'bg-primary-500'],
-                                ['nama' => 'Miskin', 'persen' => 28, 'warna' => 'bg-secondary-500'],
-                                ['nama' => 'Amil', 'persen' => 12, 'warna' => 'bg-accent-500'],
-                                ['nama' => 'Lainnya', 'persen' => 25, 'warna' => 'bg-neutral-300'],
-                            ];
-                            @endphp
-                            @foreach($asnaf as $item)
-                            <div>
-                                <div class="flex justify-between text-xs mb-1">
-                                    <span class="text-neutral-600 font-medium">{{ $item['nama'] }}</span>
-                                    <span class="text-neutral-800 font-bold">{{ $item['persen'] }}%</span>
-                                </div>
-                                <div class="w-full bg-neutral-100 rounded-full h-1.5">
-                                    <div class="{{ $item['warna'] }} h-1.5 rounded-full" style="width: {{ $item['persen'] }}%"></div>
-                                </div>
-                            </div>
-                            @endforeach
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 mb-4">
+                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
                         </div>
+                        <p class="text-neutral-700 leading-relaxed italic">"Kalkulator zakatnya sangat membantu. Tidak perlu bingung lagi menghitung nisab dan kadar zakat. Recommended!"</p>
+                    </div>
+                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
+                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">SF</span></div>
+                        <div><h4 class="font-semibold text-neutral-900">Siti Fatimah</h4><p class="text-sm text-neutral-500">Profesional</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nz-reveal" style="transition-delay:0.25s">
+                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
+                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
+                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center space-x-1 mb-4">
+                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
+                        </div>
+                        <p class="text-neutral-700 leading-relaxed italic">"Laporan penyalurannya detail banget. Saya jadi tau persis kemana zakat saya. Alhamdulillah merasa lebih tenang."</p>
+                    </div>
+                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
+                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">MR</span></div>
+                        <div><h4 class="font-semibold text-neutral-900">Muhammad Rizki</h4><p class="text-sm text-neutral-500">Karyawan Swasta</p></div>
                     </div>
                 </div>
             </div>
@@ -368,108 +510,26 @@
 </section>
 
 
-{{-- ================================================================
-     SECTION 5: TESTIMONI
-     ================================================================ --}}
-<section id="testimoni" class="py-20 lg:py-28 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+{{-- ============================================================
+     GLOBAL SCROLL OBSERVER
+     ============================================================ --}}
+<script>
+(function () {
+    if (!('IntersectionObserver' in window)) {
+        document.querySelectorAll('.nz-reveal,.nz-reveal-left,.nz-reveal-right,.nz-reveal-scale')
+            .forEach(function(el){ el.classList.add('nz-visible'); });
+        return;
+    }
+    var obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('nz-visible');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
 
-        <div class="text-center mb-16">
-            <span class="inline-block text-xs font-semibold text-primary-500 bg-primary-50 border border-primary-100 px-4 py-1.5 rounded-full mb-4 tracking-wider uppercase">Testimoni</span>
-            <h2 class="text-3xl lg:text-4xl font-extrabold text-neutral-900 mb-4">Kata Mereka yang Sudah Pakai</h2>
-            <p class="text-neutral-500 text-base max-w-xl mx-auto">Ribuan amil dan pengurus masjid sudah merasakan kemudahan Niat Zakat.</p>
-        </div>
-
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @php
-            $testimoni = [
-                [
-                    'nama' => 'Ustadz Ahmad Fauzi',
-                    'peran' => 'Ketua Amil — Masjid Al-Ikhlas, Bandung',
-                    'isi' => 'Sebelum pakai Niat Zakat, laporan kami masih manual di Excel. Sekarang semua terekap otomatis, laporan bulanan bisa di-generate dalam hitungan menit. Alhamdulillah sangat membantu.',
-                    'bintang' => 5,
-                    'inisial' => 'AF',
-                    'warna' => 'bg-primary-500',
-                ],
-                [
-                    'nama' => 'Bapak Hendra Kusuma',
-                    'peran' => 'Bendahara — BAZNAS Kabupaten Bogor',
-                    'isi' => 'Fitur penyaluran dengan alur persetujuan amil sangat membantu memastikan tidak ada penyaluran yang tidak terverifikasi. Transparansi benar-benar terjaga.',
-                    'bintang' => 5,
-                    'inisial' => 'HK',
-                    'warna' => 'bg-secondary-600',
-                ],
-                [
-                    'nama' => 'Ibu Siti Rahmawati',
-                    'peran' => 'Admin Zakat — Masjid Raya At-Taqwa',
-                    'isi' => 'Sangat mudah digunakan! Data mustahik lengkap, bisa filter berdasarkan asnaf. Export ke Excel dan PDF-nya juga tampilan profesional, langsung bisa diserahkan ke pengurus.',
-                    'bintang' => 5,
-                    'inisial' => 'SR',
-                    'warna' => 'bg-accent-700',
-                ],
-            ];
-            @endphp
-
-            @foreach($testimoni as $t)
-            <div class="bg-neutral-50 rounded-2xl border border-neutral-200 p-6 hover:shadow-card-hover hover:border-primary-200 transition-all duration-300">
-                {{-- Stars --}}
-                <div class="flex gap-1 mb-4">
-                    @for($i = 0; $i < $t['bintang']; $i++)
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20" style="color:#ff9800">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    @endfor
-                </div>
-                {{-- Quote --}}
-                <p class="text-sm text-neutral-600 leading-relaxed mb-5 italic">"{{ $t['isi'] }}"</p>
-                {{-- Author --}}
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 {{ $t['warna'] }} rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-                        {{ $t['inisial'] }}
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-neutral-900">{{ $t['nama'] }}</p>
-                        <p class="text-xs text-neutral-400">{{ $t['peran'] }}</p>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-
-
-{{-- ================================================================
-     SECTION 6: CTA / KONTAK
-     ================================================================ --}}
-<section id="kontak" class="py-20 lg:py-24 bg-primary-500">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-nz-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
-        <h2 class="text-3xl lg:text-4xl font-extrabold text-white mb-4 leading-tight">
-            Siap Memulai Pengelolaan<br>Zakat yang Lebih Baik?
-        </h2>
-        <p class="text-primary-200 text-base max-w-xl mx-auto mb-10 leading-relaxed">
-            Bergabung bersama 500+ lembaga yang sudah mempercayakan pengelolaan zakatnya kepada Niat Zakat Digital.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="{{ route('register') }}"
-               class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-bold text-sm rounded-xl hover:bg-primary-50 shadow-nz-lg transition-all duration-200 hover:-translate-y-0.5">
-                Daftar Gratis Sekarang
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </a>
-            <a href="mailto:admin@niatzakat.id"
-               class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-white font-semibold text-sm rounded-xl border border-primary-300 hover:bg-primary-600 transition-all duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Hubungi Kami
-            </a>
-        </div>
-    </div>
-</section>
+    document.querySelectorAll('.nz-reveal,.nz-reveal-left,.nz-reveal-right,.nz-reveal-scale')
+        .forEach(function(el){ obs.observe(el); });
+})();
+</script>
