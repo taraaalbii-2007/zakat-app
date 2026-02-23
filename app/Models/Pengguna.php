@@ -330,6 +330,11 @@ class Pengguna extends Authenticatable
         return $this->peran === 'amil';
     }
 
+    public function isMuzakki(): bool
+    {
+        return $this->peran === 'muzakki';
+    }
+
     /**
      * Check if user has masjid
      */
@@ -514,5 +519,11 @@ class Pengguna extends Authenticatable
     public function getRouteKeyName(): string
     {
         return 'uuid';
+    }
+
+    // Di app/Models/Pengguna.php — tambahkan method ini
+    public function muzakki()
+    {
+        return $this->hasOne(\App\Models\Muzakki::class, 'pengguna_id');
     }
 }

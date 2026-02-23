@@ -486,6 +486,7 @@
                 opacity: 0;
                 transform: translateY(12px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -496,6 +497,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -505,15 +507,19 @@
             0% {
                 stroke-dashoffset: 100;
             }
+
             100% {
                 stroke-dashoffset: 0;
             }
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
@@ -573,7 +579,8 @@
                 font-size: 24px;
             }
 
-            .data-card, .mosque-card {
+            .data-card,
+            .mosque-card {
                 padding: 20px;
             }
 
@@ -627,15 +634,17 @@
             <!-- ==================== HEADER ==================== -->
             <div class="email-header">
                 <div class="header-decoration"></div>
-                
+
                 @php
                     $config = \App\Models\KonfigurasiAplikasi::first();
                 @endphp
-                
-                @if($config && $config->logo_aplikasi)
-                <div class="logo-container">
-                    <img src="{{ asset('storage/' . $config->logo_aplikasi) }}" alt="Logo {{ $config->nama_aplikasi ?? 'Aplikasi' }}" onerror="this.parentElement.style.display='none'">
-                </div>
+
+                @if ($config && $config->logo_aplikasi)
+                    <div class="logo-container">
+                        <img src="{{ asset('storage/' . $config->logo_aplikasi) }}"
+                            alt="Logo {{ $config->nama_aplikasi ?? 'Aplikasi' }}"
+                            onerror="this.parentElement.style.display='none'">
+                    </div>
                 @endif
 
                 <h1>Registrasi Berhasil!</h1>
@@ -647,107 +656,131 @@
                 <!-- Greeting -->
                 <div class="greeting-section slide-in">
                     <p class="greeting">Assalamu'alaikum, {{ $nama }}!</p>
-                    <p class="instruction">Selamat datang di <strong>{{ $config->nama_aplikasi ?? 'Niat Zakat' }}</strong>. Akun admin masjid Anda telah berhasil terdaftar. Berikut adalah detail akun Anda:</p>
+                    <p class="instruction">Selamat datang di
+                        <strong>{{ $config->nama_aplikasi ?? 'Niat Zakat' }}</strong>. Akun admin masjid Anda telah
+                        berhasil terdaftar. Berikut adalah detail akun Anda:
+                    </p>
                 </div>
 
                 <!-- ==================== SUCCESS SECTION ==================== -->
                 <div class="success-section fade-in">
-                    <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" opacity="0.2"/>
-                        <path class="checkmark-path" d="M7 13l3 3 7-7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none"
+                            opacity="0.2" />
+                        <path class="checkmark-path" d="M7 13l3 3 7-7" stroke="currentColor" stroke-width="3"
+                            stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    
+
                     <div class="success-title">Akun Anda Sudah Aktif!</div>
                     <div class="success-message">
-                        Anda sekarang dapat login menggunakan kredensial di bawah ini. Segera ubah password setelah login pertama untuk keamanan akun yang lebih baik.
+                        Anda sekarang dapat login menggunakan kredensial di bawah ini. Segera ubah password setelah
+                        login pertama untuk keamanan akun yang lebih baik.
                     </div>
                 </div>
 
                 <!-- ==================== ACCOUNT DATA SECTION ==================== -->
                 <div class="account-section slide-in">
                     <div class="section-label">
-                        <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg>
                         Data Akun Anda
                     </div>
-                    
+
                     <div class="data-card">
                         <div class="data-row">
                             <div class="data-label">Nama</div>
                             <div class="data-value">{{ $nama }}</div>
                         </div>
-                        
+
                         <div class="data-row">
                             <div class="data-label">Email</div>
                             <div class="data-value">{{ $email }}</div>
                         </div>
-                        
+
                         <div class="data-row">
                             <div class="data-label">Username</div>
                             <div class="data-value">
                                 <span class="highlight-value">{{ $username }}</span>
                             </div>
                         </div>
-                        
-                        @if(!$isGoogleUser && $password)
-                        <div class="data-row">
-                            <div class="data-label">Password</div>
-                            <div class="data-value">
-                                <span class="highlight-value pulse">{{ $password }}</span>
+
+                        @if (!$isGoogleUser && $password)
+                            <div class="data-row">
+                                <div class="data-label">Password</div>
+                                <div class="data-value">
+                                    <span class="highlight-value pulse">{{ $password }}</span>
+                                </div>
                             </div>
-                        </div>
                         @endif
-                        
+
                         <div class="data-row">
                             <div class="data-label">Peran</div>
                             <div class="data-value">
-                                <span class="role-badge">Admin Masjid</span>
+                                @if (isset($peran) && $peran === 'muzakki')
+                                    <span class="role-badge"
+                                        style="background: linear-gradient(135deg, #1565c0, #42a5f5);">
+                                        Muzakki
+                                    </span>
+                                @else
+                                    <span class="role-badge">Admin Masjid</span>
+                                @endif
                             </div>
                         </div>
-                        
-                        @if($isGoogleUser)
-                        <div class="data-row">
-                            <div class="data-label">Metode Login</div>
-                            <div class="data-value">
-                                <span class="google-badge">Google OAuth</span>
+
+                        @if ($isGoogleUser)
+                            <div class="data-row">
+                                <div class="data-label">Metode Login</div>
+                                <div class="data-value">
+                                    <span class="google-badge">Google OAuth</span>
+                                </div>
                             </div>
-                        </div>
                         @endif
                     </div>
                 </div>
 
                 <!-- ==================== MOSQUE DATA SECTION ==================== -->
-                <div class="mosque-section slide-in">
-                    <div class="section-label">
-                        <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M18 8c0-3.31-2.69-6-6-6S6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2zM5 20v2h14v-2H5z"/>
-                        </svg>
-                        Data Masjid
+
+                @if (!isset($peran) || $peran !== 'muzakki')
+                    <div class="mosque-section slide-in">
+                        <div class="section-label">
+                            <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path
+                                    d="M18 8c0-3.31-2.69-6-6-6S6 4.69 6 8c0 4.5 6 11 6 11s6-6.5 6-11zm-8 0c0-1.1.9-2 2-2s2 .9 2 2-.89 2-2 2c-1.1 0-2-.9-2-2zM5 20v2h14v-2H5z" />
+                            </svg>
+                            Data Masjid
+                        </div>
+
+                        <div class="mosque-card">
+                            <div class="mosque-name">{{ $nama_masjid }}</div>
+                            <div class="mosque-code">{{ $kode_masjid }}</div>
+                            <p style="text-align: center; color: #666; font-size: 13px;">
+                                Gunakan kode ini untuk mengelola data zakat masjid Anda
+                            </p>
+                        </div>
                     </div>
-                    
-                    <div class="mosque-card">
-                        <div class="mosque-name">{{ $nama_masjid }}</div>
-                        <div class="mosque-code">{{ $kode_masjid }}</div>
-                        <p style="text-align: center; color: #666; font-size: 13px;">
-                            Gunakan kode ini untuk mengelola data zakat masjid Anda
-                        </p>
-                    </div>
-                </div>
+                @endif
 
                 <!-- ==================== SECURITY WARNING ==================== -->
-                @if(!$isGoogleUser && $password)
-                <div class="security-warning slide-in">
-                    <div class="warning-title">
-                        <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                        </svg>
-                        Perhatian Keamanan
+                @if (!$isGoogleUser && $password && (!isset($peran) || $peran !== 'muzakki'))
+                    <div class="security-warning slide-in">
+                        <div class="warning-title">
+                            <svg class="warning-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                fill="currentColor">
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                            </svg>
+                            Perhatian Keamanan
+                        </div>
+                        <div class="warning-text">
+                            Email ini berisi password akun Anda. Segera ubah password setelah login pertama kali dan
+                            jangan bagikan email ini kepada siapapun. Password akan berkedip sebagai pengingat untuk
+                            segera diubah.
+                        </div>
                     </div>
-                    <div class="warning-text">
-                        Email ini berisi password akun Anda. Segera ubah password setelah login pertama kali dan jangan bagikan email ini kepada siapapun. Password akan berkedip sebagai pengingat untuk segera diubah.
-                    </div>
-                </div>
                 @endif
 
                 <!-- ==================== BUTTON SECTION ==================== -->
@@ -763,38 +796,41 @@
                 <!-- ==================== NEXT STEPS ==================== -->
                 <div class="next-steps slide-in">
                     <div class="steps-title">Langkah Selanjutnya</div>
-                    
+
                     <div class="step-item">
                         <div class="step-number">1</div>
                         <div class="step-content">
                             <div class="step-title">Login ke Dashboard</div>
                             <div class="step-description">
                                 Gunakan username dan password di atas untuk login ke dashboard admin.
-                                @if($isGoogleUser) Login dengan akun Google Anda. @endif
+                                @if ($isGoogleUser)
+                                    Login dengan akun Google Anda.
+                                @endif
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="step-item">
                         <div class="step-number">2</div>
                         <div class="step-content">
                             <div class="step-title">Ubah Password</div>
                             <div class="step-description">
-                                @if(!$isGoogleUser && $password)
-                                Segera ubah password di pengaturan akun untuk keamanan yang lebih baik.
+                                @if (!$isGoogleUser && $password)
+                                    Segera ubah password di pengaturan akun untuk keamanan yang lebih baik.
                                 @else
-                                Untuk keamanan ekstra, Anda dapat mengatur password khusus di pengaturan akun.
+                                    Untuk keamanan ekstra, Anda dapat mengatur password khusus di pengaturan akun.
                                 @endif
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="step-item">
                         <div class="step-number">3</div>
                         <div class="step-content">
                             <div class="step-title">Kelola Zakat Masjid</div>
                             <div class="step-description">
-                                Mulai kelola zakat masjid Anda — mulai dari pengumpulan, pencatatan, hingga pelaporan dan distribusi.
+                                Mulai kelola zakat masjid Anda — mulai dari pengumpulan, pencatatan, hingga pelaporan
+                                dan distribusi.
                             </div>
                         </div>
                     </div>
@@ -807,11 +843,12 @@
         <div class="email-footer">
             <div class="footer-logo-text">{{ $config->nama_aplikasi ?? 'Niat Zakat' }}</div>
             <div class="footer-divider"></div>
-            <p class="copyright">© {{ date('Y') }} {{ $config->nama_aplikasi ?? 'Niat Zakat' }}. Hak Cipta Dilindungi.</p>
+            <p class="copyright">© {{ date('Y') }} {{ $config->nama_aplikasi ?? 'Niat Zakat' }}. Hak Cipta
+                Dilindungi.</p>
             <p class="auto-email">
                 Email ini dikirim secara otomatis oleh sistem {{ $config->nama_aplikasi ?? 'Niat Zakat' }}.<br>
                 Jika Anda tidak merasa mendaftar, silakan abaikan email ini.<br>
-                Jangan balas email ini — untuk bantuan hubungi 
+                Jangan balas email ini — untuk bantuan hubungi
                 <a href="mailto:support@niat-zakat.com" class="support-link">
                     support@niat-zakat.com
                 </a>
@@ -821,23 +858,27 @@
 
     <script>
         // ==================== LOGGING ====================
-        console.log('%c{{ $config->nama_aplikasi ?? "Niat Zakat" }} - Registration Success', 'color: #2d6936; font-size: 24px; font-weight: bold; font-family: Poppins, sans-serif;');
-        console.log('%cNew admin registration completed successfully', 'color: #7cb342; font-size: 16px; font-family: Poppins, sans-serif;');
+        console.log('%c{{ $config->nama_aplikasi ?? 'Niat Zakat' }} - Registration Success',
+            'color: #2d6936; font-size: 24px; font-weight: bold; font-family: Poppins, sans-serif;');
+        console.log('%cNew admin registration completed successfully',
+            'color: #7cb342; font-size: 16px; font-family: Poppins, sans-serif;');
         console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #c5e1a5;');
         console.log('%cUser Details:', 'color: #2d6936; font-weight: bold;');
         console.log('  Name:', 'color: #666;', '{{ $nama }}');
         console.log('  Email:', 'color: #666;', '{{ $email }}');
         console.log('  Username:', 'color: #666;', '{{ $username }}');
-        @if(!$isGoogleUser && $password)
-        console.log('  Password:', 'color: #ff9800; font-weight: bold;', '{{ $password }}');
+        @if (!$isGoogleUser && $password)
+            console.log('  Password:', 'color: #ff9800; font-weight: bold;', '{{ $password }}');
         @endif
         console.log('  Mosque:', 'color: #666;', '{{ $nama_masjid }}');
         console.log('  Mosque Code:', 'color: #2d6936; font-weight: bold;', '{{ $kode_masjid }}');
         console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #c5e1a5;');
         console.log('%cRegistration time:', 'color: #7cb342; font-weight: bold;', new Date().toLocaleString('id-ID'));
-        console.log('%cSelamat bergabung! 🎉 Masjid {{ $nama_masjid }} siap dikelola', 'color: #2d6936; font-size: 14px; font-weight: bold;');
-        @if(!$isGoogleUser && $password)
-        console.log('%c⚠️  Peringatan: Password terlihat di email! Pastikan segera diubah', 'color: #ff9800; font-weight: bold;');
+        console.log('%cSelamat bergabung! 🎉 Masjid {{ $nama_masjid }} siap dikelola',
+            'color: #2d6936; font-size: 14px; font-weight: bold;');
+        @if (!$isGoogleUser && $password)
+            console.log('%c⚠️  Peringatan: Password terlihat di email! Pastikan segera diubah',
+                'color: #ff9800; font-weight: bold;');
         @endif
 
         // ==================== ANIMATE CHECKMARK ====================
@@ -846,7 +887,7 @@
             if (checkmark) {
                 checkmark.style.animation = 'checkmark 0.5s ease-in-out 0.2s forwards';
             }
-            
+
             // Add pulse animation to password if exists
             const passwordElement = document.querySelector('.pulse');
             if (passwordElement) {
@@ -865,18 +906,20 @@
 
         document.querySelector('.logo-container')?.addEventListener('click', function() {
             logoClickCount++;
-            
+
             if (logoClickTimer) clearTimeout(logoClickTimer);
-            
+
             if (logoClickCount === 2) {
-                console.log('%c🎉 Selamat! Anda menemukan Easter Egg!', 'color: #ff9800; font-size: 16px; font-weight: bold;');
-                console.log('%cTips: Password yang berkedip menandakan harus segera diubah!', 'color: #2d6936; font-size: 12px;');
-                
+                console.log('%c🎉 Selamat! Anda menemukan Easter Egg!',
+                    'color: #ff9800; font-size: 16px; font-weight: bold;');
+                console.log('%cTips: Password yang berkedip menandakan harus segera diubah!',
+                    'color: #2d6936; font-size: 12px;');
+
                 // Create confetti effect
                 createConfetti();
                 logoClickCount = 0;
             }
-            
+
             logoClickTimer = setTimeout(() => {
                 logoClickCount = 0;
             }, 500);
@@ -885,7 +928,7 @@
         // ==================== CONFETTI HELPER ====================
         function createConfetti() {
             const colors = ['#2d6936', '#7cb342', '#4caf50', '#81c784', '#aed581'];
-            
+
             for (let i = 0; i < 30; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
@@ -899,13 +942,13 @@
                     confetti.style.zIndex = '9999';
                     confetti.style.pointerEvents = 'none';
                     confetti.style.animation = `confettiFall ${Math.random() * 2 + 1}s linear forwards`;
-                    
+
                     document.body.appendChild(confetti);
-                    
+
                     setTimeout(() => confetti.remove(), 3000);
                 }, i * 30);
             }
-            
+
             // Add CSS for animation
             const style = document.createElement('style');
             style.textContent = `
@@ -924,4 +967,5 @@
         }
     </script>
 </body>
+
 </html>

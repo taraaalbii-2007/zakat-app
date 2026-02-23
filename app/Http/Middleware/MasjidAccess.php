@@ -14,51 +14,56 @@ class MasjidAccess
      * Middleware untuk memastikan user memiliki akses ke masjid
      * Digunakan untuk route yang membutuhkan data masjid
      */
-public function handle(Request $request, Closure $next): Response
-{
-    $user = Auth::user();
+    public function handle(Request $request, Closure $next): Response
+    {
+        $user = Auth::user();
 
-    if (!$user) {
-        return redirect()->route('login');
-    }
+        if (!$user) {
+            return redirect()->route('login');
+        }
 
-    if ($user->peran === 'superadmin') {
-        return $next($request);
-    }
+        if ($user->peran === 'superadmin') {
+            return $next($request);
+        }
 
-    $masjid = null; // ← inisialisasi dulu
+        // ✅ TAMBAH INI — muzakki tidak butuh cek masjid di middleware ini
+        if ($user->peran === 'muzakki') {
+            return $next($request);
+        }
 
-    if ($user->peran === 'admin_masjid') {
-        $masjid = Masjid::find($user->masjid_id);
+        $masjid = null;
+
+        if ($user->peran === 'admin_masjid') {
+            $masjid = Masjid::find($user->masjid_id);
+
+            if (!$masjid) {
+                return redirect()->route('admin.konfigurasi.index')
+                    ->with('warning', 'Silakan lengkapi profil masjid terlebih dahulu.');
+            }
+        }
+
+        if ($user->peran === 'amil') {
+            $amil = \App\Models\Amil::where('pengguna_id', $user->id)
+                ->where('status', 'aktif')
+                ->first();
+
+            if (!$amil) {
+                return redirect()->route('dashboard')
+                    ->with('error', 'Anda belum ditugaskan sebagai amil aktif.');
+            }
+
+            $masjid = $amil->masjid;
+        }
 
         if (!$masjid) {
-            return redirect()->route('admin.konfigurasi.index')
-                ->with('warning', 'Silakan lengkapi profil masjid terlebih dahulu.');
-        }
-    }
-
-    if ($user->peran === 'amil') {
-        $amil = \App\Models\Amil::where('pengguna_id', $user->id)
-            ->where('status', 'aktif')
-            ->first();
-
-        if (!$amil) {
             return redirect()->route('dashboard')
-                ->with('error', 'Anda belum ditugaskan sebagai amil aktif.');
+                ->with('error', 'Tidak dapat menentukan masjid Anda.');
         }
 
-        $masjid = $amil->masjid;
+        $request->attributes->set('masjid', $masjid);
+
+        return $next($request);
     }
-
-    if (!$masjid) {
-        return redirect()->route('dashboard')
-            ->with('error', 'Tidak dapat menentukan masjid Anda.');
-    }
-
-    $request->attributes->set('masjid', $masjid);
-
-    return $next($request);
-}
 
     /**
      * Redirect berdasarkan role ketika tidak punya masjid
@@ -69,11 +74,11 @@ public function handle(Request $request, Closure $next): Response
             case 'admin_masjid':
                 return redirect()->route('admin.konfigurasi.index')
                     ->with('warning', 'Silakan lengkapi profil masjid terlebih dahulu.');
-            
+
             case 'amil':
                 return redirect()->route('dashboard')
                     ->with('error', 'Anda belum ditugaskan di masjid manapun. Hubungi admin masjid.');
-            
+
             default:
                 return redirect()->route('login');
         }

@@ -39,6 +39,8 @@ class DashboardController extends Controller
                 return $this->adminMasjidDashboard();
             case 'amil':
                 return $this->amilDashboard();
+            case 'muzakki':                          // ← TAMBAH INI
+                return $this->muzakkiDashboard();    // ← TAMBAH INI
             default:
                 abort(403, 'Unauthorized access');
         }
@@ -337,6 +339,96 @@ class DashboardController extends Controller
             'stats',
             'quickStats',
             'trendData'
+        ));
+    }
+
+    protected function muzakkiDashboard()
+    {
+        $user = Auth::user();
+
+        // Ambil data muzakki milik user ini
+        $muzakki = \App\Models\Muzakki::where('pengguna_id', $user->id)
+            ->with(['masjid', 'transaksiPenerimaan'])
+            ->first();
+
+        if (!$muzakki) {
+            return redirect()->route('login')
+                ->with('error', 'Data muzakki tidak ditemukan. Silakan hubungi administrator.');
+        }
+
+        $masjid      = $muzakki->masjid;
+        $masjidId    = $masjid?->id;
+        $breadcrumbs = [['name' => 'Dashboard Muzakki', 'url' => null]];
+
+        // ── Statistik transaksi muzakki ──────────────────────────────────────
+        $totalZakatDibayar = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+            ->where('status', 'verified')
+            ->sum('jumlah');
+
+        $totalTransaksi = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+            ->count();
+
+        $transaksiPending = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+            ->whereIn('status', ['pending', 'menunggu_konfirmasi'])
+            ->count();
+
+        $transaksiTahunIni = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+            ->where('status', 'verified')
+            ->whereYear('tanggal_transaksi', now()->year)
+            ->sum('jumlah');
+
+        // ── Riwayat transaksi terbaru (5 terakhir) ───────────────────────────
+        $riwayatTerbaru = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+            ->with(['jenisZakat'])
+            ->latest('tanggal_transaksi')
+            ->take(5)
+            ->get();
+
+        // ── Trend 6 bulan terakhir ───────────────────────────────────────────
+        $trendZakat = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $bulan        = now()->subMonths($i);
+            $startOfMonth = $bulan->copy()->startOfMonth();
+            $endOfMonth   = $bulan->copy()->endOfMonth();
+
+            $jumlah = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
+                ->where('status', 'verified')
+                ->whereBetween('tanggal_transaksi', [$startOfMonth, $endOfMonth])
+                ->sum('jumlah');
+
+            $trendZakat->push([
+                'bulan'  => $bulan->translatedFormat('M Y'),
+                'jumlah' => (float) $jumlah,
+            ]);
+        }
+
+        // ── Harga emas terkini (untuk info nisab) ───────────────────────────
+        $hargaTerkini = \App\Models\HargaEmasPerak::where('is_active', true)
+            ->latest('tanggal')
+            ->first();
+
+        // ── Jenis zakat yang tersedia ────────────────────────────────────────
+        $jenisZakatList = \App\Models\JenisZakat::all();
+
+        $stats = [
+            'nama_muzakki'        => $muzakki->nama,
+            'nama_masjid'         => $masjid?->nama ?? '-',
+            'total_zakat_dibayar' => $totalZakatDibayar,
+            'total_transaksi'     => $totalTransaksi,
+            'transaksi_pending'   => $transaksiPending,
+            'zakat_tahun_ini'     => $transaksiTahunIni,
+        ];
+
+        return view('dashboard.muzakki', compact(
+            'breadcrumbs',
+            'user',
+            'muzakki',
+            'masjid',
+            'stats',
+            'riwayatTerbaru',
+            'trendZakat',
+            'hargaTerkini',
+            'jenisZakatList'
         ));
     }
 }

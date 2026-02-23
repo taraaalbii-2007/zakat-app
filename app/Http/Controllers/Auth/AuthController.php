@@ -267,9 +267,9 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // Auto check email
         $email = strtolower(trim($request->email));
 
+        // Cek email sudah ada
         $existingEmail = Pengguna::where('email', $email)->first();
         if ($existingEmail) {
             return redirect()->back()
@@ -278,12 +278,15 @@ class AuthController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:pengguna,email',
+            'email'           => 'required|email|unique:pengguna,email',
+            'role'            => 'required|in:admin_masjid,muzakki',  // ← TAMBAH
             'recaptcha_token' => 'nullable|string',
         ], [
-            'email.required' => 'Email wajib diisi',
-            'email.email' => 'Format email tidak valid',
-            'email.unique' => 'Email sudah terdaftar',
+            'email.required'  => 'Email wajib diisi',
+            'email.email'     => 'Format email tidak valid',
+            'email.unique'    => 'Email sudah terdaftar',
+            'role.required'   => 'Pilih peran Anda',
+            'role.in'         => 'Peran tidak valid',
         ]);
 
         if ($validator->fails()) {
@@ -300,15 +303,17 @@ class AuthController extends Controller
 
         try {
             $normalizedEmail = strtolower(trim($request->email));
+            $role            = $request->role; // ← AMBIL ROLE
 
-            $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+            $otp       = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
             $expiresAt = Carbon::now()->addMinutes(self::OTP_EXPIRY_MINUTES);
 
             $cacheKey = 'otp_registration_' . $normalizedEmail;
             Cache::put($cacheKey, [
-                'email' => $normalizedEmail,
-                'otp' => $otp,
+                'email'      => $normalizedEmail,
+                'otp'        => $otp,
                 'expires_at' => $expiresAt,
+                'role'       => $role,           // ← SIMPAN ROLE KE CACHE
                 'created_at' => now()->toDateTimeString(),
             ], self::OTP_EXPIRY_MINUTES * 60);
 
@@ -318,6 +323,7 @@ class AuthController extends Controller
             $request->session()->put('otp_email', $normalizedEmail);
             $request->session()->put('email', $normalizedEmail);
             $request->session()->put('otp_session_start', now()->toDateTimeString());
+            $request->session()->put('otp_role', $role); // ← SIMPAN KE SESSION JUGA (backup)
 
             $mailConfigLoaded = $this->loadMailConfig();
 
@@ -325,7 +331,7 @@ class AuthController extends Controller
                 if (app()->environment('local')) {
                     return redirect()->route('verify-otp', ['email' => $normalizedEmail])
                         ->with('email', $normalizedEmail)
-                        ->with('warning', 'Mode development: Konfigurasi email belum lengkap. OTP Anda adalah: ' . $otp);
+                        ->with('warning', 'Mode development: OTP Anda adalah: ' . $otp);
                 }
 
                 return back()
@@ -335,8 +341,8 @@ class AuthController extends Controller
 
             try {
                 Mail::send('emails.otp-verification', [
-                    'otp' => $otp,
-                    'email' => $normalizedEmail,
+                    'otp'              => $otp,
+                    'email'            => $normalizedEmail,
                     'expiresInMinutes' => self::OTP_EXPIRY_MINUTES,
                 ], function ($message) use ($normalizedEmail) {
                     $message->to($normalizedEmail)
@@ -345,12 +351,12 @@ class AuthController extends Controller
 
                 return redirect()->route('verify-otp', ['email' => $normalizedEmail])
                     ->with('email', $normalizedEmail)
-                    ->with('success', 'Kode OTP telah dikirim ke email Anda. Silakan cek inbox atau folder spam.');
+                    ->with('success', 'Kode OTP telah dikirim ke email Anda.');
             } catch (\Exception $mailException) {
                 if (app()->environment('local')) {
                     return redirect()->route('verify-otp', ['email' => $normalizedEmail])
                         ->with('email', $normalizedEmail)
-                        ->with('warning', 'Email tidak terkirim (error SMTP). OTP Anda adalah: ' . $otp);
+                        ->with('warning', 'Email tidak terkirim. OTP Anda adalah: ' . $otp);
                 }
 
                 return redirect()->route('verify-otp', ['email' => $normalizedEmail])
@@ -413,15 +419,14 @@ class AuthController extends Controller
 
     public function verifyOtp(Request $request)
     {
-        // Validasi email dan OTP
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'otp' => 'required|string|size:6',
-            'recaptcha_token' => 'nullable|string', // TAMBAHKAN INI
+            'email'           => 'required|email',
+            'otp'             => 'required|string|size:6',
+            'recaptcha_token' => 'nullable|string',
         ], [
             'email.required' => 'Email tidak valid',
-            'otp.required' => 'Kode OTP harus diisi',
-            'otp.size' => 'Kode OTP harus 6 digit',
+            'otp.required'   => 'Kode OTP harus diisi',
+            'otp.size'       => 'Kode OTP harus 6 digit',
         ]);
 
         if ($validator->fails()) {
@@ -430,7 +435,6 @@ class AuthController extends Controller
                 ->with('email', $request->email);
         }
 
-        // Verifikasi reCAPTCHA
         if (!$this->verifyRecaptcha($request->recaptcha_token, 'verify_otp')) {
             return redirect()->back()
                 ->with('email', $request->email)
@@ -438,7 +442,7 @@ class AuthController extends Controller
         }
 
         $cacheKey = 'otp_registration_' . $request->email;
-        $otpData = Cache::get($cacheKey);
+        $otpData  = Cache::get($cacheKey);
 
         if (!$otpData) {
             return redirect()->back()
@@ -452,50 +456,71 @@ class AuthController extends Controller
                 ->withErrors(['otp' => 'Kode OTP tidak valid.']);
         }
 
+        // ← BACA ROLE DARI CACHE (dengan fallback ke session, lalu default)
+        $role = $otpData['role']
+            ?? session('otp_role')
+            ?? 'admin_masjid';
+
         DB::beginTransaction();
 
         try {
-            // Cek apakah pengguna sudah ada (untuk kasus resend)
             $pengguna = Pengguna::where('email', $request->email)->first();
 
             if (!$pengguna) {
-                // Buat pengguna baru
+                // Buat pengguna baru dengan role yang benar
                 $pengguna = Pengguna::create([
-                    'uuid' => (string) Str::uuid(),
-                    'email' => $request->email,
+                    'uuid'              => (string) Str::uuid(),
+                    'email'             => $request->email,
                     'email_verified_at' => now(),
-                    'peran' => 'admin_masjid',
-                    'is_active' => false,
+                    'peran'             => $role,  // ← PAKAI ROLE DARI CACHE
+                    'is_active'         => false,
                 ]);
             } else {
-                // Update email_verified_at jika belum diverifikasi
+                // Update jika belum diverifikasi
+                $updateData = [];
                 if (!$pengguna->email_verified_at) {
-                    $pengguna->update(['email_verified_at' => now()]);
+                    $updateData['email_verified_at'] = now();
+                }
+                // Update role juga jika belum aktif (belum complete profile)
+                if (!$pengguna->is_active) {
+                    $updateData['peran'] = $role;
+                }
+                if (!empty($updateData)) {
+                    $pengguna->update($updateData);
                 }
             }
 
             // Hapus cache OTP
             Cache::forget($cacheKey);
             Cache::forget('otp_cooldown_' . $request->email);
+            session()->forget('otp_role');
 
             // Buat token untuk complete profile
             $profileToken = (string) Str::uuid();
-            $cacheData = [
-                'email' => $request->email,
+            $cacheData    = [
+                'email'       => $request->email,
                 'pengguna_id' => $pengguna->id,
-                'token' => $profileToken,
-                'created_at' => now()->toDateTimeString(),
+                'token'       => $profileToken,
+                'role'        => $role,           // ← SIMPAN ROLE DI SINI JUGA
+                'created_at'  => now()->toDateTimeString(),
             ];
 
             Cache::put('complete_profile_' . $request->email, $cacheData, 3600);
             Cache::put('token_map_' . $profileToken, $request->email, 3600);
 
             DB::commit();
+
             $this->logAuth('verify_otp', 'Email berhasil diverifikasi via OTP', [
                 'email' => $request->email,
+                'role'  => $role,
             ], $pengguna->id);
 
-            return redirect()->route('complete-profile', ['token' => $profileToken])
+            // ← REDIRECT SESUAI ROLE
+            $redirectRoute = $role === 'muzakki'
+                ? 'complete-profile-muzakki'
+                : 'complete-profile';
+
+            return redirect()->route($redirectRoute, ['token' => $profileToken])
                 ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -1325,6 +1350,190 @@ class AuthController extends Controller
         }
     }
 
+    public function showCompleteProfileMuzakki($token)
+    {
+        if (!$token) {
+            return redirect()->route('register')
+                ->with('error', 'Token tidak valid. Silakan daftar ulang.');
+        }
+
+        $tokenMapKey = 'token_map_' . $token;
+        $email       = Cache::get($tokenMapKey);
+
+        if (!$email) {
+            return redirect()->route('register')
+                ->with('error', 'Token tidak valid atau sesi telah berakhir. Silakan daftar ulang.');
+        }
+
+        $cacheKey  = 'complete_profile_' . $email;
+        $cacheData = Cache::get($cacheKey);
+
+        if (!$cacheData || !isset($cacheData['pengguna_id'])) {
+            return redirect()->route('register')
+                ->with('error', 'Sesi telah berakhir. Silakan daftar ulang.');
+        }
+
+        $pengguna = Pengguna::find($cacheData['pengguna_id']);
+
+        if (!$pengguna) {
+            return redirect()->route('register')
+                ->with('error', 'Pengguna tidak ditemukan. Silakan daftar ulang.');
+        }
+
+        // Pastikan role-nya muzakki, kalau bukan redirect ke complete-profile admin
+        if ($pengguna->peran !== 'muzakki') {
+            return redirect()->route('complete-profile', ['token' => $token]);
+        }
+
+        $isGoogleUser = !empty($pengguna->google_id);
+        $maskedEmail  = $this->maskEmail($pengguna->email);
+
+        $masjidList = Masjid::where('is_active', true)
+            ->orderBy('nama', 'asc')
+            ->get(['id', 'nama', 'kota_nama', 'provinsi_nama']);
+
+        $recaptchaConfig  = RecaptchaConfig::first();
+        $recaptchaSiteKey = $recaptchaConfig?->RECAPTCHA_SITE_KEY ?? null;
+
+        return view('auth.complete-profile-muzakki', compact(
+            'pengguna',
+            'maskedEmail',
+            'isGoogleUser',
+            'masjidList',
+            'token',
+            'recaptchaSiteKey'
+        ));
+    }
+
+    public function storeCompleteProfileMuzakki(Request $request, $token)
+    {
+        $pengguna = Pengguna::find($request->pengguna_id);
+
+        if (!$pengguna) {
+            return back()->with('error', 'Pengguna tidak ditemukan')->withInput();
+        }
+
+        $isGoogleUser = !empty($pengguna->google_id);
+
+        $rules = [
+            'nama'            => 'required|string|max:255',
+            'telepon'         => 'required|string|max:20',
+            'masjid_id'       => 'required|exists:masjid,id',
+            'username'        => $isGoogleUser ? 'nullable' : [
+                'required',
+                'string',
+                'min:6',
+                'max:50',
+                'regex:/^[a-zA-Z0-9_]+$/',
+                'unique:pengguna,username,' . $pengguna->id,
+            ],
+            'password'        => $isGoogleUser ? 'nullable' : 'required|string|min:8|confirmed',
+            'foto'            => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
+            'recaptcha_token' => 'nullable|string',
+        ];
+
+        $messages = [
+            'nama.required'      => 'Nama lengkap wajib diisi',
+            'telepon.required'   => 'Nomor telepon wajib diisi',
+            'masjid_id.required' => 'Pilih masjid terlebih dahulu',
+            'masjid_id.exists'   => 'Masjid tidak ditemukan',
+            'username.required'  => 'Username wajib diisi',
+            'username.min'       => 'Username minimal 6 karakter',
+            'username.regex'     => 'Username hanya boleh huruf, angka, dan underscore',
+            'username.unique'    => 'Username sudah digunakan',
+            'password.required'  => 'Password wajib diisi',
+            'password.min'       => 'Password minimal 8 karakter',
+            'password.confirmed' => 'Konfirmasi password tidak cocok',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        if (!$this->verifyRecaptcha($request->recaptcha_token, 'complete_profile_muzakki')) {
+            return back()
+                ->with('error', 'Verifikasi reCAPTCHA gagal. Silakan coba lagi.')
+                ->withInput();
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // STEP 1: Update pengguna
+            $penggunaData = ['is_active' => true];
+
+            if ($isGoogleUser) {
+                $penggunaData['username'] = $this->generateUniqueUsername($pengguna->email, $pengguna->id);
+            } else {
+                $penggunaData['username'] = $request->username;
+                $penggunaData['password'] = Hash::make($request->password);
+            }
+
+            $pengguna->update($penggunaData);
+
+            // STEP 2: Upload foto (opsional)
+            $fotoPath = null;
+            if ($request->hasFile('foto')) {
+                $fotoPath = $request->file('foto')->store('muzakki-fotos', 'public');
+            }
+
+            // STEP 3: Buat record muzakki
+            \App\Models\Muzakki::create([
+                'uuid'        => (string) Str::uuid(),
+                'pengguna_id' => $pengguna->id,
+                'masjid_id'   => $request->masjid_id,
+                'nama'        => $request->nama,
+                'telepon'     => $request->telepon,
+                'email'       => $pengguna->email,
+                'foto'        => $fotoPath,
+                'is_active'   => true,
+            ]);
+
+            // STEP 4: Cleanup cache
+            $this->cleanupRegistrationCache($pengguna->email, $token);
+
+            // STEP 5: Kirim email (silent fail)
+            try {
+                $this->loadMailConfig();
+                Mail::send('emails.registration-success', [
+                    'nama'         => $request->nama,
+                    'username'     => $penggunaData['username'],
+                    'email'        => $pengguna->email,
+                    'isGoogleUser' => $isGoogleUser,
+                    'password'     => $isGoogleUser ? null : $request->password,
+                    'peran'        => 'muzakki',
+                    'nama_masjid'  => null,
+                    'kode_masjid'  => null,
+                ], function ($message) use ($pengguna) {
+                    $message->to($pengguna->email)
+                        ->subject('Registrasi Berhasil - Niat Zakat');
+                });
+            } catch (\Exception $mailEx) {
+                Log::warning('Email registrasi muzakki gagal: ' . $mailEx->getMessage());
+            }
+
+            DB::commit();
+
+            $this->logRegistrasi('Registrasi muzakki berhasil', [
+                'username'  => $penggunaData['username'],
+                'nama'      => $request->nama,
+                'masjid_id' => $request->masjid_id,
+            ], $pengguna->id);
+
+            return redirect()->route('login')
+                ->with('success', 'Registrasi berhasil! Silakan login untuk mulai berzakat.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Complete Profile Muzakki Error: ' . $e->getMessage());
+
+            return back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     /**
      * HELPER METHODS
      */
@@ -1458,13 +1667,15 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
     }
 
-    /**
-     * GOOGLE OAUTH
-     */
     public function redirectToGoogle(Request $request)
     {
         $action = $request->query('action', 'login');
-        session(['oauth_action' => $action]);
+        $role   = $request->query('role', 'admin_masjid'); // ← AMBIL ROLE
+
+        session([
+            'oauth_action' => $action,
+            'oauth_role'   => $role,  // ← SIMPAN ROLE
+        ]);
 
         $googleConfig = GoogleConfig::first();
 
@@ -1474,13 +1685,14 @@ class AuthController extends Controller
         }
 
         config([
-            'services.google.client_id' => $googleConfig->GOOGLE_CLIENT_ID,
+            'services.google.client_id'     => $googleConfig->GOOGLE_CLIENT_ID,
             'services.google.client_secret' => $googleConfig->GOOGLE_CLIENT_SECRET,
-            'services.google.redirect' => $googleConfig->GOOGLE_REDIRECT_URI ?? url('/auth/google/callback'),
+            'services.google.redirect'      => $googleConfig->GOOGLE_REDIRECT_URI ?? url('/auth/google/callback'),
         ]);
 
         return Socialite::driver('google')->redirect();
     }
+
 
     public function handleGoogleCallback(Request $request)
     {
@@ -1489,14 +1701,14 @@ class AuthController extends Controller
 
             if ($googleConfig) {
                 config([
-                    'services.google.client_id' => $googleConfig->GOOGLE_CLIENT_ID,
+                    'services.google.client_id'     => $googleConfig->GOOGLE_CLIENT_ID,
                     'services.google.client_secret' => $googleConfig->GOOGLE_CLIENT_SECRET,
-                    'services.google.redirect' => $googleConfig->GOOGLE_REDIRECT_URI ?? url('/auth/google/callback'),
+                    'services.google.redirect'      => $googleConfig->GOOGLE_REDIRECT_URI ?? url('/auth/google/callback'),
                 ]);
             }
 
             $googleUser = Socialite::driver('google')->user();
-            $action = session('oauth_action', 'login');
+            $action     = session('oauth_action', 'login');
             session()->forget('oauth_action');
 
             if ($action === 'register') {
@@ -1506,12 +1718,13 @@ class AuthController extends Controller
             return $this->handleGoogleLogin($googleUser, $request);
         } catch (\Exception $e) {
             $redirectRoute = session('oauth_action', 'login') === 'register' ? 'register' : 'login';
-            session()->forget('oauth_action');
+            session()->forget(['oauth_action', 'oauth_role']);
 
             return redirect()->route($redirectRoute)
                 ->with('error', 'Terjadi kesalahan saat login dengan Google. Silakan coba lagi.');
         }
     }
+
 
     private function handleGoogleRegister($googleUser)
     {
@@ -1527,27 +1740,31 @@ class AuthController extends Controller
                 ->with('error', 'Email sudah terdaftar dengan metode lain. Silakan login.');
         }
 
+        // ← BACA ROLE DARI SESSION
+        $role = session('oauth_role', 'admin_masjid');
+        session()->forget('oauth_role');
+
         DB::beginTransaction();
         try {
             $pengguna = Pengguna::create([
-                'uuid' => (string) Str::uuid(),
-                'email' => $googleUser->email,
-                'google_id' => $googleUser->id,
-                'google_token' => $googleUser->token,
-                'refresh_token' => $googleUser->refreshToken,
+                'uuid'              => (string) Str::uuid(),
+                'email'             => $googleUser->email,
+                'google_id'         => $googleUser->id,
+                'google_token'      => $googleUser->token,
+                'refresh_token'     => $googleUser->refreshToken,
                 'email_verified_at' => now(),
-                'peran' => 'admin_masjid',
-                'is_active' => false,
+                'peran'             => $role,  // ← PAKAI ROLE DARI SESSION
+                'is_active'         => false,
             ]);
 
             $profileToken = (string) Str::uuid();
-
-            $cacheData = [
-                'email' => $googleUser->email,
+            $cacheData    = [
+                'email'       => $googleUser->email,
                 'pengguna_id' => $pengguna->id,
-                'token' => $profileToken,
-                'created_at' => now()->toDateTimeString(),
-                'source' => 'google_oauth'
+                'token'       => $profileToken,
+                'role'        => $role,        // ← SIMPAN ROLE
+                'created_at'  => now()->toDateTimeString(),
+                'source'      => 'google_oauth',
             ];
 
             Cache::put('complete_profile_' . $googleUser->email, $cacheData, 3600);
@@ -1555,14 +1772,23 @@ class AuthController extends Controller
             Cache::put('token_map_' . $profileToken, $googleUser->email, 3600);
 
             DB::commit();
+
             $this->logRegistrasi('Akun baru dibuat via Google OAuth', [
                 'email' => $googleUser->email,
+                'role'  => $role,
             ], $pengguna->id);
 
-            return redirect()->route('complete-profile', ['token' => $profileToken])
+            // ← REDIRECT SESUAI ROLE
+            $redirectRoute = $role === 'muzakki'
+                ? 'complete-profile-muzakki'
+                : 'complete-profile';
+
+            return redirect()->route($redirectRoute, ['token' => $profileToken])
                 ->with('success', 'Akun berhasil dibuat dengan Google. Silakan lengkapi profil Anda.');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Google Register Error: ' . $e->getMessage());
+
             return redirect()->route('register')
                 ->with('error', 'Terjadi kesalahan saat registrasi dengan Google. Silakan coba lagi.');
         }

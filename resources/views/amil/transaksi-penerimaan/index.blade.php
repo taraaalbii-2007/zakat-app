@@ -95,6 +95,10 @@
                         <p class="text-xs font-medium text-gray-500 truncate">Total Nominal</p>
                         <p class="text-xl sm:text-2xl font-semibold text-gray-900">Rp {{ number_format($stats['total_nominal'], 0, ',', '.') }}</p>
                         <p class="text-xs text-gray-500 mt-0.5">Hari ini: Rp {{ number_format($stats['total_hari_ini'], 0, ',', '.') }}</p>
+                        {{-- ▼ BARU: tampilkan infaq jika ada --}}
+                        @if (isset($stats['total_infaq']) && $stats['total_infaq'] > 0)
+                            <p class="text-xs text-amber-600 mt-0.5">+Infaq: Rp {{ number_format($stats['total_infaq'], 0, ',', '.') }}</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -228,7 +232,6 @@
                             </select>
                         </div>
 
-                        {{-- ▼ BARU: Filter konfirmasi status (hanya untuk transfer/qris) --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status Konfirmasi Pembayaran</label>
                             <select name="konfirmasi_status"
@@ -267,6 +270,7 @@
                             </select>
                         </div>
 
+                        {{-- ▼ DIPERBAIKI: tambah opsi 'daring' --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Metode Penerimaan</label>
                             <select name="metode_penerimaan"
@@ -275,6 +279,7 @@
                                 <option value="">Semua</option>
                                 <option value="datang_langsung" {{ request('metode_penerimaan') == 'datang_langsung' ? 'selected' : '' }}>Datang Langsung</option>
                                 <option value="dijemput"        {{ request('metode_penerimaan') == 'dijemput'        ? 'selected' : '' }}>Dijemput</option>
+                                <option value="daring"          {{ request('metode_penerimaan') == 'daring'          ? 'selected' : '' }}>Daring (Online)</option>
                             </select>
                         </div>
 
@@ -329,10 +334,9 @@
                                     $canContinue = $transaksi->status === 'pending'
                                                 && $transaksi->metode_penerimaan === 'dijemput'
                                                 && (!$transaksi->jenis_zakat_id || !$transaksi->metode_pembayaran);
-                                    $needsKonfirmasi = $transaksi->bisa_dikonfirmasi; // accessor dari model
+                                    $needsKonfirmasi = $transaksi->bisa_dikonfirmasi;
                                 @endphp
 
-                                {{-- Parent Row --}}
                                 <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
                                     {{ $needsKonfirmasi ? 'bg-amber-50/30' : '' }}"
                                     data-target="detail-{{ $transaksi->uuid }}">
@@ -353,10 +357,15 @@
                                                 @if ($transaksi->jumlah > 0)
                                                     · <span class="font-semibold text-gray-700">{{ $transaksi->jumlah_formatted }}</span>
                                                 @endif
+                                                {{-- ▼ BARU: tampilkan badge infaq jika ada kelebihan bayar --}}
+                                                @if ($transaksi->has_infaq && ($transaksi->jumlah_infaq ?? 0) > 0)
+                                                    · <span class="text-amber-600 font-medium">+Infaq {{ $transaksi->jumlah_infaq_formatted }}</span>
+                                                @endif
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $transaksi->status_badge !!}
-                                                {{-- ▼ Badge konfirmasi untuk transfer/qris --}}
+                                                {{-- ▼ BARU: badge metode penerimaan (termasuk daring) --}}
+                                                {!! $transaksi->metode_penerimaan_badge !!}
                                                 @if ($transaksi->metode_pembayaran && $transaksi->metode_pembayaran !== 'tunai')
                                                     {!! $transaksi->konfirmasi_status_badge !!}
                                                 @endif
@@ -366,7 +375,6 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -378,7 +386,8 @@
                                             data-can-delete="{{ $canDelete ? '1' : '0' }}"
                                             data-can-verify="{{ $canVerify ? '1' : '0' }}"
                                             data-can-continue="{{ $canContinue ? '1' : '0' }}"
-                                            data-can-konfirmasi="{{ $needsKonfirmasi ? '1' : '0' }}">
+                                            data-can-konfirmasi="{{ $needsKonfirmasi ? '1' : '0' }}"
+                                            data-metode="{{ $transaksi->metode_pembayaran }}">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                             </svg>
@@ -486,21 +495,32 @@
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah</p>
+                                                                        <p class="text-xs text-gray-500">Jumlah Zakat</p>
                                                                         <p class="text-sm font-semibold text-green-600">{{ $transaksi->jumlah_formatted }}</p>
+                                                                        {{-- ▼ BARU: detail infaq --}}
+                                                                        @if ($transaksi->has_infaq && ($transaksi->jumlah_infaq ?? 0) > 0)
+                                                                            <p class="text-xs text-amber-600 mt-0.5">
+                                                                                Dibayar: {{ $transaksi->jumlah_dibayar_formatted }}
+                                                                                <span class="font-medium">(+Infaq {{ $transaksi->jumlah_infaq_formatted }})</span>
+                                                                            </p>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             @endif
                                                         </div>
                                                     </div>
 
-                                                    {{-- Kolom 3: Metode & Status (UPDATED) --}}
+                                                    {{-- Kolom 3: Metode & Status --}}
                                                     <div>
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Metode & Status</h4>
                                                         <div class="space-y-3">
                                                             <div>
                                                                 <p class="text-xs text-gray-500 mb-1">Metode Penerimaan</p>
                                                                 {!! $transaksi->metode_penerimaan_badge !!}
+                                                                {{-- ▼ badge "Diinput Muzakki" jika transaksi daring --}}
+                                                                @if ($transaksi->diinput_muzakki)
+                                                                    <span class="ml-1 px-1.5 py-0.5 text-xs rounded bg-indigo-50 text-indigo-700 border border-indigo-200">via Muzakki</span>
+                                                                @endif
                                                             </div>
                                                             @if ($transaksi->metode_pembayaran)
                                                                 <div>
@@ -508,7 +528,6 @@
                                                                     {!! $transaksi->metode_pembayaran_badge !!}
                                                                 </div>
                                                             @endif
-                                                            {{-- ▼ Status konfirmasi (ganti payment_status) --}}
                                                             @if ($transaksi->metode_pembayaran && $transaksi->metode_pembayaran !== 'tunai')
                                                                 <div>
                                                                     <p class="text-xs text-gray-500 mb-1">Status Konfirmasi</p>
@@ -542,9 +561,11 @@
                                                 <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-3">
                                                     <div class="text-xs text-gray-500">
                                                         No. Transaksi: <span class="font-medium text-gray-700">{{ $transaksi->no_transaksi }}</span>
+                                                        @if ($transaksi->no_kwitansi)
+                                                            · Kwitansi: <span class="font-medium text-gray-700">{{ $transaksi->no_kwitansi }}</span>
+                                                        @endif
                                                     </div>
                                                     <div class="flex gap-2 flex-wrap">
-                                                        {{-- ▼ Tombol Konfirmasi Pembayaran (muncul kalau menunggu konfirmasi) --}}
                                                         @if ($needsKonfirmasi)
                                                             <button type="button"
                                                                 onclick="openKonfirmasiModal('{{ $transaksi->uuid }}', '{{ $transaksi->muzakki_nama }}', '{{ $transaksi->metode_pembayaran }}')"
@@ -618,13 +639,18 @@
                                                 <span class="text-xs text-gray-500 mx-2">•</span>
                                                 <span class="text-xs font-semibold text-gray-700">{{ $transaksi->jumlah_formatted }}</span>
                                             @endif
+                                            {{-- ▼ BARU: tampilkan infaq di mobile --}}
+                                            @if ($transaksi->has_infaq && ($transaksi->jumlah_infaq ?? 0) > 0)
+                                                <span class="text-xs text-gray-500 mx-1">•</span>
+                                                <span class="text-xs text-amber-600 font-medium">+Infaq</span>
+                                            @endif
                                         </div>
-                                        {{-- ▼ Badge konfirmasi di mobile --}}
-                                        @if ($transaksi->metode_pembayaran && $transaksi->metode_pembayaran !== 'tunai')
-                                            <div class="mt-1">
+                                        <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                                            {!! $transaksi->metode_penerimaan_badge !!}
+                                            @if ($transaksi->metode_pembayaran && $transaksi->metode_pembayaran !== 'tunai')
                                                 {!! $transaksi->konfirmasi_status_badge !!}
-                                            </div>
-                                        @endif
+                                            @endif
+                                        </div>
                                         @if ($canContinue)
                                             <div class="mt-1">
                                                 <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Data Belum Lengkap</span>
@@ -700,7 +726,13 @@
                                                         <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
-                                                        <span class="font-semibold text-green-600">{{ $transaksi->jumlah_formatted }}</span>
+                                                        <div>
+                                                            <span class="font-semibold text-green-600">{{ $transaksi->jumlah_formatted }}</span>
+                                                            {{-- ▼ BARU: detail infaq di mobile --}}
+                                                            @if ($transaksi->has_infaq && ($transaksi->jumlah_infaq ?? 0) > 0)
+                                                                <span class="text-xs text-amber-600 ml-1">(+Infaq {{ $transaksi->jumlah_infaq_formatted }})</span>
+                                                            @endif
+                                                        </div>
                                                     </div>
                                                 @endif
                                                 <div class="flex items-center gap-2 flex-wrap">
@@ -709,7 +741,6 @@
                                                         {!! $transaksi->metode_pembayaran_badge !!}
                                                     @endif
                                                 </div>
-                                                {{-- ▼ Status konfirmasi di mobile expandable --}}
                                                 @if ($transaksi->metode_pembayaran && $transaksi->metode_pembayaran !== 'tunai')
                                                     <div class="flex items-center gap-2">
                                                         {!! $transaksi->konfirmasi_status_badge !!}
@@ -723,7 +754,6 @@
 
                                         <div class="pt-3 border-t border-gray-200">
                                             <div class="flex gap-2 flex-wrap">
-                                                {{-- ▼ Tombol konfirmasi di mobile --}}
                                                 @if ($needsKonfirmasi)
                                                     <button type="button"
                                                         onclick="openKonfirmasiModal('{{ $transaksi->uuid }}', '{{ $transaksi->muzakki_nama }}', '{{ $transaksi->metode_pembayaran }}')"
@@ -837,7 +867,6 @@
                     Cetak Kwitansi
                 </a>
 
-                {{-- ▼ BARU: Konfirmasi Pembayaran di dropdown --}}
                 <div class="border-t border-gray-100 my-1" id="dd-divider-konfirmasi" style="display:none;"></div>
                 <button type="button" id="dd-konfirmasi"
                     class="flex items-center w-full px-4 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition-colors hidden">
@@ -987,20 +1016,19 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            // ── Referensi elemen ──────────────────────────────────────────
-            const dropdown         = document.getElementById('dropdown-container');
-            const ddDetail         = document.getElementById('dd-detail');
-            const ddContinue       = document.getElementById('dd-continue');
-            const ddPrint          = document.getElementById('dd-print');
-            const ddKonfirmasi     = document.getElementById('dd-konfirmasi');
-            const ddVerify         = document.getElementById('dd-verify');
-            const ddEdit           = document.getElementById('dd-edit');
-            const ddDelete         = document.getElementById('dd-delete');
+            const dropdown            = document.getElementById('dropdown-container');
+            const ddDetail            = document.getElementById('dd-detail');
+            const ddContinue          = document.getElementById('dd-continue');
+            const ddPrint             = document.getElementById('dd-print');
+            const ddKonfirmasi        = document.getElementById('dd-konfirmasi');
+            const ddVerify            = document.getElementById('dd-verify');
+            const ddEdit              = document.getElementById('dd-edit');
+            const ddDelete            = document.getElementById('dd-delete');
             const ddDividerKonfirmasi = document.getElementById('dd-divider-konfirmasi');
-            const ddDividerVerify  = document.getElementById('dd-divider-verify');
-            const ddDividerDelete  = document.getElementById('dd-divider-delete');
+            const ddDividerVerify     = document.getElementById('dd-divider-verify');
+            const ddDividerDelete     = document.getElementById('dd-divider-delete');
 
-            // ── Desktop expandable rows ───────────────────────────────────
+            // ── Desktop expandable rows ──
             document.querySelectorAll('.expandable-row').forEach(row => {
                 row.addEventListener('click', function (e) {
                     if (e.target.closest('a, .dropdown-toggle, button')) return;
@@ -1011,7 +1039,7 @@
                 });
             });
 
-            // ── Mobile expandable cards ───────────────────────────────────
+            // ── Mobile expandable cards ──
             document.querySelectorAll('.expandable-row-mobile').forEach(row => {
                 row.addEventListener('click', function (e) {
                     if (e.target.closest('a, .dropdown-toggle, button')) return;
@@ -1022,20 +1050,18 @@
                 });
             });
 
-            // ── Tutup dropdown ────────────────────────────────────────────
             function closeDropdown() {
                 dropdown.classList.add('hidden');
                 dropdown.removeAttribute('data-uuid');
             }
 
-            // ── Posisikan dropdown ────────────────────────────────────────
             function positionDropdown(toggle) {
-                const rect  = toggle.getBoundingClientRect();
-                const ddW   = 224;
-                const ddH   = dropdown.offsetHeight || 280;
+                const rect   = toggle.getBoundingClientRect();
+                const ddW    = 224;
+                const ddH    = dropdown.offsetHeight || 280;
                 const margin = 6;
-                const vpW   = window.innerWidth;
-                const vpH   = window.innerHeight;
+                const vpW    = window.innerWidth;
+                const vpH    = window.innerHeight;
 
                 let left = rect.right - ddW;
                 if (left < margin) left = margin;
@@ -1049,21 +1075,21 @@
                 dropdown.style.left = left + 'px';
             }
 
-            // ── Event klik global ─────────────────────────────────────────
             document.addEventListener('click', function (e) {
                 const toggle = e.target.closest('.dropdown-toggle');
 
                 if (toggle) {
                     e.stopPropagation();
 
-                    const uuid         = toggle.dataset.uuid;
-                    const nama         = toggle.dataset.nama;
-                    const canEdit      = toggle.dataset.canEdit      === '1';
-                    const canDelete    = toggle.dataset.canDelete    === '1';
-                    const canVerify    = toggle.dataset.canVerify    === '1';
-                    const canContinue  = toggle.dataset.canContinue  === '1';
+                    const uuid          = toggle.dataset.uuid;
+                    const nama          = toggle.dataset.nama;
+                    const canEdit       = toggle.dataset.canEdit       === '1';
+                    const canDelete     = toggle.dataset.canDelete     === '1';
+                    const canVerify     = toggle.dataset.canVerify     === '1';
+                    const canContinue   = toggle.dataset.canContinue   === '1';
                     const canKonfirmasi = toggle.dataset.canKonfirmasi === '1';
-                    const metode       = toggle.dataset.metode || '';
+                    // ▼ DIPERBAIKI: baca data-metode dari button
+                    const metode        = toggle.dataset.metode        || '';
 
                     if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
                         closeDropdown(); return;
@@ -1074,10 +1100,10 @@
                     ddDetail.href = `/transaksi-penerimaan/${uuid}`;
                     ddPrint.href  = `/transaksi-penerimaan/${uuid}/print`;
 
-                    // Continue
-                    canContinue ? (ddContinue.href = `/transaksi-penerimaan/${uuid}/edit`, show(ddContinue)) : hide(ddContinue);
+                    canContinue
+                        ? (ddContinue.href = `/transaksi-penerimaan/${uuid}/edit`, show(ddContinue))
+                        : hide(ddContinue);
 
-                    // Konfirmasi Pembayaran
                     if (canKonfirmasi) {
                         show(ddKonfirmasi);
                         ddDividerKonfirmasi.style.display = '';
@@ -1090,7 +1116,6 @@
                         ddDividerKonfirmasi.style.display = 'none';
                     }
 
-                    // Verify
                     if (canVerify) {
                         show(ddVerify);
                         ddDividerVerify.style.display = '';
@@ -1100,10 +1125,10 @@
                         ddDividerVerify.style.display = 'none';
                     }
 
-                    // Edit
-                    canEdit ? (ddEdit.href = `/transaksi-penerimaan/${uuid}/edit`, show(ddEdit)) : hide(ddEdit);
+                    canEdit
+                        ? (ddEdit.href = `/transaksi-penerimaan/${uuid}/edit`, show(ddEdit))
+                        : hide(ddEdit);
 
-                    // Delete
                     if (canDelete) {
                         show(ddDelete);
                         ddDividerDelete.style.display = '';
@@ -1127,29 +1152,25 @@
             function show(el) { el.classList.remove('hidden'); }
             function hide(el) { el.classList.add('hidden'); }
 
-            // ── Modal Konfirmasi Pembayaran ────────────────────────────────
             function openKonfirmasiModal(uuid, nama, metode) {
-                document.getElementById('modal-konfirmasi-nama').textContent    = nama;
-                document.getElementById('modal-konfirmasi-metode').textContent  = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
+                document.getElementById('modal-konfirmasi-nama').textContent   = nama;
+                document.getElementById('modal-konfirmasi-metode').textContent = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
                 document.getElementById('konfirmasi-form').action = `/transaksi-penerimaan/${uuid}/konfirmasi-pembayaran`;
                 document.getElementById('konfirmasi-catatan').value = '';
                 openModal('konfirmasi-modal');
             }
 
-            // Sync catatan input → hidden field saat submit
             document.getElementById('konfirmasi-form')?.addEventListener('submit', function () {
                 document.getElementById('konfirmasi-catatan-hidden').value =
                     document.getElementById('konfirmasi-catatan').value;
             });
 
-            // ── Modal Verify ─────────────────────────────────────────────
             function openVerifyModal(uuid, nama) {
                 document.getElementById('modal-verify-nama').textContent = nama;
                 document.getElementById('verify-form').action = `/transaksi-penerimaan/${uuid}/verify`;
                 openModal('verify-modal');
             }
 
-            // ── Modal Delete ─────────────────────────────────────────────
             function openDeleteModal(uuid, nama) {
                 document.getElementById('modal-delete-nama').textContent = nama;
                 document.getElementById('delete-form').action = `/transaksi-penerimaan/${uuid}`;
@@ -1161,7 +1182,6 @@
                 document.body.style.overflow = 'hidden';
             }
 
-            // Backdrop click menutup modal
             ['konfirmasi-modal', 'verify-modal', 'delete-modal'].forEach(id => {
                 document.getElementById(id)?.addEventListener('click', function (e) {
                     if (e.target === this) closeModal(id);
@@ -1173,13 +1193,11 @@
             window.openDeleteModal     = openDeleteModal;
         });
 
-        // ── Global closeModal ─────────────────────────────────────────────
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
             document.body.style.overflow = '';
         }
 
-        // ── Search & Filter ───────────────────────────────────────────────
         function toggleSearch() {
             const btn       = document.getElementById('search-button');
             const form      = document.getElementById('search-form');
@@ -1191,7 +1209,6 @@
                 container.style.minWidth = '280px';
                 setTimeout(() => input.focus(), 50);
             } else {
-                if (!'{{ request('q') }}') input.value = '';
                 form.classList.add('hidden');
                 btn.classList.remove('hidden');
                 container.style.minWidth = '';
