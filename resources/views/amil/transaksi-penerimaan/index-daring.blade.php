@@ -1,5 +1,5 @@
 {{--
-    resources/views/amil/transaksi-penerimaan/index-daring.blade.php
+    resources/views/amil/transaksi-daring/index-daring.blade.php
 
     DIPAKAI OLEH  : Amil / Admin Masjid
     CONTROLLER    : indexDaring() — hanya menampilkan transaksi mode daring
@@ -463,7 +463,7 @@
                                                                 Konfirmasi Pembayaran
                                                             </button>
                                                         @endif
-                                                        <a href="{{ route('transaksi-penerimaan.show', $trx->uuid) }}"
+                                                        <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
                                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -610,7 +610,7 @@
                                                         Konfirmasi
                                                     </button>
                                                 @endif
-                                                <a href="{{ route('transaksi-penerimaan.show', $trx->uuid) }}"
+                                                <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
                                                     class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -819,7 +819,7 @@
 
                     dropdown.dataset.uuid = uuid;
 
-                    ddDetail.href = `/transaksi-penerimaan/${uuid}`;
+                    ddDetail.href = `/transaksi-daring/${uuid}`;
 
                     if (canKonfirmasi) {
                         show(ddKonfirmasi);
@@ -850,7 +850,7 @@
             function openKonfirmasiModal(uuid, nama, metode) {
                 document.getElementById('modal-konfirmasi-nama').textContent   = nama;
                 document.getElementById('modal-konfirmasi-metode').textContent = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
-                document.getElementById('konfirmasi-form').action = `/transaksi-penerimaan/${uuid}/konfirmasi-pembayaran`;
+                document.getElementById('konfirmasi-form').action = `/transaksi-daring/${uuid}/konfirmasi-pembayaran`;
                 document.getElementById('konfirmasi-catatan').value = '';
                 openModal('konfirmasi-modal');
             }

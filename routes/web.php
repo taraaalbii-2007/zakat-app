@@ -58,9 +58,9 @@ Route::middleware('guest')->group(function () {
     Route::post('/complete-profile/{token}', [AuthController::class, 'storeCompleteProfile'])->name('complete-profile.store');
 
     Route::get('/complete-profile-muzakki/{token}', [AuthController::class, 'showCompleteProfileMuzakki'])
-    ->name('complete-profile-muzakki');
+        ->name('complete-profile-muzakki');
     Route::post('/complete-profile-muzakki/{token}', [AuthController::class, 'storeCompleteProfileMuzakki'])
-    ->name('complete-profile-muzakki.store');
+        ->name('complete-profile-muzakki.store');
 
     Route::get('/reset-password-sent', [AuthController::class, 'showResetSent'])->name('password.reset-sent');
     Route::post('/resend-reset-link', [AuthController::class, 'resendResetLink'])->name('password.resend');
@@ -347,7 +347,7 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
     // - Data Mustahik (view only)
     // - Laporan Harian
     // Transaksi Penerimaan
-  Route::prefix('pemantauan-transaksi')->name('pemantauan-transaksi.')->group(function () {
+    Route::prefix('pemantauan-transaksi')->name('pemantauan-transaksi.')->group(function () {
         // INDEX — semua transaksi (tanpa tombol create/aksi)
         Route::get('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'index'])
             ->name('index');
@@ -364,52 +364,52 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
     });
 
 
-Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->group(function () {
-    // INDEX DATANG LANGSUNG
-    Route::get('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'indexDatangLangsung'])
-        ->name('index');
+    Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->group(function () {
+        // INDEX DATANG LANGSUNG
+        Route::get('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'indexDatangLangsung'])
+            ->name('index');
 
-    // EXPORT
-    Route::get('/export/excel', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'exportExcel'])
-        ->name('export.excel');
+        // EXPORT
+        Route::get('/export/excel', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'exportExcel'])
+            ->name('export.excel');
 
-    // CREATE
-    Route::get('/create', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'createDatangLangsung'])
-        ->name('create');
+        // CREATE
+        Route::get('/create', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'createDatangLangsung'])
+            ->name('create');
 
-    // STORE
-    Route::post('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'storeDatangLangsung'])
+        // STORE
+        Route::post('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'storeDatangLangsung'])
 
-        ->name('store');
+            ->name('store');
 
-    // SHOW
-    Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showDatangLangsung'])
-        ->name('show')->whereUuid('uuid');
+        // SHOW
+        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showDatangLangsung'])
+            ->name('show')->whereUuid('uuid');
 
-    // EDIT & UPDATE
-    Route::get('/{uuid}/edit', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'edit'])
-        ->name('edit')->whereUuid('uuid');
-    Route::put('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'update'])
-        ->name('update')->whereUuid('uuid');
+        // EDIT & UPDATE
+        Route::get('/{uuid}/edit', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'edit'])
+            ->name('edit')->whereUuid('uuid');
+        Route::put('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'update'])
+            ->name('update')->whereUuid('uuid');
 
-    // DELETE
-    Route::delete('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'destroy'])
-        ->name('destroy')->whereUuid('uuid');
+        // DELETE
+        Route::delete('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'destroy'])
+            ->name('destroy')->whereUuid('uuid');
 
-    // PRINT KWITANSI
-    Route::get('/{uuid}/print', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'printKwitansi'])
-        ->name('print')->whereUuid('uuid');
+        // PRINT KWITANSI
+        Route::get('/{uuid}/print', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'printKwitansi'])
+            ->name('print')->whereUuid('uuid');
 
-    // STATUS ACTIONS
-    Route::post('/{uuid}/verify', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'verify'])
-    ->name('verify')
-    ->whereUuid('uuid')
-    ->middleware(['auth', 'active.user', 'amil', 'masjid.access']);
-    Route::post('/{uuid}/reject', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'reject'])
-        ->name('reject')->whereUuid('uuid');
-});
+        // STATUS ACTIONS
+        Route::post('/{uuid}/verify', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'verify'])
+            ->name('verify')
+            ->whereUuid('uuid')
+            ->middleware(['auth', 'active.user', 'amil', 'masjid.access']);
+        Route::post('/{uuid}/reject', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'reject'])
+            ->name('reject')->whereUuid('uuid');
+    });
 
- Route::prefix('transaksi-dijemput')->name('transaksi-dijemput.')->group(function () {
+    Route::prefix('transaksi-dijemput')->name('transaksi-dijemput.')->group(function () {
         // INDEX
         Route::get('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'indexDijemput'])
             ->name('index');
@@ -437,18 +437,24 @@ Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->
             ->name('destroy')->whereUuid('uuid');
 
         // STATUS PENJEMPUTAN (AJAX)
-        Route::post('/{uuid}/update-status-penjemputan', 
-            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'updateStatusPenjemputan'])
+        Route::post(
+            '/{uuid}/update-status-penjemputan',
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'updateStatusPenjemputan']
+        )
             ->name('update-status-penjemputan')->whereUuid('uuid');
-        Route::post('/{uuid}/konfirmasi-pembayaran', 
-            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'konfirmasiPembayaran'])
+        Route::post(
+            '/{uuid}/konfirmasi-pembayaran',
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'konfirmasiPembayaran']
+        )
             ->name('konfirmasi-pembayaran')->whereUuid('uuid');
-        Route::post('/{uuid}/tolak-pembayaran', 
-            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'tolakPembayaran'])
+        Route::post(
+            '/{uuid}/tolak-pembayaran',
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'tolakPembayaran']
+        )
             ->name('tolak-pembayaran')->whereUuid('uuid');
     });
 
-Route::prefix('transaksi-daring')->name('transaksi-daring.')->group(function () {
+    Route::prefix('transaksi-daring')->name('transaksi-daring.')->group(function () {
         // INDEX DARING
         Route::get('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'indexDaring'])
             ->name('index');
@@ -458,11 +464,15 @@ Route::prefix('transaksi-daring')->name('transaksi-daring.')->group(function () 
             ->name('show')->whereUuid('uuid');
 
         // KONFIRMASI PEMBAYARAN DARING
-        Route::post('/{uuid}/konfirmasi-pembayaran', 
-            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'konfirmasiPembayaran'])
+        Route::post(
+            '/{uuid}/konfirmasi-pembayaran',
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'konfirmasiPembayaran']
+        )
             ->name('konfirmasi-pembayaran')->whereUuid('uuid');
-        Route::post('/{uuid}/tolak-pembayaran', 
-            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'tolakPembayaran'])
+        Route::post(
+            '/{uuid}/tolak-pembayaran',
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'tolakPembayaran']
+        )
             ->name('tolak-pembayaran')->whereUuid('uuid');
     });
 
@@ -683,5 +693,24 @@ Route::middleware(['auth', 'active.user'])->prefix('api')->name('api.')->group(f
             ->name('admin.villages');
         Route::get('/admin/postal-code/{villageCode}', [WilayahController::class, 'getPostalCode'])
             ->name('admin.postal-code');
+    });
+});
+
+Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(function () {
+    Route::prefix('transaksi-daring-muzakki')->name('transaksi-daring-muzakki.')->group(function () {
+        
+        // GANTI dari AmilController ke MuzakkiController
+        Route::get('/', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'index'])
+            ->name('index');
+        
+        // GANTI dari KunjunganMustahikController ke TransaksiZakatController
+        Route::get('/create', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{uuid}', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'show'])
+            ->name('show');
     });
 });

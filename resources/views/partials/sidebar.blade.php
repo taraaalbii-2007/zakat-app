@@ -507,11 +507,14 @@
             @if ($isAmil)
                 @php
                     // Dropdown states untuk Amil
-                    $transaksiRoutes = ['transaksi-penerimaan', 'transaksi-penyaluran'];
+                    $transaksiRoutes = [
+                        'pemantauan-transaksi',
+                        'transaksi-datang-langsung',
+                        'transaksi-daring',
+                        'transaksi-dijemput',
+                        'transaksi-penyaluran',
+                    ];
                     $isTransaksiOpen = collect($transaksiRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
-
-                    $kasRoutes = ['kas-harian', 'setor-kas'];
-                    $isKasOpen = collect($kasRoutes)->contains(fn($r) => str_contains($currentRoute, $r));
                 @endphp
 
                 <!-- MENU UTAMA -->
@@ -544,9 +547,9 @@
                     </a>
                 </li>
 
-                <!-- TRANSAKSI ZAKAT (Dropdown) -->
+                <!-- KELOLA TRANSAKSI (Dropdown Utama) -->
                 <li class="mt-4 mb-1">
-                    <p class="{{ $sectionLabel }}">Transaksi Zakat</p>
+                    <p class="{{ $sectionLabel }}">Kelola Transaksi</p>
                 </li>
                 <li>
                     <details class="group" {{ $isTransaksiOpen ? 'open' : '' }}>
@@ -563,33 +566,50 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <ul class="{{ $subBorder }}">
+
+                        <ul class="{{ $subBorder }} space-y-0.5">
+                            {{-- Header: KESELURUHAN --}}
+                            <li class="mt-2 mb-0.5 px-2">
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">KESELURUHAN
+                                </p>
+                            </li>
+
+                            {{-- Pemantauan Transaksi --}}
                             <li>
                                 <a href="{{ route('pemantauan-transaksi.index') }}"
-                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $subActive : $subInactive }}">
+                                    class="flex items-center space-x-2 px-2 py-1 text-xs rounded transition-colors {{ str_contains($currentRoute, 'pemantauan-transaksi') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
                                     <span>Pemantauan Transaksi</span>
                                 </a>
                             </li>
-                             <li>
-                                <a href="{{ route('transaksi-datang-langsung.index', ['metode' => 'daring']) }}"
-                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'daring' ? $subActive : $subInactive }}">
+
+                            {{-- Header: METODE PENERIMAAN --}}
+                            <li class="mt-3 mb-0.5 px-2">
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">METODE
+                                    PENERIMAAN</p>
+                            </li>
+
+                            {{-- Datang Langsung --}}
+                            <li>
+                                <a href="{{ route('transaksi-datang-langsung.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-datang-langsung') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                     <span>Datang Langsung</span>
                                 </a>
                             </li>
-                            {{-- SUB-MENU BARU: Daring & Dijemput --}}
+
+                            {{-- Daring --}}
                             <li>
-                                <a href="{{ route('transaksi-daring.index', ['metode' => 'daring']) }}"
-                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'daring' ? $subActive : $subInactive }}">
+                                <a href="{{ route('transaksi-daring.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-daring') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -598,9 +618,11 @@
                                     <span>Daring</span>
                                 </a>
                             </li>
+
+                            {{-- Dijemput --}}
                             <li>
-                                <a href="{{ route('transaksi-dijemput.index', ['metode' => 'dijemput']) }}"
-                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'dijemput' ? $subActive : $subInactive }}">
+                                <a href="{{ route('transaksi-dijemput.index') }}"
+                                    class="flex items-center space-x-2 px-2 py-1 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-dijemput') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -611,9 +633,17 @@
                                     <span>Dijemput</span>
                                 </a>
                             </li>
+
+                            {{-- Header: TRANSAKSI --}}
+                            <li class="mt-3 mb-0.5 px-2">
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400">TRANSAKSI
+                                </p>
+                            </li>
+
+                            {{-- Transaksi Penyaluran --}}
                             <li>
                                 <a href="{{ route('transaksi-penyaluran.index') }}"
-                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $subActive : $subInactive }}">
+                                    class="flex items-center space-x-2 px-2 py-1 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penyaluran') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -631,7 +661,7 @@
                     <p class="{{ $sectionLabel }}">Kas Anda</p>
                 </li>
                 <li>
-                    <details class="group" {{ $isKasOpen ? 'open' : '' }}>
+                    <details class="group">
                         <summary class="{{ $summaryClass }} text-[13px]">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -645,7 +675,7 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <ul class="{{ $subBorder }}">
+                        <ul class="{{ $subBorder }} space-y-0.5">
                             <li>
                                 <a href="{{ route('kas-harian.index') }}"
                                     class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'kas-harian') ? $subActive : $subInactive }}">
@@ -714,7 +744,7 @@
                     <p class="{{ $sectionLabel }}">Zakat Saya</p>
                 </li>
                 <li>
-                    <a href="{{ route('transaksi-penerimaan.index') }}"
+                    <a href="{{ route('transaksi-daring-muzakki.index') }}"
                         class="flex items-center space-x-2.5 px-2 py-2 rounded-md transition-colors text-[13px] {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $activeClass : $inactiveClass }}">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

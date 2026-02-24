@@ -74,6 +74,8 @@ class Kernel extends HttpKernel
         
         // Middleware untuk complete profile
         'complete.profile' => \App\Http\Middleware\CompleteProfile::class,
+
+        'muzakki'      => \App\Http\Middleware\Muzakki::class,
         
         // Middleware untuk user aktif (sudah di middlewareGroups)
         'active.user' => \App\Http\Middleware\ActiveUser::class,

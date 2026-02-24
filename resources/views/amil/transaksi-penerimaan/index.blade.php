@@ -12,6 +12,7 @@
 @section('content')
 <div class="space-y-4 sm:space-y-6">
 
+
     {{-- ── Main Card ── --}}
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
 
@@ -235,6 +236,8 @@
                             <th class="w-12 px-4 py-3"></th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Muzakki & Transaksi</th>
+                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                                Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -289,6 +292,17 @@
                                         </div>
                                         <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}" 
+                                       class="inline-flex items-center p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
                                 </td>
                             </tr>
 
