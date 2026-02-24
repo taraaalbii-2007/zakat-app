@@ -1,5 +1,5 @@
 {{--
-    resources/views/amil/transaksi-penerimaan/create.blade.php
+    resources/views/amil/transaksi-datang-langsung/create.blade.php
 
     ┌──────────────────┬──────────────────┬────────────────────────────────────────────────────┐
     │ Peran            │ Mode ($mode)     │ Behaviour                                          │
@@ -53,7 +53,7 @@
             <p class="text-xs text-gray-500 mt-0.5">{{ $masjid->nama }} &middot; No: {{ $noTransaksiPreview }}</p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ $isMuzakki ? route('muzakki.transaksi.index') : route('transaksi-penerimaan.index') }}"
+            <a href="{{ $isMuzakki ? route('muzakki.transaksi.index') : route('transaksi-datang-langsung.index') }}"
                class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all">
                 <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -69,7 +69,15 @@
 
 {{-- ───────────────────────────────── FORM ───────────────────────────────── --}}
 <form id="mainForm"
-      action="{{ $isMuzakki ? route('muzakki.transaksi.store') : route('transaksi-penerimaan.store') }}"
+      action="{{ 
+          $isMuzakki 
+              ? route('muzakki.transaksi.store') 
+              : ($mode === 'daring' 
+                  ? route('transaksi-daring.store') 
+                  : ($mode === 'dijemput' 
+                      ? route('transaksi-dijemput.store') 
+                      : route('transaksi-datang-langsung.store')))
+      }}"
       method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
     @csrf
     {{-- Hidden state fields --}}

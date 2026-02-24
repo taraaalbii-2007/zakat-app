@@ -1,4 +1,4 @@
-{{-- resources/views/amil/transaksi-penerimaan/show.blade.php --}}
+{{-- resources/views/amil/pemantauan-transaksi/show.blade.php --}}
 
 @extends('layouts.app')
 
@@ -43,45 +43,7 @@
             </div>
             @endif
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                {{-- Form Konfirmasi --}}
-                <form method="POST" action="{{ route('transaksi-penerimaan.konfirmasi', $transaksi->uuid) }}">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="block text-xs font-medium text-yellow-700 mb-1.5">Catatan Konfirmasi (Opsional)</label>
-                        <input type="text" name="catatan_konfirmasi"
-                            placeholder="Contoh: Dana masuk Rp 100.000 – 17/02/2026"
-                            class="block w-full px-3 py-2 text-sm border border-yellow-300 bg-white rounded-lg focus:outline-none focus:border-green-400 focus:ring-0 placeholder:text-gray-400">
-                    </div>
-                    <button type="submit"
-                        onclick="return confirm('Konfirmasi bahwa dana sudah masuk ke rekening masjid?')"
-                        class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Konfirmasi Diterima
-                    </button>
-                </form>
-
-                {{-- Form Tolak --}}
-                <form method="POST" action="{{ route('transaksi-penerimaan.tolak', $transaksi->uuid) }}">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="block text-xs font-medium text-yellow-700 mb-1.5">Alasan Penolakan <span class="text-red-500">*</span></label>
-                        <input type="text" name="catatan_konfirmasi" required
-                            placeholder="Contoh: Dana belum masuk ke rekening"
-                            class="block w-full px-3 py-2 text-sm border border-yellow-300 bg-white rounded-lg focus:outline-none focus:border-red-400 focus:ring-0 placeholder:text-gray-400">
-                    </div>
-                    <button type="submit"
-                        onclick="return confirm('Tolak pembayaran ini?')"
-                        class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        Tolak Pembayaran
-                    </button>
-                </form>
-            </div>
+            {{-- HAPUS FORM KONFIRMASI DAN TOLAK --}}
         </div>
     </div>
     @endif
@@ -141,46 +103,16 @@
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Informasi lengkap transaksi zakat</p>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    <a href="{{ route('transaksi-penerimaan.index') }}"
+                    {{-- HANYA TOMBOL KEMBALI --}}
+                    <a href="{{ route('transaksi-datang-langsung.index') }}"
                         class="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 shadow-sm text-xs sm:text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
                         Kembali
                     </a>
-
-                    <a href="{{ route('transaksi-penerimaan.print', $transaksi->uuid) }}" target="_blank"
-                        class="inline-flex items-center px-3 sm:px-4 py-2 bg-primary hover:bg-primary-600 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                        </svg>
-                        Cetak
-                    </a>
-
-                    @if($transaksi->status === 'pending')
-                    <a href="{{ route('transaksi-penerimaan.edit', $transaksi->uuid) }}"
-                        class="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Edit
-                    </a>
-                    @endif
-
-                    {{-- Tombol Verifikasi Tunai --}}
-                    @if($transaksi->status === 'pending' && $transaksi->metode_pembayaran === 'tunai')
-                    <form method="POST" action="{{ route('transaksi-penerimaan.verify', $transaksi->uuid) }}" class="inline">
-                        @csrf
-                        <button type="submit"
-                            onclick="return confirm('Verifikasi transaksi tunai ini?')"
-                            class="inline-flex items-center px-3 sm:px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-colors shadow-sm">
-                            <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Verifikasi
-                        </button>
-                    </form>
-                    @endif
+                    
+                    {{-- HAPUS SEMUA TOMBOL LAINNYA (Cetak, Edit, Verifikasi) --}}
                 </div>
             </div>
         </div>
@@ -573,90 +505,18 @@
                 </div>
             </div>
 
-            {{-- Action Buttons --}}
-            <div class="pt-4 border-t border-gray-200">
-                <div class="flex flex-col sm:flex-row flex-wrap gap-3">
-                    @if($transaksi->status === 'pending')
-                    <a href="{{ route('transaksi-penerimaan.edit', $transaksi->uuid) }}"
-                        class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Edit Transaksi
-                    </a>
-                    @endif
-
-                    <a href="{{ route('transaksi-penerimaan.print', $transaksi->uuid) }}" target="_blank"
-                        class="inline-flex items-center justify-center px-4 py-2.5 bg-primary border border-transparent shadow-sm text-sm font-medium rounded-lg text-white hover:bg-primary-600 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                        </svg>
-                        Cetak Kwitansi
-                    </a>
-
-                    @if($transaksi->status === 'pending')
-                    <button type="button" onclick="confirmDelete()"
-                        class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white hover:bg-red-700 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Hapus Transaksi
-                    </button>
-                    @endif
-                </div>
-            </div>
+            {{-- HAPUS SEMUA ACTION BUTTONS --}}
 
         </div>{{-- end content body --}}
     </div>{{-- end main card --}}
 </div>
 
-{{-- Delete Modal --}}
-<div id="delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl bg-white">
-        <div class="flex justify-center mb-4">
-            <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Hapus Transaksi</h3>
-        <p class="text-sm text-gray-500 mb-1 text-center">
-            Apakah Anda yakin ingin menghapus transaksi<br>
-            "<span class="font-semibold text-gray-700">{{ $transaksi->no_transaksi }}</span>"?
-        </p>
-        <p class="text-sm text-gray-500 mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
-        <div class="flex justify-center gap-3">
-            <button type="button" onclick="closeDeleteModal()"
-                class="w-28 rounded-lg border border-gray-300 px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                Batal
-            </button>
-            <form method="POST" action="{{ route('transaksi-penerimaan.destroy', $transaksi->uuid) }}" class="inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                    class="w-28 rounded-lg px-4 py-2.5 bg-red-600 text-sm font-medium text-white hover:bg-red-700 transition-colors">
-                    Hapus
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
+{{-- HAPUS DELETE MODAL KARENA TIDAK ADA AKSI HAPUS --}}
+
 @endsection
 
 @push('scripts')
 <script>
-function confirmDelete() {
-    document.getElementById('delete-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-function closeDeleteModal() {
-    document.getElementById('delete-modal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-document.getElementById('delete-modal')?.addEventListener('click', function(e) {
-    if (e.target === this) closeDeleteModal();
-});
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeDeleteModal();
-});
+// HAPUS SEMUA FUNGSI JS YANG TIDAK DIPERLUKAN
 </script>
 @endpush

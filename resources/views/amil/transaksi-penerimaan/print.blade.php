@@ -396,7 +396,7 @@
 
     {{-- Action Buttons --}}
     <div class="action-bar no-print">
-        <a href="{{ route('transaksi-penerimaan.show', $transaksi->uuid) }}" class="btn btn-secondary">
+        <a href="{{ route('transaksi-datang-langsung.show', $transaksi->uuid) }}" class="btn btn-secondary">
             <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>

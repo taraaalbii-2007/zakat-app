@@ -502,7 +502,7 @@
                 <div class="panel-body">
                         <div class="qa-grid">
 
-                            <a href="{{ route('transaksi-penerimaan.create') }}" class="qa-item">
+                            <a href="{{ route('transaksi-datang-langsung.create') }}" class="qa-item">
                                 <div class="qa-icon">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -557,7 +557,7 @@
                                 <span class="qa-label">Setor Kas</span>
                             </a>
 
-                            <a href="{{ route('transaksi-penerimaan.index') }}" class="qa-item">
+                            <a href="{{ route('transaksi-datang-langsung.index') }}" class="qa-item">
                                 <div class="qa-icon">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>

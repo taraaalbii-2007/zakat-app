@@ -565,19 +565,30 @@
                         </summary>
                         <ul class="{{ $subBorder }}">
                             <li>
-                                <a href="{{ route('transaksi-penerimaan.index') }}"
+                                <a href="{{ route('pemantauan-transaksi.index') }}"
                                     class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     </svg>
-                                    <span>Transaksi Penerimaan</span>
+                                    <span>Pemantauan Transaksi</span>
+                                </a>
+                            </li>
+                             <li>
+                                <a href="{{ route('transaksi-datang-langsung.index', ['metode' => 'daring']) }}"
+                                    class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'daring' ? $subActive : $subInactive }}">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                    </svg>
+                                    <span>Datang Langsung</span>
                                 </a>
                             </li>
                             {{-- SUB-MENU BARU: Daring & Dijemput --}}
                             <li>
-                                <a href="{{ route('transaksi-penerimaan.index', ['metode' => 'daring']) }}"
+                                <a href="{{ route('transaksi-daring.index', ['metode' => 'daring']) }}"
                                     class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'daring' ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -588,7 +599,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('transaksi-penerimaan.index', ['metode' => 'dijemput']) }}"
+                                <a href="{{ route('transaksi-dijemput.index', ['metode' => 'dijemput']) }}"
                                     class="flex items-center space-x-2 px-2 py-1.5 text-xs rounded transition-colors {{ str_contains($currentRoute, 'transaksi-penerimaan') && request('metode') === 'dijemput' ? $subActive : $subInactive }}">
                                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
