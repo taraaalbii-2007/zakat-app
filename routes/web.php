@@ -359,7 +359,7 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
             ->name('export.excel');
 
         // SHOW — detail transaksi
-        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'show'])
+        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showPemantauan'])
             ->name('show')->whereUuid('uuid');
     });
 
@@ -460,7 +460,7 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
             ->name('index');
 
         // SHOW
-        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'show'])
+        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showDaring'])
             ->name('show')->whereUuid('uuid');
 
         // KONFIRMASI PEMBAYARAN DARING
@@ -713,4 +713,10 @@ Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(fu
         Route::get('/{uuid}', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'show'])
             ->name('show');
     });
+});
+
+Route::middleware(['auth', 'active.user'])->group(function () {
+    // Mark notifikasi sebagai sudah dibaca (update session)
+    Route::post('/notif/mark-read', [\App\Http\Controllers\NotifController::class, 'markRead'])
+        ->name('notif.mark-read');
 });

@@ -852,6 +852,28 @@ class TransaksiPenerimaanController extends Controller
     }
 
     // ================================================================
+    // SHOW DARING - Display details of an online transaction
+    // ================================================================
+    public function showDaring($uuid)
+    {
+        $transaksi = TransaksiPenerimaan::with([
+            'masjid',
+            'jenisZakat',
+            'tipeZakat',
+            'programZakat',
+            'amil.pengguna',
+            'verifiedBy',
+            'dikonfirmasiOleh'
+        ])
+            ->where('uuid', $uuid)
+            ->byMasjid($this->masjid->id)
+            ->byMetodePenerimaan('daring')
+            ->firstOrFail();
+
+        return view('amil.transaksi-penerimaan.show-daring', compact('transaksi'));
+    }
+
+    // ================================================================
     // SHOW DATANG LANGSUNG - Display details of a datang langsung transaction
     // ================================================================
     public function showDatangLangsung($uuid)
@@ -911,7 +933,7 @@ class TransaksiPenerimaanController extends Controller
         ])
             ->where('uuid', $uuid)
             ->byMasjid($this->masjid->id)
-            ->byMetodePenerimaan('datang_langsung')
+            // tidak ada filter metode — semua metode bisa dilihat
             ->firstOrFail();
 
         return view('amil.transaksi-penerimaan.show-pemantauan', compact('transaksi'));

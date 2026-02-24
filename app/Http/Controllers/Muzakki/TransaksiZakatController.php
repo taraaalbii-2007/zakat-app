@@ -136,8 +136,7 @@ class TransaksiZakatController extends Controller
         $rekeningList = RekeningMasjid::where('masjid_id', $this->masjid->id)
             ->where('is_active', true)->get();
 
-        $jenisZakatList = JenisZakat::where('status', 'aktif')
-            ->orderBy('nama')->get();
+        $jenisZakatList = JenisZakat::all();
 
         $programZakatList = ProgramZakat::where('masjid_id', $this->masjid->id)
             ->where('status', 'aktif')->orderBy('nama_program')->get();
@@ -148,9 +147,7 @@ class TransaksiZakatController extends Controller
         // Build tipe zakat array grouped by jenis
         $tipeZakatList = [];
         foreach ($jenisZakatList as $jenis) {
-            $tipeZakatList[$jenis->id] = TipeZakat::where('jenis_zakat_id', $jenis->id)
-                ->where('status', 'aktif')
-                ->orderBy('nama')->get()
+            $tipeZakatList[$jenis->id] = TipeZakat::all()
                 ->map(function ($tipe) {
                     return [
                         'uuid' => $tipe->uuid,

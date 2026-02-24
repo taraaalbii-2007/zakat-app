@@ -15,28 +15,26 @@
     $notifUnread = 0;
 
     /**
+     * SESSION-BASED PER-ITEM READ — pakai UUID sebagai identifier unik
+     * Key: notif_read_ids_{user_id} → array UUID yang sudah diklik/dibaca
+     * Item yang UUID-nya ada di session → disaring, tidak ditampilkan sama sekali
+     */
+    $notifSessionKey = 'notif_read_ids_' . $authUser->id;
+    $readIds         = session($notifSessionKey, []); // array of UUID yang sudah dibaca
+
+    /**
      * AMIL — Notifikasi transaksi baru dari muzakki
-     * - Transaksi DARING  : status = pending, konfirmasi_status = menunggu_konfirmasi
-     * - Transaksi DIJEMPUT: status = pending, status_penjemputan = menunggu
-     *
-     * FIX BUG: ->map() menghasilkan Collection of plain arrays (bukan Eloquent models).
-     * ->merge()->sortByDesc('time') gagal dengan "getKey() on array" karena:
-     *   1. 'time' adalah string diffForHumans, bukan nilai sortable
-     *   2. Laravel internal memanggil getKey() saat mengira item adalah model
-     * SOLUSI: tambah key 'timestamp' (integer unix), merge via toArray(), sortByDesc pakai 'timestamp'
      */
     if ($isAmil && isset($authUser->amil)) {
-        $amilId   = $authUser->amil->id;
         $masjidId = $authUser->amil->masjid_id;
 
-        // Transaksi DARING menunggu konfirmasi amil
         $daringPending = \App\Models\TransaksiPenerimaan::where('masjid_id', $masjidId)
             ->where('metode_penerimaan', 'daring')
             ->where('status', 'pending')
             ->where('konfirmasi_status', 'menunggu_konfirmasi')
             ->with('jenisZakat')
             ->latest('created_at')
-            ->take(5)
+            ->take(10)
             ->get()
             ->map(fn($t) => [
                 'icon'      => 'transfer',
@@ -45,18 +43,17 @@
                 'body'      => $t->muzakki_nama . ' — ' . ($t->jenisZakat->nama ?? 'Zakat') . ' Rp ' . number_format($t->jumlah, 0, ',', '.'),
                 'time'      => $t->created_at->diffForHumans(),
                 'timestamp' => $t->created_at->timestamp,
-                'url'       => route('pemantauan-transaksi.show', $t->uuid),
-                'no'        => $t->no_transaksi,
+                'url'       => route('transaksi-daring.show', $t->uuid),
+                'id'        => $t->uuid,
             ]);
 
-        // Transaksi DIJEMPUT menunggu penjemputan
         $dijemputPending = \App\Models\TransaksiPenerimaan::where('masjid_id', $masjidId)
             ->where('metode_penerimaan', 'dijemput')
             ->where('status', 'pending')
             ->where('status_penjemputan', 'menunggu')
             ->with('jenisZakat')
             ->latest('created_at')
-            ->take(5)
+            ->take(10)
             ->get()
             ->map(fn($t) => [
                 'icon'      => 'pickup',
@@ -65,18 +62,20 @@
                 'body'      => $t->muzakki_nama . ' — Menunggu dijemput di ' . \Str::limit($t->muzakki_alamat ?? 'lokasi terdaftar', 35),
                 'time'      => $t->created_at->diffForHumans(),
                 'timestamp' => $t->created_at->timestamp,
-                'url'       => route('pemantauan-transaksi.show', $t->uuid),
-                'no'        => $t->no_transaksi,
+                'url'       => route('transaksi-dijemput.show', $t->uuid),
+                'id'        => $t->uuid,
             ]);
 
-        // FIX: toArray() dulu agar tidak ada Eloquent object, lalu collect() ulang sebelum sortByDesc
-        $notifItems  = collect(array_merge(
+        // Filter: buang item yang UUID-nya sudah ada di session (sudah dibaca)
+        $notifItems = collect(array_merge(
                 $daringPending->values()->toArray(),
                 $dijemputPending->values()->toArray()
             ))
+            ->filter(fn($n) => !in_array($n['id'], $readIds))
             ->sortByDesc('timestamp')
             ->values();
-        $notifUnread = $daringPending->count() + $dijemputPending->count();
+
+        $notifUnread = $notifItems->count();
     }
 
     /**
@@ -85,7 +84,7 @@
     if ($isMuzakki && isset($authUser->muzakki)) {
         $muzakkiId = $authUser->muzakki->id;
 
-        $verifiedTransaksi = \App\Models\TransaksiPenerimaan::where('muzakki_id', $muzakkiId)
+        $allMuzakkiNotif = \App\Models\TransaksiPenerimaan::where('muzakki_id', $muzakkiId)
             ->whereIn('status', ['verified', 'rejected', 'dijemput'])
             ->where('updated_at', '>=', now()->subDays(7))
             ->with('jenisZakat')
@@ -94,43 +93,25 @@
             ->get()
             ->map(function ($t) {
                 $statusMap = [
-                    'verified' => [
-                        'icon'  => 'check',
-                        'color' => 'emerald',
-                        'title' => 'Transaksi Dikonfirmasi',
-                        'body'  => 'Transaksi ' . $t->no_transaksi . ' telah diverifikasi oleh amil.',
-                    ],
-                    'rejected' => [
-                        'icon'  => 'x',
-                        'color' => 'red',
-                        'title' => 'Transaksi Ditolak',
-                        'body'  => 'Transaksi ' . $t->no_transaksi . ' ditolak. Silakan hubungi amil.',
-                    ],
-                    'dijemput' => [
-                        'icon'  => 'truck',
-                        'color' => 'blue',
-                        'title' => 'Amil Dalam Perjalanan',
-                        'body'  => 'Amil sedang menuju lokasi untuk ' . $t->no_transaksi . '.',
-                    ],
+                    'verified' => ['icon' => 'check', 'color' => 'emerald', 'title' => 'Transaksi Dikonfirmasi',   'body' => 'Transaksi ' . $t->no_transaksi . ' telah diverifikasi oleh amil.'],
+                    'rejected' => ['icon' => 'x',     'color' => 'red',     'title' => 'Transaksi Ditolak',        'body' => 'Transaksi ' . $t->no_transaksi . ' ditolak. Silakan hubungi amil.'],
+                    'dijemput' => ['icon' => 'truck',  'color' => 'blue',    'title' => 'Amil Dalam Perjalanan',    'body' => 'Amil sedang menuju lokasi untuk ' . $t->no_transaksi . '.'],
                 ];
-                $info = $statusMap[$t->status] ?? [
-                    'icon'  => 'info',
-                    'color' => 'gray',
-                    'title' => 'Update Transaksi',
-                    'body'  => 'Ada pembaruan pada transaksi ' . $t->no_transaksi,
-                ];
+                $info = $statusMap[$t->status] ?? ['icon' => 'info', 'color' => 'gray', 'title' => 'Update Transaksi', 'body' => 'Ada pembaruan pada transaksi ' . $t->no_transaksi];
                 return array_merge($info, [
                     'time'      => $t->updated_at->diffForHumans(),
                     'timestamp' => $t->updated_at->timestamp,
                     'url'       => route('transaksi-daring-muzakki.show', $t->uuid),
-                    'no'        => $t->no_transaksi,
+                    'id'        => $t->uuid,
                 ]);
             });
 
-        // FIX: sama, toArray() dulu sebelum collect untuk jaga konsistensi
-        $notifItems  = collect($verifiedTransaksi->values()->toArray())
+        // Filter: buang item yang UUID-nya sudah ada di session
+        $notifItems  = collect($allMuzakkiNotif->values()->toArray())
+            ->filter(fn($n) => !in_array($n['id'], $readIds))
             ->sortByDesc('timestamp')
             ->values();
+
         $notifUnread = $notifItems->count();
     }
 
@@ -190,7 +171,7 @@
 
                         {{-- Badge jumlah notifikasi --}}
                         @if($notifUnread > 0)
-                            <span class="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                            <span id="notif-badge" class="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                                 {{ $notifUnread > 9 ? '9+' : $notifUnread }}
                             </span>
                         @endif
@@ -204,9 +185,11 @@
                         <div class="p-4 border-b border-neutral-200 flex items-center justify-between">
                             <h3 class="font-semibold text-neutral-900">Notifikasi</h3>
                             @if($notifUnread > 0)
-                                <span class="text-xs font-medium bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
+                                <span id="notif-header-badge" class="text-xs font-medium bg-red-100 text-red-600 px-2 py-0.5 rounded-full">
                                     {{ $notifUnread }} baru
                                 </span>
+                            @else
+                                <span id="notif-header-badge" class="hidden text-xs font-medium bg-red-100 text-red-600 px-2 py-0.5 rounded-full"></span>
                             @endif
                         </div>
 
@@ -222,10 +205,12 @@
                         </div>
 
                         {{-- List notifikasi --}}
-                        <div class="max-h-96 overflow-y-auto divide-y divide-neutral-100">
+                        <div id="notif-list" class="max-h-96 overflow-y-auto divide-y divide-neutral-100">
                             @forelse($notifItems as $notif)
                                 <a href="{{ $notif['url'] }}"
-                                   class="flex items-start space-x-3 p-4 hover:bg-neutral-50 transition-colors">
+                                   data-id="{{ $notif['id'] }}"
+                                   onclick="markNotifRead(event, this)"
+                                   class="notif-item flex items-start space-x-3 p-4 hover:bg-neutral-50 transition-all duration-200 relative">
 
                                     {{-- Icon berdasarkan tipe --}}
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
@@ -266,14 +251,14 @@
                                         @endif
                                     </div>
 
-                                    <div class="flex-1 min-w-0">
+                                    <div class="flex-1 min-w-0 pr-4">
                                         <p class="text-sm font-semibold text-neutral-900 truncate">{{ $notif['title'] }}</p>
                                         <p class="text-xs text-neutral-600 mt-0.5 line-clamp-2">{{ $notif['body'] }}</p>
                                         <p class="text-xs text-neutral-400 mt-1">{{ $notif['time'] }}</p>
                                     </div>
                                 </a>
                             @empty
-                                <div class="p-8 text-center">
+                                <div id="notif-empty" class="p-8 text-center">
                                     <div class="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-3">
                                         <svg class="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -476,13 +461,68 @@
 
 <script>
     function toggleNotifications() {
-        document.getElementById('notifications-dropdown').classList.toggle('hidden');
+        const dropdown = document.getElementById('notifications-dropdown');
+        dropdown.classList.toggle('hidden');
         document.getElementById('user-menu-dropdown')?.classList.add('hidden');
     }
+
     function toggleUserMenu() {
         document.getElementById('user-menu-dropdown').classList.toggle('hidden');
         document.getElementById('notifications-dropdown')?.classList.add('hidden');
     }
+
+    /**
+     * Klik notif → item fade-out hilang + badge berkurang 1 + kirim UUID ke server
+     */
+    function markNotifRead(event, el) {
+        event.preventDefault();
+
+        const id  = el.dataset.id;   // UUID
+        const url = el.getAttribute('href');
+
+        // Animasi fade-out & collapse
+        el.style.transition  = 'opacity 0.2s, max-height 0.3s, padding 0.3s';
+        el.style.overflow    = 'hidden';
+        el.style.maxHeight   = el.offsetHeight + 'px';
+        el.style.opacity     = '0';
+        setTimeout(() => {
+            el.style.maxHeight = '0';
+            el.style.padding   = '0';
+        }, 50);
+        setTimeout(() => el.remove(), 350);
+
+        // Kurangi angka badge
+        const badge       = document.getElementById('notif-badge');
+        const headerBadge = document.getElementById('notif-header-badge');
+        if (badge) {
+            let count = parseInt(badge.textContent) || 0;
+            count = Math.max(0, count - 1);
+            if (count <= 0) {
+                badge.classList.add('hidden');
+                if (headerBadge) headerBadge.classList.add('hidden');
+            } else {
+                badge.textContent = count > 9 ? '9+' : count;
+                if (headerBadge) {
+                    headerBadge.textContent = count + ' baru';
+                }
+            }
+        }
+
+        // Simpan UUID ke session via server
+        fetch('{{ route("notif.mark-read") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ id: id }),
+        }).catch(() => {});
+
+        // Navigasi setelah animasi selesai
+        setTimeout(() => { window.location.href = url; }, 300);
+    }
+
     document.addEventListener('click', function (e) {
         const notifBtn  = document.querySelector('[onclick="toggleNotifications()"]');
         const userBtn   = document.querySelector('[onclick="toggleUserMenu()"]');
