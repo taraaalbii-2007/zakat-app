@@ -383,7 +383,7 @@ Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->
         ->name('store');
 
     // SHOW
-    Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'show'])
+    Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showDatangLangsung'])
         ->name('show')->whereUuid('uuid');
 
     // EDIT & UPDATE

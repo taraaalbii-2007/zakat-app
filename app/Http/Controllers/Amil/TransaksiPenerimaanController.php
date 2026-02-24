@@ -852,6 +852,28 @@ public function showDijemput($uuid)
     return view('amil.transaksi-penerimaan.show-dijemput', compact('transaksi'));
 }
 
+// ================================================================
+// SHOW DATANG LANGSUNG - Display details of a datang langsung transaction
+// ================================================================
+public function showDatangLangsung($uuid)
+{
+    $transaksi = TransaksiPenerimaan::with([
+        'masjid',
+        'jenisZakat',
+        'tipeZakat',
+        'programZakat',
+        'amil.pengguna',
+        'verifiedBy',
+        'dikonfirmasiOleh'
+    ])
+        ->where('uuid', $uuid)
+        ->byMasjid($this->masjid->id)
+        ->byMetodePenerimaan('datang_langsung')
+        ->firstOrFail();
+    
+    return view('amil.transaksi-penerimaan.show-datang-langsung', compact('transaksi'));
+}
+
     // ================================================================
     // SHOW MUZAKKI
     // ================================================================
