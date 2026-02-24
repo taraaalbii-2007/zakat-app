@@ -419,7 +419,7 @@ Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->
             ->name('create');
 
         // STORE
-        Route::post('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'store'])
+        Route::post('/', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'storeDijemput'])
             ->name('store');
 
         // SHOW
@@ -440,6 +440,12 @@ Route::prefix('transaksi-datang-langsung')->name('transaksi-datang-langsung.')->
         Route::post('/{uuid}/update-status-penjemputan', 
             [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'updateStatusPenjemputan'])
             ->name('update-status-penjemputan')->whereUuid('uuid');
+        Route::post('/{uuid}/konfirmasi-pembayaran', 
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'konfirmasiPembayaran'])
+            ->name('konfirmasi-pembayaran')->whereUuid('uuid');
+        Route::post('/{uuid}/tolak-pembayaran', 
+            [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'tolakPembayaran'])
+            ->name('tolak-pembayaran')->whereUuid('uuid');
     });
 
 Route::prefix('transaksi-daring')->name('transaksi-daring.')->group(function () {

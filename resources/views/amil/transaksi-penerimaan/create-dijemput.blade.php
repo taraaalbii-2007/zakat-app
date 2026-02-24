@@ -47,7 +47,7 @@
                     <div class="flex items-center gap-2">
                         <h2 class="text-base sm:text-lg font-bold text-gray-900">Permintaan Penjemputan Zakat</h2>
                         <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
-                            🚗 Dijemput
+                            Dijemput
                         </span>
                     </div>
                     <p class="text-xs text-gray-500 mt-0.5">
