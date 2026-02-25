@@ -32,7 +32,7 @@
 
         @if($errors->any())
         <div class="mb-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
+            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293-1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
             <div><p class="text-sm font-semibold text-red-800">Terdapat kesalahan:</p>
                 <ul class="list-disc list-inside text-sm text-red-700 mt-1 space-y-0.5">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
             </div>
@@ -215,55 +215,54 @@
                 </h3>
 
                 {{-- ====================================================
-                     DATA MUZAKKI — SEMUA KOLOM READONLY
-                     Nama diambil dari username, bukan nama lengkap
+                     DATA MUZAKKI — NAMA & EMAIL READONLY
+                     TELEPON, NIK, ALAMAT BISA DIEDIT
                 ==================================================== --}}
                 <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-5">
                     <p class="text-xs font-bold text-green-800 mb-2 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         Data Muzakki
                     </p>
-                    <p class="text-xs text-gray-500 mb-3 italic">Data diambil dari profil akun Anda dan tidak dapat diubah di sini.</p>
+                    <p class="text-xs text-gray-500 mb-3 italic">Field yang dicetak tebal tidak dapat diubah.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {{-- PERUBAHAN 1: Nama diambil dari username, readonly --}}
+                        {{-- NAMA — READONLY --}}
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">Nama (Username)</label>
+                            <label class="block text-xs text-gray-500 mb-1">Nama Lengkap <span class="text-red-500">*</span> <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
                             <input type="text" name="muzakki_nama" value="{{ $muzakkiData['nama'] }}"
                                 readonly
-                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none"
-                                placeholder="Username">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none">
                         </div>
-                        {{-- PERUBAHAN 1: Telepon readonly --}}
+                        
+                        {{-- EMAIL — READONLY --}}
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">Telepon</label>
-                            <input type="text" name="muzakki_telepon" value="{{ $muzakkiData['telepon'] }}"
-                                readonly
-                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none"
-                                placeholder="No. HP">
-                        </div>
-                        {{-- PERUBAHAN 1: Email readonly --}}
-                        <div>
-                            <label class="block text-xs text-gray-500 mb-1">Email</label>
+                            <label class="block text-xs text-gray-500 mb-1">Email <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
                             <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}"
                                 readonly
-                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none"
-                                placeholder="Email">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none">
                         </div>
-                        {{-- PERUBAHAN 1: NIK readonly --}}
+                        
+                        {{-- TELEPON — BISA DIEDIT --}}
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Telepon / WA <span class="text-red-500">*</span></label>
+                            <input type="text" name="muzakki_telepon" value="{{ old('muzakki_telepon', $muzakkiData['telepon']) }}"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
+                                placeholder="Masukkan nomor telepon">
+                        </div>
+                        
+                        {{-- NIK — BISA DIEDIT --}}
                         <div>
                             <label class="block text-xs text-gray-500 mb-1">NIK</label>
-                            <input type="text" name="muzakki_nik" value="{{ $muzakkiData['nik'] }}"
-                                readonly
-                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none"
+                            <input type="text" name="muzakki_nik" value="{{ old('muzakki_nik', $muzakkiData['nik']) }}"
+                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-indigo-500 transition-all"
                                 placeholder="16 digit NIK" maxlength="16">
                         </div>
-                        {{-- PERUBAHAN 1: Alamat readonly --}}
+                        
+                        {{-- ALAMAT — BISA DIEDIT --}}
                         <div class="sm:col-span-2">
-                            <label class="block text-xs text-gray-500 mb-1">Alamat</label>
+                            <label class="block text-xs text-gray-500 mb-1">Alamat Lengkap <span class="text-red-500">*</span></label>
                             <textarea name="muzakki_alamat" rows="2"
-                                readonly
-                                class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 resize-none select-none"
-                                placeholder="Alamat lengkap">{{ $muzakkiData['alamat'] }}</textarea>
+                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-indigo-500 transition-all resize-none"
+                                placeholder="Masukkan alamat lengkap">{{ old('muzakki_alamat', $muzakkiData['alamat']) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -279,7 +278,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        {{-- PERUBAHAN 2: Tipe Spesifik — hanya tampil "Tunai" jika Fitrah --}}
+                        {{-- Tipe Spesifik — hanya tampil "Tunai" jika Fitrah --}}
                         <div id="dWrapTipe" class="hidden">
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Tipe Spesifik <span class="text-red-500">*</span></label>
                             <select name="tipe_zakat_id" id="dTipeId" class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-indigo-500 transition-all">
@@ -302,9 +301,7 @@
                         </select>
                     </div>
 
-                    {{-- ====================================================
-                         PERUBAHAN 3: Panel Fitrah Tunai + Tambah Nama Muzakki
-                    ==================================================== --}}
+                    {{-- Panel Fitrah Tunai --}}
                     <div id="dPanelFitrahTunai" class="hidden space-y-4">
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
                             <p class="text-xs font-bold text-amber-800 mb-2">Zakat Fitrah — Nominal</p>
@@ -328,9 +325,7 @@
                             </div>
                         </div>
 
-                        {{-- ====================================================
-                             PERUBAHAN 3: Daftar Nama Muzakki (per jiwa)
-                        ==================================================== --}}
+                        {{-- Daftar Nama Muzakki (per jiwa) --}}
                         <div class="border border-indigo-200 rounded-xl overflow-hidden">
                             <div class="bg-indigo-50 px-4 py-2.5 flex items-center justify-between">
                                 <p class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
@@ -417,13 +412,11 @@
                         <p class="text-xs text-indigo-800">Pilih metode pembayaran. Bukti transfer akan dikonfirmasi oleh amil.</p>
                     </div>
 
-                    {{-- ====================================================
-                         PERUBAHAN 4: Metode pembayaran jadi dropdown
-                    ==================================================== --}}
+                    {{-- Metode pembayaran dropdown FULL WIDTH --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Metode Pembayaran <span class="text-red-500">*</span></label>
                         <select name="metode_pembayaran" id="dMetodePembayaran"
-                            class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-indigo-500 transition-all max-w-xs">
+                            class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-indigo-500 transition-all">
                             <option value="">-- Pilih Metode --</option>
                             <option value="transfer">Transfer Bank</option>
                             <option value="qris">QRIS</option>
@@ -434,8 +427,8 @@
                     <div id="dInfoTransfer" class="hidden space-y-3">
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                             <p class="text-sm font-bold text-blue-800 mb-3">Rekening Transfer Masjid</p>
-                            @if($rekeningList->isNotEmpty())
-                                @foreach($rekeningList as $rek)
+                            @if($rekeningMasjidList->isNotEmpty())
+                                @foreach($rekeningMasjidList as $rek)
                                 <div class="bg-white border border-blue-200 rounded-lg p-3 flex items-center justify-between mb-2 last:mb-0">
                                     <div>
                                         <p class="text-xs font-bold text-gray-800">{{ $rek->nama_bank }}</p>
@@ -449,7 +442,6 @@
                                 <p class="text-xs text-gray-500 italic">Belum ada rekening aktif. Hubungi pengurus masjid.</p>
                             @endif
                         </div>
-                        {{-- PERUBAHAN 5: No referensi dihapus --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Upload Bukti Transfer <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                             <div id="dPrvTransfer" class="h-28 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-indigo-400 transition-all" onclick="document.getElementById('dInpTransfer').click()">
@@ -463,20 +455,18 @@
                     <div id="dInfoQris" class="hidden space-y-3">
                         <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
                             <p class="text-sm font-bold text-purple-800 mb-3">QRIS Masjid</p>
-                            @php $rekeningQris = $rekeningList->where('jenis','qris')->first() ?? $rekeningList->first(); @endphp
-                            @if($rekeningQris && !empty($rekeningQris->qris_image))
-                            <div class="flex justify-center mb-3"><div class="bg-white p-3 rounded-xl border border-purple-200 shadow-sm"><img src="{{ Storage::url($rekeningQris->qris_image) }}" class="w-36 h-36 object-contain" alt="QRIS"></div></div>
+                            @if($konfigurasiQris && !empty($konfigurasiQris->qris_image_path))
+                            <div class="flex justify-center mb-3"><div class="bg-white p-3 rounded-xl border border-purple-200 shadow-sm"><img src="{{ $konfigurasiQris->qris_image_url }}" class="w-36 h-36 object-contain" alt="QRIS"></div></div>
                             @else
                             <div class="bg-white border border-purple-200 rounded-lg p-4 text-center mb-3"><p class="text-xs text-gray-500">Hubungi pengurus masjid untuk mendapatkan kode QRIS.</p></div>
                             @endif
                         </div>
-                        {{-- PERUBAHAN 5: No referensi QRIS dihapus --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti QRIS <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                             <div id="dPrvQris" class="h-28 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-indigo-400 transition-all" onclick="document.getElementById('dInpQris').click()">
                                 <div class="text-center"><svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="text-xs text-gray-400">Klik untuk upload</p></div>
                             </div>
-                            <input type="file" name="bukti_transfer" id="dInpQris" accept="image/*" class="hidden" onchange="prvBuktiD(this,'dPrvQris')">
+                            <input type="file" name="bukti_qris" id="dInpQris" accept="image/*" class="hidden" onchange="prvBuktiD(this,'dPrvQris')">
                         </div>
                     </div>
 
@@ -518,7 +508,7 @@
                             <tr class="border-b border-green-100"><td class="text-gray-500 py-1.5 w-1/2">Jenis Zakat</td><td class="font-bold text-gray-900" id="dRingJenis">-</td></tr>
                             <tr class="border-b border-green-100"><td class="text-gray-500 py-1.5">Jumlah Zakat</td><td class="font-bold text-green-700" id="dRingJumlah">-</td></tr>
                             <tr class="border-b border-green-100"><td class="text-gray-500 py-1.5">Metode Bayar</td><td class="font-bold text-gray-900" id="dRingMetode">-</td></tr>
-                            <tr class="border-b border-green-100"><td class="text-gray-500 py-1.5">Jumlah Jiwa</td><td class="font-bold text-gray-900" id="dRingJiwa">-</td></tr>
+                            <tr class="border-b border-green-100" id="dRingJiwaRow"><td class="text-gray-500 py-1.5">Jumlah Jiwa</td><td class="font-bold text-gray-900" id="dRingJiwa">-</td></tr>
                             <tr><td class="text-gray-500 py-1.5">Status</td><td class="font-bold text-amber-600">Menunggu konfirmasi amil</td></tr>
                         </table>
                     </div>
@@ -573,31 +563,42 @@
                         Data Diri
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {{-- NAMA — READONLY --}}
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Nama <span class="text-red-500">*</span></label>
+                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span> <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
                             <input type="text" name="muzakki_nama" value="{{ $muzakkiData['nama'] }}" readonly
                                 class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-100 rounded-xl cursor-not-allowed text-gray-600">
                         </div>
+                        
+                        {{-- EMAIL — READONLY --}}
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Telepon / WA <span class="text-red-500">*</span></label>
-                            <input type="text" name="muzakki_telepon" value="{{ $muzakkiData['telepon'] }}" readonly
-                                class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-100 rounded-xl cursor-not-allowed text-gray-600" placeholder="081234567890">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
+                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Email <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
                             <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}" readonly
                                 class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-100 rounded-xl cursor-not-allowed text-gray-600">
                         </div>
+                        
+                        {{-- TELEPON — BISA DIEDIT --}}
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1.5">Telepon / WA <span class="text-red-500">*</span></label>
+                            <input type="text" name="muzakki_telepon" value="{{ old('muzakki_telepon', $muzakkiData['telepon']) }}"
+                                class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-orange-400 transition-all"
+                                placeholder="Masukkan nomor telepon">
+                        </div>
+                        
+                        {{-- NIK — BISA DIEDIT --}}
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1.5">NIK</label>
-                            <input type="text" name="muzakki_nik" value="{{ $muzakkiData['nik'] }}" readonly
-                                class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-100 rounded-xl cursor-not-allowed text-gray-600" placeholder="16 digit NIK" maxlength="16">
+                            <input type="text" name="muzakki_nik" value="{{ old('muzakki_nik', $muzakkiData['nik']) }}"
+                                class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-orange-400 transition-all"
+                                placeholder="16 digit NIK" maxlength="16">
                         </div>
+                        
+                        {{-- ALAMAT — BISA DIEDIT --}}
                         <div class="sm:col-span-2">
                             <label class="block text-xs font-medium text-gray-700 mb-1.5">Alamat Lengkap Penjemputan <span class="text-red-500">*</span></label>
-                            <textarea name="muzakki_alamat" id="djAlamat" rows="2" readonly
-                                class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-100 rounded-xl cursor-not-allowed text-gray-600 resize-none"
-                                placeholder="Jl. ..., RT/RW, Kelurahan, Kecamatan — tulis selengkap mungkin">{{ $muzakkiData['alamat'] }}</textarea>
+                            <textarea name="muzakki_alamat" id="djAlamat" rows="2"
+                                class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-orange-400 transition-all resize-none"
+                                placeholder="Masukkan alamat lengkap untuk penjemputan">{{ old('muzakki_alamat', $muzakkiData['alamat']) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -717,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ── PERUBAHAN 2: Jenis zakat change — filter tipe untuk fitrah hanya tampil tunai ──
+    // Jenis zakat change — filter tipe untuk fitrah hanya tampil tunai
     document.getElementById('dJenisId').addEventListener('change', function() {
         const jenisId = this.value;
         const jenisNama = (this.options[this.selectedIndex]?.dataset.nama || '').toLowerCase();
@@ -737,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const isFitrah = jenisNama.includes('fitrah');
 
             if (isFitrah) {
-                // PERUBAHAN 2: Untuk Fitrah, hanya tampilkan tipe yang mengandung "tunai"
+                // Untuk Fitrah, hanya tampilkan tipe yang mengandung "tunai"
                 const tunaiList = list.filter(t => t.nama.toLowerCase().includes('tunai'));
                 if (tunaiList.length > 0) {
                     tunaiList.forEach(t => {
@@ -788,13 +789,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Input listeners fitrah
     document.getElementById('dJiwa')?.addEventListener('input', function() {
         hitungFitrahD();
-        sinkronisasiNamaJiwa(); // PERUBAHAN 3
+        sinkronisasiNamaJiwa();
     });
     document.getElementById('dNominalJiwa')?.addEventListener('input', hitungFitrahD);
     document.getElementById('dHarta')?.addEventListener('input', hitungMalD);
     document.getElementById('dPersen')?.addEventListener('input', hitungMalD);
 
-    // ── PERUBAHAN 4: Dropdown metode pembayaran ──
+    // Dropdown metode pembayaran
     document.getElementById('dMetodePembayaran')?.addEventListener('change', function() {
         document.getElementById('dInfoTransfer').classList.add('hidden');
         document.getElementById('dInfoQris').classList.add('hidden');
@@ -819,7 +820,7 @@ function dTampilFitrah() {
     dActivePanelZ = 'fitrah';
     document.getElementById('dPanelFitrahTunai').classList.remove('hidden');
     hitungFitrahD();
-    sinkronisasiNamaJiwa(); // PERUBAHAN 3: Pastikan baris nama sesuai jumlah jiwa
+    sinkronisasiNamaJiwa();
 }
 function dTampilMal(tipeOpt) {
     dActivePanelZ = 'mal';
@@ -847,20 +848,13 @@ function getJumlahZakatD() {
     return 0;
 }
 
-// ══════════════════════════════════════════════════
-// PERUBAHAN 3: Manajemen nama jiwa
-// ══════════════════════════════════════════════════
-
-/**
- * Tambah baris nama jiwa baru
- */
+// Manajemen nama jiwa
 function tambahNamaJiwa() {
     const container = document.getElementById('dDaftarNama');
     const rows = container.querySelectorAll('.nama-jiwa-row');
     const jumlahJiwa = parseInt(document.getElementById('dJiwa').value) || 1;
 
     if (rows.length >= jumlahJiwa) {
-        // Otomatis tambah jumlah jiwa jika sudah penuh
         document.getElementById('dJiwa').value = rows.length + 1;
         hitungFitrahD();
     }
@@ -882,7 +876,6 @@ function tambahNamaJiwa() {
     `;
     container.appendChild(newRow);
 
-    // Sinkronisasi jumlah jiwa
     const totalRows = container.querySelectorAll('.nama-jiwa-row').length;
     if (parseInt(document.getElementById('dJiwa').value) < totalRows) {
         document.getElementById('dJiwa').value = totalRows;
@@ -890,9 +883,6 @@ function tambahNamaJiwa() {
     }
 }
 
-/**
- * Hapus baris nama jiwa
- */
 function hapusNamaJiwa(btn) {
     const row = btn.closest('.nama-jiwa-row');
     const container = document.getElementById('dDaftarNama');
@@ -905,7 +895,6 @@ function hapusNamaJiwa(btn) {
 
     row.remove();
 
-    // Re-number semua baris yang tersisa
     const remaining = container.querySelectorAll('.nama-jiwa-row');
     remaining.forEach((r, i) => {
         r.dataset.index = i;
@@ -915,14 +904,10 @@ function hapusNamaJiwa(btn) {
         if (inp && !inp.value) inp.placeholder = `Nama jiwa ke-${i + 1}`;
     });
 
-    // Sinkronisasi jumlah jiwa
     document.getElementById('dJiwa').value = remaining.length;
     hitungFitrahD();
 }
 
-/**
- * Sinkronisasi baris nama dengan jumlah jiwa di input
- */
 function sinkronisasiNamaJiwa() {
     const jumlahJiwa = parseInt(document.getElementById('dJiwa').value) || 1;
     const container = document.getElementById('dDaftarNama');
@@ -930,7 +915,6 @@ function sinkronisasiNamaJiwa() {
     const current = rows.length;
 
     if (jumlahJiwa > current) {
-        // Tambah baris
         for (let i = current; i < jumlahJiwa; i++) {
             const newRow = document.createElement('div');
             newRow.className = 'flex items-center gap-2 nama-jiwa-row';
@@ -949,17 +933,16 @@ function sinkronisasiNamaJiwa() {
             container.appendChild(newRow);
         }
     } else if (jumlahJiwa < current) {
-        // Hapus baris berlebih dari belakang (kecuali baris pertama)
         const allRows = container.querySelectorAll('.nama-jiwa-row');
         for (let i = current - 1; i >= jumlahJiwa; i--) {
-            if (i > 0) { // Jangan hapus baris pertama
+            if (i > 0) {
                 allRows[i].remove();
             }
         }
     }
 }
 
-// ── Navigation daring steps ──
+// Navigation daring steps
 function dGoStep(n) {
     if (n > dActiveStep) {
         if (!dValidateStep(dActiveStep)) return;
@@ -1008,16 +991,16 @@ function dUpdateRingkasan() {
     document.getElementById('dRingJumlah').textContent = 'Rp ' + fmt(jumlah);
     document.getElementById('dRingMetode').textContent = metode === 'transfer' ? 'Transfer Bank' : (metode === 'qris' ? 'QRIS' : '-');
 
-    // PERUBAHAN 3: Tampilkan info jiwa hanya jika fitrah
-    const jiwaRow = document.getElementById('dRingJiwa');
+    // Tampilkan info jiwa hanya jika fitrah
+    const jiwaRow = document.getElementById('dRingJiwaRow');
     if (dActivePanelZ === 'fitrah') {
-        jiwaRow.textContent = jiwa + ' jiwa';
-        jiwaRow.closest('tr').style.display = '';
+        document.getElementById('dRingJiwa').textContent = jiwa + ' jiwa';
+        jiwaRow.style.display = '';
     } else {
-        jiwaRow.closest('tr').style.display = 'none';
+        jiwaRow.style.display = 'none';
     }
 
-    // PERUBAHAN 3: Preview nama-nama jiwa di konfirmasi
+    // Preview nama-nama jiwa di konfirmasi
     const namaWrap = document.getElementById('dRingNamaWrap');
     const namaList = document.getElementById('dRingNamaList');
     if (dActivePanelZ === 'fitrah') {
@@ -1036,7 +1019,7 @@ function dUpdateRingkasan() {
     }
 }
 
-// ── GPS ──
+// GPS
 function getGPS() {
     const status = document.getElementById('gpsStatus');
     const result = document.getElementById('gpsResult');
@@ -1056,28 +1039,37 @@ function getGPS() {
     );
 }
 
-// ── Form Validation Dijemput ──
+// Form Validation Dijemput
 document.getElementById('formDijemput')?.addEventListener('submit', function(e) {
     const nama = this.querySelector('[name="muzakki_nama"]').value.trim();
-    const alamat = document.getElementById('djAlamat').value.trim();
+    const telepon = this.querySelector('[name="muzakki_telepon"]').value.trim();
+    const alamat = this.querySelector('[name="muzakki_alamat"]').value.trim();
     const lat = document.getElementById('djLat').value;
     const amil = document.querySelector('.amil-radio:checked');
+    
     if (!nama) { e.preventDefault(); alert('Nama wajib diisi.'); return; }
+    if (!telepon) { e.preventDefault(); alert('Nomor telepon wajib diisi.'); return; }
     if (!alamat) { e.preventDefault(); alert('Alamat penjemputan wajib diisi.'); return; }
     if (!lat) { e.preventDefault(); alert('Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".'); return; }
     if (!amil) { e.preventDefault(); alert('Pilih amil penjemput terlebih dahulu.'); return; }
+    
     const btn = document.getElementById('btnSimpanDijemput');
     btn.disabled = true;
     btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
 });
 
-// ── Form Validation Daring ──
+// Form Validation Daring
 document.getElementById('formDaring')?.addEventListener('submit', function(e) {
+    const telepon = this.querySelector('[name="muzakki_telepon"]').value.trim();
+    const alamat = this.querySelector('[name="muzakki_alamat"]').value.trim();
+    
+    if (!telepon) { e.preventDefault(); alert('Nomor telepon wajib diisi.'); return; }
+    if (!alamat) { e.preventDefault(); alert('Alamat wajib diisi.'); return; }
+    
     if (!document.getElementById('dJenisId').value) { e.preventDefault(); alert('Pilih jenis zakat.'); dGoStep(1); return; }
     if (!document.getElementById('dTipeId').value) { e.preventDefault(); alert('Pilih tipe zakat.'); dGoStep(1); return; }
     if (getJumlahZakatD() <= 0) { e.preventDefault(); alert('Jumlah zakat tidak valid.'); dGoStep(1); return; }
 
-    // PERUBAHAN 4: Validasi dropdown metode
     const metode = document.getElementById('dMetodePembayaran').value;
     if (!metode) { e.preventDefault(); alert('Pilih metode pembayaran.'); dGoStep(2); return; }
 

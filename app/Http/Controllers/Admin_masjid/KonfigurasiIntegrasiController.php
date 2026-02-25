@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Admin_masjid;
 
 use App\Http\Controllers\Controller;
 use App\Models\KonfigurasiWhatsapp;
+use App\Models\KonfigurasiQris;
 use App\Models\Masjid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class KonfigurasiIntegrasiController extends Controller
 {
     /**
-     * Display konfigurasi integrasi (WhatsApp)
+     * Display konfigurasi integrasi (WhatsApp & QRIS)
      */
     public function show()
     {
@@ -23,24 +25,25 @@ class KonfigurasiIntegrasiController extends Controller
             $masjid = $user->masjid;
 
             if (!$masjid) {
-                return redirect()->route('dashboard')
-                    ->with('error', 'Data masjid tidak ditemukan');
+                return redirect()->route('dashboard')->with('error', 'Data masjid tidak ditemukan');
             }
 
-            // Get atau create konfigurasi WhatsApp
+            // WhatsApp
             $whatsapp = KonfigurasiWhatsapp::firstOrCreate(
                 ['masjid_id' => $masjid->id],
-                [
-                    'api_url' => 'https://api.fonnte.com/send',
-                    'is_active' => false
-                ]
+                ['api_url' => 'https://api.fonnte.com/send', 'is_active' => false]
             );
 
-            return view('admin-masjid.konfigurasi-integrasi.show', compact('masjid', 'whatsapp'));
+            // QRIS
+            $qris = KonfigurasiQris::firstOrCreate(
+                ['masjid_id' => $masjid->id],
+                ['is_active' => false]
+            );
+
+            return view('admin-masjid.konfigurasi-integrasi.show', compact('masjid', 'whatsapp', 'qris'));
         } catch (\Exception $e) {
             Log::error('Error showing konfigurasi integrasi: ' . $e->getMessage());
-            return redirect()->route('dashboard')
-                ->with('error', 'Terjadi kesalahan saat memuat konfigurasi');
+            return redirect()->route('dashboard')->with('error', 'Terjadi kesalahan saat memuat konfigurasi');
         }
     }
 
@@ -67,7 +70,13 @@ class KonfigurasiIntegrasiController extends Controller
                 ]
             );
 
-            return view('admin-masjid.konfigurasi-integrasi.edit', compact('masjid', 'whatsapp'));
+            // Get atau create konfigurasi QRIS
+            $qris = KonfigurasiQris::firstOrCreate(
+                ['masjid_id' => $masjid->id],
+                ['is_active' => false]
+            );
+
+            return view('admin-masjid.konfigurasi-integrasi.edit', compact('masjid', 'whatsapp', 'qris'));
         } catch (\Exception $e) {
             Log::error('Error showing edit konfigurasi integrasi: ' . $e->getMessage());
             return redirect()->route('dashboard')
@@ -81,13 +90,21 @@ class KonfigurasiIntegrasiController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            // WhatsApp validation
             'whatsapp_api_key'             => 'nullable|string|max:255',
             'whatsapp_nomor_pengirim'       => 'nullable|string|max:20',
             'whatsapp_api_url'              => 'nullable|url|max:255',
             'whatsapp_nomor_tujuan_default' => 'nullable|string|max:20',
             'whatsapp_is_active'            => 'nullable|boolean',
+            
+            // QRIS validation - Upload foto saja
+            'qris_image'                    => 'nullable|image|mimes:jpeg,jpg,png,gif|max:5120',
+            'qris_is_active'                => 'nullable|boolean',
         ], [
             'whatsapp_api_url.url' => 'Format URL API WhatsApp tidak valid',
+            'qris_image.image' => 'File QRIS harus berupa gambar',
+            'qris_image.mimes' => 'Format gambar QRIS hanya boleh JPG, JPEG, PNG, atau GIF',
+            'qris_image.max' => 'Ukuran gambar QRIS maksimal 5MB',
         ]);
 
         if ($validator->fails()) {
@@ -106,7 +123,9 @@ class KonfigurasiIntegrasiController extends Controller
                     ->with('error', 'Data masjid tidak ditemukan');
             }
 
-            // Update WhatsApp Configuration
+            // ═══════════════════════════════════════════════════════════
+            // UPDATE WHATSAPP CONFIGURATION
+            // ═══════════════════════════════════════════════════════════
             $whatsappData = [
                 'api_key'               => $request->whatsapp_api_key,
                 'nomor_pengirim'        => $request->whatsapp_nomor_pengirim,
@@ -118,6 +137,43 @@ class KonfigurasiIntegrasiController extends Controller
             KonfigurasiWhatsapp::updateOrCreate(
                 ['masjid_id' => $masjid->id],
                 $whatsappData
+            );
+
+            // ═══════════════════════════════════════════════════════════
+            // UPDATE QRIS CONFIGURATION
+            // ═══════════════════════════════════════════════════════════
+            $qrisData = [
+                'is_active' => $request->has('qris_is_active') ? true : false,
+            ];
+
+            // Handle upload gambar QRIS
+            if ($request->hasFile('qris_image')) {
+                // Hapus gambar lama jika ada
+                $qrisOld = KonfigurasiQris::where('masjid_id', $masjid->id)->first();
+                if ($qrisOld && $qrisOld->qris_image_path && !filter_var($qrisOld->qris_image_path, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($qrisOld->qris_image_path);
+                }
+
+                // ✅ PERBAIKAN: Simpan gambar ke folder public/qris/
+                $file = $request->file('qris_image');
+                $fileName = $masjid->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+                // Gunakan store() untuk menyimpan ke public/qris/
+                $path = $file->storeAs('qris', $fileName, 'public');
+                $qrisData['qris_image_path'] = $path;
+            }
+
+            // Hapus gambar jika checkbox di-check
+            if ($request->has('hapus_qris_image')) {
+                $qrisOld = KonfigurasiQris::where('masjid_id', $masjid->id)->first();
+                if ($qrisOld && $qrisOld->qris_image_path && !filter_var($qrisOld->qris_image_path, FILTER_VALIDATE_URL)) {
+                    Storage::disk('public')->delete($qrisOld->qris_image_path);
+                }
+                $qrisData['qris_image_path'] = null;
+            }
+
+            KonfigurasiQris::updateOrCreate(
+                ['masjid_id' => $masjid->id],
+                $qrisData
             );
 
             DB::commit();
@@ -214,6 +270,41 @@ class KonfigurasiIntegrasiController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error toggling WhatsApp status: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan'
+            ], 500);
+        }
+    }
+
+    /**
+     * Toggle QRIS status
+     */
+    public function toggleQrisStatus()
+    {
+        try {
+            $user   = Auth::user();
+            $masjid = $user->masjid;
+
+            $qris = KonfigurasiQris::where('masjid_id', $masjid->id)->first();
+
+            if (!$qris) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Konfigurasi QRIS tidak ditemukan'
+                ], 404);
+            }
+
+            $qris->is_active = !$qris->is_active;
+            $qris->save();
+
+            return response()->json([
+                'success'   => true,
+                'message'   => 'Status QRIS berhasil diubah',
+                'is_active' => $qris->is_active
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error toggling QRIS status: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan'

@@ -236,17 +236,32 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         Route::get('/amil/{amilId}/muzaki', [App\Http\Controllers\Admin_masjid\AdminMasjidMuzakiController::class, 'getMuzakiByAmil'])->name('amil.muzaki');
     });
 
-    Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])->name('show');
-        Route::get('/edit', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'edit'])->name('edit');
-        Route::post('/update', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'update'])->name('update');
+ Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
+    // GET - Tampilkan konfigurasi (status WhatsApp & QRIS)
+    Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])
+        ->name('show');
+    
+    // GET - Form edit konfigurasi
+    Route::get('/edit', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'edit'])
+        ->name('edit');
+    
+    // POST - Simpan perubahan (WhatsApp & QRIS - upload foto)
+    // MENGGUNAKAN POST BUKAN PUT (lebih cocok untuk file upload)
+    Route::post('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'update'])
+        ->name('update');
+    
+    // POST - Test koneksi WhatsApp
+    Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])
+        ->name('test-whatsapp');
 
-        // Testing endpoints
-        Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])->name('test-whatsapp');
-
-        // Toggle status
-        Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])->name('toggle-whatsapp');
-    });
+    // POST - Toggle WhatsApp status (aktif/tidak aktif)
+    Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])
+        ->name('toggle-whatsapp');
+    
+    // POST - Toggle QRIS status (aktif/tidak aktif)
+    Route::post('/toggle-qris', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleQrisStatus'])
+        ->name('toggle-qris');
+});
 
     Route::prefix('program-zakat')->name('program-zakat.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin_masjid\ProgramZakatController::class, 'index'])->name('index');
@@ -698,11 +713,11 @@ Route::middleware(['auth', 'active.user'])->prefix('api')->name('api.')->group(f
 
 Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(function () {
     Route::prefix('transaksi-daring-muzakki')->name('transaksi-daring-muzakki.')->group(function () {
-        
+
         // GANTI dari AmilController ke MuzakkiController
         Route::get('/', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'index'])
             ->name('index');
-        
+
         // GANTI dari KunjunganMustahikController ke TransaksiZakatController
         Route::get('/create', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'create'])
             ->name('create');

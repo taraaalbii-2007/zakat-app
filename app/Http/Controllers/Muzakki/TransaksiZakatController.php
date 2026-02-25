@@ -142,6 +142,9 @@ class TransaksiZakatController extends Controller
             ->where('status', 'aktif')
             ->with('pengguna')
             ->get();
+        $rekeningMasjidList = RekeningMasjid::where('masjid_id', $this->masjid->id)
+        ->where('is_active', true)
+        ->get();
 
         // Tipe zakat dikelompokkan per jenis untuk kebutuhan JS di view
         $tipeZakatList = [];
@@ -158,13 +161,15 @@ class TransaksiZakatController extends Controller
                 ->toArray();
         }
 
-        // Nama muzakki diambil dari username akun (bukan nama profil)
+        // PERUBAHAN: Data muzakki - semua field diambil
+        // NAMA dan EMAIL akan ditampilkan READONLY
+        // TELEPON, NIK, ALAMAT bisa diedit
         $muzakkiData = [
-            'nama'    => $this->user->username ?? $this->muzakki->nama,
-            'telepon' => $this->muzakki->telepon,
+            'nama'    => $this->muzakki->nama ?? $this->user->username ?? 'Muzakki',
             'email'   => $this->muzakki->email ?? $this->user->email,
-            'alamat'  => $this->muzakki->alamat,
-            'nik'     => $this->muzakki->nik,
+            'telepon' => $this->muzakki->telepon ?? '',
+            'nik'     => $this->muzakki->nik ?? '',
+            'alamat'  => $this->muzakki->alamat ?? '',
         ];
 
         $zakatFitrahInfo = [
@@ -173,14 +178,19 @@ class TransaksiZakatController extends Controller
             'beras_liter'      => self::BERAS_LITER_PER_JIWA,
         ];
 
+        $konfigurasiQris = \App\Models\KonfigurasiQris::where('masjid_id', $this->masjid->id)
+    ->where('is_active', true)
+    ->first();
+
         return view('muzakki.transaksi-daring-muzakki.create', compact(
             'jenisZakatList',
             'programZakatList',
             'amilList',
             'tipeZakatList',
-            'rekeningList',
+            'rekeningMasjidList',
             'zakatFitrahInfo',
-            'muzakkiData'
+            'muzakkiData',
+            'konfigurasiQris'
         ));
     }
 
@@ -218,12 +228,14 @@ class TransaksiZakatController extends Controller
             $transaksi->tanggal_transaksi = $request->tanggal_transaksi ?? now()->format('Y-m-d');
             $transaksi->waktu_transaksi   = now();
 
-            // Snapshot data muzakki saat transaksi dibuat (field readonly di form)
+            // PERUBAHAN: Snapshot data muzakki - SEMUA field disimpan
+            // NAMA dan EMAIL dari form (readonly)
+            // TELEPON, NIK, ALAMAT dari input user (bisa diedit)
             $transaksi->muzakki_nama    = $request->muzakki_nama;
-            $transaksi->muzakki_telepon = $request->muzakki_telepon;
             $transaksi->muzakki_email   = $request->muzakki_email;
-            $transaksi->muzakki_alamat  = $request->muzakki_alamat;
+            $transaksi->muzakki_telepon = $request->muzakki_telepon;
             $transaksi->muzakki_nik     = $request->muzakki_nik;
+            $transaksi->muzakki_alamat  = $request->muzakki_alamat;
 
             $transaksi->metode_penerimaan = $metode;
             $transaksi->keterangan        = $request->keterangan;
@@ -295,10 +307,10 @@ class TransaksiZakatController extends Controller
         $rules = [
             'tanggal_transaksi' => 'nullable|date',
             'muzakki_nama'      => 'required|string|max:255',
-            'muzakki_telepon'   => 'nullable|string|max:20',
             'muzakki_email'     => 'nullable|email|max:255',
-            'muzakki_alamat'    => 'nullable|string|max:500',
-            'muzakki_nik'       => 'nullable|string|max:16',
+            'muzakki_telepon'   => 'required|string|max:20',  // WAJIB diisi karena bisa diedit
+            'muzakki_nik'       => 'nullable|string|max:16',  // Opsional
+            'muzakki_alamat'    => 'required|string|max:500', // WAJIB diisi karena bisa diedit
             'metode_penerimaan' => 'required|in:daring,dijemput',
             'keterangan'        => 'nullable|string|max:1000',
         ];
@@ -322,6 +334,7 @@ class TransaksiZakatController extends Controller
             $rules['jumlah_dibayar']     = 'nullable|numeric|min:0';
             $rules['metode_pembayaran']  = 'required|in:transfer,qris';
             $rules['bukti_transfer']     = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['bukti_qris']         = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
             $rules['nama_jiwa']          = 'nullable|array|max:100';
             $rules['nama_jiwa.*']        = 'nullable|string|max:255';
         }
@@ -429,9 +442,16 @@ class TransaksiZakatController extends Controller
         $transaksi->status            = 'pending';
         $transaksi->konfirmasi_status = 'menunggu_konfirmasi';
 
+        // Handle bukti transfer
         if ($request->hasFile('bukti_transfer')) {
             $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
             $transaksi->bukti_transfer = $path;
+        }
+
+        // Handle bukti QRIS
+        if ($request->hasFile('bukti_qris')) {
+            $path = $request->file('bukti_qris')->store('bukti-qris', 'public');
+            $transaksi->bukti_transfer = $path; // Simpan di kolom yang sama atau buat kolom khusus
         }
     }
 
