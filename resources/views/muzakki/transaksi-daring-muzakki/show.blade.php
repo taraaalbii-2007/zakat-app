@@ -126,7 +126,7 @@
                         </svg>
                         {{ $transaksi->no_transaksi }}
                     </span>
-                    
+
                     {{-- Status Badge --}}
                     @php
                         $statusBadges = [
@@ -288,6 +288,29 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- ── Nama Jiwa (Zakat Fitrah) ── --}}
+                @if(!empty($transaksi->nama_jiwa_json))
+                <div class="mt-6 pt-5 border-t border-gray-100">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nama Jiwa — {{ count($transaksi->nama_jiwa_json) }} Jiwa
+                        </label>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($transaksi->nama_jiwa_json as $index => $namaJiwa)
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-green-50 text-green-800 border border-green-200">
+                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-200 text-green-800 text-xs font-bold flex-shrink-0">{{ $index + 1 }}</span>
+                            {{ $namaJiwa }}
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
 
             <hr class="border-gray-200">
@@ -306,6 +329,12 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Jumlah Zakat</label>
                             <p class="text-sm font-semibold text-green-600">Rp {{ number_format($transaksi->jumlah, 0, ',', '.') }}</p>
+                            @if($transaksi->jumlah_infaq > 0)
+                            <p class="text-xs text-amber-600 mt-0.5">
+                                +Infaq Rp {{ number_format($transaksi->jumlah_infaq, 0, ',', '.') }}
+                                <span class="text-gray-500">(Total: Rp {{ number_format($transaksi->jumlah_dibayar, 0, ',', '.') }})</span>
+                            </p>
+                            @endif
                             @if($transaksi->jumlah_beras_kg)
                             <p class="text-xs text-gray-600 mt-0.5">{{ $transaksi->jumlah_beras_kg }} kg beras</p>
                             @endif
@@ -385,11 +414,11 @@
                         <h4 class="text-sm font-semibold text-gray-900 mb-3">Status Penjemputan</h4>
                         @php
                             $statusPenjemputanMap = [
-                                'menunggu' => ['bg-yellow-100 text-yellow-800', 'Menunggu Amil'],
-                                'diterima' => ['bg-blue-100 text-blue-800', 'Diterima Amil'],
+                                'menunggu'         => ['bg-yellow-100 text-yellow-800', 'Menunggu Amil'],
+                                'diterima'         => ['bg-blue-100 text-blue-800', 'Diterima Amil'],
                                 'dalam_perjalanan' => ['bg-indigo-100 text-indigo-800', 'Dalam Perjalanan'],
-                                'sampai_lokasi' => ['bg-orange-100 text-orange-800', 'Amil di Lokasi'],
-                                'selesai' => ['bg-green-100 text-green-800', 'Selesai'],
+                                'sampai_lokasi'    => ['bg-orange-100 text-orange-800', 'Amil di Lokasi'],
+                                'selesai'          => ['bg-green-100 text-green-800', 'Selesai'],
                             ];
                             [$pjClass, $pjLabel] = $statusPenjemputanMap[$transaksi->status_penjemputan] ?? ['bg-gray-100 text-gray-800', 'Tidak Diketahui'];
                         @endphp

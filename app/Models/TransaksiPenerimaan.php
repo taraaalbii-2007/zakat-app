@@ -32,6 +32,7 @@ class TransaksiPenerimaan extends Model
         'dikonfirmasi_oleh', 'konfirmasi_at', 'catatan_konfirmasi',
         // Detail Fitrah
         'jumlah_jiwa', 'nominal_per_jiwa', 'jumlah_beras_kg', 'harga_beras_per_kg',
+        'nama_jiwa_json',
         // Detail Mal
         'nilai_harta', 'nisab_saat_ini', 'sudah_haul', 'tanggal_mulai_haul',
         // Bukti & catatan
@@ -51,6 +52,7 @@ class TransaksiPenerimaan extends Model
         'has_infaq'           => 'boolean',
         'diinput_muzakki'     => 'boolean',
         'jumlah_jiwa'         => 'integer',
+        'nama_jiwa_json' => 'array',
         'nominal_per_jiwa'    => 'decimal:2',
         'jumlah_beras_kg'     => 'decimal:2',
         'harga_beras_per_kg'  => 'decimal:2',

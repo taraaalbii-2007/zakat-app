@@ -42,8 +42,6 @@
                 <p class="text-sm font-mono text-gray-900 bg-white border border-yellow-200 px-3 py-1.5 rounded-lg inline-block">{{ $transaksi->no_referensi_transfer }}</p>
             </div>
             @endif
-
-            {{-- HAPUS FORM KONFIRMASI DAN TOLAK --}}
         </div>
     </div>
     @endif
@@ -103,7 +101,6 @@
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Informasi lengkap transaksi zakat</p>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                    {{-- HANYA TOMBOL KEMBALI --}}
                     <a href="{{ route('transaksi-daring.index') }}"
                         class="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 shadow-sm text-xs sm:text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,8 +108,6 @@
                         </svg>
                         Kembali
                     </a>
-                    
-                    {{-- HAPUS SEMUA TOMBOL LAINNYA (Cetak, Edit, Verifikasi) --}}
                 </div>
             </div>
         </div>
@@ -268,6 +263,29 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- ── Nama Jiwa (Zakat Fitrah) ── --}}
+                @if(!empty($transaksi->nama_jiwa_json))
+                <div class="mt-6 pt-5 border-t border-gray-100">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nama Jiwa — {{ count($transaksi->nama_jiwa_json) }} Jiwa
+                        </label>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($transaksi->nama_jiwa_json as $index => $namaJiwa)
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-green-50 text-green-800 border border-green-200">
+                            <span class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-green-200 text-green-800 text-xs font-bold flex-shrink-0">{{ $index + 1 }}</span>
+                            {{ $namaJiwa }}
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </div>
 
             <hr class="border-gray-200">
@@ -286,6 +304,12 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Jumlah Pembayaran</label>
                             <p class="text-sm font-semibold text-green-600">{{ $transaksi->jumlah_formatted }}</p>
+                            @if($transaksi->jumlah_infaq > 0)
+                            <p class="text-xs text-amber-600 mt-0.5">
+                                Dibayar: {{ $transaksi->jumlah_dibayar_formatted }}
+                                <span class="font-medium">(+Infaq {{ $transaksi->jumlah_infaq_formatted }})</span>
+                            </p>
+                            @endif
                             @if($transaksi->jumlah_beras_kg)
                             <p class="text-xs text-gray-600 mt-0.5">{{ $transaksi->jumlah_beras_kg }} kg beras</p>
                             @endif
@@ -505,18 +529,13 @@
                 </div>
             </div>
 
-            {{-- HAPUS SEMUA ACTION BUTTONS --}}
-
         </div>{{-- end content body --}}
     </div>{{-- end main card --}}
 </div>
-
-{{-- HAPUS DELETE MODAL KARENA TIDAK ADA AKSI HAPUS --}}
-
 @endsection
 
 @push('scripts')
 <script>
-// HAPUS SEMUA FUNGSI JS YANG TIDAK DIPERLUKAN
+// No JS needed
 </script>
 @endpush

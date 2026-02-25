@@ -276,6 +276,22 @@
                                     <td class="px-6 py-4">
                                         <div class="flex-1">
                                             <div class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</div>
+
+                                            {{-- ── Nama Jiwa (Zakat Fitrah) ── --}}
+                                            @if (!empty($trx->nama_jiwa_json))
+                                                <div class="flex flex-wrap gap-1 mt-1">
+                                                    @foreach ($trx->nama_jiwa_json as $namaJiwa)
+                                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
+                                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                            </svg>
+                                                            {{ $namaJiwa }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
                                             <div class="text-xs text-gray-500 mt-0.5">
                                                 {{ $trx->tanggal_transaksi->format('d/m/Y') }} ·
                                                 {{ $trx->waktu_transaksi->format('H:i') }}
@@ -327,6 +343,27 @@
                                                                     <p class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</p>
                                                                 </div>
                                                             </div>
+
+                                                            {{-- Nama Jiwa di Expandable --}}
+                                                            @if (!empty($trx->nama_jiwa_json))
+                                                                <div class="flex items-start">
+                                                                    <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    </svg>
+                                                                    <div>
+                                                                        <p class="text-xs text-gray-500">Nama Jiwa ({{ count($trx->nama_jiwa_json) }} jiwa)</p>
+                                                                        <div class="flex flex-wrap gap-1 mt-1">
+                                                                            @foreach ($trx->nama_jiwa_json as $namaJiwa)
+                                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
+                                                                                    {{ $namaJiwa }}
+                                                                                </span>
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
                                                             @if ($trx->muzakki_telepon)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -497,6 +534,22 @@
                                             <h3 class="text-sm font-semibold text-gray-900 truncate mr-2">{{ $trx->muzakki_nama }}</h3>
                                             {!! $trx->status_badge !!}
                                         </div>
+
+                                        {{-- ── Nama Jiwa Mobile ── --}}
+                                        @if (!empty($trx->nama_jiwa_json))
+                                            <div class="flex flex-wrap gap-1 mt-1">
+                                                @foreach ($trx->nama_jiwa_json as $namaJiwa)
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
+                                                        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                        {{ $namaJiwa }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        @endif
+
                                         <div class="flex items-center mt-1">
                                             <span class="text-xs text-gray-500">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
                                             @if ($trx->jumlah > 0)
@@ -536,6 +589,30 @@
                             <div id="detail-mobile-{{ $trx->uuid }}" class="hidden expandable-content-mobile">
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
                                     <div class="space-y-4">
+
+                                        {{-- Nama Jiwa di Expandable Mobile --}}
+                                        @if (!empty($trx->nama_jiwa_json))
+                                            <div>
+                                                <h4 class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Nama Jiwa</h4>
+                                                <div class="flex items-start gap-2">
+                                                    <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    </svg>
+                                                    <div>
+                                                        <p class="text-xs text-gray-500 mb-1">{{ count($trx->nama_jiwa_json) }} jiwa</p>
+                                                        <div class="flex flex-wrap gap-1">
+                                                            @foreach ($trx->nama_jiwa_json as $namaJiwa)
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
+                                                                    {{ $namaJiwa }}
+                                                                </span>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+
                                         @if ($trx->muzakki_telepon || $trx->muzakki_email)
                                             <div>
                                                 <h4 class="text-sm font-medium text-gray-900 mb-2">Kontak</h4>
