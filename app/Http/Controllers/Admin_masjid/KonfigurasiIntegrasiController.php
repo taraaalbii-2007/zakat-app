@@ -96,7 +96,7 @@ class KonfigurasiIntegrasiController extends Controller
             'whatsapp_api_url'              => 'nullable|url|max:255',
             'whatsapp_nomor_tujuan_default' => 'nullable|string|max:20',
             'whatsapp_is_active'            => 'nullable|boolean',
-            
+
             // QRIS validation - Upload foto saja
             'qris_image'                    => 'nullable|image|mimes:jpeg,jpg,png,gif|max:5120',
             'qris_is_active'                => 'nullable|boolean',
@@ -147,6 +147,7 @@ class KonfigurasiIntegrasiController extends Controller
             ];
 
             // Handle upload gambar QRIS
+            // Handle upload gambar QRIS
             if ($request->hasFile('qris_image')) {
                 // Hapus gambar lama jika ada
                 $qrisOld = KonfigurasiQris::where('masjid_id', $masjid->id)->first();
@@ -154,12 +155,24 @@ class KonfigurasiIntegrasiController extends Controller
                     Storage::disk('public')->delete($qrisOld->qris_image_path);
                 }
 
-                // ✅ PERBAIKAN: Simpan gambar ke folder public/qris/
                 $file = $request->file('qris_image');
-                $fileName = $masjid->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-                // Gunakan store() untuk menyimpan ke public/qris/
-                $path = $file->storeAs('qris', $fileName, 'public');
-                $qrisData['qris_image_path'] = $path;
+
+                // ✅ Selalu simpan sebagai .jpg (konversi otomatis dari jfif/jpeg/png/dll)
+                $fileName = $masjid->id . '_' . time() . '.jpg';
+
+                // Pastikan folder ada
+                $folder = storage_path('app/public/qris');
+                if (!file_exists($folder)) {
+                    mkdir($folder, 0755, true);
+                }
+
+                // Konversi ke JPG menggunakan GD (built-in PHP)
+                $imageContent = file_get_contents($file->getRealPath());
+                $image = imagecreatefromstring($imageContent);
+                imagejpeg($image, $folder . '/' . $fileName, 90);
+                imagedestroy($image);
+
+                $qrisData['qris_image_path'] = 'qris/' . $fileName;
             }
 
             // Hapus gambar jika checkbox di-check
@@ -180,7 +193,6 @@ class KonfigurasiIntegrasiController extends Controller
 
             return redirect()->route('konfigurasi-integrasi.show')
                 ->with('success', 'Konfigurasi integrasi berhasil diperbarui');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error updating konfigurasi integrasi: ' . $e->getMessage());
