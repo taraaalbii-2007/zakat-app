@@ -171,6 +171,23 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach ($transaksis as $trx)
+                            @php
+                                // Cek apakah ada data nama jiwa
+                                $hasNamaJiwa = false;
+                                $namaJiwaList = [];
+                                
+                                if ($trx->dataZakatFitrah && isset($trx->dataZakatFitrah['nama_jiwa']) && count($trx->dataZakatFitrah['nama_jiwa']) > 0) {
+                                    $hasNamaJiwa = true;
+                                    $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                                } elseif ($trx->dataZakatFitrahTunai && isset($trx->dataZakatFitrahTunai['nama_jiwa']) && count($trx->dataZakatFitrahTunai['nama_jiwa']) > 0) {
+                                    $hasNamaJiwa = true;
+                                    $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                                } elseif ($trx->nama_jiwa_json && is_array($trx->nama_jiwa_json) && count($trx->nama_jiwa_json) > 0) {
+                                    $hasNamaJiwa = true;
+                                    $namaJiwaList = $trx->nama_jiwa_json;
+                                }
+                            @endphp
+
                             {{-- Parent Row --}}
                             <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
                                 data-target="detail-{{ $trx->uuid }}">
@@ -191,12 +208,15 @@
                                         <div class="text-xs text-gray-500 mt-0.5">
                                             {{ $trx->tanggal_transaksi->format('d/m/Y') }}
                                             @if($trx->waktu_transaksi)
-                                                &middot; {{ $trx->waktu_transaksi->format('H:i') }}
+                                                &middot; {{ \Carbon\Carbon::parse($trx->waktu_transaksi)->format('H:i') }}
                                             @endif
                                             @if ($trx->jumlah > 0)
                                                 &middot; <span class="font-semibold text-gray-700">Rp {{ number_format($trx->jumlah, 0, ',', '.') }}</span>
                                             @elseif($trx->jumlah_beras_kg > 0)
                                                 &middot; <span class="font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }} kg</span>
+                                            @endif
+                                            @if($hasNamaJiwa)
+                                                &middot; <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
                                             @endif
                                         </div>
                                         <div class="flex items-center gap-2 mt-2 flex-wrap">
@@ -210,6 +230,11 @@
                                                 @endif">
                                                 {{ ucfirst($trx->metode_pembayaran) }}
                                             </span>
+                                            @if($trx->metode_penerimaan == 'datang_langsung')
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                    Datang Langsung
+                                                </span>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                     </div>
@@ -250,6 +275,20 @@
                                                                     {{ $trx->muzakki_nama ?? '-' }}</p>
                                                             </div>
                                                         </div>
+                                                        @if($trx->muzakki_nik)
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-xs text-gray-500">NIK</p>
+                                                                <p class="text-sm text-gray-900">{{ $trx->muzakki_nik }}</p>
+                                                            </div>
+                                                        </div>
+                                                        @endif
                                                         @if($trx->muzakki_telepon)
                                                         <div class="flex items-start">
                                                             <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
@@ -328,7 +367,7 @@
                                                                 <p class="text-sm font-medium text-gray-900">
                                                                     {{ $trx->tanggal_transaksi->format('d F Y') }}
                                                                     @if($trx->waktu_transaksi)
-                                                                        <span class="text-gray-500"> ({{ $trx->waktu_transaksi->format('H:i') }})</span>
+                                                                        <span class="text-gray-500"> ({{ \Carbon\Carbon::parse($trx->waktu_transaksi)->format('H:i') }})</span>
                                                                     @endif
                                                                 </p>
                                                             </div>
@@ -362,10 +401,61 @@
                                                             </svg>
                                                             <div>
                                                                 <p class="text-xs text-gray-500">Program Zakat</p>
-                                                                <p class="text-sm text-gray-900">{{ $trx->programZakat->nama }}</p>
+                                                                <p class="text-sm text-gray-900">{{ $trx->programZakat->nama_program }}</p>
                                                             </div>
                                                         </div>
                                                         @endif
+                                                        
+                                                        {{-- Nama Jiwa (jika ada) --}}
+                                                        @if($hasNamaJiwa)
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-xs text-gray-500">
+                                                                    Nama Jiwa 
+                                                                    <span class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
+                                                                </p>
+                                                                <div class="text-sm text-gray-700 mt-1 flex flex-wrap gap-1">
+                                                                    @foreach($namaJiwaList as $index => $nama)
+                                                                        @if($nama && trim($nama) !== '')
+                                                                            <span class="inline-flex items-center bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
+                                                                                <span class="font-medium text-gray-500 mr-1">{{ $index + 1 }}.</span>
+                                                                                {{ $nama }}
+                                                                            </span>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                        
+                                                        {{-- Data Zakat Mal --}}
+                                                        @if($trx->dataZakatMal)
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-xs text-gray-500">Detail Mal</p>
+                                                                <p class="text-xs text-gray-700">
+                                                                    Nilai Harta: Rp {{ number_format($trx->dataZakatMal['nilai_harta'] ?? 0, 0, ',', '.') }}<br>
+                                                                    @if(isset($trx->dataZakatMal['persentase'])) Persen: {{ $trx->dataZakatMal['persentase'] }}%<br> @endif
+                                                                    @if(isset($trx->dataZakatMal['sudah_haul']) && $trx->dataZakatMal['sudah_haul'])
+                                                                        Sudah Haul: Ya
+                                                                    @endif
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                        
                                                         @if ($trx->jumlah > 0)
                                                         <div class="flex items-start">
                                                             <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0"
@@ -385,22 +475,25 @@
                                                             </div>
                                                         </div>
                                                         @endif
-                                                        @if ($trx->jumlah_beras_kg > 0)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0"
-                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2"
-                                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jumlah (Beras)</p>
-                                                                <p class="text-sm font-semibold text-amber-600">
-                                                                    {{ $trx->jumlah_beras_kg }} kg
-                                                                </p>
+
+                                                        @if($trx->jenisZakat && strtolower($trx->jenisZakat->nama) == 'zakat fitrah' && $trx->tipeZakat && strtolower($trx->tipeZakat->nama) == 'beras')
+                                                            @if ($trx->jumlah_beras_kg > 0)
+                                                            <div class="flex items-start">
+                                                                <svg class="w-4 h-4 text-amber-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                                </svg>
+                                                                <div>
+                                                                    <p class="text-xs text-gray-500">Jumlah (Beras)</p>
+                                                                    <p class="text-sm font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }} kg</p>
+                                                                    @if($trx->jumlah_beras_liter > 0)
+                                                                    <p class="text-xs text-gray-500">({{ $trx->jumlah_beras_liter }} liter)</p>
+                                                                    @endif
+                                                                </div>
                                                             </div>
-                                                        </div>
+                                                            @endif
                                                         @endif
+
                                                         @if($trx->keterangan)
                                                         <div class="flex items-start">
                                                             <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
@@ -463,6 +556,36 @@
                                                             </div>
                                                         </div>
                                                         @endif
+                                                        
+                                                        {{-- Informasi Tambahan --}}
+                                                        @if($trx->jumlah_jiwa > 0)
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-xs text-gray-500">Jumlah Jiwa</p>
+                                                                <p class="text-sm text-gray-900">{{ $trx->jumlah_jiwa }}</p>
+                                                            </div>
+                                                        </div>
+                                                        @endif
+                                                        @if($trx->nominal_per_jiwa > 0)
+                                                        <div class="flex items-start">
+                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            <div>
+                                                                <p class="text-xs text-gray-500">Nominal per Jiwa</p>
+                                                                <p class="text-sm text-gray-900">Rp {{ number_format($trx->nominal_per_jiwa, 0, ',', '.') }}</p>
+                                                            </div>
+                                                        </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -500,6 +623,23 @@
             {{-- ── Mobile View ── --}}
             <div class="md:hidden divide-y divide-gray-200">
                 @foreach ($transaksis as $trx)
+                    @php
+                        // Cek apakah ada data nama jiwa
+                        $hasNamaJiwa = false;
+                        $namaJiwaList = [];
+                        
+                        if ($trx->dataZakatFitrah && isset($trx->dataZakatFitrah['nama_jiwa']) && count($trx->dataZakatFitrah['nama_jiwa']) > 0) {
+                            $hasNamaJiwa = true;
+                            $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                        } elseif ($trx->dataZakatFitrahTunai && isset($trx->dataZakatFitrahTunai['nama_jiwa']) && count($trx->dataZakatFitrahTunai['nama_jiwa']) > 0) {
+                            $hasNamaJiwa = true;
+                            $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                        } elseif ($trx->nama_jiwa_json && is_array($trx->nama_jiwa_json) && count($trx->nama_jiwa_json) > 0) {
+                            $hasNamaJiwa = true;
+                            $namaJiwaList = $trx->nama_jiwa_json;
+                        }
+                    @endphp
+
                     <div class="expandable-card">
                         <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                             data-target="detail-mobile-{{ $trx->uuid }}">
@@ -514,10 +654,16 @@
                                     </div>
                                     <div class="flex items-center mt-1 flex-wrap gap-2">
                                         <span class="text-xs text-gray-500">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
+                                        @if($trx->waktu_transaksi)
+                                            <span class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($trx->waktu_transaksi)->format('H:i') }}</span>
+                                        @endif
                                         @if($trx->jumlah > 0)
                                             <span class="text-xs font-semibold text-green-600">Rp {{ number_format($trx->jumlah, 0, ',', '.') }}</span>
                                         @elseif($trx->jumlah_beras_kg > 0)
                                             <span class="text-xs font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }} kg</span>
+                                        @endif
+                                        @if($hasNamaJiwa)
+                                            <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
                                         @endif
                                         <span class="px-2 py-0.5 text-xs font-medium rounded-full
                                             @if($trx->metode_pembayaran == 'tunai') bg-green-100 text-green-800
@@ -526,6 +672,11 @@
                                             @endif">
                                             {{ ucfirst($trx->metode_pembayaran) }}
                                         </span>
+                                        @if($trx->metode_penerimaan == 'datang_langsung')
+                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                                Datang Langsung
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 ml-2">
@@ -563,6 +714,20 @@
                                                     <p class="text-sm font-mono text-gray-900">{{ $trx->no_transaksi }}</p>
                                                 </div>
                                             </div>
+                                            
+                                            @if($trx->muzakki_nik)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">NIK</p>
+                                                    <p class="text-sm text-gray-900">{{ $trx->muzakki_nik }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
                                             @if($trx->muzakki_telepon)
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -575,6 +740,7 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            
                                             @if($trx->muzakki_alamat)
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,6 +755,20 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            
+                                            @if($trx->muzakki_email)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Email</p>
+                                                    <p class="text-sm text-gray-900">{{ $trx->muzakki_email }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
                                             @if ($trx->jenisZakat)
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -604,6 +784,65 @@
                                                 </div>
                                             </div>
                                             @endif
+                                            
+                                            @if ($trx->programZakat)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Program Zakat</p>
+                                                    <p class="text-sm text-gray-900">{{ $trx->programZakat->nama_program }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
+                                            {{-- Nama Jiwa (jika ada) --}}
+                                            @if($hasNamaJiwa)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">
+                                                        Nama Jiwa 
+                                                        <span class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
+                                                    </p>
+                                                    <div class="text-xs text-gray-700 mt-1 space-y-1">
+                                                        @foreach($namaJiwaList as $index => $nama)
+                                                            @if($nama && trim($nama) !== '')
+                                                                <div class="flex items-start">
+                                                                    <span class="text-gray-400 w-4">{{ $index + 1 }}.</span>
+                                                                    <span>{{ $nama }}</span>
+                                                                </div>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
+                                            {{-- Data Zakat Mal --}}
+                                            @if($trx->dataZakatMal)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Detail Mal</p>
+                                                    <p class="text-xs text-gray-700">
+                                                        Nilai Harta: Rp {{ number_format($trx->dataZakatMal['nilai_harta'] ?? 0, 0, ',', '.') }}
+                                                        @if(isset($trx->dataZakatMal['sudah_haul']) && $trx->dataZakatMal['sudah_haul'])
+                                                            <br>Sudah Haul
+                                                        @endif
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
                                             @if ($trx->jumlah > 0)
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -621,7 +860,8 @@
                                                 </div>
                                             </div>
                                             @endif
-                                            @if ($trx->jumlah_beras_kg > 0)
+                                            
+                                            @if ($trx->jumlah_beras_kg > 0 && $trx->jenisZakat && strtolower($trx->jenisZakat->nama) == 'zakat fitrah' && $trx->tipeZakat && strtolower($trx->tipeZakat->nama) == 'beras')
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-amber-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -630,9 +870,39 @@
                                                 <div>
                                                     <p class="text-xs text-gray-500">Jumlah (Beras)</p>
                                                     <p class="text-sm font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }} kg</p>
+                                                    @if($trx->jumlah_beras_liter > 0)
+                                                        <p class="text-xs text-gray-500">({{ $trx->jumlah_beras_liter }} liter)</p>
+                                                    @endif
                                                 </div>
                                             </div>
                                             @endif
+                                            
+                                            @if($trx->jumlah_jiwa > 0)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Jumlah Jiwa</p>
+                                                    <p class="text-sm text-gray-900">{{ $trx->jumlah_jiwa }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
+                                            @if($trx->nominal_per_jiwa > 0)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Nominal per Jiwa</p>
+                                                    <p class="text-sm text-gray-900">Rp {{ number_format($trx->nominal_per_jiwa, 0, ',', '.') }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
                                             @if($trx->verified_at)
                                             <div class="flex items-start text-sm">
                                                 <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -642,6 +912,19 @@
                                                 <div>
                                                     <p class="text-xs text-gray-500">Diverifikasi Pada</p>
                                                     <p class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}</p>
+                                                </div>
+                                            </div>
+                                            @endif
+                                            
+                                            @if($trx->keterangan)
+                                            <div class="flex items-start text-sm">
+                                                <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                                </svg>
+                                                <div>
+                                                    <p class="text-xs text-gray-500">Keterangan</p>
+                                                    <p class="text-sm text-gray-700">{{ $trx->keterangan }}</p>
                                                 </div>
                                             </div>
                                             @endif

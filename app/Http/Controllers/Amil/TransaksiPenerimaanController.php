@@ -416,9 +416,6 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     // STORE DATANG LANGSUNG
     // ================================================================
-    // ================================================================
-    // STORE DATANG LANGSUNG
-    // ================================================================
     public function storeDatangLangsung(Request $request)
     {
         Log::info('Transaksi Datang Langsung Store', [
@@ -427,6 +424,9 @@ class TransaksiPenerimaanController extends Controller
         ]);
 
         try {
+            // Deteksi apakah ini pembayaran beras
+            $isBeras = $request->is_pembayaran_beras == '1';
+
             $rules = [
                 'tanggal_transaksi'  => 'required|date',
                 'muzakki_nama'       => 'required|string|max:255',
@@ -449,10 +449,18 @@ class TransaksiPenerimaanController extends Controller
                 'sudah_haul'         => 'nullable|boolean',
                 'tanggal_mulai_haul' => 'nullable|date',
                 'jumlah_dibayar'     => 'nullable|numeric|min:0',
-                'metode_pembayaran'  => 'required|in:tunai,transfer,qris',
-                'bukti_transfer'     => 'nullable|image|max:2048',
                 'keterangan'         => 'nullable|string',
             ];
+
+            // ✅ PERBAIKAN: Hanya validasi metode_pembayaran jika BUKAN pembayaran beras
+            if (!$isBeras) {
+                $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
+            }
+
+            // Validasi bukti transfer hanya untuk transfer/qris (bukan beras)
+            if (!$isBeras && $request->metode_pembayaran === 'transfer') {
+                $rules['bukti_transfer'] = 'nullable|image|max:2048';
+            }
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -474,8 +482,14 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->metode_penerimaan = 'datang_langsung';
             $transaksi->keterangan        = $request->keterangan;
 
-            $this->isiDetailZakat($transaksi, $request, $request->is_pembayaran_beras == '1');
-            $this->isiMetodePembayaranDatangLangsung($transaksi, $request);
+            $this->isiDetailZakat($transaksi, $request, $isBeras);
+
+            // ✅ PERBAIKAN: Panggil method yang sesuai
+            if ($isBeras) {
+                $this->isiMetodePembayaranBeras($transaksi, $request);
+            } else {
+                $this->isiMetodePembayaranDatangLangsung($transaksi, $request);
+            }
 
             if ($this->user->isAmil() && $this->amil) {
                 $transaksi->amil_id = $this->amil->id;
@@ -503,107 +517,153 @@ class TransaksiPenerimaanController extends Controller
         }
     }
 
-    // ================================================================
-    // STORE DIJEMPUT
-    // ================================================================
-    public function storeDijemput(Request $request)
-    {
-        Log::info('Transaksi Dijemput Store', [
-            'user_id'   => $this->user->id,
-            'masjid_id' => $this->masjid->id,
-            'request_data' => $request->except(['_token'])
+ public function storeDijemput(Request $request)
+{
+    Log::info('Transaksi Dijemput Store', [
+        'user_id'   => $this->user->id,
+        'masjid_id' => $this->masjid->id,
+        'request_data' => $request->except(['_token'])
+    ]);
+
+    try {
+        $rules = [
+            'tanggal_transaksi' => 'required|date',
+            'muzakki_nama'      => 'required|string|max:255',
+            'muzakki_telepon'   => 'nullable|string|max:20',
+            'muzakki_email'     => 'nullable|email|max:255',
+            'muzakki_alamat'    => 'required|string',
+            'muzakki_nik'       => 'nullable|string|size:16',
+            'amil_id'           => 'required|exists:amil,id',
+            'latitude'          => 'required|numeric',
+            'longitude'         => 'required|numeric',
+            'tanggal_penjemputan' => 'nullable|date',
+            'metode_pembayaran' => 'nullable|in:tunai,transfer,qris',
+            'jumlah_dibayar'    => 'nullable|numeric|min:0',
+            'keterangan'        => 'nullable|string',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            Log::warning('Validasi gagal', ['errors' => $validator->errors()->toArray()]);
+            return redirect()->back()->withInput()->withErrors($validator->errors());
+        }
+
+        DB::beginTransaction();
+
+        // Generate no transaksi
+        $noTransaksi = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+
+        Log::info('Menyimpan transaksi', ['no_transaksi' => $noTransaksi]);
+
+        $transaksi = new TransaksiPenerimaan();
+        $transaksi->masjid_id         = $this->masjid->id;
+        $transaksi->no_transaksi      = $noTransaksi;
+        $transaksi->tanggal_transaksi = $request->tanggal_transaksi ?? now();
+        $transaksi->waktu_transaksi   = now();
+        $transaksi->muzakki_nama      = $request->muzakki_nama;
+        $transaksi->muzakki_telepon   = $request->muzakki_telepon;
+        $transaksi->muzakki_email     = $request->muzakki_email;
+        $transaksi->muzakki_alamat    = $request->muzakki_alamat;
+        $transaksi->muzakki_nik       = $request->muzakki_nik;
+        $transaksi->metode_penerimaan = 'dijemput';
+        $transaksi->amil_id           = $request->amil_id;
+        $transaksi->latitude          = $request->latitude;
+        $transaksi->longitude         = $request->longitude;
+        $transaksi->status_penjemputan = 'menunggu';
+        $transaksi->waktu_request     = now();
+        $transaksi->jumlah            = 0;
+        $transaksi->keterangan        = $request->keterangan;
+
+        // ✅ PERBAIKAN: AUTO VERIFIED UNTUK SEMUA METODE PEMBAYARAN (TUNAI, TRANSFER, QRIS)
+        if ($request->filled('metode_pembayaran')) {
+            $transaksi->metode_pembayaran = $request->metode_pembayaran;
+            
+            // AUTO VERIFIKASI UNTUK SEMUA METODE PEMBAYARAN
+            $transaksi->status = 'verified';
+            $transaksi->verified_by = $this->user->id;
+            $transaksi->verified_at = now();
+            
+            // Set konfirmasi_status berdasarkan metode pembayaran
+            if (in_array($request->metode_pembayaran, ['qris', 'transfer'])) {
+                $transaksi->konfirmasi_status = 'dikonfirmasi';
+            } else {
+                // Untuk tunai, tidak perlu konfirmasi status
+                $transaksi->konfirmasi_status = null;
+            }
+            
+            // Set jumlah dibayar jika ada
+            if ($request->filled('jumlah_dibayar')) {
+                $transaksi->jumlah_dibayar = $request->jumlah_dibayar;
+                $transaksi->jumlah = $request->jumlah_dibayar;
+            } else {
+                // Jika jumlah_dibayar tidak diisi, set jumlah_dibayar sama dengan jumlah (0 untuk sementara)
+                $transaksi->jumlah_dibayar = 0;
+            }
+            
+            Log::info('Transaksi dijemput auto verified', [
+                'no_transaksi' => $noTransaksi,
+                'metode' => $request->metode_pembayaran,
+                'status' => 'verified'
+            ]);
+        } else {
+            // Jika tidak ada metode pembayaran, status pending
+            $transaksi->status = 'pending';
+            $transaksi->konfirmasi_status = null;
+            
+            Log::warning('Transaksi dijemput tanpa metode pembayaran', [
+                'no_transaksi' => $noTransaksi
+            ]);
+        }
+
+        // Jika ada tanggal penjemputan yang diinginkan
+        if ($request->filled('tanggal_penjemputan')) {
+            $transaksi->tanggal_penjemputan = $request->tanggal_penjemputan;
+        }
+
+        // Jika diinput oleh muzakki
+        if ($this->user->isMuzakki() && $this->user->muzakki) {
+            $transaksi->diinput_muzakki = true;
+            $transaksi->muzakki_id = $this->user->muzakki->id;
+        }
+
+        $transaksi->save();
+
+        DB::commit();
+
+        Log::info('Request penjemputan berhasil disimpan', [
+            'no_transaksi' => $transaksi->no_transaksi,
+            'id' => $transaksi->id,
+            'status' => $transaksi->status,
+            'metode' => $transaksi->metode_pembayaran,
+            'verified_at' => $transaksi->verified_at
         ]);
 
-        try {
-            $rules = [
-                'tanggal_transaksi' => 'required|date',
-                'muzakki_nama'      => 'required|string|max:255',
-                'muzakki_telepon'   => 'nullable|string|max:20',
-                'muzakki_email'     => 'nullable|email|max:255',
-                'muzakki_alamat'    => 'required|string',
-                'muzakki_nik'       => 'nullable|string|size:16',
-                'amil_id'           => 'required|exists:amil,id',
-                'latitude'          => 'required|numeric',
-                'longitude'         => 'required|numeric',
-                'tanggal_penjemputan' => 'nullable|date',
-                'keterangan'        => 'nullable|string',
-            ];
-
-            $validator = Validator::make($request->all(), $rules);
-            if ($validator->fails()) {
-                Log::warning('Validasi gagal', ['errors' => $validator->errors()->toArray()]);
-                return redirect()->back()->withInput()->withErrors($validator->errors());
-            }
-
-            DB::beginTransaction();
-
-            // Generate no transaksi
-            $noTransaksi = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
-
-            Log::info('Menyimpan transaksi', ['no_transaksi' => $noTransaksi]);
-
-            $transaksi = new TransaksiPenerimaan();
-            $transaksi->masjid_id         = $this->masjid->id;
-            $transaksi->no_transaksi      = $noTransaksi;
-            $transaksi->tanggal_transaksi = $request->tanggal_transaksi ?? now();
-            $transaksi->waktu_transaksi   = now();
-            $transaksi->muzakki_nama      = $request->muzakki_nama;
-            $transaksi->muzakki_telepon   = $request->muzakki_telepon;
-            $transaksi->muzakki_email     = $request->muzakki_email;
-            $transaksi->muzakki_alamat    = $request->muzakki_alamat;
-            $transaksi->muzakki_nik       = $request->muzakki_nik;
-            $transaksi->metode_penerimaan = 'dijemput';
-            $transaksi->amil_id           = $request->amil_id;
-            $transaksi->latitude          = $request->latitude;
-            $transaksi->longitude         = $request->longitude;
-            $transaksi->status            = 'pending';
-            $transaksi->status_penjemputan = 'menunggu';
-            $transaksi->waktu_request     = now();
-            $transaksi->jumlah            = 0;
-            $transaksi->keterangan        = $request->keterangan;
-
-            // Jika ada tanggal penjemputan yang diinginkan
-            if ($request->filled('tanggal_penjemputan')) {
-                $transaksi->tanggal_penjemputan = $request->tanggal_penjemputan;
-            }
-
-            // Jika diinput oleh muzakki
-            if ($this->user->isMuzakki() && $this->user->muzakki) {
-                $transaksi->diinput_muzakki = true;
-                $transaksi->muzakki_id = $this->user->muzakki->id;
-            }
-
-            $transaksi->save();
-
-            DB::commit();
-
-            Log::info('Request penjemputan berhasil disimpan', [
-                'no_transaksi' => $transaksi->no_transaksi,
-                'id' => $transaksi->id
-            ]);
-
-            $message = 'Request penjemputan berhasil disimpan. Amil akan segera menghubungi Anda. No. Transaksi: ' . $transaksi->no_transaksi;
-
-            // Redirect berdasarkan role
-            if ($this->user->isMuzakki()) {
-                return redirect()->route('muzakki.transaksi.index')->with('success', $message);
-            }
-
-            return redirect()->route('transaksi-dijemput.index')->with('success', $message);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Store dijemput error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
-            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan request: ' . $e->getMessage());
+        $message = 'Request penjemputan berhasil disimpan. ';
+        
+        if ($transaksi->status == 'verified') {
+            $message .= 'Pembayaran ' . strtoupper($transaksi->metode_pembayaran) . ' telah terverifikasi otomatis. ';
         }
-    }
+        
+        $message .= 'Amil akan segera menghubungi Anda. No. Transaksi: ' . $transaksi->no_transaksi;
 
-    // ================================================================
-    // STORE DARING
-    // ================================================================
+        // Redirect berdasarkan role
+        if ($this->user->isMuzakki()) {
+            return redirect()->route('muzakki.transaksi.index')->with('success', $message);
+        }
+
+        return redirect()->route('transaksi-dijemput.index')->with('success', $message);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Store dijemput error: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ]);
+        return redirect()->back()->withInput()->with('error', 'Gagal menyimpan request: ' . $e->getMessage());
+    }
+}
+  
     // ================================================================
     // STORE DARING
     // ================================================================
@@ -991,6 +1051,30 @@ class TransaksiPenerimaanController extends Controller
             'beras_liter'      => self::BERAS_LITER_PER_JIWA,
         ];
 
+        // Ambil QRIS config
+        $qrisConfig = KonfigurasiQris::where('masjid_id', $this->masjid->id)
+            ->where('is_active', true)
+            ->first();
+
+        // Gunakan no_transaksi dari transaksi yang sudah ada
+        $noTransaksiPreview = $transaksi->no_transaksi;
+
+        // PERBAIKAN: Siapkan data muzakki jika user adalah muzakki
+        $muzakkiData = null;
+        if ($this->user->isMuzakki() && $this->user->muzakki) {
+            $m = $this->user->muzakki;
+            $muzakkiData = [
+                'nama'    => $m->nama,
+                'telepon' => $m->telepon,
+                'email'   => $m->email,
+                'alamat'  => $m->alamat,
+                'nik'     => $m->nik,
+            ];
+        }
+
+        // PERBAIKAN: Tambahkan tanggalHariIni untuk input hidden
+        $tanggalHariIni = now()->format('Y-m-d');
+
         return view('amil.transaksi-penerimaan.edit', compact(
             'transaksi',
             'jenisZakatList',
@@ -1000,7 +1084,11 @@ class TransaksiPenerimaanController extends Controller
             'isDijemput',
             'needsZakatData',
             'rekeningList',
-            'zakatFitrahInfo'
+            'zakatFitrahInfo',
+            'qrisConfig',
+            'noTransaksiPreview',
+            'muzakkiData',      // TAMBAHKAN
+            'tanggalHariIni'    // TAMBAHKAN
         ));
     }
 
@@ -1350,62 +1438,82 @@ class TransaksiPenerimaanController extends Controller
         }
     }
 
-    // ================================================================
-    // UPDATE STATUS PENJEMPUTAN
-    // ================================================================
-    public function updateStatusPenjemputan(Request $request, $uuid)
-    {
-        if (!$this->user->isAmil()) {
-            return response()->json(['error' => 'Hanya amil yang dapat update status penjemputan.'], 403);
-        }
-
-        $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
-
-        if (!$transaksi->bisaDiupdatePenjemputan) {
-            return response()->json(['error' => 'Status penjemputan tidak dapat diupdate.'], 400);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:diterima,dalam_perjalanan,sampai_lokasi,selesai'
-        ]);
-        if ($validator->fails()) return response()->json(['errors' => $validator->errors()], 422);
-
-        DB::beginTransaction();
-        try {
-            $status = $request->status;
-            $transaksi->status_penjemputan = $status;
-
-            switch ($status) {
-                case 'diterima':
-                    $transaksi->waktu_diterima_amil = now();
-                    break;
-                case 'dalam_perjalanan':
-                    $transaksi->waktu_berangkat = now();
-                    break;
-                case 'sampai_lokasi':
-                    $transaksi->waktu_sampai = now();
-                    break;
-                case 'selesai':
-                    $transaksi->waktu_selesai = now();
-                    break;
-            }
-
-            $transaksi->save();
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Status penjemputan berhasil diupdate.',
-                'status'  => $status,
-                'waktu'   => now()->format('H:i:s'),
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Gagal mengupdate status.'], 500);
-        }
+ public function updateStatusPenjemputan(Request $request, $uuid)
+{
+    if (!$this->user->isAmil() && !$this->user->isAdminMasjid()) {
+        return response()->json(['error' => 'Hanya amil yang dapat update status penjemputan.'], 403);
     }
 
+    $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
+        ->byMasjid($this->masjid->id)
+        ->firstOrFail();
+
+    if (!$transaksi->bisaDiupdatePenjemputan) {
+        return response()->json(['error' => 'Status penjemputan tidak dapat diupdate.'], 400);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'status' => 'required|in:diterima,dalam_perjalanan,sampai_lokasi,selesai'
+    ]);
+    
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    DB::beginTransaction();
+    try {
+        $status = $request->status;
+        $transaksi->status_penjemputan = $status;
+
+        switch ($status) {
+            case 'diterima':
+                $transaksi->waktu_diterima_amil = now();
+                break;
+            case 'dalam_perjalanan':
+                $transaksi->waktu_berangkat = now();
+                break;
+            case 'sampai_lokasi':
+                $transaksi->waktu_sampai = now();
+                break;
+            case 'selesai':
+                $transaksi->waktu_selesai = now();
+                
+                // ✅ AUTO VERIFIED SAAT PENJEMPUTAN SELESAI (jika belum verified)
+                if ($transaksi->status != 'verified') {
+                    $transaksi->status = 'verified';
+                    $transaksi->verified_by = $this->user->id;
+                    $transaksi->verified_at = now();
+                    
+                    // Untuk transfer/qris, pastikan konfirmasi_status
+                    if (in_array($transaksi->metode_pembayaran, ['transfer', 'qris'])) {
+                        $transaksi->konfirmasi_status = 'dikonfirmasi';
+                    }
+                    
+                    Log::info('Transaksi dijemput verified saat selesai', [
+                        'no_transaksi' => $transaksi->no_transaksi,
+                        'metode' => $transaksi->metode_pembayaran
+                    ]);
+                }
+                break;
+        }
+
+        $transaksi->save();
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status penjemputan berhasil diupdate.',
+            'status'  => $status,
+            'waktu'   => now()->format('H:i:s'),
+            'transaksi_status' => $transaksi->status
+        ]);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Update status penjemputan error: ' . $e->getMessage());
+        return response()->json(['error' => 'Gagal mengupdate status.'], 500);
+    }
+}
     // ================================================================
     // PRINT KWITANSI
     // ================================================================
@@ -1595,7 +1703,7 @@ class TransaksiPenerimaanController extends Controller
     }
 
     // ================================================================
-    // HELPER: Isi metode pembayaran datang langsung
+    // HELPER: Isi metode pembayaran datang langsung - AUTO VERIFIED UNTUK SEMUA METODE
     // ================================================================
     protected function isiMetodePembayaranDatangLangsung(TransaksiPenerimaan $transaksi, Request $request): void
     {
@@ -1628,19 +1736,31 @@ class TransaksiPenerimaanController extends Controller
         $transaksi->jumlah_infaq   = $infaq;
         $transaksi->has_infaq      = $infaq > 0;
 
-        if ($metodePembayaran === 'tunai') {
-            $transaksi->status      = 'verified';
-            $transaksi->verified_by = $this->user->id;
-            $transaksi->verified_at = now();
-        } else {
-            $transaksi->status             = 'pending';
-            $transaksi->konfirmasi_status  = 'menunggu_konfirmasi';
+        // ✅ PERBAIKAN: SEMUA METODE PEMBAYARAN LANGSUNG VERIFIED
+        $transaksi->status      = 'verified';
+        $transaksi->verified_by = $this->user->id;
+        $transaksi->verified_at = now();
+
+        // Untuk transfer/qris, tetap simpan bukti transfer jika ada
+        if (in_array($metodePembayaran, ['transfer', 'qris'])) {
+            // Opsional: Set konfirmasi_status jika masih ingin track
+            $transaksi->konfirmasi_status = 'dikonfirmasi'; // atau bisa dikosongkan
 
             if ($request->hasFile('bukti_transfer')) {
                 $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
                 $transaksi->bukti_transfer = $path;
             }
+        } else {
+            // Untuk tunai, tidak perlu konfirmasi status
+            $transaksi->konfirmasi_status = null;
         }
+
+        Log::info('Transaksi datang langsung auto verified', [
+            'no_transaksi' => $transaksi->no_transaksi,
+            'metode' => $metodePembayaran,
+            'jumlah' => $jumlahDibayar,
+            'infaq' => $infaq
+        ]);
     }
 
     // ================================================================
@@ -1701,5 +1821,25 @@ class TransaksiPenerimaanController extends Controller
         $transaksi->status      = 'verified';
         $transaksi->verified_by = $this->user->id;
         $transaksi->verified_at = now();
+    }
+
+    // ================================================================
+    // HELPER: Isi metode pembayaran untuk beras
+    // ================================================================
+    protected function isiMetodePembayaranBeras(TransaksiPenerimaan $transaksi, Request $request): void
+    {
+        $transaksi->metode_pembayaran = 'tunai'; // Default untuk beras
+        $transaksi->jumlah_dibayar   = 0;
+        $transaksi->jumlah_infaq     = 0;
+        $transaksi->has_infaq        = false;
+        $transaksi->status           = 'verified';
+        $transaksi->verified_by      = $this->user->id;
+        $transaksi->verified_at      = now();
+
+        Log::info('Transaksi beras disimpan', [
+            'no_transaksi' => $transaksi->no_transaksi,
+            'jumlah_beras' => $request->jumlah_beras_kg . ' kg',
+            'jumlah_jiwa' => $request->jumlah_jiwa
+        ]);
     }
 }

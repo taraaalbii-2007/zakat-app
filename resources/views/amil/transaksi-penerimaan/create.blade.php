@@ -280,7 +280,8 @@
                                     @foreach ($amilList as $amil)
                                         <option value="{{ $amil->id }}"
                                             {{ old('amil_id') == $amil->id ? 'selected' : '' }}>{{ $amil->nama_lengkap }}
-                                            ({{ $amil->kode_amil }})</option>
+                                            ({{ $amil->kode_amil }})
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -591,162 +592,206 @@
                     </div>
                 </div>{{-- /step2 --}}
 
-               {{-- ═══════════ STEP 3 — PEMBAYARAN ═══════════ --}}
-<div id="step3" class="step-panel hidden">
-    <h3 class="text-sm font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-        <span class="inline-flex w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs items-center justify-center mr-1.5 font-bold">3</span>
-        Metode Pembayaran
-    </h3>
-    <div class="space-y-5">
+                {{-- ═══════════ STEP 3 — PEMBAYARAN ═══════════ --}}
+                <div id="step3" class="step-panel hidden">
+                    <h3 class="text-sm font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                        <span
+                            class="inline-flex w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs items-center justify-center mr-1.5 font-bold">3</span>
+                        Metode Pembayaran
+                    </h3>
+                    <div class="space-y-5">
 
-        <div id="alertDaringNoTunai" class="{{ $defaultMode==='daring' ? '' : 'hidden' }} bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-            <p class="text-xs text-gray-600">Pembayaran daring hanya mendukung <strong>Transfer Bank</strong> atau <strong>QRIS</strong>.</p>
-        </div>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Cara Pembayaran <span class="text-red-500">*</span></label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <label id="cardTunai" class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran')==='tunai' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }} {{ $defaultMode==='daring' ? 'hidden' : '' }}">
-                    <input type="radio" name="metode_pembayaran" value="tunai" class="hidden pay-radio" {{ old('metode_pembayaran')==='tunai' ? 'checked' : '' }}>
-                    <div class="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-900">Tunai</p>
-                    <p class="text-xs text-gray-500 text-center">Bayar langsung</p>
-                </label>
-                <label id="cardTransfer" class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran')==='transfer' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
-                    <input type="radio" name="metode_pembayaran" value="transfer" class="hidden pay-radio" {{ old('metode_pembayaran')==='transfer' ? 'checked' : '' }}>
-                    <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10"/></svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-900">Transfer Bank</p>
-                    <p class="text-xs text-gray-500 text-center">Ke rekening masjid</p>
-                </label>
-                <label id="cardQris" class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran')==='qris' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
-                    <input type="radio" name="metode_pembayaran" value="qris" class="hidden pay-radio" {{ old('metode_pembayaran')==='qris' ? 'checked' : '' }}>
-                    <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-900">QRIS</p>
-                    <p class="text-xs text-gray-500 text-center">Scan QR masjid</p>
-                </label>
-            </div>
-            @error('metode_pembayaran')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-        </div>
-
-        {{-- JUMLAH DIBAYAR --}}
-        <div id="wrapJmlDibayar" class="hidden">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div>
-                    <div class="flex items-center justify-between mb-1">
-                        <label class="text-sm font-medium text-gray-700">Jumlah yang Diserahkan (Rp)</label>
-                        <button type="button" id="btnBayarPas" class="text-xs font-semibold text-blue-600 hover:underline">Isi Sesuai Zakat</button>
-                    </div>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                        <input type="number" name="jumlah_dibayar" id="jmlDibayar"
-                            value="{{ old('jumlah_dibayar') }}" min="0" step="1000"
-                            placeholder="Kosongkan = bayar pas sesuai zakat wajib"
-                            class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Jika membayar <strong>lebih</strong>, kelebihan otomatis dicatat sebagai <strong>infaq sukarela</strong>.</p>
-                </div>
-                <div id="boxKalkulasiInfaq" class="hidden rounded-lg border p-3 mt-3">
-                    <div id="teksInfaq" class="text-sm"></div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Info Tunai --}}
-        <div id="infoTunaiSec" class="hidden bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <p class="text-sm font-medium text-gray-800">Pembayaran Tunai</p>
-            <p class="text-xs text-gray-600 mt-1">Transaksi akan <strong>langsung terverifikasi</strong> setelah disimpan.</p>
-        </div>
-
-        {{-- Info Transfer --}}
-        <div id="infoTransferSec" class="hidden space-y-3">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <p class="text-sm font-medium text-gray-800 mb-3">Rekening Transfer Masjid</p>
-                @if($rekeningList->isNotEmpty())
-                    @foreach($rekeningList as $rek)
-                    <div class="bg-white border border-gray-200 rounded p-3 flex items-center justify-between mb-2 last:mb-0">
-                        <div>
-                            <p class="text-xs font-bold text-gray-800">{{ $rek->nama_bank }}</p>
-                            <p class="text-sm font-mono font-bold text-gray-900 tracking-wider mt-0.5">{{ $rek->nomor_rekening }}</p>
-                            <p class="text-xs text-gray-500">a.n. {{ $rek->nama_pemilik }}</p>
+                        <div id="alertDaringNoTunai"
+                            class="{{ $defaultMode === 'daring' ? '' : 'hidden' }} bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                            <p class="text-xs text-gray-600">Pembayaran daring hanya mendukung <strong>Transfer
+                                    Bank</strong> atau <strong>QRIS</strong>.</p>
                         </div>
-                        <button type="button" onclick="salin('{{ $rek->nomor_rekening }}')" class="text-xs text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition-all font-medium">Salin</button>
-                    </div>
-                    @endforeach
-                @else
-                    <p class="text-xs text-gray-500">Hubungi amil untuk info rekening.</p>
-                @endif
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                <p class="text-xs text-gray-600">Transaksi akan <strong>langsung terverifikasi</strong> setelah disimpan.</p>
-            </div>
-        </div>
 
-        {{-- ★ Info QRIS — dari KonfigurasiQris (tanpa no referensi) ★ --}}
-        <div id="infoQrisSec" class="hidden space-y-3">
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <p class="text-sm font-medium text-gray-800 mb-4">QRIS {{ $masjid->nama }}</p>
-                @php $qrisImageUrl = $qrisConfig?->qris_image_url ?? null; @endphp
-                @if($qrisImageUrl)
-                    <div class="flex justify-center">
-                        <div class="bg-white p-4 rounded-lg border border-gray-200 inline-flex flex-col items-center gap-3">
-                            <img src="{{ $qrisImageUrl }}"
-                                 class="w-48 h-48 object-contain"
-                                 alt="QRIS {{ $masjid->nama }}"
-                                 loading="lazy">
-                            <div class="text-center">
-                                <p class="text-xs font-medium text-gray-800">{{ $masjid->nama }}</p>
-                                <p class="text-xs text-gray-500 mt-0.5">Scan QR di atas untuk membayar</p>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Cara Pembayaran <span
+                                    class="text-red-500">*</span></label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <label id="cardTunai"
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran') === 'tunai' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }} {{ $defaultMode === 'daring' ? 'hidden' : '' }}">
+                                    <input type="radio" name="metode_pembayaran" value="tunai"
+                                        class="hidden pay-radio"
+                                        {{ old('metode_pembayaran') === 'tunai' ? 'checked' : '' }}>
+                                    <div class="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-gray-900">Tunai</p>
+                                    <p class="text-xs text-gray-500 text-center">Bayar langsung</p>
+                                </label>
+                                <label id="cardTransfer"
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran') === 'transfer' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
+                                    <input type="radio" name="metode_pembayaran" value="transfer"
+                                        class="hidden pay-radio"
+                                        {{ old('metode_pembayaran') === 'transfer' ? 'checked' : '' }}>
+                                    <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-gray-900">Transfer Bank</p>
+                                    <p class="text-xs text-gray-500 text-center">Ke rekening masjid</p>
+                                </label>
+                                <label id="cardQris"
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran') === 'qris' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
+                                    <input type="radio" name="metode_pembayaran" value="qris"
+                                        class="hidden pay-radio" {{ old('metode_pembayaran') === 'qris' ? 'checked' : '' }}>
+                                    <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-semibold text-gray-900">QRIS</p>
+                                    <p class="text-xs text-gray-500 text-center">Scan QR masjid</p>
+                                </label>
+                            </div>
+                            @error('metode_pembayaran')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- JUMLAH DIBAYAR --}}
+                        <div id="wrapJmlDibayar" class="hidden">
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="text-sm font-medium text-gray-700">Jumlah yang Diserahkan
+                                            (Rp)</label>
+                                        <button type="button" id="btnBayarPas"
+                                            class="text-xs font-semibold text-blue-600 hover:underline">Isi Sesuai
+                                            Zakat</button>
+                                    </div>
+                                    <div class="relative">
+                                        <span
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                        <input type="number" name="jumlah_dibayar" id="jmlDibayar"
+                                            value="{{ old('jumlah_dibayar') }}" min="0" step="1000"
+                                            placeholder="Kosongkan = bayar pas sesuai zakat wajib"
+                                            class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">Jika membayar <strong>lebih</strong>, kelebihan
+                                        otomatis dicatat sebagai <strong>infaq sukarela</strong>.</p>
+                                </div>
+                                <div id="boxKalkulasiInfaq" class="hidden rounded-lg border p-3 mt-3">
+                                    <div id="teksInfaq" class="text-sm"></div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @else
-                    <div class="flex justify-center">
-                        <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
-                            <svg class="w-14 h-14 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                            <p class="text-sm font-medium text-gray-500">QRIS belum dikonfigurasi</p>
-                            <p class="text-xs text-gray-400 mt-1">Tunjukkan QRIS fisik masjid kepada muzakki</p>
+
+                        {{-- Info Tunai --}}
+                        <div id="infoTunaiSec" class="hidden bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <p class="text-sm font-medium text-gray-800">Pembayaran Tunai</p>
+                            <p class="text-xs text-gray-600 mt-1">Transaksi akan <strong>langsung terverifikasi</strong>
+                                setelah disimpan.</p>
                         </div>
+
+                        {{-- Info Transfer --}}
+                        <div id="infoTransferSec" class="hidden space-y-3">
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <p class="text-sm font-medium text-gray-800 mb-3">Rekening Transfer Masjid</p>
+                                @if ($rekeningList->isNotEmpty())
+                                    @foreach ($rekeningList as $rek)
+                                        <div
+                                            class="bg-white border border-gray-200 rounded p-3 flex items-center justify-between mb-2 last:mb-0">
+                                            <div>
+                                                <p class="text-xs font-bold text-gray-800">{{ $rek->nama_bank }}</p>
+                                                <p class="text-sm font-mono font-bold text-gray-900 tracking-wider mt-0.5">
+                                                    {{ $rek->nomor_rekening }}</p>
+                                                <p class="text-xs text-gray-500">a.n. {{ $rek->nama_pemilik }}</p>
+                                            </div>
+                                            <button type="button" onclick="salin('{{ $rek->nomor_rekening }}')"
+                                                class="text-xs text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition-all font-medium">Salin</button>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <p class="text-xs text-gray-500">Hubungi amil untuk info rekening.</p>
+                                @endif
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                                <p class="text-xs text-gray-600">Transaksi akan <strong>langsung terverifikasi</strong>
+                                    setelah disimpan.</p>
+                            </div>
+                        </div>
+
+                        {{-- ★ Info QRIS — dari KonfigurasiQris (tanpa no referensi) ★ --}}
+                        <div id="infoQrisSec" class="hidden space-y-3">
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <p class="text-sm font-medium text-gray-800 mb-4">QRIS {{ $masjid->nama }}</p>
+                                @php $qrisImageUrl = $qrisConfig?->qris_image_url ?? null; @endphp
+                                @if ($qrisImageUrl)
+                                    <div class="flex justify-center">
+                                        <div
+                                            class="bg-white p-4 rounded-lg border border-gray-200 inline-flex flex-col items-center gap-3">
+                                            <img src="{{ $qrisImageUrl }}" class="w-48 h-48 object-contain"
+                                                alt="QRIS {{ $masjid->nama }}" loading="lazy">
+                                            <div class="text-center">
+                                                <p class="text-xs font-medium text-gray-800">{{ $masjid->nama }}</p>
+                                                <p class="text-xs text-gray-500 mt-0.5">Scan QR di atas untuk membayar</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="flex justify-center">
+                                        <div class="bg-white border border-gray-200 rounded-lg p-8 text-center">
+                                            <svg class="w-14 h-14 text-gray-300 mx-auto mb-3" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                            </svg>
+                                            <p class="text-sm font-medium text-gray-500">QRIS belum dikonfigurasi</p>
+                                            <p class="text-xs text-gray-400 mt-1">Tunjukkan QRIS fisik masjid kepada
+                                                muzakki</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                                <p class="text-xs text-gray-600">Transaksi akan <strong>langsung terverifikasi</strong>
+                                    setelah disimpan.</p>
+                            </div>
+                        </div>
+
+                        {{-- Keterangan --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan / Keterangan <span
+                                    class="text-xs text-gray-400">(opsional)</span></label>
+                            <textarea name="keterangan" rows="2" placeholder="Untuk program tertentu, atas nama keluarga, dll."
+                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500 resize-none">{{ old('keterangan') }}</textarea>
+                        </div>
+
+                    </div>{{-- /space-y-5 --}}
+
+                    {{-- TOMBOL NAVIGASI STEP 3 --}}
+                    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                        <button type="button" onclick="goStep(2)"
+                            class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Kembali
+                        </button>
+                        <button type="submit" id="btnFinalSave" disabled
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg opacity-50 cursor-not-allowed">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Transaksi
+                        </button>
                     </div>
-                @endif
-            </div>
-            <div class="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
-                <p class="text-xs text-gray-600">Transaksi akan <strong>langsung terverifikasi</strong> setelah disimpan.</p>
-            </div>
-        </div>
-
-        {{-- Keterangan --}}
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan / Keterangan <span class="text-xs text-gray-400">(opsional)</span></label>
-            <textarea name="keterangan" rows="2" placeholder="Untuk program tertentu, atas nama keluarga, dll."
-                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500 resize-none">{{ old('keterangan') }}</textarea>
-        </div>
-
-    </div>{{-- /space-y-5 --}}
-
-    {{-- TOMBOL NAVIGASI STEP 3 --}}
-    <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
-        <button type="button" onclick="goStep(2)" 
-            class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-            Kembali
-        </button>
-        <button type="submit" id="btnFinalSave" disabled
-            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg opacity-50 cursor-not-allowed">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
-            Simpan Transaksi
-        </button>
-    </div>
-</div>{{-- /step3 --}}
+                </div>{{-- /step3 --}}
 
             </form>
         </div>

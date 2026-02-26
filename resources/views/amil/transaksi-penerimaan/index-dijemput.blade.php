@@ -9,8 +9,7 @@
       - Kolom status_penjemputan (menunggu/diterima/dalam_perjalanan/sampai_lokasi/selesai)
       - Tombol "Lengkapi Zakat" untuk transaksi yang belum ada detail zakatnya
       - Tombol update status penjemputan (AJAX)
-      - Tombol "Konfirmasi" dan "Tolak" untuk pembayaran transfer/QRIS langsung dari index
-      - Modal konfirmasi dan tolak pembayaran
+      - ✅ SEMUA METODE PEMBAYARAN (TUNAI, TRANSFER, QRIS) AUTO VERIFIED
       - Ada tombol Create baru (berbeda dengan daring)
 
     VARIABEL      : $transaksis (paginated), $amilList, $stats
@@ -325,6 +324,10 @@
                                     $statusPenjemputan = $trx->status_penjemputan ?? 'menunggu';
                                     $sudahDijemput = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
                                     $perluLengkapi = $sudahDijemput && !$trx->jenis_zakat_id;
+                                    
+                                    // ✅ PERBAIKAN: Semua metode pembayaran auto verified
+                                    $isAutoVerified = $trx->status == 'verified' && $trx->metode_pembayaran;
+                                    
                                     $nextStatus =
                                         [
                                             'menunggu' => ['diterima', 'Terima'],
@@ -332,14 +335,11 @@
                                             'dalam_perjalanan' => ['sampai_lokasi', 'Sampai'],
                                             'sampai_lokasi' => ['selesai', 'Selesai'],
                                         ][$statusPenjemputan] ?? null;
-                                    $butuhKonfirmasi = $trx->status == 'pending' && 
-                                                        $trx->konfirmasi_status == 'menunggu_konfirmasi' && 
-                                                        in_array($trx->metode_pembayaran, ['transfer', 'qris']);
                                 @endphp
 
                                 <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
                                     {{ $perluLengkapi ? 'bg-orange-50/30' : '' }}
-                                    {{ $butuhKonfirmasi ? 'bg-green-50/30' : '' }}"
+                                    {{ $isAutoVerified ? 'bg-green-50/30' : '' }}"
                                     data-target="detail-{{ $trx->uuid }}">
                                     <td class="px-4 py-4">
                                         <button type="button"
@@ -366,20 +366,32 @@
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $trx->status_badge !!}
+                                                
+                                                {{-- ✅ Auto Verified Badge untuk SEMUA metode pembayaran --}}
+                                                @if ($isAutoVerified)
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                        Auto Verified
+                                                    </span>
+                                                @endif
+                                                
                                                 {!! $trx->status_penjemputan_badge !!}
+                                                
                                                 @if ($perluLengkapi)
                                                     <span
                                                         class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                                                         Perlu Dilengkapi
                                                     </span>
                                                 @endif
-                                                @if ($butuhKonfirmasi)
-                                                    <span
-                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">
-                                                        Menunggu Konfirmasi
-                                                    </span>
-                                                @endif
                                             </div>
+                                            {{-- Tampilkan metode pembayaran --}}
+                                            @if ($trx->metode_pembayaran)
+                                                <div class="text-xs text-gray-400 mt-1">
+                                                    Metode: <span class="capitalize">{{ $trx->metode_pembayaran }}</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -388,7 +400,6 @@
                                             data-uuid="{{ $trx->uuid }}" 
                                             data-nama="{{ $trx->muzakki_nama }}"
                                             data-perlu-lengkapi="{{ $perluLengkapi ? '1' : '0' }}"
-                                            data-butuh-konfirmasi="{{ $butuhKonfirmasi ? '1' : '0' }}"
                                             data-no-transaksi="{{ $trx->no_transaksi }}"
                                             data-jumlah="{{ $trx->jumlah_formatted }}"
                                             data-can-delete="{{ in_array($trx->status, ['pending', 'rejected']) ? '1' : '0' }}"
@@ -581,8 +592,8 @@
                                                                         <p class="text-xs text-gray-500">Metode Pembayaran</p>
                                                                         <p class="text-sm font-medium text-gray-900 capitalize">
                                                                             {{ $trx->metode_pembayaran }}
-                                                                            @if($trx->metode_pembayaran == 'transfer' && $trx->no_referensi_transfer)
-                                                                                <span class="text-xs text-gray-400 block">No. Ref: {{ $trx->no_referensi_transfer }}</span>
+                                                                            @if($isAutoVerified)
+                                                                                <span class="text-xs text-green-600 ml-1">(Auto Verified)</span>
                                                                             @endif
                                                                         </p>
                                                                     </div>
@@ -605,6 +616,9 @@
                                                                 <p class="text-xs text-gray-500 mb-1">Status Transaksi
                                                                 </p>
                                                                 {!! $trx->status_badge !!}
+                                                                @if($isAutoVerified)
+                                                                    <span class="ml-1 text-xs text-green-600">(Auto Verified)</span>
+                                                                @endif
                                                             </div>
                                                             @if ($trx->amil)
                                                                 <div class="flex items-start">
@@ -674,29 +688,7 @@
                                                             class="font-medium text-gray-700">{{ $trx->no_transaksi }}</span>
                                                     </div>
                                                     <div class="flex gap-2 flex-wrap">
-                                                        @if ($butuhKonfirmasi)
-                                                            <button type="button"
-                                                                onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->no_transaksi }}', '{{ $trx->muzakki_nama }}', '{{ $trx->jumlah_formatted }}')"
-                                                                class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-lg transition-all">
-                                                                <svg class="w-4 h-4 mr-1.5" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2" d="M5 13l4 4L19 7" />
-                                                                </svg>
-                                                                Konfirmasi
-                                                            </button>
-                                                            
-                                                            <button type="button"
-                                                                onclick="openTolakModal('{{ $trx->uuid }}', '{{ $trx->no_transaksi }}', '{{ $trx->muzakki_nama }}')"
-                                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-all">
-                                                                <svg class="w-4 h-4 mr-1.5" fill="none"
-                                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                                </svg>
-                                                                Tolak
-                                                            </button>
-                                                        @endif
+                                                        
                                                         @if ($nextStatus && (auth()->user()->isAmil() || auth()->user()->isAdminMasjid()))
                                                             <button type="button"
                                                                 onclick="updateStatusPenjemputan('{{ $trx->uuid }}', '{{ $nextStatus[0] }}', this)"
@@ -709,6 +701,7 @@
                                                                 {{ $nextStatus[1] }}
                                                             </button>
                                                         @endif
+                                                        
                                                         @if ($perluLengkapi)
                                                             <a href="{{ route('transaksi-dijemput.edit', $trx->uuid) }}"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 text-xs font-medium rounded-lg transition-all">
@@ -721,6 +714,7 @@
                                                                 Lengkapi Zakat
                                                             </a>
                                                         @endif
+                                                        
                                                         @if ($trx->latitude && $trx->longitude)
                                                             <a href="https://maps.google.com/?q={{ $trx->latitude }},{{ $trx->longitude }}"
                                                                 target="_blank"
@@ -737,6 +731,7 @@
                                                                 Buka Maps
                                                             </a>
                                                         @endif
+                                                        
                                                         <a href="{{ route('transaksi-dijemput.show', $trx->uuid) }}"
                                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                             <svg class="w-4 h-4 mr-1.5" fill="none"
@@ -768,9 +763,10 @@
                             $statusPenjemputan = $trx->status_penjemputan ?? 'menunggu';
                             $sudahDijemput = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
                             $perluLengkapi = $sudahDijemput && !$trx->jenis_zakat_id;
-                            $butuhKonfirmasi = $trx->status == 'pending' && 
-                                                $trx->konfirmasi_status == 'menunggu_konfirmasi' && 
-                                                in_array($trx->metode_pembayaran, ['transfer', 'qris']);
+                            
+                            // ✅ PERBAIKAN: Semua metode pembayaran auto verified
+                            $isAutoVerified = $trx->status == 'verified' && $trx->metode_pembayaran;
+                            
                             $nextStatus =
                                 [
                                     'menunggu' => ['diterima', 'Terima'],
@@ -779,7 +775,7 @@
                                     'sampai_lokasi' => ['selesai', 'Selesai'],
                                 ][$statusPenjemputan] ?? null;
                         @endphp
-                        <div class="expandable-card {{ $perluLengkapi ? 'bg-orange-50/30' : '' }} {{ $butuhKonfirmasi ? 'bg-green-50/30' : '' }}">
+                        <div class="expandable-card {{ $perluLengkapi ? 'bg-orange-50/30' : '' }} {{ $isAutoVerified ? 'bg-green-50/30' : '' }}">
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                                 data-target="detail-mobile-{{ $trx->uuid }}">
                                 <div class="flex items-center justify-between">
@@ -800,17 +796,29 @@
                                         </div>
                                         <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
                                             {!! $trx->status_penjemputan_badge !!}
+                                            
+                                            {{-- ✅ Auto Verified Badge untuk SEMUA metode pembayaran --}}
+                                            @if ($isAutoVerified)
+                                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    Auto Verified
+                                                </span>
+                                            @endif
+                                            
                                             @if ($perluLengkapi)
                                                 <span
                                                     class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Perlu
                                                     Dilengkapi</span>
                                             @endif
-                                            @if ($butuhKonfirmasi)
-                                                <span
-                                                    class="px-2 py-0.5 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Menunggu
-                                                    Konfirmasi</span>
-                                            @endif
                                         </div>
+                                        {{-- Tampilkan metode pembayaran --}}
+                                        @if ($trx->metode_pembayaran)
+                                            <div class="text-xs text-gray-400 mt-1">
+                                                Metode: <span class="capitalize">{{ $trx->metode_pembayaran }}</span>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="flex items-center gap-1 ml-2">
                                         <button type="button"
@@ -818,7 +826,6 @@
                                             data-uuid="{{ $trx->uuid }}" 
                                             data-nama="{{ $trx->muzakki_nama }}"
                                             data-perlu-lengkapi="{{ $perluLengkapi ? '1' : '0' }}"
-                                            data-butuh-konfirmasi="{{ $butuhKonfirmasi ? '1' : '0' }}"
                                             data-no-transaksi="{{ $trx->no_transaksi }}"
                                             data-jumlah="{{ $trx->jumlah_formatted }}"
                                             data-can-delete="{{ in_array($trx->status, ['pending', 'rejected']) ? '1' : '0' }}"
@@ -907,6 +914,9 @@
                                                         </svg>
                                                         <span
                                                             class="font-semibold text-green-600">{{ $trx->jumlah_formatted }}</span>
+                                                        @if($isAutoVerified)
+                                                            <span class="text-xs text-green-600 ml-1">(Auto Verified)</span>
+                                                        @endif
                                                     </div>
                                                 @endif
                                                 @if ($trx->amil)
@@ -926,29 +936,7 @@
 
                                         <div class="pt-3 border-t border-gray-200">
                                             <div class="flex gap-2 flex-wrap">
-                                                @if ($butuhKonfirmasi)
-                                                    <button type="button"
-                                                        onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->no_transaksi }}', '{{ $trx->muzakki_nama }}', '{{ $trx->jumlah_formatted }}')"
-                                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                        Konfirmasi
-                                                    </button>
-                                                    
-                                                    <button type="button"
-                                                        onclick="openTolakModal('{{ $trx->uuid }}', '{{ $trx->no_transaksi }}', '{{ $trx->muzakki_nama }}')"
-                                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                        Tolak
-                                                    </button>
-                                                @endif
+                                                
                                                 @if ($nextStatus && (auth()->user()->isAmil() || auth()->user()->isAdminMasjid()))
                                                     <button type="button"
                                                         onclick="updateStatusPenjemputan('{{ $trx->uuid }}', '{{ $nextStatus[0] }}', this)"
@@ -961,6 +949,7 @@
                                                         {{ $nextStatus[1] }}
                                                     </button>
                                                 @endif
+                                                
                                                 @if ($perluLengkapi)
                                                     <a href="{{ route('transaksi-dijemput.edit', $trx->uuid) }}"
                                                         class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 text-xs font-medium rounded-lg transition-all">
@@ -973,6 +962,7 @@
                                                         Lengkapi
                                                     </a>
                                                 @endif
+                                                
                                                 <a href="{{ route('transaksi-dijemput.show', $trx->uuid) }}"
                                                     class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
@@ -1056,22 +1046,6 @@
                     Lihat Detail
                 </a>
 
-                <button type="button" id="dd-konfirmasi"
-                    class="flex items-center w-full px-4 py-2.5 text-sm text-green-700 hover:bg-green-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span id="dd-konfirmasi-label">Konfirmasi Pembayaran</span>
-                </button>
-
-                <button type="button" id="dd-tolak"
-                    class="flex items-center w-full px-4 py-2.5 text-sm text-red-700 hover:bg-red-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    <span id="dd-tolak-label">Tolak Pembayaran</span>
-                </button>
-
                 <button type="button" id="dd-next-status"
                     class="flex items-center w-full px-4 py-2.5 text-sm text-blue-700 hover:bg-blue-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1149,107 +1123,6 @@
         </div>
     </div>
 
-    {{-- ── Modal: Konfirmasi Pembayaran ── --}}
-    <div id="konfirmasi-modal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-[10000] flex items-center justify-center p-4">
-        <div class="p-6 border border-gray-200 w-full max-w-md shadow-xl rounded-2xl bg-white">
-            <div class="flex justify-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Konfirmasi Pembayaran</h3>
-            <p class="text-sm text-gray-500 mb-1 text-center">
-                Konfirmasi pembayaran untuk
-            </p>
-            <p class="text-base font-semibold text-gray-900 mb-1 text-center" id="modal-konfirmasi-nama"></p>
-            <p class="text-sm text-gray-600 mb-2 text-center">
-                No. Transaksi: <span id="modal-konfirmasi-no" class="font-mono font-semibold"></span>
-            </p>
-            <p class="text-lg font-bold text-green-600 mb-4 text-center" id="modal-konfirmasi-jumlah"></p>
-            
-            <form method="POST" id="konfirmasi-form">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 text-left">Catatan (opsional)</label>
-                    <textarea name="catatan_konfirmasi" rows="2" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                        placeholder="Tambahkan catatan jika perlu..."></textarea>
-                </div>
-                
-                <div class="flex justify-center gap-3">
-                    <button type="button" onclick="closeKonfirmasiModal()"
-                        class="w-28 rounded-lg border border-gray-300 px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="w-28 rounded-lg px-4 py-2.5 bg-green-600 text-sm font-medium text-white hover:bg-green-700 transition-colors">
-                        Konfirmasi
-                    </button>
-                </div>
-            </form>
-            
-            <div class="mt-4 pt-3 border-t border-gray-100">
-                <p class="text-xs text-yellow-600 text-center">
-                    ⚠️ Setelah dikonfirmasi, transaksi akan berstatus <strong>verified</strong> dan dana tercatat.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    {{-- ── Modal: Tolak Pembayaran ── --}}
-    <div id="tolak-modal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-[10000] flex items-center justify-center p-4">
-        <div class="p-6 border border-gray-200 w-full max-w-md shadow-xl rounded-2xl bg-white">
-            <div class="flex justify-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Tolak Pembayaran</h3>
-            <p class="text-sm text-gray-500 mb-1 text-center">
-                Tolak pembayaran untuk
-            </p>
-            <p class="text-base font-semibold text-gray-900 mb-1 text-center" id="modal-tolak-nama"></p>
-            <p class="text-sm text-gray-600 mb-4 text-center">
-                No. Transaksi: <span id="modal-tolak-no" class="font-mono font-semibold"></span>
-            </p>
-            
-            <form method="POST" id="tolak-form">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2 text-left">
-                        Alasan Penolakan <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="catatan_konfirmasi" rows="3" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Contoh: Bukti transfer tidak jelas, nominal tidak sesuai, dll."></textarea>
-                </div>
-                
-                <div class="flex justify-center gap-3">
-                    <button type="button" onclick="closeTolakModal()"
-                        class="w-28 rounded-lg border border-gray-300 px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="w-28 rounded-lg px-4 py-2.5 bg-red-600 text-sm font-medium text-white hover:bg-red-700 transition-colors">
-                        Tolak
-                    </button>
-                </div>
-            </form>
-            
-            <div class="mt-4 pt-3 border-t border-gray-100">
-                <p class="text-xs text-red-600 text-center">
-                    ⚠️ Setelah ditolak, transaksi akan berstatus <strong>rejected</strong> dan perlu diperbaiki.
-                </p>
-            </div>
-        </div>
-    </div>
-
     {{-- ── Toast Notifikasi AJAX ── --}}
     <div id="toast-status" class="fixed bottom-5 right-5 z-50 hidden transition-all">
         <div class="bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2">
@@ -1284,70 +1157,6 @@
                 modal.classList.add('hidden');
                 document.body.style.overflow = '';
             }
-        }
-
-        // Fungsi untuk membuka modal konfirmasi
-        function openKonfirmasiModal(uuid, noTransaksi, nama, jumlah) {
-            console.log('Opening konfirmasi modal for:', uuid, noTransaksi, nama, jumlah);
-            
-            const modal = document.getElementById('konfirmasi-modal');
-            const namaEl = document.getElementById('modal-konfirmasi-nama');
-            const noEl = document.getElementById('modal-konfirmasi-no');
-            const jumlahEl = document.getElementById('modal-konfirmasi-jumlah');
-            const form = document.getElementById('konfirmasi-form');
-            
-            if (!modal) {
-                alert('Error: Modal konfirmasi tidak ditemukan');
-                return;
-            }
-            
-            if (!namaEl || !noEl || !jumlahEl || !form) {
-                alert('Error: Elemen modal tidak lengkap');
-                return;
-            }
-            
-            namaEl.textContent = nama;
-            noEl.textContent = noTransaksi;
-            jumlahEl.textContent = jumlah;
-            form.action = `/transaksi-dijemput/${uuid}/konfirmasi-pembayaran`;
-            
-            openModal('konfirmasi-modal');
-        }
-
-        // Fungsi untuk menutup modal konfirmasi
-        function closeKonfirmasiModal() {
-            closeModal('konfirmasi-modal');
-        }
-
-        // Fungsi untuk membuka modal tolak
-        function openTolakModal(uuid, noTransaksi, nama) {
-            console.log('Opening tolak modal for:', uuid, noTransaksi, nama);
-            
-            const modal = document.getElementById('tolak-modal');
-            const namaEl = document.getElementById('modal-tolak-nama');
-            const noEl = document.getElementById('modal-tolak-no');
-            const form = document.getElementById('tolak-form');
-            
-            if (!modal) {
-                alert('Error: Modal tolak tidak ditemukan');
-                return;
-            }
-            
-            if (!namaEl || !noEl || !form) {
-                alert('Error: Elemen modal tidak lengkap');
-                return;
-            }
-            
-            namaEl.textContent = nama;
-            noEl.textContent = noTransaksi;
-            form.action = `/transaksi-dijemput/${uuid}/tolak-pembayaran`;
-            
-            openModal('tolak-modal');
-        }
-
-        // Fungsi untuk menutup modal tolak
-        function closeTolakModal() {
-            closeModal('tolak-modal');
         }
 
         // Fungsi untuk membuka modal delete
@@ -1440,8 +1249,6 @@
 
             const dropdown = document.getElementById('dropdown-container');
             const ddDetail = document.getElementById('dd-detail');
-            const ddKonfirmasi = document.getElementById('dd-konfirmasi');
-            const ddTolak = document.getElementById('dd-tolak');
             const ddNextStatus = document.getElementById('dd-next-status');
             const ddNextLabel = document.getElementById('dd-next-label');
             const ddLengkapi = document.getElementById('dd-lengkapi');
@@ -1512,10 +1319,7 @@
 
                     const uuid = toggle.dataset.uuid;
                     const nama = toggle.dataset.nama;
-                    const noTransaksi = toggle.dataset.noTransaksi;
-                    const jumlah = toggle.dataset.jumlah;
                     const perluLengkapi = toggle.dataset.perluLengkapi === '1';
-                    const butuhKonfirmasi = toggle.dataset.butuhKonfirmasi === '1';
                     const canDelete = toggle.dataset.canDelete === '1';
                     const nextStatus = toggle.dataset.nextStatus || '';
                     const nextLabel = toggle.dataset.nextLabel || '';
@@ -1529,26 +1333,6 @@
 
                     dropdown.dataset.uuid = uuid;
                     if (ddDetail) ddDetail.href = `/transaksi-dijemput/${uuid}`;
-
-                    // Tombol Konfirmasi dan Tolak
-                    if (ddKonfirmasi && ddTolak) {
-                        if (butuhKonfirmasi) {
-                            ddKonfirmasi.classList.remove('hidden');
-                            ddKonfirmasi.onclick = () => {
-                                closeDropdown();
-                                openKonfirmasiModal(uuid, noTransaksi, nama, jumlah);
-                            };
-                            
-                            ddTolak.classList.remove('hidden');
-                            ddTolak.onclick = () => {
-                                closeDropdown();
-                                openTolakModal(uuid, noTransaksi, nama);
-                            };
-                        } else {
-                            ddKonfirmasi.classList.add('hidden');
-                            ddTolak.classList.add('hidden');
-                        }
-                    }
 
                     // Tombol Update Status
                     if (ddNextStatus && ddNextLabel) {
@@ -1621,30 +1405,12 @@
                     if (e.target === this) closeModal('delete-modal');
                 });
             }
-
-            // Event listener untuk modal konfirmasi
-            const konfirmasiModal = document.getElementById('konfirmasi-modal');
-            if (konfirmasiModal) {
-                konfirmasiModal.addEventListener('click', function(e) {
-                    if (e.target === this) closeKonfirmasiModal();
-                });
-            }
-
-            // Event listener untuk modal tolak
-            const tolakModal = document.getElementById('tolak-modal');
-            if (tolakModal) {
-                tolakModal.addEventListener('click', function(e) {
-                    if (e.target === this) closeTolakModal();
-                });
-            }
         });
 
         // Keydown event untuk escape
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 closeModal('delete-modal');
-                closeKonfirmasiModal();
-                closeTolakModal();
             }
         });
     </script>
