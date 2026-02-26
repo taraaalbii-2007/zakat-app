@@ -225,7 +225,7 @@ class MustahikController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengedit data ini.');
         }
 
-        $kategoris = KategoriMustahik::where('is_active', true)->orderBy('nama')->get();
+        $kategoris = KategoriMustahik::all();
         $provinces = Province::orderBy('name')->get();
 
         $cities = $mustahik->provinsi_kode
