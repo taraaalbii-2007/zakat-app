@@ -59,9 +59,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>Kembali
             </a>
-            @if($defaultMode==='datang_langsung') <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">📍 Datang Langsung</span>
-            @elseif($defaultMode==='dijemput')   <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">🚗 Dijemput</span>
-            @else                                 <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">🌐 Daring</span>
+            @if($defaultMode==='datang_langsung') <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Datang Langsung</span>
+            @elseif($defaultMode==='dijemput')   <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Dijemput</span>
+            @else                                 <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">Daring</span>
             @endif
         </div>
     </div>
@@ -192,7 +192,7 @@
                 </span>
                 Data Muzakki (Pemberi Zakat)
                 @if($muzakkiData)
-                <span class="ml-2 text-xs font-normal text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">✓ Dari profil Anda</span>
+                <span class="ml-2 text-xs font-normal text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">Dari profil Anda</span>
                 @endif
             </h3>
 
@@ -364,7 +364,7 @@
             <div id="panelBeras" class="hidden space-y-4">
                 {{-- INFO BAZNAS BERAS --}}
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <p class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">🌾 Ketentuan Zakat Fitrah Beras</p>
+                    <p class="text-sm font-bold text-amber-900 mb-3">Ketentuan Zakat Fitrah Beras</p>
                     <div class="grid grid-cols-3 gap-2 mb-3">
                         <div class="bg-white rounded-lg border border-amber-200 p-2.5 text-center">
                             <p class="text-base font-bold text-amber-800">{{ $zakatFitrahInfo['beras_kg'] }} kg</p>
@@ -375,11 +375,11 @@
                             <p class="text-xs text-amber-700 mt-0.5">per jiwa</p>
                         </div>
                         <div class="bg-white rounded-lg border border-green-200 p-2.5 text-center">
-                            <p class="text-base font-bold text-green-700">≈ Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}</p>
+                            <p class="text-base font-bold text-green-700">Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}</p>
                             <p class="text-xs text-gray-500 mt-0.5">per jiwa (BAZNAS)</p>
                         </div>
                     </div>
-                    <p class="text-xs text-amber-700">ℹ️ Ketetapan BAZNAS: {{ $zakatFitrahInfo['beras_kg'] }} kg atau {{ $zakatFitrahInfo['beras_liter'] }} liter beras per jiwa ≈ <strong>Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}</strong></p>
+                    <p class="text-xs text-amber-700">Ketetapan BAZNAS: {{ $zakatFitrahInfo['beras_kg'] }} kg atau {{ $zakatFitrahInfo['beras_liter'] }} liter beras per jiwa = <strong>Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}</strong></p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -414,7 +414,7 @@
 
                 {{-- Ringkasan beras otomatis --}}
                 <div id="infoBerasRingkas" class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-900 space-y-1.5">
-                    <p class="text-xs font-semibold text-green-800 uppercase tracking-wide mb-2">📊 Ringkasan</p>
+                    <p class="text-xs font-semibold text-green-800 uppercase tracking-wide mb-2">Ringkasan</p>
                     <p id="berasRingkasText">Isi data di atas untuk melihat ringkasan.</p>
                 </div>
 
@@ -430,7 +430,7 @@
             <div id="panelFitrahTunai" class="hidden space-y-4">
                 {{-- INFO BAZNAS TUNAI --}}
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <p class="text-sm font-bold text-amber-900 mb-3 flex items-center gap-2">💰 Ketentuan Zakat Fitrah (Dibayar Uang)</p>
+                    <p class="text-sm font-bold text-amber-900 mb-3">Ketentuan Zakat Fitrah (Dibayar Uang)</p>
                     <div class="grid grid-cols-3 gap-2 mb-3">
                         <div class="bg-white rounded-lg border border-amber-200 p-2.5 text-center">
                             <p class="text-base font-bold text-amber-800">{{ $zakatFitrahInfo['beras_kg'] }} kg</p>
@@ -445,7 +445,7 @@
                             <p class="text-xs text-gray-500 mt-0.5">per jiwa (BAZNAS)</p>
                         </div>
                     </div>
-                    <p class="text-xs text-amber-700">ℹ️ BAZNAS menetapkan nilai {{ $zakatFitrahInfo['beras_kg'] }} kg / {{ $zakatFitrahInfo['beras_liter'] }} liter beras = <strong>Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}/jiwa</strong></p>
+                    <p class="text-xs text-amber-700">BAZNAS menetapkan nilai {{ $zakatFitrahInfo['beras_kg'] }} kg / {{ $zakatFitrahInfo['beras_liter'] }} liter beras = <strong>Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'],0,',','.') }}/jiwa</strong></p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -470,7 +470,7 @@
 
                 {{-- Ringkasan tunai otomatis --}}
                 <div id="infoTunaiRingkas" class="bg-primary/5 border border-primary/20 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-primary uppercase tracking-wide mb-2">📊 Ringkasan</p>
+                    <p class="text-xs font-semibold text-primary uppercase tracking-wide mb-2">Ringkasan</p>
                     <div id="tunaiRingkasText" class="text-sm text-gray-500">Isi data di atas untuk melihat ringkasan.</div>
                 </div>
 
@@ -522,7 +522,7 @@
                         class="w-4 h-4 text-primary border-gray-300 rounded mt-0.5">
                     <div>
                         <label for="sudahHaul" class="text-sm font-medium text-gray-900 cursor-pointer">Harta sudah mencapai haul (1 tahun hijriyah)</label>
-                        <p class="text-xs text-gray-500 mt-0.5">Centang jika sudah dimiliki ≥ 1 tahun penuh</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Centang jika sudah dimiliki lebih dari atau sama dengan 1 tahun penuh</p>
                     </div>
                 </div>
                 <div id="wrapHaul" class="{{ old('sudah_haul') ? '' : 'hidden' }}">
@@ -662,7 +662,6 @@
 
                     {{-- Kalkulasi infaq real-time --}}
                     <div id="boxKalkulasiInfaq" class="hidden rounded-xl border p-3 flex items-start gap-2 text-sm">
-                        <span id="ikonInfaq" class="mt-0.5 text-base leading-none">💰</span>
                         <div id="teksInfaq"></div>
                     </div>
                 </div>
@@ -682,7 +681,7 @@
             {{-- Info Transfer --}}
             <div id="infoTransferSec" class="hidden space-y-3">
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <p class="text-sm font-semibold text-blue-800 mb-3">🏦 Rekening Transfer Masjid</p>
+                    <p class="text-sm font-semibold text-blue-800 mb-3">Rekening Transfer Masjid</p>
                     @if($rekeningList->isNotEmpty())
                         @foreach($rekeningList as $rek)
                         <div class="bg-white border border-blue-200 rounded-lg p-3 flex items-center justify-between mb-2 last:mb-0">
@@ -705,24 +704,18 @@
                             class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary transition-all">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Bukti Transfer <span class="text-xs text-gray-400">(opsional)</span></label>
-                    <div id="prvTransfer" class="h-28 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer" onclick="document.getElementById('inpTransfer').click()">
-                        <p class="text-xs text-gray-400">Klik untuk upload</p>
-                    </div>
-                    <input type="file" name="bukti_transfer" id="inpTransfer" accept="image/*" class="hidden" onchange="prvBukti(this,'prvTransfer')">
-                    <p class="text-xs text-gray-500">Format: JPG, PNG. Maks 2MB.</p>
-                </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex items-start gap-2">
-                    <svg class="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <p class="text-xs text-yellow-800">Status <strong>pending</strong> — amil akan konfirmasi setelah dana masuk.</p>
+                <div class="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-start gap-2">
+                    <svg class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-xs text-green-800">Transaksi akan <strong>langsung terverifikasi</strong> setelah disimpan.</p>
                 </div>
             </div>
 
             {{-- Info QRIS --}}
             <div id="infoQrisSec" class="hidden space-y-3">
                 <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
-                    <p class="text-sm font-semibold text-purple-800 mb-3">📱 QRIS Masjid</p>
+                    <p class="text-sm font-semibold text-purple-800 mb-3">QRIS Masjid</p>
                     @php $rekeningQris = $rekeningList->where('jenis','qris')->first() ?? $rekeningList->first(); @endphp
                     @if($rekeningQris && !empty($rekeningQris->qris_image))
                         <div class="flex justify-center mb-3">
@@ -743,17 +736,11 @@
                             class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary transition-all">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti QRIS <span class="text-xs text-gray-400">(opsional)</span></label>
-                    <div id="prvQris" class="h-28 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer" onclick="document.getElementById('inpQris').click()">
-                        <p class="text-xs text-gray-400">Klik untuk upload</p>
-                    </div>
-                    <input type="file" name="bukti_transfer" id="inpQris" accept="image/*" class="hidden" onchange="prvBukti(this,'prvQris')">
-                    <p class="text-xs text-gray-500">Format: JPG, PNG. Maks 2MB.</p>
-                </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 flex items-start gap-2">
-                    <svg class="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    <p class="text-xs text-yellow-800">Status <strong>pending</strong> — amil akan konfirmasi setelah dana masuk.</p>
+                <div class="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-start gap-2">
+                    <svg class="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-xs text-green-800">Transaksi akan <strong>langsung terverifikasi</strong> setelah disimpan.</p>
                 </div>
             </div>
 
@@ -766,7 +753,7 @@
 
             {{-- RINGKASAN FINAL --}}
             <div id="boxRingSummary" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-4">
-                <p class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">✅ Ringkasan Transaksi</p>
+                <p class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Ringkasan Transaksi</p>
                 <table class="w-full text-sm">
                     <tr class="border-b border-gray-100">
                         <td class="text-gray-500 py-1.5 w-1/2">Zakat Wajib</td>
@@ -969,7 +956,7 @@ document.getElementById('btnGps')?.addEventListener('click', function () {
             document.getElementById('latitude').value  = pos.coords.latitude.toFixed(7);
             document.getElementById('longitude').value = pos.coords.longitude.toFixed(7);
             this.disabled = false;
-            this.innerHTML = '✓ Berhasil';
+            this.innerHTML = 'Berhasil';
             setTimeout(() => { this.innerHTML = this._orig; }, 2500);
         },
         err => { this.disabled = false; this.innerHTML = this._orig; alert('Gagal: ' + err.message); }
@@ -1055,11 +1042,11 @@ function hitungBeras() {
 
     let html = '';
     if (jiwa > 0 && kg > 0) {
-        html += `<p>👤 <strong>${jiwa} jiwa</strong> × ${BAZNAS.berasKg} kg = minimum <strong>${minKg.toFixed(1)} kg</strong> (${minLtr.toFixed(1)} liter)</p>`;
-        html += `<p>🌾 Beras diserahkan: <strong>${kg} kg</strong> (~${(kg * BAZNAS.berasLiter / BAZNAS.berasKg).toFixed(1)} liter)</p>`;
-        if (harga > 0) html += `<p>💵 Konversi uang @Rp ${fmt(harga)}/kg: <strong>Rp ${fmt(konvUang)}</strong></p>`;
-        html += `<p>📊 Estimasi BAZNAS (Rp ${fmt(BAZNAS.nominalPerJiwa)}/jiwa): <strong>Rp ${fmt(baznasTot)}</strong></p>`;
-        if (kg < minKg) html += `<p class="text-red-700 font-semibold">⚠️ Beras kurang dari minimum (${minKg.toFixed(1)} kg)</p>`;
+        html += `<p>${jiwa} jiwa x ${BAZNAS.berasKg} kg = minimum <strong>${minKg.toFixed(1)} kg</strong> (${minLtr.toFixed(1)} liter)</p>`;
+        html += `<p>Beras diserahkan: <strong>${kg} kg</strong> (~${(kg * BAZNAS.berasLiter / BAZNAS.berasKg).toFixed(1)} liter)</p>`;
+        if (harga > 0) html += `<p>Konversi uang @Rp ${fmt(harga)}/kg: <strong>Rp ${fmt(konvUang)}</strong></p>`;
+        html += `<p>Estimasi BAZNAS (Rp ${fmt(BAZNAS.nominalPerJiwa)}/jiwa): <strong>Rp ${fmt(baznasTot)}</strong></p>`;
+        if (kg < minKg) html += `<p class="text-red-700 font-semibold">Beras kurang dari minimum (${minKg.toFixed(1)} kg)</p>`;
     } else {
         html = 'Isi jumlah jiwa dan beras untuk melihat ringkasan.';
     }
@@ -1082,10 +1069,10 @@ function hitungFitrahTunai() {
 
     let html = '';
     if (jiwa > 0 && nominal > 0) {
-        html += `<p class="font-semibold text-gray-800">💰 ${jiwa} jiwa × Rp ${fmt(nominal)} = <span class="text-primary text-lg">Rp ${fmt(total)}</span></p>`;
-        html += `<p class="text-xs text-gray-500 mt-1">🌾 Setara beras: ~${(jiwa * BAZNAS.berasKg).toFixed(1)} kg / ${(jiwa * BAZNAS.berasLiter).toFixed(1)} liter</p>`;
+        html += `<p class="font-semibold text-gray-800">${jiwa} jiwa x Rp ${fmt(nominal)} = <span class="text-primary text-lg">Rp ${fmt(total)}</span></p>`;
+        html += `<p class="text-xs text-gray-500 mt-1">Setara beras: ~${(jiwa * BAZNAS.berasKg).toFixed(1)} kg / ${(jiwa * BAZNAS.berasLiter).toFixed(1)} liter</p>`;
         if (nominal < BAZNAS.nominalPerJiwa)
-            html += `<p class="text-xs text-amber-700 mt-1">⚠️ Nominal di bawah ketetapan BAZNAS (Rp ${fmt(BAZNAS.nominalPerJiwa)}/jiwa)</p>`;
+            html += `<p class="text-xs text-amber-700 mt-1">Nominal di bawah ketetapan BAZNAS (Rp ${fmt(BAZNAS.nominalPerJiwa)}/jiwa)</p>`;
     } else {
         html = '<p class="text-sm text-gray-400">Isi jumlah jiwa dan nominal untuk melihat ringkasan.</p>';
     }
@@ -1100,8 +1087,8 @@ function tampilPanelMal(tipeOpt) {
     document.getElementById('malPersen').value = tipeOpt.dataset.persentase || 2.5;
 
     let nisabHtml = '';
-    if (tipeOpt.dataset.nisabEmas > 0)    nisabHtml += `<p>• Nisab emas: ${tipeOpt.dataset.nisabEmas} gram</p>`;
-    if (tipeOpt.dataset.requireHaul==='1') nisabHtml += `<p>• <strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
+    if (tipeOpt.dataset.nisabEmas > 0)    nisabHtml += `<p>Nisab emas: ${tipeOpt.dataset.nisabEmas} gram</p>`;
+    if (tipeOpt.dataset.requireHaul==='1') nisabHtml += `<p><strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
     const box = document.getElementById('nisabBox');
     if (nisabHtml) { document.getElementById('nisabIsi').innerHTML = nisabHtml; box.classList.remove('hidden'); }
     else box.classList.add('hidden');
@@ -1116,7 +1103,7 @@ function hitungMal() {
     const p = parseFloat(document.getElementById('malPersen').value) || 2.5;
     const t = h * (p / 100);
     document.getElementById('malTotalDisp').textContent = 'Rp ' + fmt(t);
-    document.getElementById('malDetailDisp').textContent = `${p}% × Rp ${fmt(h)} = Rp ${fmt(t)}`;
+    document.getElementById('malDetailDisp').textContent = `${p}% x Rp ${fmt(h)} = Rp ${fmt(t)}`;
     document.getElementById('hdnJumlahMal').value = Math.round(t);
 }
 document.getElementById('sudahHaul').addEventListener('change', function () {
@@ -1203,26 +1190,22 @@ function hitungKalkulasiInfaq() {
     const jz   = getJumlahZakat();
     const jd   = parseFloat(document.getElementById('jmlDibayar').value) || 0;
     const box  = document.getElementById('boxKalkulasiInfaq');
-    const ikon = document.getElementById('ikonInfaq');
     const teks = document.getElementById('teksInfaq');
 
     if (jz <= 0 || jd <= 0) { box.classList.add('hidden'); return; }
 
-    const infaq = Math.max(0, jd - jz);
+    const infaq  = Math.max(0, jd - jz);
     const kurang = Math.max(0, jz - jd);
     box.classList.remove('hidden','bg-amber-50','border-amber-200','bg-red-50','border-red-200','bg-green-50','border-green-200');
 
     if (infaq > 0) {
         box.classList.add('bg-amber-50','border-amber-200');
-        ikon.textContent = '🎉';
-        teks.innerHTML = `Kelebihan <strong>Rp ${fmt(infaq)}</strong> otomatis dicatat sebagai <strong>infaq sukarela</strong>. Jazakallah khairan! 🙏`;
+        teks.innerHTML = `Kelebihan <strong>Rp ${fmt(infaq)}</strong> otomatis dicatat sebagai <strong>infaq sukarela</strong>. Jazakallah khairan.`;
     } else if (kurang > 0) {
         box.classList.add('bg-red-50','border-red-200');
-        ikon.textContent = '⚠️';
         teks.innerHTML = `Kurang <strong>Rp ${fmt(kurang)}</strong> dari zakat wajib (Rp ${fmt(jz)}).`;
     } else {
         box.classList.add('bg-green-50','border-green-200');
-        ikon.textContent = '✅';
         teks.innerHTML = `Pembayaran <strong>pas</strong> sesuai zakat wajib (Rp ${fmt(jz)}).`;
     }
 }
@@ -1247,14 +1230,11 @@ function refreshRingSummary(metode) {
         document.getElementById('ringInfaq').textContent = 'Rp ' + fmt(infaq);
     } else document.getElementById('ringRowInfaq').classList.add('hidden');
 
-    const mLabel = { tunai:'💵 Tunai', transfer:'🏦 Transfer Bank', qris:'📱 QRIS' };
+    const mLabel = { tunai:'Tunai', transfer:'Transfer Bank', qris:'QRIS' };
     document.getElementById('ringMetode').textContent = mLabel[metode] || metode;
 
     const stEl = document.getElementById('ringStatus');
-    if (metode === 'tunai')
-        stEl.innerHTML = '<span class="text-green-600">✓ Langsung terverifikasi</span>';
-    else
-        stEl.innerHTML = '<span class="text-yellow-600">⏳ Pending — menunggu konfirmasi amil</span>';
+    stEl.innerHTML = '<span class="text-green-600">Langsung terverifikasi</span>';
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1316,16 +1296,6 @@ function spinBtn(btn, txt) {
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
     </svg> ${txt}`;
-}
-
-function prvBukti(input, previewId) {
-    const el = document.getElementById(previewId);
-    if (input.files?.[0]) {
-        if (input.files[0].size > 2097152) { alert('Ukuran file maks 2MB.'); input.value = ''; return; }
-        const r = new FileReader();
-        r.onload = e => { el.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain">`; };
-        r.readAsDataURL(input.files[0]);
-    }
 }
 
 function salin(teks) {

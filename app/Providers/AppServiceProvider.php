@@ -47,10 +47,7 @@ class AppServiceProvider extends ServiceProvider
                 if ($masjidId) {
                     $sidebarCounts = [
                         // Datang langsung: transaksi pending (belum verified)
-                        'datang_langsung' => TransaksiPenerimaan::where('masjid_id', $masjidId)
-                            ->where('metode_penerimaan', 'datang_langsung')
-                            ->where('status', 'pending')
-                            ->count(),
+                        'datang_langsung' => 0, 
 
                         // Daring: menunggu konfirmasi pembayaran
                         'daring' => TransaksiPenerimaan::where('masjid_id', $masjidId)
