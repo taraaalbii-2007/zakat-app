@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use App\Exports\TransaksiPenerimaanExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\KonfigurasiQris;
 
 class TransaksiPenerimaanController extends Controller
 {
@@ -363,6 +364,10 @@ class TransaksiPenerimaanController extends Controller
             'beras_liter'      => self::BERAS_LITER_PER_JIWA,
         ];
 
+        $qrisConfig = KonfigurasiQris::where('masjid_id', $this->masjid->id)
+            ->where('is_active', true)
+            ->first();
+
         $muzakkiData = null;
         if ($this->user->isMuzakki() && $this->user->muzakki) {
             $m           = $this->user->muzakki;
@@ -376,17 +381,18 @@ class TransaksiPenerimaanController extends Controller
         }
 
         return view('amil.transaksi-penerimaan.create', compact(
-            'mode',
-            'jenisZakatList',
-            'programZakatList',
-            'amilList',
-            'noTransaksiPreview',
-            'tanggalHariIni',
-            'tipeZakatList',
-            'rekeningList',
-            'zakatFitrahInfo',
-            'muzakkiData'
-        ));
+    'mode',
+    'jenisZakatList',
+    'programZakatList',
+    'amilList',
+    'noTransaksiPreview',
+    'tanggalHariIni',
+    'tipeZakatList',
+    'rekeningList',
+    'zakatFitrahInfo',
+    'muzakkiData',
+    'qrisConfig'
+));
     }
 
     // ================================================================
