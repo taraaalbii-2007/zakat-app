@@ -46,7 +46,6 @@ class TransaksiPenerimaan extends Model
         'metode_pembayaran',
         // Konfirmasi manual
         'konfirmasi_status',
-        'no_referensi_transfer',
         'dikonfirmasi_oleh',
         'konfirmasi_at',
         'catatan_konfirmasi',
@@ -55,7 +54,7 @@ class TransaksiPenerimaan extends Model
         'nominal_per_jiwa',
         'jumlah_beras_kg',
         'harga_beras_per_kg',
-        'nama_jiwa_json',
+        'nama_jiwa_json', // JSON array untuk menyimpan nama per jiwa
         // Detail Mal
         'nilai_harta',
         'nisab_saat_ini',
@@ -84,7 +83,7 @@ class TransaksiPenerimaan extends Model
         'has_infaq'           => 'boolean',
         'diinput_muzakki'     => 'boolean',
         'jumlah_jiwa'         => 'integer',
-        'nama_jiwa_json' => 'array',
+        'nama_jiwa_json'      => 'array', // Cast ke array
         'nominal_per_jiwa'    => 'decimal:2',
         'jumlah_beras_kg'     => 'decimal:2',
         'harga_beras_per_kg'  => 'decimal:2',
@@ -276,6 +275,10 @@ class TransaksiPenerimaan extends Model
     {
         return $q->where('has_infaq', true)->where('jumlah_infaq', '>', 0);
     }
+    public function scopeByTahun($query, $tahun)
+    {
+        return $query->whereYear('tanggal_transaksi', $tahun);
+    }
 
     public function scopeSearch($q, $search)
     {
@@ -284,8 +287,8 @@ class TransaksiPenerimaan extends Model
             $q->where('no_transaksi', 'like', "%{$search}%")
                 ->orWhere('muzakki_nama', 'like', "%{$search}%")
                 ->orWhere('muzakki_telepon', 'like', "%{$search}%")
-                ->orWhere('no_kwitansi', 'like', "%{$search}%")
-                ->orWhere('no_referensi_transfer', 'like', "%{$search}%");
+                ->orWhere('no_kwitansi', 'like', "%{$search}%");
+                // Hapus no_referensi_transfer dari pencarian
         });
     }
 
@@ -521,8 +524,4 @@ class TransaksiPenerimaan extends Model
         if (is_null($this->jumlah_dibayar)) return 0;
         return max(0, (float)$this->jumlah - (float)$this->jumlah_dibayar);
     }
-    public function scopeByTahun($query, $tahun)
-    {
-        return $query->whereYear('tanggal_transaksi', $tahun);
-    }
-}   
+}

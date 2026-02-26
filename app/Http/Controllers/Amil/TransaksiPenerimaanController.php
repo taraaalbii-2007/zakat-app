@@ -381,18 +381,18 @@ class TransaksiPenerimaanController extends Controller
         }
 
         return view('amil.transaksi-penerimaan.create', compact(
-    'mode',
-    'jenisZakatList',
-    'programZakatList',
-    'amilList',
-    'noTransaksiPreview',
-    'tanggalHariIni',
-    'tipeZakatList',
-    'rekeningList',
-    'zakatFitrahInfo',
-    'muzakkiData',
-    'qrisConfig'
-));
+            'mode',
+            'jenisZakatList',
+            'programZakatList',
+            'amilList',
+            'noTransaksiPreview',
+            'tanggalHariIni',
+            'tipeZakatList',
+            'rekeningList',
+            'zakatFitrahInfo',
+            'muzakkiData',
+            'qrisConfig'
+        ));
     }
 
     // ================================================================
@@ -413,6 +413,9 @@ class TransaksiPenerimaanController extends Controller
         return $this->create($request);
     }
 
+    // ================================================================
+    // STORE DATANG LANGSUNG
+    // ================================================================
     // ================================================================
     // STORE DATANG LANGSUNG
     // ================================================================
@@ -439,13 +442,14 @@ class TransaksiPenerimaanController extends Controller
                 'nominal_per_jiwa'   => 'nullable|numeric|min:0',
                 'jumlah_beras_kg'    => 'nullable|numeric|min:0',
                 'harga_beras_per_kg' => 'nullable|numeric|min:0',
+                'nama_jiwa_json'     => 'nullable|array',
+                'nama_jiwa_json.*'   => 'nullable|string|max:100',
                 'nilai_harta'        => 'nullable|numeric|min:0',
                 'nisab_saat_ini'     => 'nullable|numeric|min:0',
                 'sudah_haul'         => 'nullable|boolean',
                 'tanggal_mulai_haul' => 'nullable|date',
                 'jumlah_dibayar'     => 'nullable|numeric|min:0',
                 'metode_pembayaran'  => 'required|in:tunai,transfer,qris',
-                'no_referensi_transfer' => 'nullable|string|max:100',
                 'bukti_transfer'     => 'nullable|image|max:2048',
                 'keterangan'         => 'nullable|string',
             ];
@@ -600,6 +604,9 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     // STORE DARING
     // ================================================================
+    // ================================================================
+    // STORE DARING
+    // ================================================================
     public function storeDaring(Request $request)
     {
         Log::info('Transaksi Daring Store', [
@@ -623,13 +630,14 @@ class TransaksiPenerimaanController extends Controller
                 'nominal_per_jiwa'   => 'nullable|numeric|min:0',
                 'jumlah_beras_kg'    => 'nullable|numeric|min:0',
                 'harga_beras_per_kg' => 'nullable|numeric|min:0',
+                'nama_jiwa_json'     => 'nullable|array',
+                'nama_jiwa_json.*'   => 'nullable|string|max:100',
                 'nilai_harta'        => 'nullable|numeric|min:0',
                 'nisab_saat_ini'     => 'nullable|numeric|min:0',
                 'sudah_haul'         => 'nullable|boolean',
                 'tanggal_mulai_haul' => 'nullable|date',
                 'jumlah_dibayar'     => 'required|numeric|min:0',
                 'metode_pembayaran'  => 'required|in:transfer,qris',
-                'no_referensi_transfer' => 'required|string|max:100',
                 'bukti_transfer'     => 'required|image|max:2048',
                 'keterangan'         => 'nullable|string',
             ];
@@ -702,6 +710,8 @@ class TransaksiPenerimaanController extends Controller
             'jumlah_jiwa'       => 'nullable|integer|min:1',
             'nominal_per_jiwa'  => 'nullable|numeric|min:0',
             'jumlah_beras_kg'   => 'nullable|numeric|min:0',
+            'nama_jiwa_json'    => 'nullable|array',
+            'nama_jiwa_json.*'  => 'nullable|string|max:100',
             'nilai_harta'       => 'nullable|numeric|min:0',
             'sudah_haul'        => 'nullable|boolean',
             'tanggal_mulai_haul' => 'nullable|date',
@@ -1022,6 +1032,8 @@ class TransaksiPenerimaanController extends Controller
                     'jenis_zakat_id'     => 'required|exists:jenis_zakat,id',
                     'tipe_zakat_id'      => 'required|exists:tipe_zakat,uuid',
                     'program_zakat_id'   => 'nullable|exists:program_zakat,id',
+                    'nama_jiwa_json'     => 'nullable|array',
+                    'nama_jiwa_json.*'   => 'nullable|string|max:100',
                     'keterangan'         => 'nullable|string',
                 ];
 
@@ -1044,7 +1056,6 @@ class TransaksiPenerimaanController extends Controller
                         'is_pembayaran_beras' => 'in:0',
                         'metode_pembayaran'    => 'required|in:tunai,transfer,qris',
                         'jumlah_dibayar'        => 'nullable|numeric|min:0',
-                        'no_referensi_transfer' => 'nullable|string|max:100',
                         'bukti_transfer'        => 'nullable|image|max:2048',
                     ]);
 
@@ -1137,7 +1148,6 @@ class TransaksiPenerimaanController extends Controller
                     } else {
                         $transaksi->status = 'pending';
                         $transaksi->konfirmasi_status = 'menunggu_konfirmasi';
-                        $transaksi->no_referensi_transfer = $request->no_referensi_transfer;
 
                         if ($request->hasFile('bukti_transfer')) {
                             $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
@@ -1557,6 +1567,18 @@ class TransaksiPenerimaanController extends Controller
         $transaksi->program_zakat_id = $request->program_zakat_id;
         $transaksi->jumlah           = round($jumlah);
 
+        // ★ TAMBAHKAN NAMA JIWA jika ada ★
+        if ($request->has('nama_jiwa_json') && is_array($request->nama_jiwa_json)) {
+            // Filter hanya yang tidak kosong
+            $namaJiwa = array_filter($request->nama_jiwa_json, function ($value) {
+                return !empty(trim($value));
+            });
+
+            if (!empty($namaJiwa)) {
+                $transaksi->nama_jiwa_json = array_values($namaJiwa); // Reset index
+            }
+        }
+
         if ($isFitrah) {
             $transaksi->jumlah_jiwa        = $request->jumlah_jiwa;
             $transaksi->nominal_per_jiwa   = $request->nominal_per_jiwa;
@@ -1613,7 +1635,6 @@ class TransaksiPenerimaanController extends Controller
         } else {
             $transaksi->status             = 'pending';
             $transaksi->konfirmasi_status  = 'menunggu_konfirmasi';
-            $transaksi->no_referensi_transfer = $request->no_referensi_transfer;
 
             if ($request->hasFile('bukti_transfer')) {
                 $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
@@ -1640,7 +1661,6 @@ class TransaksiPenerimaanController extends Controller
 
         $transaksi->status             = 'pending';
         $transaksi->konfirmasi_status  = 'menunggu_konfirmasi';
-        $transaksi->no_referensi_transfer = $request->no_referensi_transfer;
 
         if ($request->hasFile('bukti_transfer')) {
             $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
@@ -1675,7 +1695,6 @@ class TransaksiPenerimaanController extends Controller
 
             if (in_array($metodePembayaran, ['transfer', 'qris'])) {
                 $transaksi->konfirmasi_status = 'menunggu_konfirmasi';
-                $transaksi->no_referensi_transfer = $request->no_referensi_transfer;
             }
         }
 
