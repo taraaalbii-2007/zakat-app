@@ -13,14 +13,31 @@ class TransaksiPenerimaan extends Model
     protected $table = 'transaksi_penerimaan';
 
     protected $fillable = [
-        'uuid', 'no_transaksi', 'tanggal_transaksi', 'waktu_transaksi',
-        'masjid_id', 'muzakki_id', 'diinput_muzakki',
-        'jenis_zakat_id', 'tipe_zakat_id', 'program_zakat_id',
-        'muzakki_nama', 'muzakki_telepon', 'muzakki_email', 'muzakki_alamat', 'muzakki_nik',
-        'metode_penerimaan', 'amil_id',
-        'latitude', 'longitude',
+        'uuid',
+        'no_transaksi',
+        'tanggal_transaksi',
+        'waktu_transaksi',
+        'masjid_id',
+        'muzakki_id',
+        'diinput_muzakki',
+        'jenis_zakat_id',
+        'tipe_zakat_id',
+        'program_zakat_id',
+        'muzakki_nama',
+        'muzakki_telepon',
+        'muzakki_email',
+        'muzakki_alamat',
+        'muzakki_nik',
+        'metode_penerimaan',
+        'amil_id',
+        'latitude',
+        'longitude',
         'status_penjemputan',
-        'waktu_request', 'waktu_diterima_amil', 'waktu_berangkat', 'waktu_sampai', 'waktu_selesai',
+        'waktu_request',
+        'waktu_diterima_amil',
+        'waktu_berangkat',
+        'waktu_sampai',
+        'waktu_selesai',
         // Nominal
         'jumlah',          // Nominal zakat wajib
         'jumlah_dibayar',  // Nominal aktual yang dibayar (bisa > jumlah)
@@ -28,17 +45,32 @@ class TransaksiPenerimaan extends Model
         'has_infaq',
         'metode_pembayaran',
         // Konfirmasi manual
-        'konfirmasi_status', 'no_referensi_transfer',
-        'dikonfirmasi_oleh', 'konfirmasi_at', 'catatan_konfirmasi',
+        'konfirmasi_status',
+        'no_referensi_transfer',
+        'dikonfirmasi_oleh',
+        'konfirmasi_at',
+        'catatan_konfirmasi',
         // Detail Fitrah
-        'jumlah_jiwa', 'nominal_per_jiwa', 'jumlah_beras_kg', 'harga_beras_per_kg',
+        'jumlah_jiwa',
+        'nominal_per_jiwa',
+        'jumlah_beras_kg',
+        'harga_beras_per_kg',
         'nama_jiwa_json',
         // Detail Mal
-        'nilai_harta', 'nisab_saat_ini', 'sudah_haul', 'tanggal_mulai_haul',
+        'nilai_harta',
+        'nisab_saat_ini',
+        'sudah_haul',
+        'tanggal_mulai_haul',
         // Bukti & catatan
-        'no_kwitansi', 'bukti_transfer', 'foto_dokumentasi', 'keterangan',
+        'no_kwitansi',
+        'bukti_transfer',
+        'foto_dokumentasi',
+        'keterangan',
         // Status
-        'status', 'alasan_penolakan', 'verified_by', 'verified_at',
+        'status',
+        'alasan_penolakan',
+        'verified_by',
+        'verified_at',
     ];
 
     protected $casts = [
@@ -139,46 +171,121 @@ class TransaksiPenerimaan extends Model
     // RELATIONSHIPS
     // ===============================
 
-    public function masjid()           { return $this->belongsTo(Masjid::class, 'masjid_id'); }
-    public function muzakki()          { return $this->belongsTo(Muzakki::class, 'muzakki_id'); }
-    public function jenisZakat()       { return $this->belongsTo(JenisZakat::class, 'jenis_zakat_id'); }
-    public function tipeZakat()        { return $this->belongsTo(TipeZakat::class, 'tipe_zakat_id'); }
-    public function programZakat()     { return $this->belongsTo(ProgramZakat::class, 'program_zakat_id'); }
-    public function amil()             { return $this->belongsTo(Amil::class, 'amil_id'); }
-    public function verifiedBy()       { return $this->belongsTo(Pengguna::class, 'verified_by'); }
-    public function dikonfirmasiOleh() { return $this->belongsTo(Pengguna::class, 'dikonfirmasi_oleh'); }
+    public function masjid()
+    {
+        return $this->belongsTo(Masjid::class, 'masjid_id');
+    }
+    public function muzakki()
+    {
+        return $this->belongsTo(Muzakki::class, 'muzakki_id');
+    }
+    public function jenisZakat()
+    {
+        return $this->belongsTo(JenisZakat::class, 'jenis_zakat_id');
+    }
+    public function tipeZakat()
+    {
+        return $this->belongsTo(TipeZakat::class, 'tipe_zakat_id');
+    }
+    public function programZakat()
+    {
+        return $this->belongsTo(ProgramZakat::class, 'program_zakat_id');
+    }
+    public function amil()
+    {
+        return $this->belongsTo(Amil::class, 'amil_id');
+    }
+    public function verifiedBy()
+    {
+        return $this->belongsTo(Pengguna::class, 'verified_by');
+    }
+    public function dikonfirmasiOleh()
+    {
+        return $this->belongsTo(Pengguna::class, 'dikonfirmasi_oleh');
+    }
 
     // ===============================
     // SCOPES
     // ===============================
 
-    public function scopeByMasjid($q, $id)              { return $q->where('masjid_id', $id); }
-    public function scopeByTanggal($q, $tgl)             { return $q->whereDate('tanggal_transaksi', $tgl); }
-    public function scopeByPeriode($q, $start, $end)     { return $q->whereBetween('tanggal_transaksi', [$start, $end]); }
-    public function scopeByJenisZakat($q, $id)           { return $q->where('jenis_zakat_id', $id); }
-    public function scopeByMetodePembayaran($q, $m)      { return $q->where('metode_pembayaran', $m); }
-    public function scopeByStatus($q, $s)                { return $q->where('status', $s); }
-    public function scopeVerified($q)                    { return $q->where('status', 'verified'); }
-    public function scopePending($q)                     { return $q->where('status', 'pending'); }
-    public function scopeRejected($q)                    { return $q->where('status', 'rejected'); }
-    public function scopeByKonfirmasiStatus($q, $s)      { return $q->where('konfirmasi_status', $s); }
-    public function scopeMenungguKonfirmasi($q)          { return $q->where('konfirmasi_status', 'menunggu_konfirmasi'); }
-    public function scopeByMetodePenerimaan($q, $m)      { return $q->where('metode_penerimaan', $m); }
-    public function scopeByAmil($q, $id)                 { return $q->where('amil_id', $id); }
-    public function scopeByStatusPenjemputan($q, $s)     { return $q->where('status_penjemputan', $s); }
-    public function scopeByMuzakki($q, $id)              { return $q->where('muzakki_id', $id); }
-    public function scopeDiinputMuzakki($q)              { return $q->where('diinput_muzakki', true); }
-    public function scopeHasInfaq($q)                    { return $q->where('has_infaq', true)->where('jumlah_infaq', '>', 0); }
+    public function scopeByMasjid($q, $id)
+    {
+        return $q->where('masjid_id', $id);
+    }
+    public function scopeByTanggal($q, $tgl)
+    {
+        return $q->whereDate('tanggal_transaksi', $tgl);
+    }
+    public function scopeByPeriode($q, $start, $end)
+    {
+        return $q->whereBetween('tanggal_transaksi', [$start, $end]);
+    }
+    public function scopeByJenisZakat($q, $id)
+    {
+        return $q->where('jenis_zakat_id', $id);
+    }
+    public function scopeByMetodePembayaran($q, $m)
+    {
+        return $q->where('metode_pembayaran', $m);
+    }
+    public function scopeByStatus($q, $s)
+    {
+        return $q->where('status', $s);
+    }
+    public function scopeVerified($q)
+    {
+        return $q->where('status', 'verified');
+    }
+    public function scopePending($q)
+    {
+        return $q->where('status', 'pending');
+    }
+    public function scopeRejected($q)
+    {
+        return $q->where('status', 'rejected');
+    }
+    public function scopeByKonfirmasiStatus($q, $s)
+    {
+        return $q->where('konfirmasi_status', $s);
+    }
+    public function scopeMenungguKonfirmasi($q)
+    {
+        return $q->where('konfirmasi_status', 'menunggu_konfirmasi');
+    }
+    public function scopeByMetodePenerimaan($q, $m)
+    {
+        return $q->where('metode_penerimaan', $m);
+    }
+    public function scopeByAmil($q, $id)
+    {
+        return $q->where('amil_id', $id);
+    }
+    public function scopeByStatusPenjemputan($q, $s)
+    {
+        return $q->where('status_penjemputan', $s);
+    }
+    public function scopeByMuzakki($q, $id)
+    {
+        return $q->where('muzakki_id', $id);
+    }
+    public function scopeDiinputMuzakki($q)
+    {
+        return $q->where('diinput_muzakki', true);
+    }
+    public function scopeHasInfaq($q)
+    {
+        return $q->where('has_infaq', true)->where('jumlah_infaq', '>', 0);
+    }
 
     public function scopeSearch($q, $search)
     {
         if (!$search) return $q;
         return $q->where(function ($q) use ($search) {
             $q->where('no_transaksi', 'like', "%{$search}%")
-              ->orWhere('muzakki_nama', 'like', "%{$search}%")
-              ->orWhere('muzakki_telepon', 'like', "%{$search}%")
-              ->orWhere('no_kwitansi', 'like', "%{$search}%")
-              ->orWhere('no_referensi_transfer', 'like', "%{$search}%");
+                ->orWhere('muzakki_nama', 'like', "%{$search}%")
+                ->orWhere('muzakki_telepon', 'like', "%{$search}%")
+                ->orWhere('no_kwitansi', 'like', "%{$search}%")
+                ->orWhere('no_referensi_transfer', 'like', "%{$search}%");
         });
     }
 
@@ -414,4 +521,8 @@ class TransaksiPenerimaan extends Model
         if (is_null($this->jumlah_dibayar)) return 0;
         return max(0, (float)$this->jumlah - (float)$this->jumlah_dibayar);
     }
-}
+    public function scopeByTahun($query, $tahun)
+    {
+        return $query->whereYear('tanggal_transaksi', $tahun);
+    }
+}   

@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Facades\Storage; @endphp
+
 {{--
     resources/views/amil/transaksi-daring/index-daring.blade.php
 
@@ -260,6 +262,7 @@
                             @foreach ($transaksis as $trx)
                                 @php
                                     $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
+                                    $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
                                 @endphp
 
                                 <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
@@ -315,7 +318,8 @@
                                             data-uuid="{{ $trx->uuid }}"
                                             data-nama="{{ $trx->muzakki_nama }}"
                                             data-can-konfirmasi="{{ $needsKonfirmasi ? '1' : '0' }}"
-                                            data-metode="{{ $trx->metode_pembayaran }}">
+                                            data-metode="{{ $trx->metode_pembayaran }}"
+                                            data-bukti="{{ $buktiUrl }}">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                             </svg>
@@ -492,12 +496,12 @@
                                                     <div class="flex gap-2 flex-wrap">
                                                         @if ($needsKonfirmasi)
                                                             <button type="button"
-                                                                onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}')"
+                                                                onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}', '{{ $buktiUrl }}')"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
                                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                 </svg>
-                                                                Konfirmasi Pembayaran
+                                                                Review & Konfirmasi
                                                             </button>
                                                         @endif
                                                         <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
@@ -524,6 +528,7 @@
                     @foreach ($transaksis as $trx)
                         @php
                             $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
+                            $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
                         @endphp
                         <div class="expandable-card {{ $needsKonfirmasi ? 'bg-amber-50/30' : '' }}">
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
@@ -572,7 +577,8 @@
                                             data-uuid="{{ $trx->uuid }}"
                                             data-nama="{{ $trx->muzakki_nama }}"
                                             data-can-konfirmasi="{{ $needsKonfirmasi ? '1' : '0' }}"
-                                            data-metode="{{ $trx->metode_pembayaran }}">
+                                            data-metode="{{ $trx->metode_pembayaran }}"
+                                            data-bukti="{{ $buktiUrl }}">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                             </svg>
@@ -679,12 +685,12 @@
                                             <div class="flex gap-2 flex-wrap">
                                                 @if ($needsKonfirmasi)
                                                     <button type="button"
-                                                        onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}')"
+                                                        onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}', '{{ $buktiUrl }}')"
                                                         class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
                                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
-                                                        Konfirmasi
+                                                        Review & Konfirmasi
                                                     </button>
                                                 @endif
                                                 <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
@@ -775,49 +781,108 @@
                     <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Konfirmasi Pembayaran
+                    Review & Konfirmasi
                 </button>
             </div>
         </div>
     </div>
 
-    {{-- ── Modal: Konfirmasi Pembayaran ── --}}
+    {{-- ── Modal: Review & Konfirmasi Pembayaran ── --}}
     <div id="konfirmasi-modal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-[10000] flex items-center justify-center p-4">
-        <div class="p-6 border border-gray-200 w-full max-w-sm shadow-xl rounded-2xl bg-white">
-            <div class="flex justify-center mb-4">
-                <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="w-full max-w-md shadow-xl rounded-2xl bg-white overflow-hidden">
+
+            {{-- Header --}}
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">Review & Konfirmasi Pembayaran</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            <span id="modal-konfirmasi-metode" class="font-semibold text-amber-700"></span>
+                            dari "<span id="modal-konfirmasi-nama" class="font-semibold text-gray-700"></span>"
+                        </p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeModal('konfirmasi-modal')"
+                    class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
+                </button>
+            </div>
+
+            {{-- Bukti Pembayaran --}}
+            <div class="px-6 pt-4">
+                <p class="text-xs font-medium text-gray-700 mb-2">Bukti Pembayaran</p>
+
+                {{-- Ada bukti --}}
+                <div id="modal-bukti-container" class="hidden">
+                    <a id="modal-bukti-link" href="#" target="_blank"
+                        class="block relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 cursor-zoom-in">
+                        <img id="modal-bukti-img" src="" alt="Bukti Pembayaran"
+                            class="w-full max-h-64 object-contain rounded-xl">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                            <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                Buka di tab baru
+                            </span>
+                        </div>
+                    </a>
+                    <p class="text-xs text-gray-400 mt-1.5 text-center">Klik gambar untuk memperbesar</p>
+                </div>
+
+                {{-- Tidak ada bukti --}}
+                <div id="modal-bukti-empty" class="hidden">
+                    <div class="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+                        <div class="text-center">
+                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p class="text-xs text-gray-400">Bukti pembayaran tidak tersedia</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-1 text-center">Konfirmasi Pembayaran</h3>
-            <p class="text-sm text-gray-500 mb-1 text-center">
-                Konfirmasi <span id="modal-konfirmasi-metode" class="font-semibold text-amber-700"></span> dari
-                "<span id="modal-konfirmasi-nama" class="font-semibold text-gray-700"></span>"?
-            </p>
-            <p class="text-xs text-gray-400 mb-5 text-center">Pastikan dana sudah masuk ke rekening/QRIS masjid sebelum mengkonfirmasi.</p>
-            <div class="mb-4">
-                <label class="block text-xs font-medium text-gray-700 mb-1">Catatan (opsional)</label>
+
+            {{-- Peringatan --}}
+            <div class="mx-6 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                <p class="text-xs text-amber-700">
+                    <span class="font-semibold">⚠️ Pastikan</span> dana sudah masuk ke rekening/QRIS masjid sebelum mengkonfirmasi.
+                </p>
+            </div>
+
+            {{-- Catatan & Aksi --}}
+            <div class="px-6 py-4">
+                <label class="block text-xs font-medium text-gray-700 mb-1.5">Catatan (opsional)</label>
                 <input type="text" id="konfirmasi-catatan"
                     placeholder="Misal: Dana sudah masuk pukul 10.30"
-                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400">
+                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 mb-4">
+
+                <form method="POST" id="konfirmasi-form">
+                    @csrf
+                    <input type="hidden" name="catatan_konfirmasi" id="konfirmasi-catatan-hidden">
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeModal('konfirmasi-modal')"
+                            class="flex-1 rounded-lg border border-gray-300 px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 rounded-lg px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-sm font-medium text-white transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Konfirmasi
+                        </button>
+                    </div>
+                </form>
             </div>
-            <form method="POST" id="konfirmasi-form">
-                @csrf
-                <input type="hidden" name="catatan_konfirmasi" id="konfirmasi-catatan-hidden">
-                <div class="flex justify-center gap-3">
-                    <button type="button" onclick="closeModal('konfirmasi-modal')"
-                        class="w-28 rounded-lg border border-gray-300 px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="w-28 rounded-lg px-4 py-2.5 bg-amber-500 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
-                        Konfirmasi
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -889,6 +954,7 @@
                     const nama          = toggle.dataset.nama;
                     const canKonfirmasi = toggle.dataset.canKonfirmasi === '1';
                     const metode        = toggle.dataset.metode || '';
+                    const bukti         = toggle.dataset.bukti || '';
 
                     if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
                         closeDropdown(); return;
@@ -903,7 +969,7 @@
                         ddDividerKonfirmasi.style.display = '';
                         ddKonfirmasi.onclick = () => {
                             closeDropdown();
-                            openKonfirmasiModal(uuid, nama, metode);
+                            openKonfirmasiModal(uuid, nama, metode, bukti);
                         };
                     } else {
                         hide(ddKonfirmasi);
@@ -924,14 +990,6 @@
             function show(el) { el.classList.remove('hidden'); }
             function hide(el) { el.classList.add('hidden'); }
 
-            function openKonfirmasiModal(uuid, nama, metode) {
-                document.getElementById('modal-konfirmasi-nama').textContent   = nama;
-                document.getElementById('modal-konfirmasi-metode').textContent = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
-                document.getElementById('konfirmasi-form').action = `/transaksi-daring/${uuid}/konfirmasi-pembayaran`;
-                document.getElementById('konfirmasi-catatan').value = '';
-                openModal('konfirmasi-modal');
-            }
-
             document.getElementById('konfirmasi-form')?.addEventListener('submit', function () {
                 document.getElementById('konfirmasi-catatan-hidden').value =
                     document.getElementById('konfirmasi-catatan').value;
@@ -948,6 +1006,32 @@
 
             window.openKonfirmasiModal = openKonfirmasiModal;
         });
+
+        function openKonfirmasiModal(uuid, nama, metode, buktiUrl) {
+            document.getElementById('modal-konfirmasi-nama').textContent   = nama;
+            document.getElementById('modal-konfirmasi-metode').textContent = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
+            document.getElementById('konfirmasi-form').action = `/transaksi-daring/${uuid}/konfirmasi-pembayaran`;
+            document.getElementById('konfirmasi-catatan').value = '';
+
+            // Tampilkan bukti atau placeholder
+            const buktiContainer = document.getElementById('modal-bukti-container');
+            const buktiEmpty     = document.getElementById('modal-bukti-empty');
+            const buktiImg       = document.getElementById('modal-bukti-img');
+            const buktiLink      = document.getElementById('modal-bukti-link');
+
+            if (buktiUrl && buktiUrl.trim() !== '') {
+                buktiImg.src   = buktiUrl;
+                buktiLink.href = buktiUrl;
+                buktiContainer.classList.remove('hidden');
+                buktiEmpty.classList.add('hidden');
+            } else {
+                buktiContainer.classList.add('hidden');
+                buktiEmpty.classList.remove('hidden');
+            }
+
+            document.getElementById('konfirmasi-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
 
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');

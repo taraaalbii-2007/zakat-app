@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,7 @@
             color: #2d3436;
             margin: 20px;
         }
-        
+
         /* Header Styles */
         .header {
             text-align: center;
@@ -20,6 +21,7 @@
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 12px;
         }
+
         .header h1 {
             margin: 0;
             font-size: 18px;
@@ -27,18 +29,20 @@
             letter-spacing: 1px;
             color: #000;
         }
+
         .header h2 {
             margin: 4px 0;
             font-size: 14px;
             font-weight: normal;
             color: #636e72;
         }
+
         .header .subtitle {
             margin: 2px 0;
             font-size: 11px;
             font-style: italic;
         }
-        
+
         /* Info Section */
         .info-section {
             margin-bottom: 20px;
@@ -46,9 +50,11 @@
             width: 100%;
             border-collapse: collapse;
         }
+
         .info-row {
             display: table-row;
         }
+
         .info-label {
             display: table-cell;
             width: 140px;
@@ -56,12 +62,13 @@
             font-weight: bold;
             color: #2d3436;
         }
+
         .info-value {
             display: table-cell;
             padding: 4px 0;
             border-bottom: 1px solid #f1f2f6;
         }
-        
+
         /* Table Styles */
         table.data-table {
             width: 100%;
@@ -70,6 +77,7 @@
             font-size: 9.5px;
             table-layout: fixed;
         }
+
         table.data-table th {
             background-color: #1a7a4a;
             color: #ffffff;
@@ -79,6 +87,7 @@
             padding: 8px 4px;
             text-transform: uppercase;
         }
+
         table.data-table td {
             border: 1px solid #2d3436;
             padding: 6px 4px;
@@ -89,17 +98,25 @@
             page-break-inside: avoid;
         }
 
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
         /* Footer & Signature */
         .footer-container {
             margin-top: 30px;
             width: 100%;
             page-break-inside: avoid;
         }
-        
+
         .signature-table {
             width: 100%;
             border: none;
@@ -119,11 +136,13 @@
         .signature-space {
             height: 60px;
         }
+
         .signature-name {
             font-weight: bold;
             text-decoration: underline;
             margin-bottom: 2px;
         }
+
         .footer-note {
             clear: both;
             padding-top: 40px;
@@ -134,6 +153,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>{{ strtoupper($masjid->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}</h1>
@@ -149,49 +169,55 @@
     <div class="info-section">
         <div class="info-row">
             <div class="info-label">Hari / Tanggal</div>
-            <div class="info-value">: {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}, {{ \Carbon\Carbon::now()->format('H:i') }} WIB</div>
+            <div class="info-value">: {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }},
+                {{ \Carbon\Carbon::now()->format('H:i') }} WIB</div>
         </div>
 
         <div class="info-row">
             <div class="info-label">Filter Berdasarkan</div>
-            <div class="info-value">: 
+            <div class="info-value">:
                 @php
                     $appliedFilters = [];
-                    
-                    if(!empty($filters['q'])) {
+
+                    if (!empty($filters['q'])) {
                         $appliedFilters[] = "Pencarian: '" . $filters['q'] . "'";
                     }
 
-                    if(!empty($filters['start_date']) && !empty($filters['end_date'])) {
-                        $appliedFilters[] = "Periode: " . \Carbon\Carbon::parse($filters['start_date'])->format('d/m/Y') . " - " . \Carbon\Carbon::parse($filters['end_date'])->format('d/m/Y');
+                    if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+                        $appliedFilters[] =
+                            'Periode: ' .
+                            \Carbon\Carbon::parse($filters['start_date'])->format('d/m/Y') .
+                            ' - ' .
+                            \Carbon\Carbon::parse($filters['end_date'])->format('d/m/Y');
                     }
 
-                    if(!empty($filters['jenis_zakat_id'])) {
+                    if (!empty($filters['jenis_zakat_id'])) {
                         $jenis = $jenisZakatList->firstWhere('id', $filters['jenis_zakat_id']);
-                        $appliedFilters[] = "Jenis: " . ($jenis->nama ?? 'Zakat');
+                        $appliedFilters[] = 'Jenis: ' . ($jenis->nama ?? 'Zakat');
                     }
 
-                    if(!empty($filters['metode_pembayaran'])) {
-                        $appliedFilters[] = "Metode Bayar: " . ucfirst($filters['metode_pembayaran']);
+                    if (!empty($filters['metode_pembayaran'])) {
+                        $appliedFilters[] = 'Metode Bayar: ' . ucfirst($filters['metode_pembayaran']);
                     }
 
-                    if(!empty($filters['status'])) {
-                        $statusText = match($filters['status']) {
+                    if (!empty($filters['status'])) {
+                        $statusText = match ($filters['status']) {
                             'verified' => 'Terverifikasi',
                             'pending' => 'Menunggu',
                             'rejected' => 'Ditolak',
-                            default => $filters['status']
+                            default => $filters['status'],
                         };
-                        $appliedFilters[] = "Status: " . $statusText;
+                        $appliedFilters[] = 'Status: ' . $statusText;
                     }
 
-                    if(!empty($filters['metode_penerimaan'])) {
-                        $penerimaanText = $filters['metode_penerimaan'] == 'datang_langsung' ? 'Datang Langsung' : 'Dijemput';
-                        $appliedFilters[] = "Penerimaan: " . $penerimaanText;
+                    if (!empty($filters['metode_penerimaan'])) {
+                        $penerimaanText =
+                            $filters['metode_penerimaan'] == 'datang_langsung' ? 'Datang Langsung' : 'Dijemput';
+                        $appliedFilters[] = 'Penerimaan: ' . $penerimaanText;
                     }
                 @endphp
 
-                @if(count($appliedFilters) > 0)
+                @if (count($appliedFilters) > 0)
                     {{ implode(' | ', $appliedFilters) }}
                 @else
                     Semua Data
@@ -201,17 +227,17 @@
 
         <div class="info-row">
             <div class="info-label">Ringkasan Data</div>
-            <div class="info-value">: 
-                <strong>{{ number_format($totalTransaksi, 0, ',', '.') }}</strong> Total | 
-                <span style="color: #01579b;">{{ $totalVerified }} Terverifikasi</span> | 
-                <span style="color: #f57f17;">{{ $totalPending }} Menunggu Konfirmasi</span> | 
+            <div class="info-value">:
+                <strong>{{ number_format($totalTransaksi, 0, ',', '.') }}</strong> Total |
+                <span style="color: #01579b;">{{ $totalVerified }} Terverifikasi</span> |
+                <span style="color: #f57f17;">{{ $totalPending }} Menunggu Konfirmasi</span> |
                 <strong>Rp {{ number_format($totalNominal, 0, ',', '.') }}</strong>
             </div>
         </div>
 
         <div class="info-row">
             <div class="info-label">Petugas Ekspor</div>
-            <div class="info-value">: {{ $user->name ?? $user->username ?? 'System' }}</div>
+            <div class="info-value">: {{ $user->name ?? ($user->username ?? 'System') }}</div>
         </div>
     </div>
 
@@ -223,7 +249,8 @@
                 <th rowspan="2" style="width: 60px;">Tanggal</th>
                 <th rowspan="2">Muzakki</th>
                 <th colspan="4">Detail Zakat</th>
-                <th colspan="2">Pembayaran</th>
+                <th rowspan="2" style="width: 70px;">Jumlah Jiwa</th>
+                <th colspan="3">Pembayaran</th>
                 <th colspan="2">Status</th>
                 <th rowspan="2">Amil</th>
             </tr>
@@ -233,7 +260,8 @@
                 <th>Program</th>
                 <th style="width: 70px;">Jumlah (Rp)</th>
                 <th>Metode</th>
-                <th>No. Referensi</th>
+                <th style="width: 60px;">Infaq (Rp)</th>
+                <th style="width: 60px;">Total Dibayar</th>
                 <th>Verif</th>
                 <th>Konfirmasi</th>
             </tr>
@@ -241,19 +269,44 @@
         <tbody>
             @forelse($transaksis as $index => $transaksi)
                 @php
-                    $statusText = match($transaksi->status) {
+                    $statusText = match ($transaksi->status) {
                         'verified' => 'Verified',
                         'pending' => 'Pending',
                         'rejected' => 'Rejected',
-                        default => strtoupper($transaksi->status)
+                        default => strtoupper($transaksi->status),
                     };
-                    
-                    $konfirmasiStatusText = match($transaksi->konfirmasi_status) {
+
+                    $konfirmasiStatusText = match ($transaksi->konfirmasi_status) {
                         'dikonfirmasi' => 'Dikonfirmasi',
                         'menunggu_konfirmasi' => 'Menunggu',
                         'ditolak' => 'Ditolak',
-                        default => '-'
+                        default => '-',
                     };
+
+                    // Bangun teks jumlah jiwa
+                    $jiwaText = '-';
+
+                    if ($transaksi->jumlah_beras_kg > 0) {
+                        // Zakat fitrah beras
+                        $jiwaText = $transaksi->jumlah_beras_kg . ' kg';
+                        if ($transaksi->jumlah_jiwa > 0) {
+                            $jiwaText .= ' (' . $transaksi->jumlah_jiwa . ' jiwa)';
+                        }
+                    } elseif ($transaksi->jumlah_jiwa > 0) {
+                        // Zakat fitrah uang — tampilkan jumlah jiwa + nama-nama
+                        $namaJiwa = $transaksi->nama_jiwa_json; // sudah di-cast array otomatis
+
+                        if (!empty($namaJiwa) && is_array($namaJiwa)) {
+                            // Ada nama jiwa tersimpan
+                            $jiwaText = $transaksi->jumlah_jiwa . ' jiwa:' . "\n";
+                            foreach ($namaJiwa as $i => $nama) {
+                                $jiwaText .= $i + 1 . '. ' . $nama . "\n";
+                            }
+                        } else {
+                            // Tidak ada nama jiwa, tampilkan jumlah saja
+                            $jiwaText = $transaksi->jumlah_jiwa . ' jiwa';
+                        }
+                    }
                 @endphp
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
@@ -262,33 +315,33 @@
                     <td class="text-left"><strong>{{ $transaksi->muzakki_nama }}</strong></td>
                     <td class="text-left">{{ $transaksi->jenisZakat->nama ?? '-' }}</td>
                     <td class="text-left">{{ $transaksi->tipeZakat->nama ?? '-' }}</td>
-                    <td class="text-left" style="font-size: 8px;">{{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}</td>
-                    <td class="text-right">{{ $transaksi->jumlah > 0 ? number_format($transaksi->jumlah, 0, ',', '.') : '-' }}</td>
-                    <td class="text-center">{{ $transaksi->metode_pembayaran ? ucfirst($transaksi->metode_pembayaran) : '-' }}</td>
-                    <td class="text-center" style="font-size: 8px;">{{ $transaksi->no_referensi_transfer ?? '-' }}</td>
+                    <td class="text-left" style="font-size: 8px;">
+                        {{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}</td>
+                    <td class="text-right">
+                        {{ $transaksi->jumlah > 0 ? number_format($transaksi->jumlah, 0, ',', '.') : '-' }}</td>
+                    <td class="text-left" style="font-size: 8px; white-space: pre-wrap;">{{ $jiwaText }}</td>
+                    <td class="text-center">
+                        {{ $transaksi->metode_pembayaran ? ucfirst($transaksi->metode_pembayaran) : '-' }}</td>
+                    <td class="text-right">
+                        {{ $transaksi->jumlah_infaq > 0 ? number_format($transaksi->jumlah_infaq, 0, ',', '.') : '-' }}
+                    </td>
+                    <td class="text-right">
+                        @if ($transaksi->jumlah_dibayar > 0)
+                            {{ number_format($transaksi->jumlah_dibayar, 0, ',', '.') }}
+                        @elseif($transaksi->jumlah_beras_kg > 0)
+                            {{ $transaksi->jumlah_beras_kg }} kg
+                        @else
+                            -
+                        @endif
+                    </td>
                     <td class="text-center">{{ $statusText }}</td>
                     <td class="text-center">{{ $konfirmasiStatusText }}</td>
-                    <td class="text-left">{{ $transaksi->amil->pengguna->name ?? $transaksi->amil->nama_lengkap ?? '-' }}</td>
+                    <td class="text-left">
+                        {{ $transaksi->amil->pengguna->name ?? ($transaksi->amil->nama_lengkap ?? '-') }}</td>
                 </tr>
-
-                @php
-                    $adaRincian = $transaksi->jumlah_beras_kg || $transaksi->jumlah_jiwa || $transaksi->nilai_harta || $transaksi->keterangan || $transaksi->bukti_transfer;
-                @endphp
-                @if($adaRincian)
-                <tr style="background-color: #fafafa;">
-                    <td colspan="13" style="padding: 4px 8px; font-size: 8px; color: #636e72; border-top: none;">
-                        <span style="font-weight: bold; color: #2d3436;">Rincian:</span>
-                        @if($transaksi->jumlah_beras_kg) Beras: {{ $transaksi->jumlah_beras_kg }} kg (@ Rp {{ number_format($transaksi->harga_beras_per_kg ?? 0, 0, ',', '.') }}) | @endif
-                        @if($transaksi->jumlah_jiwa) Jiwa: {{ $transaksi->jumlah_jiwa }} orang | @endif
-                        @if($transaksi->nilai_harta) Nilai Harta: Rp {{ number_format($transaksi->nilai_harta, 0, ',', '.') }} | @endif
-                        @if($transaksi->bukti_transfer) <span style="color: #01579b;">Ada bukti transfer</span> | @endif
-                        @if($transaksi->keterangan) Ket: {{ $transaksi->keterangan }} @endif
-                    </td>
-                </tr>
-                @endif
             @empty
                 <tr>
-                    <td colspan="13" class="text-center" style="padding: 30px; color: #b2bec3;">
+                    <td colspan="15" class="text-center" style="padding: 30px; color: #b2bec3;">
                         <em>Data tidak ditemukan untuk kriteria filter ini.</em>
                     </td>
                 </tr>
@@ -299,10 +352,11 @@
     <div class="footer-container">
         <table class="signature-table">
             <tr>
-                <td style="width: 70%;"></td> 
+                <td style="width: 70%;"></td>
                 <td style="width: 30%;">
                     <div class="signature-wrapper">
-                        <div style="margin-bottom: 5px;">{{ $masjid->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
+                        <div style="margin-bottom: 5px;">{{ $masjid->kota_nama ?? 'Bandung' }},
+                            {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
                         <div>Mengetahui,</div>
                         <div style="margin-bottom: 10px;"><strong>Admin Masjid</strong></div>
                         <div class="signature-space"></div>
@@ -315,8 +369,10 @@
 
     <div class="footer-note">
         <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $masjid->nama ?? 'Masjid' }}.</p>
-        <p>*Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
+        <p>*Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti
+            transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
         <p>Dicetak pada: {{ $tanggalExport }}</p>
     </div>
 </body>
+
 </html>

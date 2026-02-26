@@ -602,7 +602,13 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
-                                    <span>Datang Langsung</span>
+                                    <span class="flex-1">Datang Langsung</span>
+                                    @if (($sidebarCounts['datang_langsung'] ?? 0) > 0)
+                                        <span
+                                            class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                            {{ $sidebarCounts['datang_langsung'] > 99 ? '99+' : $sidebarCounts['datang_langsung'] }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
 
@@ -615,7 +621,13 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                                     </svg>
-                                    <span>Daring</span>
+                                    <span class="flex-1">Daring</span>
+                                    @if (($sidebarCounts['daring'] ?? 0) > 0)
+                                        <span
+                                            class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                            {{ $sidebarCounts['daring'] > 99 ? '99+' : $sidebarCounts['daring'] }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
 
@@ -630,7 +642,13 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span>Dijemput</span>
+                                    <span class="flex-1">Dijemput</span>
+                                    @if (($sidebarCounts['dijemput'] ?? 0) > 0)
+                                        <span
+                                            class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold leading-none text-white bg-red-500 rounded-full">
+                                            {{ $sidebarCounts['dijemput'] > 99 ? '99+' : $sidebarCounts['dijemput'] }}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
 

@@ -133,6 +133,7 @@ class TransaksiPenerimaanController extends Controller
         if ($request->filled('metode_pembayaran')) $query->byMetodePembayaran($request->metode_pembayaran);
         if ($request->filled('status'))            $query->byStatus($request->status);
         if ($request->filled('konfirmasi_status')) $query->byKonfirmasiStatus($request->konfirmasi_status);
+        if ($request->filled('tahun')) $query->whereYear('tanggal_transaksi', $request->tahun);
         if ($request->filled('metode_penerimaan')) $query->byMetodePenerimaan($request->metode_penerimaan);
 
         $query->orderBy('created_at', 'desc');
