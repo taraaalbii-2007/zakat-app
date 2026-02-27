@@ -60,6 +60,16 @@ class TransaksiPenerimaan extends Model
         'nisab_saat_ini',
         'sudah_haul',
         'tanggal_mulai_haul',
+        // FIDYAH - Kolom baru
+        'fidyah_jumlah_hari',
+        'fidyah_tipe',
+        'fidyah_nama_bahan',
+        'fidyah_berat_per_hari_gram',
+        'fidyah_total_berat_kg',
+        'fidyah_jumlah_box',
+        'fidyah_menu_makanan',
+        'fidyah_harga_per_box',
+        'fidyah_cara_serah',
         // Bukti & catatan
         'no_kwitansi',
         'bukti_transfer',
@@ -83,7 +93,7 @@ class TransaksiPenerimaan extends Model
         'has_infaq'           => 'boolean',
         'diinput_muzakki'     => 'boolean',
         'jumlah_jiwa'         => 'integer',
-        'nama_jiwa_json'      => 'array', // Cast ke array
+        'nama_jiwa_json'      => 'array',
         'nominal_per_jiwa'    => 'decimal:2',
         'jumlah_beras_kg'     => 'decimal:2',
         'harga_beras_per_kg'  => 'decimal:2',
@@ -91,6 +101,12 @@ class TransaksiPenerimaan extends Model
         'nisab_saat_ini'      => 'decimal:2',
         'sudah_haul'          => 'boolean',
         'tanggal_mulai_haul'  => 'date',
+        // FIDYAH casts
+        'fidyah_jumlah_hari'       => 'integer',
+        'fidyah_berat_per_hari_gram' => 'integer',
+        'fidyah_total_berat_kg'    => 'decimal:3',
+        'fidyah_jumlah_box'        => 'integer',
+        'fidyah_harga_per_box'     => 'decimal:2',
         'foto_dokumentasi'    => 'array',
         'konfirmasi_at'       => 'datetime',
         'waktu_request'       => 'datetime',
@@ -119,6 +135,7 @@ class TransaksiPenerimaan extends Model
             if (empty($model->tanggal_transaksi)) $model->tanggal_transaksi = now();
             if (empty($model->waktu_transaksi))   $model->waktu_transaksi = now();
             if (empty($model->no_kwitansi))    $model->no_kwitansi = self::generateNoKwitansi($model->masjid_id);
+            
             // Default jumlah_dibayar = jumlah jika tidak diisi
             if (is_null($model->jumlah_dibayar) && !is_null($model->jumlah)) {
                 $model->jumlah_dibayar = $model->jumlah;
@@ -279,6 +296,19 @@ class TransaksiPenerimaan extends Model
     {
         return $query->whereYear('tanggal_transaksi', $tahun);
     }
+    
+    /**
+     * Scope untuk filter fidyah
+     */
+    public function scopeFidyah($q)
+    {
+        return $q->whereNotNull('fidyah_jumlah_hari');
+    }
+    
+    public function scopeByFidyahTipe($q, $tipe)
+    {
+        return $q->where('fidyah_tipe', $tipe);
+    }
 
     public function scopeSearch($q, $search)
     {
@@ -288,7 +318,6 @@ class TransaksiPenerimaan extends Model
                 ->orWhere('muzakki_nama', 'like', "%{$search}%")
                 ->orWhere('muzakki_telepon', 'like', "%{$search}%")
                 ->orWhere('no_kwitansi', 'like', "%{$search}%");
-                // Hapus no_referensi_transfer dari pencarian
         });
     }
 
@@ -362,6 +391,22 @@ class TransaksiPenerimaan extends Model
         return '<span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">+ Infaq</span>';
     }
 
+    /**
+     * Badge untuk tipe fidyah
+     */
+    public function getFidyahTipeBadgeAttribute(): string
+    {
+        if (!$this->fidyah_tipe) return '';
+        
+        $badges = [
+            'mentah' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">Fidyah Bahan Mentah</span>',
+            'matang' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Fidyah Makanan Matang</span>',
+            'tunai'  => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Fidyah Tunai</span>',
+        ];
+        
+        return $badges[$this->fidyah_tipe] ?? '';
+    }
+
     // ===============================
     // ACCESSORS — FORMAT
     // ===============================
@@ -406,6 +451,11 @@ class TransaksiPenerimaan extends Model
         return $this->jenisZakat && stripos($this->jenisZakat->nama, 'mal') !== false;
     }
 
+    public function getIsZakatFidyahAttribute(): bool
+    {
+        return $this->jenisZakat && stripos($this->jenisZakat->nama, 'fidyah') !== false;
+    }
+
     public function getIsBayarBerasAttribute(): bool
     {
         return $this->tipeZakat && stripos($this->tipeZakat->nama, 'beras') !== false;
@@ -424,6 +474,112 @@ class TransaksiPenerimaan extends Model
     public function getIsDatangLangsungAttribute(): bool
     {
         return $this->metode_penerimaan === 'datang_langsung';
+    }
+
+    // ===============================
+    // ACCESSORS — FIDYAH
+    // ===============================
+
+    /**
+     * Cek apakah ini transaksi fidyah
+     */
+    public function getIsFidyahAttribute(): bool
+    {
+        return !is_null($this->fidyah_jumlah_hari) && $this->fidyah_jumlah_hari > 0;
+    }
+
+    /**
+     * Get tipe fidyah dengan label
+     */
+    public function getFidyahTipeLabelAttribute(): string
+    {
+        $tipe = [
+            'mentah' => 'Bahan Pokok Mentah',
+            'matang' => 'Makanan Siap Santap',
+            'tunai' => 'Tunai / Uang',
+        ];
+        
+        return $tipe[$this->fidyah_tipe] ?? '-';
+    }
+
+    /**
+     * Get cara serah dengan label
+     */
+    public function getFidyahCaraSerahLabelAttribute(): string
+    {
+        $cara = [
+            'dibagikan' => 'Dibagikan (Nasi Box)',
+            'dijamu' => 'Dijamu / Diundang Makan',
+            'via_lembaga' => 'Disalurkan via Lembaga',
+        ];
+        
+        return $cara[$this->fidyah_cara_serah] ?? '-';
+    }
+
+    /**
+     * Get detail lengkap fidyah untuk display
+     */
+    public function getDetailFidyahAttribute(): ?string
+    {
+        if (!$this->isFidyah) {
+            return null;
+        }
+
+        $detail = "Fidyah {$this->fidyah_jumlah_hari} hari";
+
+        switch ($this->fidyah_tipe) {
+            case 'mentah':
+                $bahan = $this->fidyah_nama_bahan ?? 'Bahan Pokok';
+                $detail .= " • {$bahan} ";
+                if ($this->fidyah_total_berat_kg) {
+                    $detail .= number_format($this->fidyah_total_berat_kg, 2) . " kg";
+                } else {
+                    $detail .= $this->fidyah_jumlah_hari . " hari × " . ($this->fidyah_berat_per_hari_gram ?? 675) . " gram";
+                }
+                break;
+                
+            case 'matang':
+                $detail .= " • {$this->fidyah_jumlah_box} box makanan siap santap";
+                if ($this->fidyah_menu_makanan) {
+                    $detail .= " ({$this->fidyah_menu_makanan})";
+                }
+                if ($this->fidyah_cara_serah) {
+                    $detail .= " • {$this->fidyah_cara_serah_label}";
+                }
+                break;
+                
+            case 'tunai':
+                $detail .= " • Tunai " . $this->jumlah_formatted;
+                break;
+        }
+
+        return $detail;
+    }
+
+    /**
+     * Ringkasan fidyah untuk tooltip
+     */
+    public function getFidyahSummaryAttribute(): string
+    {
+        if (!$this->isFidyah) {
+            return '';
+        }
+
+        $summary = "{$this->fidyah_jumlah_hari} hari";
+
+        switch ($this->fidyah_tipe) {
+            case 'mentah':
+                $summary .= " • {$this->fidyah_nama_bahan} " . number_format($this->fidyah_total_berat_kg ?? 0, 2) . " kg";
+                break;
+            case 'matang':
+                $summary .= " • {$this->fidyah_jumlah_box} box";
+                break;
+            case 'tunai':
+                $summary .= " • " . $this->jumlah_formatted;
+                break;
+        }
+
+        return $summary;
     }
 
     // ===============================

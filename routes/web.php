@@ -498,6 +498,8 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
             ->name('get-nisab-info');
         Route::post('/hitung-info-bayar',  [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'hitungInfoPembayaran'])
             ->name('hitung-info-bayar');
+        Route::post('/hitung-fidyah', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'hitungFidyah'])
+            ->name('hitung-fidyah');
     });
 
 
