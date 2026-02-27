@@ -114,8 +114,7 @@
                         <a href="{{ route('transaksi-daring-muzakki.create') }}"
                             class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Bayar Zakat Baru</span>
                         </a>
@@ -137,8 +136,7 @@
                             <button type="button" onclick="toggleSearch()" id="search-button"
                                 class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                                 <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
                             </button>
@@ -153,8 +151,7 @@
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                             </svg>
                                         </div>
                                         <input type="search" name="q" value="{{ request('q') }}"
@@ -182,7 +179,6 @@
                         <input type="hidden" name="q" value="{{ request('q') }}">
                     @endif
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                             <select name="status"
@@ -194,7 +190,6 @@
                                 <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Metode Penerimaan</label>
                             <select name="metode_penerimaan"
@@ -205,7 +200,6 @@
                                 <option value="dijemput" {{ request('metode_penerimaan') == 'dijemput' ? 'selected' : '' }}>Dijemput Amil</option>
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Jenis Zakat</label>
                             <select name="jenis_zakat_id"
@@ -219,14 +213,12 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Mulai</label>
                             <input type="date" name="start_date" value="{{ request('start_date') }}"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Akhir</label>
                             <input type="date" name="end_date" value="{{ request('end_date') }}"
@@ -234,7 +226,6 @@
                                 onchange="this.form.submit()">
                         </div>
                     </div>
-
                     @if (request()->hasAny(['status', 'jenis_zakat_id', 'metode_penerimaan', 'start_date', 'end_date']))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('transaksi-daring-muzakki.index', request('q') ? ['q' => request('q')] : []) }}"
@@ -257,7 +248,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="w-12 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Muzakki &amp; Transaksi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaksi</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Aksi</th>
                             </tr>
                         </thead>
@@ -269,6 +260,20 @@
                                     $isRejected = $trx->status === 'rejected';
                                     $isDaring   = $trx->metode_penerimaan === 'daring';
                                     $isDijemput = $trx->metode_penerimaan === 'dijemput';
+
+                                    // Deteksi nama jiwa
+                                    $hasNamaJiwa  = false;
+                                    $namaJiwaList = [];
+                                    if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
+                                        $hasNamaJiwa  = true;
+                                        $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                                    } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
+                                        $hasNamaJiwa  = true;
+                                        $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                                    } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
+                                        $hasNamaJiwa  = true;
+                                        $namaJiwaList = $trx->nama_jiwa_json;
+                                    }
                                 @endphp
 
                                 {{-- Parent Row --}}
@@ -286,7 +291,6 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex-1">
-                                            {{-- Nama muzakki + No. transaksi --}}
                                             <div class="flex items-center gap-2">
                                                 <span class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama ?? '-' }}</span>
                                                 @if ($isDaring)
@@ -295,22 +299,6 @@
                                                     <span class="px-1.5 py-0.5 rounded text-xs bg-orange-50 text-orange-700 border border-orange-200">Dijemput</span>
                                                 @endif
                                             </div>
-
-                                            {{-- ── Nama Jiwa (Zakat Fitrah) ── --}}
-                                            @if (!empty($trx->nama_jiwa_json))
-                                                <div class="flex flex-wrap gap-1 mt-1">
-                                                    @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            {{ $namaJiwa }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-
                                             <div class="text-xs text-gray-500 mt-0.5">
                                                 {{ $trx->tanggal_transaksi->format('d/m/Y') }}
                                                 @if ($trx->jenisZakat)
@@ -322,6 +310,9 @@
                                                 @if ($trx->jumlah_infaq > 0)
                                                     &middot; <span class="text-amber-600">+Infaq {{ $trx->jumlah_infaq_formatted }}</span>
                                                 @endif
+                                                @if ($hasNamaJiwa)
+                                                    &middot; <span class="text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
+                                                @endif
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $trx->status_badge !!}
@@ -331,24 +322,24 @@
                                                 @if ($isDijemput && $trx->status_penjemputan)
                                                     @php
                                                         $pjBadge = [
-                                                            'menunggu'          => 'bg-gray-100 text-gray-700',
-                                                            'diterima'          => 'bg-blue-100 text-blue-700',
-                                                            'dalam_perjalanan'  => 'bg-indigo-100 text-indigo-700',
-                                                            'sampai_lokasi'     => 'bg-purple-100 text-purple-700',
-                                                            'selesai'           => 'bg-green-100 text-green-700',
+                                                            'menunggu'         => 'bg-gray-100 text-gray-700',
+                                                            'diterima'         => 'bg-blue-100 text-blue-700',
+                                                            'dalam_perjalanan' => 'bg-indigo-100 text-indigo-700',
+                                                            'sampai_lokasi'    => 'bg-purple-100 text-purple-700',
+                                                            'selesai'          => 'bg-green-100 text-green-700',
                                                         ][$trx->status_penjemputan] ?? 'bg-gray-100 text-gray-700';
                                                         $pjLabel = [
-                                                            'menunggu'          => 'Menunggu Amil',
-                                                            'diterima'          => 'Diterima Amil',
-                                                            'dalam_perjalanan'  => 'Dalam Perjalanan',
-                                                            'sampai_lokasi'     => 'Amil di Lokasi',
-                                                            'selesai'           => 'Selesai',
+                                                            'menunggu'         => 'Menunggu Amil',
+                                                            'diterima'         => 'Diterima Amil',
+                                                            'dalam_perjalanan' => 'Dalam Perjalanan',
+                                                            'sampai_lokasi'    => 'Amil di Lokasi',
+                                                            'selesai'          => 'Selesai',
                                                         ][$trx->status_penjemputan] ?? $trx->status_penjemputan;
                                                     @endphp
                                                     <span class="px-2 py-0.5 rounded-full text-xs font-medium {{ $pjBadge }}">{{ $pjLabel }}</span>
                                                 @endif
                                             </div>
-                                            <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">Klik untuk melihat detail</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -373,18 +364,11 @@
 
                                                     {{-- Kolom 1: Data Muzakki --}}
                                                     <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3 flex items-center gap-1.5">
-                                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            Data Muzakki
-                                                        </h4>
-                                                        <div class="space-y-2.5">
+                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Data Muzakki</h4>
+                                                        <div class="space-y-3">
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                                 </svg>
                                                                 <div>
                                                                     <p class="text-xs text-gray-500">Nama</p>
@@ -392,20 +376,25 @@
                                                                 </div>
                                                             </div>
 
-                                                            {{-- Nama Jiwa di Expandable --}}
-                                                            @if (!empty($trx->nama_jiwa_json))
+                                                            {{-- Nama Jiwa --}}
+                                                            @if ($hasNamaJiwa)
                                                                 <div class="flex items-start">
-                                                                    <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Nama Jiwa ({{ count($trx->nama_jiwa_json) }} jiwa)</p>
-                                                                        <div class="flex flex-wrap gap-1 mt-1">
-                                                                            @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                                                    {{ $namaJiwa }}
-                                                                                </span>
+                                                                        <p class="text-xs text-gray-500">Nama Jiwa
+                                                                            <span class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
+                                                                        </p>
+                                                                        <div class="text-sm text-gray-700 mt-1 flex flex-wrap gap-1">
+                                                                            @foreach ($namaJiwaList as $index => $nama)
+                                                                                @if ($nama && trim($nama) !== '')
+                                                                                    <span class="inline-flex items-center bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
+                                                                                        <span class="font-medium text-gray-500 mr-1">{{ $index + 1 }}.</span>
+                                                                                        {{ $nama }}
+                                                                                    </span>
+                                                                                @endif
                                                                             @endforeach
                                                                         </div>
                                                                     </div>
@@ -451,10 +440,8 @@
                                                             @if ($trx->muzakki_alamat)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                     </svg>
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Alamat</p>
@@ -467,18 +454,11 @@
 
                                                     {{-- Kolom 2: Detail Zakat --}}
                                                     <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3 flex items-center gap-1.5">
-                                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                            </svg>
-                                                            Detail Zakat
-                                                        </h4>
-                                                        <div class="space-y-2.5">
+                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Zakat</h4>
+                                                        <div class="space-y-3">
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                                 </svg>
                                                                 <div>
                                                                     <p class="text-xs text-gray-500">Tanggal</p>
@@ -494,18 +474,9 @@
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Jenis Zakat</p>
                                                                         <p class="text-sm font-medium text-gray-900">{{ $trx->jenisZakat->nama }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->tipeZakat)
-                                                                <div class="flex items-start">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Tipe</p>
-                                                                        <p class="text-sm font-medium text-gray-900">{{ $trx->tipeZakat->nama }}</p>
+                                                                        @if ($trx->tipeZakat)
+                                                                            <p class="text-xs text-gray-400 mt-0.5">{{ $trx->tipeZakat->nama }}</p>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             @endif
@@ -524,8 +495,7 @@
                                                             @if ($trx->jumlah_infaq > 0)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M12 8v13m0-13V6a4 4 0 00-4-4H6" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a4 4 0 00-4-4H6" />
                                                                     </svg>
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Infaq</p>
@@ -536,8 +506,7 @@
                                                             @if ($isDijemput && $trx->amil)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                                     </svg>
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Amil Penjemput</p>
@@ -550,14 +519,8 @@
 
                                                     {{-- Kolom 3: Status & Pembayaran --}}
                                                     <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3 flex items-center gap-1.5">
-                                                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                            Status &amp; Pembayaran
-                                                        </h4>
-                                                        <div class="space-y-2.5">
+                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Status &amp; Pembayaran</h4>
+                                                        <div class="space-y-3">
                                                             <div>
                                                                 <p class="text-xs text-gray-500 mb-1">Status</p>
                                                                 {!! $trx->status_badge !!}
@@ -605,10 +568,8 @@
                                                         <a href="{{ route('transaksi-daring-muzakki.show', $trx->uuid) }}"
                                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                             </svg>
                                                             Lihat Detail
                                                         </a>
@@ -631,7 +592,22 @@
                             $isRejected = $trx->status === 'rejected';
                             $isDaring   = $trx->metode_penerimaan === 'daring';
                             $isDijemput = $trx->metode_penerimaan === 'dijemput';
+
+                            // Deteksi nama jiwa
+                            $hasNamaJiwa  = false;
+                            $namaJiwaList = [];
+                            if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
+                                $hasNamaJiwa  = true;
+                                $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                            } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
+                                $hasNamaJiwa  = true;
+                                $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                            } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
+                                $hasNamaJiwa  = true;
+                                $namaJiwaList = $trx->nama_jiwa_json;
+                            }
                         @endphp
+
                         <div class="expandable-card {{ $isPending ? 'bg-amber-50/30' : '' }} {{ $isRejected ? 'bg-red-50/30' : '' }}">
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                                 data-target="detail-mobile-{{ $trx->uuid }}">
@@ -643,26 +619,13 @@
                                             </h3>
                                             {!! $trx->status_badge !!}
                                         </div>
-
-                                        {{-- ── Nama Jiwa Mobile ── --}}
-                                        @if (!empty($trx->nama_jiwa_json))
-                                            <div class="flex flex-wrap gap-1 mt-1">
-                                                @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                        </svg>
-                                                        {{ $namaJiwa }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-
                                         <div class="flex items-center mt-1 flex-wrap gap-2">
                                             <span class="text-xs text-gray-500">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
                                             @if ($trx->jumlah > 0)
                                                 <span class="text-xs font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span>
+                                            @endif
+                                            @if ($hasNamaJiwa)
+                                                <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
                                             @endif
                                             @if ($isDaring)
                                                 <span class="px-1.5 py-0.5 rounded text-xs bg-indigo-50 text-indigo-700">Daring</span>
@@ -697,77 +660,83 @@
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
                                     <div class="space-y-4">
 
-                                        {{-- Data Muzakki --}}
-                                        <div>
-                                            <h4 class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Data Muzakki</h4>
-                                            <div class="space-y-1.5">
-
-                                                {{-- Nama Jiwa di Expandable Mobile --}}
-                                                @if (!empty($trx->nama_jiwa_json))
-                                                    <div class="flex items-start text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        </svg>
-                                                        <div>
-                                                            <span class="text-gray-500 font-medium">Nama Jiwa ({{ count($trx->nama_jiwa_json) }} jiwa):</span>
-                                                            <div class="flex flex-wrap gap-1 mt-1">
-                                                                @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                                        {{ $namaJiwa }}
-                                                                    </span>
-                                                                @endforeach
-                                                            </div>
+                                        {{-- Nama Jiwa Mobile --}}
+                                        @if ($hasNamaJiwa)
+                                            <div>
+                                                <h4 class="text-sm font-medium text-gray-900 mb-2">Nama Jiwa</h4>
+                                                <div class="flex items-start text-sm">
+                                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                    </svg>
+                                                    <div>
+                                                        <p class="text-xs text-gray-500">{{ count($namaJiwaList) }} orang</p>
+                                                        <div class="text-xs text-gray-700 mt-1 space-y-1">
+                                                            @foreach ($namaJiwaList as $index => $nama)
+                                                                @if ($nama && trim($nama) !== '')
+                                                                    <div class="flex items-start">
+                                                                        <span class="text-gray-400 w-4 flex-shrink-0">{{ $index + 1 }}.</span>
+                                                                        <span>{{ $nama }}</span>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
                                                         </div>
                                                     </div>
-                                                @endif
-
-                                                @if ($trx->muzakki_telepon)
-                                                    <div class="flex items-center text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                        </svg>
-                                                        <span class="text-gray-600">{{ $trx->muzakki_telepon }}</span>
-                                                    </div>
-                                                @endif
-                                                @if ($trx->muzakki_email)
-                                                    <div class="flex items-center text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                        </svg>
-                                                        <span class="text-gray-600">{{ $trx->muzakki_email }}</span>
-                                                    </div>
-                                                @endif
-                                                @if ($trx->muzakki_nik)
-                                                    <div class="flex items-center text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0" />
-                                                        </svg>
-                                                        <span class="font-mono text-gray-600">NIK: {{ $trx->muzakki_nik }}</span>
-                                                    </div>
-                                                @endif
-                                                @if ($trx->muzakki_alamat)
-                                                    <div class="flex items-start text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        </svg>
-                                                        <span class="text-gray-600">{{ Str::limit($trx->muzakki_alamat, 60) }}</span>
-                                                    </div>
-                                                @endif
+                                                </div>
                                             </div>
-                                        </div>
+                                        @endif
+
+                                        {{-- Data Muzakki --}}
+                                        @if ($trx->muzakki_telepon || $trx->muzakki_email || $trx->muzakki_nik || $trx->muzakki_alamat)
+                                            <div>
+                                                <h4 class="text-sm font-medium text-gray-900 mb-2">Data Muzakki</h4>
+                                                <div class="space-y-2">
+                                                    @if ($trx->muzakki_telepon)
+                                                        <div class="flex items-center text-sm">
+                                                            <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                            </svg>
+                                                            <span class="text-gray-600">{{ $trx->muzakki_telepon }}</span>
+                                                        </div>
+                                                    @endif
+                                                    @if ($trx->muzakki_email)
+                                                        <div class="flex items-center text-sm">
+                                                            <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                            </svg>
+                                                            <span class="text-gray-600">{{ $trx->muzakki_email }}</span>
+                                                        </div>
+                                                    @endif
+                                                    @if ($trx->muzakki_nik)
+                                                        <div class="flex items-center text-sm">
+                                                            <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1" />
+                                                            </svg>
+                                                            <span class="font-mono text-gray-600">NIK: {{ $trx->muzakki_nik }}</span>
+                                                        </div>
+                                                    @endif
+                                                    @if ($trx->muzakki_alamat)
+                                                        <div class="flex items-start text-sm">
+                                                            <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                            </svg>
+                                                            <span class="text-gray-600">{{ Str::limit($trx->muzakki_alamat, 60) }}</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
 
                                         {{-- Detail Zakat --}}
                                         <div>
-                                            <h4 class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Detail Zakat</h4>
-                                            <div class="space-y-1.5">
+                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Detail Zakat</h4>
+                                            <div class="space-y-2">
                                                 @if ($trx->jenisZakat)
-                                                    <div class="flex items-center text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <div class="flex items-center text-sm">
+                                                        <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                         </svg>
@@ -775,19 +744,19 @@
                                                     </div>
                                                 @endif
                                                 @if ($trx->jumlah > 0)
-                                                    <div class="flex items-center text-xs gap-2">
-                                                        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <div class="flex items-center text-sm">
+                                                        <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8" />
                                                         </svg>
                                                         <span class="font-semibold text-green-600">{{ $trx->jumlah_formatted }}</span>
                                                         @if ($trx->jumlah_infaq > 0)
-                                                            <span class="text-amber-600">(+Infaq {{ $trx->jumlah_infaq_formatted }})</span>
+                                                            <span class="text-amber-600 ml-1">(+Infaq {{ $trx->jumlah_infaq_formatted }})</span>
                                                         @endif
                                                     </div>
                                                 @endif
                                                 @if ($isDaring && $trx->metode_pembayaran)
-                                                    <div class="flex items-center text-xs gap-2">
+                                                    <div class="flex items-center text-sm gap-2">
                                                         <span class="text-gray-500">Bayar via:</span>
                                                         <span class="font-medium text-gray-700 uppercase">{{ $trx->metode_pembayaran }}</span>
                                                     </div>
@@ -802,14 +771,12 @@
                                             </div>
                                         @endif
 
-                                        <div class="pt-2 border-t border-gray-200 flex gap-2">
+                                        <div class="pt-3 border-t border-gray-200">
                                             <a href="{{ route('transaksi-daring-muzakki.show', $trx->uuid) }}"
-                                                class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
+                                                class="flex-1 inline-flex items-center justify-center w-full px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
                                                 Lihat Detail
                                             </a>
@@ -859,7 +826,6 @@
                 </div>
             @endif
         </div>
-
     </div>
 
     {{-- ── Dropdown Container ── --}}
@@ -869,10 +835,8 @@
                 <a href="#" id="dd-detail"
                     class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                     <svg class="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                     Lihat Detail
                 </a>
@@ -884,65 +848,95 @@
 
 @push('scripts')
     <script>
+        // ── Search & Filter ───────────────────────────────────────────────
+        function toggleSearch() {
+            const btn       = document.getElementById('search-button');
+            const form      = document.getElementById('search-form');
+            const input     = document.getElementById('search-input');
+            const container = document.getElementById('search-container');
+            if (form.classList.contains('hidden')) {
+                btn.classList.add('hidden');
+                form.classList.remove('hidden');
+                container.style.minWidth = '280px';
+                setTimeout(() => input.focus(), 50);
+            } else {
+                form.classList.add('hidden');
+                btn.classList.remove('hidden');
+                container.style.minWidth = '';
+            }
+        }
+
+        function toggleFilter() {
+            document.getElementById('filter-panel').classList.toggle('hidden');
+        }
+
+        // ── DOMContentLoaded ─────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', function () {
 
-            // ── Desktop expandable rows ──────────────────────────────────
+            // ── Desktop expandable rows ──
             document.querySelectorAll('.expandable-row').forEach(function (row) {
                 row.addEventListener('click', function (e) {
                     if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    var target = document.getElementById(this.dataset.target);
-                    var icon   = this.querySelector('.expand-icon');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
+                    const target = document.getElementById(this.dataset.target);
+                    const icon   = this.querySelector('.expand-icon');
+                    if (target && icon) {
+                        target.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-90');
+                    }
                 });
             });
 
-            // ── Mobile expandable cards ──────────────────────────────────
+            // ── Mobile expandable cards ──
             document.querySelectorAll('.expandable-row-mobile').forEach(function (row) {
                 row.addEventListener('click', function (e) {
                     if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    var target = document.getElementById(this.dataset.target);
-                    var icon   = this.querySelector('.expand-icon-mobile');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
+                    const target = document.getElementById(this.dataset.target);
+                    const icon   = this.querySelector('.expand-icon-mobile');
+                    if (target && icon) {
+                        target.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-180');
+                    }
                 });
             });
 
             // ── Dropdown ─────────────────────────────────────────────────
-            var dropdown = document.getElementById('dropdown-container');
-            var ddDetail = document.getElementById('dd-detail');
+            const dropdown = document.getElementById('dropdown-container');
+            const ddDetail = document.getElementById('dd-detail');
 
             function closeDropdown() {
-                dropdown.classList.add('hidden');
-                dropdown.removeAttribute('data-uuid');
+                if (dropdown) {
+                    dropdown.classList.add('hidden');
+                    dropdown.removeAttribute('data-uuid');
+                }
             }
 
             function positionDropdown(toggle) {
-                var rect  = toggle.getBoundingClientRect();
-                var ddW   = 208;
-                var ddH   = dropdown.offsetHeight || 80;
-                var margin = 6;
-                var vpW   = window.innerWidth;
-                var vpH   = window.innerHeight;
+                if (!dropdown) return;
+                const rect   = toggle.getBoundingClientRect();
+                const ddW    = 208;
+                const ddH    = dropdown.offsetHeight || 80;
+                const margin = 6;
+                const vpW    = window.innerWidth;
+                const vpH    = window.innerHeight;
 
-                var left = rect.right - ddW;
+                let left = rect.right - ddW;
                 if (left < margin) left = margin;
                 if (left + ddW > vpW - margin) left = vpW - ddW - margin;
 
-                var top = rect.bottom + margin;
+                let top = rect.bottom + margin;
                 if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
                 if (top < margin) top = margin;
 
-                dropdown.style.top  = top + 'px';
+                dropdown.style.top  = top  + 'px';
                 dropdown.style.left = left + 'px';
             }
 
             document.addEventListener('click', function (e) {
-                var toggle = e.target.closest('.dropdown-toggle');
+                const toggle = e.target.closest('.dropdown-toggle');
 
                 if (toggle) {
                     e.stopPropagation();
-                    var uuid = toggle.dataset.uuid;
+                    const uuid = toggle.dataset.uuid;
 
                     if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
                         closeDropdown();
@@ -950,7 +944,7 @@
                     }
 
                     dropdown.dataset.uuid = uuid;
-                    ddDetail.href = '/transaksi-daring-muzakki/' + uuid;
+                    if (ddDetail) ddDetail.href = '/transaksi-daring-muzakki/' + uuid;
 
                     dropdown.classList.remove('hidden');
                     positionDropdown(toggle);
@@ -964,31 +958,10 @@
             window.addEventListener('resize', closeDropdown);
         });
 
-        // ── Search & Filter ───────────────────────────────────────────────
-        function toggleSearch() {
-            var btn       = document.getElementById('search-button');
-            var form      = document.getElementById('search-form');
-            var input     = document.getElementById('search-input');
-            var container = document.getElementById('search-container');
-            if (form.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                form.classList.remove('hidden');
-                container.style.minWidth = '280px';
-                setTimeout(function () { input.focus(); }, 50);
-            } else {
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = '';
-            }
-        }
-
-        function toggleFilter() {
-            document.getElementById('filter-panel').classList.toggle('hidden');
-        }
-
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                document.getElementById('dropdown-container').classList.add('hidden');
+                const dropdown = document.getElementById('dropdown-container');
+                if (dropdown) dropdown.classList.add('hidden');
             }
         });
     </script>

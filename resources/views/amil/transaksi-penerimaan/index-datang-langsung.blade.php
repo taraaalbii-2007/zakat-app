@@ -551,7 +551,7 @@
                                                                     {{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}
                                                                 </p>
                                                                 @if($trx->verified_by)
-                                                                <p class="text-xs text-gray-500">Oleh: {{ $trx->verified_by }}</p>
+                                                                <p class="text-xs text-gray-500">Oleh: {{ $trx->amil->nama_lengkap }}</p>
                                                                 @endif
                                                             </div>
                                                         </div>

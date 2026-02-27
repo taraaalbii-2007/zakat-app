@@ -57,7 +57,7 @@
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
-                        <p class="text-xs font-medium text-gray-500 truncate">Total Transaksi</p>
+                        <p class="text-xs font-medium text-gray-500 truncate">Total</p>
                         <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ number_format($stats['total'], 0, ',', '.') }}</p>
                         <p class="text-xs text-indigo-600 mt-0.5">Daring</p>
                     </div>
@@ -74,6 +74,7 @@
                     <div class="ml-3 flex-1 min-w-0">
                         <p class="text-xs font-medium text-gray-500 truncate">Terverifikasi</p>
                         <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ number_format($stats['total_verified'], 0, ',', '.') }}</p>
+                        <p class="text-xs text-green-600 mt-0.5">Dikonfirmasi</p>
                     </div>
                 </div>
             </div>
@@ -87,16 +88,14 @@
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
-                        <p class="text-xs font-medium text-gray-500 truncate">Menunggu Konfirmasi</p>
+                        <p class="text-xs font-medium text-gray-500 truncate">Menunggu</p>
                         <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ number_format($stats['menunggu_konfirmasi'], 0, ',', '.') }}</p>
-                        @if (isset($stats['menunggu_konfirmasi']) && $stats['menunggu_konfirmasi'] > 0)
-                            <p class="text-xs text-amber-600 mt-0.5">Perlu diproses</p>
-                        @endif
+                        <p class="text-xs text-amber-600 mt-0.5">Perlu diproses</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+            <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4 col-span-2 lg:col-span-1">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-100 flex items-center justify-center">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +205,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Konfirmasi Pembayaran</label>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Konfirmasi</label>
                             <select name="konfirmasi_status"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
@@ -263,6 +262,20 @@
                                 @php
                                     $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
                                     $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
+
+                                    // Deteksi nama jiwa
+                                    $hasNamaJiwa = false;
+                                    $namaJiwaList = [];
+                                    if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                                    } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                                    } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->nama_jiwa_json;
+                                    }
                                 @endphp
 
                                 <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
@@ -279,37 +292,32 @@
                                     <td class="px-6 py-4">
                                         <div class="flex-1">
                                             <div class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</div>
-
-                                            {{-- ── Nama Jiwa (Zakat Fitrah) ── --}}
-                                            @if (!empty($trx->nama_jiwa_json))
-                                                <div class="flex flex-wrap gap-1 mt-1">
-                                                    @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            {{ $namaJiwa }}
-                                                        </span>
-                                                    @endforeach
-                                                </div>
-                                            @endif
-
                                             <div class="text-xs text-gray-500 mt-0.5">
-                                                {{ $trx->tanggal_transaksi->format('d/m/Y') }} ·
-                                                {{ $trx->waktu_transaksi->format('H:i') }}
+                                                {{ $trx->tanggal_transaksi->format('d/m/Y') }}
+                                                @if ($trx->waktu_transaksi)
+                                                    · {{ $trx->waktu_transaksi->format('H:i') }}
+                                                @endif
                                                 @if ($trx->jumlah > 0)
                                                     · <span class="font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span>
                                                 @endif
                                                 @if ($trx->jumlah_infaq > 0)
                                                     · <span class="text-amber-600 font-medium">+Infaq {{ $trx->jumlah_infaq_formatted }}</span>
                                                 @endif
+                                                @if ($hasNamaJiwa)
+                                                    · <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
+                                                @endif
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $trx->status_badge !!}
                                                 {!! $trx->metode_pembayaran_badge !!}
                                                 {!! $trx->konfirmasi_status_badge !!}
+                                                @if ($needsKonfirmasi)
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                                        Perlu Konfirmasi
+                                                    </span>
+                                                @endif
                                             </div>
+                                            <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -347,27 +355,29 @@
                                                                     <p class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</p>
                                                                 </div>
                                                             </div>
-
-                                                            {{-- Nama Jiwa di Expandable --}}
-                                                            @if (!empty($trx->nama_jiwa_json))
+                                                            @if ($hasNamaJiwa)
                                                                 <div class="flex items-start">
-                                                                    <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Nama Jiwa ({{ count($trx->nama_jiwa_json) }} jiwa)</p>
-                                                                        <div class="flex flex-wrap gap-1 mt-1">
-                                                                            @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                                                    {{ $namaJiwa }}
-                                                                                </span>
+                                                                        <p class="text-xs text-gray-500">Nama Jiwa
+                                                                            <span class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
+                                                                        </p>
+                                                                        <div class="text-sm text-gray-700 mt-1 flex flex-wrap gap-1">
+                                                                            @foreach ($namaJiwaList as $index => $nama)
+                                                                                @if ($nama && trim($nama) !== '')
+                                                                                    <span class="inline-flex items-center bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
+                                                                                        <span class="font-medium text-gray-500 mr-1">{{ $index + 1 }}.</span>
+                                                                                        {{ $nama }}
+                                                                                    </span>
+                                                                                @endif
                                                                             @endforeach
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             @endif
-
                                                             @if ($trx->muzakki_telepon)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -449,6 +459,17 @@
                                                                     </div>
                                                                 </div>
                                                             @endif
+                                                            @if ($trx->no_transaksi)
+                                                                <div class="flex items-start">
+                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                                    </svg>
+                                                                    <div>
+                                                                        <p class="text-xs text-gray-500">No. Transaksi</p>
+                                                                        <p class="text-sm font-mono text-gray-900">{{ $trx->no_transaksi }}</p>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
 
@@ -457,16 +478,9 @@
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Metode & Status</h4>
                                                         <div class="space-y-3">
                                                             <div>
-                                                                <p class="text-xs text-gray-500 mb-1">Metode Penerimaan</p>
-                                                                {!! $trx->metode_penerimaan_badge !!}
-                                                                <span class="ml-1 px-1.5 py-0.5 text-xs rounded bg-indigo-50 text-indigo-700 border border-indigo-200">via Muzakki</span>
+                                                                <p class="text-xs text-gray-500 mb-1">Metode Pembayaran</p>
+                                                                {!! $trx->metode_pembayaran_badge !!}
                                                             </div>
-                                                            @if ($trx->metode_pembayaran)
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500 mb-1">Metode Pembayaran</p>
-                                                                    {!! $trx->metode_pembayaran_badge !!}
-                                                                </div>
-                                                            @endif
                                                             <div>
                                                                 <p class="text-xs text-gray-500 mb-1">Status Konfirmasi</p>
                                                                 {!! $trx->konfirmasi_status_badge !!}
@@ -478,13 +492,19 @@
                                                                 <p class="text-xs text-gray-500 mb-1">Status Verifikasi</p>
                                                                 {!! $trx->status_badge !!}
                                                             </div>
+                                                            @if ($trx->keterangan)
+                                                                <div class="mt-2 p-2 bg-gray-100 border border-gray-200 rounded-lg">
+                                                                    <p class="text-xs text-gray-500 font-medium">Keterangan:</p>
+                                                                    <p class="text-xs text-gray-700">{{ $trx->keterangan }}</p>
+                                                                </div>
+                                                            @endif
+                                                            @if ($trx->catatan_konfirmasi)
+                                                                <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                                                                    <p class="text-xs text-blue-600 font-medium">Catatan Konfirmasi:</p>
+                                                                    <p class="text-xs text-blue-700">{{ $trx->catatan_konfirmasi }}</p>
+                                                                </div>
+                                                            @endif
                                                         </div>
-                                                        @if ($trx->keterangan)
-                                                            <div class="mt-4 pt-4 border-t border-gray-200">
-                                                                <p class="text-xs text-gray-500 mb-1">Keterangan</p>
-                                                                <p class="text-sm text-gray-600">{{ $trx->keterangan }}</p>
-                                                            </div>
-                                                        @endif
                                                     </div>
                                                 </div>
 
@@ -529,6 +549,20 @@
                         @php
                             $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
                             $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
+
+                            // Deteksi nama jiwa
+                            $hasNamaJiwa = false;
+                            $namaJiwaList = [];
+                            if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                            } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                            } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->nama_jiwa_json;
+                            }
                         @endphp
                         <div class="expandable-card {{ $needsKonfirmasi ? 'bg-amber-50/30' : '' }}">
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
@@ -539,36 +573,26 @@
                                             <h3 class="text-sm font-semibold text-gray-900 truncate mr-2">{{ $trx->muzakki_nama }}</h3>
                                             {!! $trx->status_badge !!}
                                         </div>
-
-                                        {{-- ── Nama Jiwa Mobile ── --}}
-                                        @if (!empty($trx->nama_jiwa_json))
-                                            <div class="flex flex-wrap gap-1 mt-1">
-                                                @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                        </svg>
-                                                        {{ $namaJiwa }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-
-                                        <div class="flex items-center mt-1">
+                                        <div class="flex items-center mt-1 flex-wrap gap-2">
                                             <span class="text-xs text-gray-500">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
                                             @if ($trx->jumlah > 0)
-                                                <span class="text-xs text-gray-500 mx-2">·</span>
-                                                <span class="text-xs font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span>
+                                                <span class="text-xs font-semibold text-green-600">{{ $trx->jumlah_formatted }}</span>
                                             @endif
                                             @if ($trx->jumlah_infaq > 0)
-                                                <span class="text-xs text-gray-500 mx-1">·</span>
                                                 <span class="text-xs text-amber-600 font-medium">+Infaq</span>
+                                            @endif
+                                            @if ($hasNamaJiwa)
+                                                <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
                                             @endif
                                         </div>
                                         <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
                                             {!! $trx->metode_pembayaran_badge !!}
                                             {!! $trx->konfirmasi_status_badge !!}
+                                            @if ($needsKonfirmasi)
+                                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                                    Perlu Konfirmasi
+                                                </span>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 ml-2">
@@ -596,22 +620,25 @@
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
                                     <div class="space-y-4">
 
-                                        {{-- Nama Jiwa di Expandable Mobile --}}
-                                        @if (!empty($trx->nama_jiwa_json))
+                                        {{-- Nama Jiwa --}}
+                                        @if ($hasNamaJiwa)
                                             <div>
-                                                <h4 class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Nama Jiwa</h4>
-                                                <div class="flex items-start gap-2">
-                                                    <svg class="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <h4 class="text-sm font-medium text-gray-900 mb-2">Nama Jiwa</h4>
+                                                <div class="flex items-start text-sm">
+                                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                                     </svg>
                                                     <div>
-                                                        <p class="text-xs text-gray-500 mb-1">{{ count($trx->nama_jiwa_json) }} jiwa</p>
-                                                        <div class="flex flex-wrap gap-1">
-                                                            @foreach ($trx->nama_jiwa_json as $namaJiwa)
-                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700 border border-green-200">
-                                                                    {{ $namaJiwa }}
-                                                                </span>
+                                                        <p class="text-xs text-gray-500">{{ count($namaJiwaList) }} orang</p>
+                                                        <div class="text-xs text-gray-700 mt-1 space-y-1">
+                                                            @foreach ($namaJiwaList as $index => $nama)
+                                                                @if ($nama && trim($nama) !== '')
+                                                                    <div class="flex items-start">
+                                                                        <span class="text-gray-400 w-4 flex-shrink-0">{{ $index + 1 }}.</span>
+                                                                        <span>{{ $nama }}</span>
+                                                                    </div>
+                                                                @endif
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -669,39 +696,35 @@
                                                         </div>
                                                     </div>
                                                 @endif
-                                                <div class="flex items-center gap-2 flex-wrap">
-                                                    {!! $trx->metode_pembayaran_badge !!}
-                                                </div>
-                                                <div class="flex items-center gap-2">
+                                                <div>
+                                                    <p class="text-xs text-gray-500 mb-1">Status Konfirmasi</p>
                                                     {!! $trx->konfirmasi_status_badge !!}
                                                     @if ($trx->no_referensi_transfer)
-                                                        <span class="text-xs text-gray-400">Ref: {{ $trx->no_referensi_transfer }}</span>
+                                                        <span class="text-xs text-gray-400 ml-1">Ref: {{ $trx->no_referensi_transfer }}</span>
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="pt-3 border-t border-gray-200">
-                                            <div class="flex gap-2 flex-wrap">
-                                                @if ($needsKonfirmasi)
-                                                    <button type="button"
-                                                        onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}', '{{ $buktiUrl }}')"
-                                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                        Review & Konfirmasi
-                                                    </button>
-                                                @endif
-                                                <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
-                                                    class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
+                                        <div class="pt-3 border-t border-gray-200 flex gap-2">
+                                            @if ($needsKonfirmasi)
+                                                <button type="button"
+                                                    onclick="openKonfirmasiModal('{{ $trx->uuid }}', '{{ $trx->muzakki_nama }}', '{{ $trx->metode_pembayaran }}', '{{ $buktiUrl }}')"
+                                                    class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
                                                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    Detail
-                                                </a>
-                                            </div>
+                                                    Konfirmasi
+                                                </button>
+                                            @endif
+                                            <a href="{{ route('transaksi-daring.show', $trx->uuid) }}"
+                                                class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                Detail Lengkap
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -753,10 +776,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-indigo-900 mb-2">Tentang Transaksi Daring</p>
-                    <div class="text-xs text-indigo-800 space-y-1">
-                        <p>Transaksi daring dibuat oleh muzakki melalui portal mereka sendiri. Pembayaran hanya tersedia via Transfer Bank atau QRIS. Tugas amil adalah memverifikasi bukti pembayaran yang dikirimkan dan menekan tombol Konfirmasi setelah dana masuk ke rekening.</p>
-                    </div>
+                    <p class="text-sm font-semibold text-indigo-900 mb-1">Tentang Transaksi Daring</p>
+                    <p class="text-xs text-indigo-800">Transaksi daring dibuat oleh muzakki melalui portal mereka sendiri. Pembayaran hanya tersedia via Transfer Bank atau QRIS. Tugas amil adalah memverifikasi bukti pembayaran yang dikirimkan dan menekan tombol Konfirmasi setelah dana masuk ke rekening.</p>
                 </div>
             </div>
         </div>
@@ -774,7 +795,6 @@
                     </svg>
                     Lihat Detail
                 </a>
-
                 <div class="border-t border-gray-100 my-1" id="dd-divider-konfirmasi" style="display:none;"></div>
                 <button type="button" id="dd-konfirmasi"
                     class="flex items-center w-full px-4 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition-colors hidden">
@@ -791,8 +811,6 @@
     <div id="konfirmasi-modal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-[10000] flex items-center justify-center p-4">
         <div class="w-full max-w-md shadow-xl rounded-2xl bg-white overflow-hidden">
-
-            {{-- Header --}}
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -816,11 +834,8 @@
                 </button>
             </div>
 
-            {{-- Bukti Pembayaran --}}
             <div class="px-6 pt-4">
                 <p class="text-xs font-medium text-gray-700 mb-2">Bukti Pembayaran</p>
-
-                {{-- Ada bukti --}}
                 <div id="modal-bukti-container" class="hidden">
                     <a id="modal-bukti-link" href="#" target="_blank"
                         class="block relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 cursor-zoom-in">
@@ -837,8 +852,6 @@
                     </a>
                     <p class="text-xs text-gray-400 mt-1.5 text-center">Klik gambar untuk memperbesar</p>
                 </div>
-
-                {{-- Tidak ada bukti --}}
                 <div id="modal-bukti-empty" class="hidden">
                     <div class="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
                         <div class="text-center">
@@ -851,20 +864,17 @@
                 </div>
             </div>
 
-            {{-- Peringatan --}}
             <div class="mx-6 mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
                 <p class="text-xs text-amber-700">
                     <span class="font-semibold">⚠️ Pastikan</span> dana sudah masuk ke rekening/QRIS masjid sebelum mengkonfirmasi.
                 </p>
             </div>
 
-            {{-- Catatan & Aksi --}}
             <div class="px-6 py-4">
                 <label class="block text-xs font-medium text-gray-700 mb-1.5">Catatan (opsional)</label>
                 <input type="text" id="konfirmasi-catatan"
                     placeholder="Misal: Dana sudah masuk pukul 10.30"
                     class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 mb-4">
-
                 <form method="POST" id="konfirmasi-form">
                     @csrf
                     <input type="hidden" name="catatan_konfirmasi" id="konfirmasi-catatan-hidden">
@@ -890,130 +900,15 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const dropdown            = document.getElementById('dropdown-container');
-            const ddDetail            = document.getElementById('dd-detail');
-            const ddKonfirmasi        = document.getElementById('dd-konfirmasi');
-            const ddDividerKonfirmasi = document.getElementById('dd-divider-konfirmasi');
-
-            // ── Desktop expandable rows ──
-            document.querySelectorAll('.expandable-row').forEach(row => {
-                row.addEventListener('click', function (e) {
-                    if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    const target = document.getElementById(this.dataset.target);
-                    const icon   = this.querySelector('.expand-icon');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
-                });
-            });
-
-            // ── Mobile expandable cards ──
-            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-                row.addEventListener('click', function (e) {
-                    if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    const target = document.getElementById(this.dataset.target);
-                    const icon   = this.querySelector('.expand-icon-mobile');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                });
-            });
-
-            function closeDropdown() {
-                dropdown.classList.add('hidden');
-                dropdown.removeAttribute('data-uuid');
-            }
-
-            function positionDropdown(toggle) {
-                const rect   = toggle.getBoundingClientRect();
-                const ddW    = 224;
-                const ddH    = dropdown.offsetHeight || 120;
-                const margin = 6;
-                const vpW    = window.innerWidth;
-                const vpH    = window.innerHeight;
-
-                let left = rect.right - ddW;
-                if (left < margin) left = margin;
-                if (left + ddW > vpW - margin) left = vpW - ddW - margin;
-
-                let top = rect.bottom + margin;
-                if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
-                if (top < margin) top = margin;
-
-                dropdown.style.top  = top  + 'px';
-                dropdown.style.left = left + 'px';
-            }
-
-            document.addEventListener('click', function (e) {
-                const toggle = e.target.closest('.dropdown-toggle');
-
-                if (toggle) {
-                    e.stopPropagation();
-
-                    const uuid          = toggle.dataset.uuid;
-                    const nama          = toggle.dataset.nama;
-                    const canKonfirmasi = toggle.dataset.canKonfirmasi === '1';
-                    const metode        = toggle.dataset.metode || '';
-                    const bukti         = toggle.dataset.bukti || '';
-
-                    if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
-                        closeDropdown(); return;
-                    }
-
-                    dropdown.dataset.uuid = uuid;
-
-                    ddDetail.href = `/transaksi-daring/${uuid}`;
-
-                    if (canKonfirmasi) {
-                        show(ddKonfirmasi);
-                        ddDividerKonfirmasi.style.display = '';
-                        ddKonfirmasi.onclick = () => {
-                            closeDropdown();
-                            openKonfirmasiModal(uuid, nama, metode, bukti);
-                        };
-                    } else {
-                        hide(ddKonfirmasi);
-                        ddDividerKonfirmasi.style.display = 'none';
-                    }
-
-                    dropdown.classList.remove('hidden');
-                    positionDropdown(toggle);
-
-                } else if (!dropdown.contains(e.target)) {
-                    closeDropdown();
-                }
-            });
-
-            window.addEventListener('scroll', closeDropdown, true);
-            window.addEventListener('resize', closeDropdown);
-
-            function show(el) { el.classList.remove('hidden'); }
-            function hide(el) { el.classList.add('hidden'); }
-
-            document.getElementById('konfirmasi-form')?.addEventListener('submit', function () {
-                document.getElementById('konfirmasi-catatan-hidden').value =
-                    document.getElementById('konfirmasi-catatan').value;
-            });
-
-            function openModal(id) {
-                document.getElementById(id).classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
-
-            document.getElementById('konfirmasi-modal')?.addEventListener('click', function (e) {
-                if (e.target === this) closeModal('konfirmasi-modal');
-            });
-
-            window.openKonfirmasiModal = openKonfirmasiModal;
-        });
-
+        // ============================================================
+        // FUNGSI GLOBAL
+        // ============================================================
         function openKonfirmasiModal(uuid, nama, metode, buktiUrl) {
             document.getElementById('modal-konfirmasi-nama').textContent   = nama;
             document.getElementById('modal-konfirmasi-metode').textContent = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
             document.getElementById('konfirmasi-form').action = `/transaksi-daring/${uuid}/konfirmasi-pembayaran`;
             document.getElementById('konfirmasi-catatan').value = '';
 
-            // Tampilkan bukti atau placeholder
             const buktiContainer = document.getElementById('modal-bukti-container');
             const buktiEmpty     = document.getElementById('modal-bukti-empty');
             const buktiImg       = document.getElementById('modal-bukti-img');
@@ -1058,6 +953,121 @@
         function toggleFilter() {
             document.getElementById('filter-panel').classList.toggle('hidden');
         }
+
+        // ============================================================
+        // DOMContentLoaded
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdown            = document.getElementById('dropdown-container');
+            const ddDetail            = document.getElementById('dd-detail');
+            const ddKonfirmasi        = document.getElementById('dd-konfirmasi');
+            const ddDividerKonfirmasi = document.getElementById('dd-divider-konfirmasi');
+
+            // ── Desktop expandable rows ──
+            document.querySelectorAll('.expandable-row').forEach(row => {
+                row.addEventListener('click', function (e) {
+                    if (e.target.closest('a, .dropdown-toggle, button')) return;
+                    const target = document.getElementById(this.dataset.target);
+                    const icon   = this.querySelector('.expand-icon');
+                    if (target && icon) {
+                        target.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-90');
+                    }
+                });
+            });
+
+            // ── Mobile expandable cards ──
+            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+                row.addEventListener('click', function (e) {
+                    if (e.target.closest('a, .dropdown-toggle, button')) return;
+                    const target = document.getElementById(this.dataset.target);
+                    const icon   = this.querySelector('.expand-icon-mobile');
+                    if (target && icon) {
+                        target.classList.toggle('hidden');
+                        icon.classList.toggle('rotate-180');
+                    }
+                });
+            });
+
+            function closeDropdown() {
+                if (dropdown) {
+                    dropdown.classList.add('hidden');
+                    dropdown.removeAttribute('data-uuid');
+                }
+            }
+
+            function positionDropdown(toggle) {
+                if (!dropdown) return;
+                const rect   = toggle.getBoundingClientRect();
+                const ddW    = 224;
+                const ddH    = dropdown.offsetHeight || 120;
+                const margin = 6;
+                const vpW    = window.innerWidth;
+                const vpH    = window.innerHeight;
+
+                let left = rect.right - ddW;
+                if (left < margin) left = margin;
+                if (left + ddW > vpW - margin) left = vpW - ddW - margin;
+
+                let top = rect.bottom + margin;
+                if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
+                if (top < margin) top = margin;
+
+                dropdown.style.top  = top  + 'px';
+                dropdown.style.left = left + 'px';
+            }
+
+            document.addEventListener('click', function (e) {
+                const toggle = e.target.closest('.dropdown-toggle');
+
+                if (toggle) {
+                    e.stopPropagation();
+
+                    const uuid          = toggle.dataset.uuid;
+                    const nama          = toggle.dataset.nama;
+                    const canKonfirmasi = toggle.dataset.canKonfirmasi === '1';
+                    const metode        = toggle.dataset.metode || '';
+                    const bukti         = toggle.dataset.bukti || '';
+
+                    if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
+                        closeDropdown(); return;
+                    }
+
+                    dropdown.dataset.uuid = uuid;
+                    if (ddDetail) ddDetail.href = `/transaksi-daring/${uuid}`;
+
+                    if (canKonfirmasi) {
+                        ddKonfirmasi.classList.remove('hidden');
+                        ddDividerKonfirmasi.style.display = '';
+                        ddKonfirmasi.onclick = () => {
+                            closeDropdown();
+                            openKonfirmasiModal(uuid, nama, metode, bukti);
+                        };
+                    } else {
+                        ddKonfirmasi.classList.add('hidden');
+                        ddDividerKonfirmasi.style.display = 'none';
+                    }
+
+                    dropdown.classList.remove('hidden');
+                    positionDropdown(toggle);
+
+                } else if (!dropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            window.addEventListener('scroll', closeDropdown, true);
+            window.addEventListener('resize', closeDropdown);
+
+            document.getElementById('konfirmasi-form')?.addEventListener('submit', function () {
+                document.getElementById('konfirmasi-catatan-hidden').value =
+                    document.getElementById('konfirmasi-catatan').value;
+            });
+
+            document.getElementById('konfirmasi-modal')?.addEventListener('click', function (e) {
+                if (e.target === this) closeModal('konfirmasi-modal');
+            });
+        });
 
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeModal('konfirmasi-modal');

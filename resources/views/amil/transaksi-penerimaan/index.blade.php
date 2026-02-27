@@ -42,7 +42,6 @@
                             <div x-show="open" @click.away="open = false" x-transition
                                 class="absolute right-0 mt-2 w-48 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50">
                                 <div class="py-1">
-                                    {{-- Export PDF — teruskan semua filter aktif --}}
                                     <a href="{{ route('pemantauan-transaksi.export.pdf', request()->query()) }}"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                                         <svg class="w-4 h-4 mr-3 text-red-500 flex-shrink-0" fill="none"
@@ -52,7 +51,6 @@
                                         </svg>
                                         Export PDF
                                     </a>
-                                    {{-- Export Excel — teruskan semua filter aktif --}}
                                     <a href="{{ route('pemantauan-transaksi.export.excel', request()->query()) }}"
                                         class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                                         <svg class="w-4 h-4 mr-3 text-green-600 flex-shrink-0" fill="none"
@@ -207,16 +205,25 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Penjemputan (Dijemput)</label>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Penjemputan
+                                (Dijemput)</label>
                             <select name="status_penjemputan"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua</option>
-                                <option value="menunggu" {{ request('status_penjemputan') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                                <option value="diterima" {{ request('status_penjemputan') == 'diterima' ? 'selected' : '' }}>Diterima Amil</option>
-                                <option value="dalam_perjalanan" {{ request('status_penjemputan') == 'dalam_perjalanan' ? 'selected' : '' }}>Dalam Perjalanan</option>
-                                <option value="sampai_lokasi" {{ request('status_penjemputan') == 'sampai_lokasi' ? 'selected' : '' }}>Sampai Lokasi</option>
-                                <option value="selesai" {{ request('status_penjemputan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="menunggu"
+                                    {{ request('status_penjemputan') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+                                <option value="diterima"
+                                    {{ request('status_penjemputan') == 'diterima' ? 'selected' : '' }}>Diterima Amil
+                                </option>
+                                <option value="dalam_perjalanan"
+                                    {{ request('status_penjemputan') == 'dalam_perjalanan' ? 'selected' : '' }}>Dalam
+                                    Perjalanan</option>
+                                <option value="sampai_lokasi"
+                                    {{ request('status_penjemputan') == 'sampai_lokasi' ? 'selected' : '' }}>Sampai Lokasi
+                                </option>
+                                <option value="selesai"
+                                    {{ request('status_penjemputan') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                             </select>
                         </div>
 
@@ -318,35 +325,75 @@
                                     $menungguKonfirmasi =
                                         $trx->metode_penerimaan === 'daring' &&
                                         $trx->konfirmasi_status === 'menunggu_konfirmasi';
-                                    
+
+                                    // Deteksi nama jiwa
+                                    $hasNamaJiwa = false;
+                                    $namaJiwaList = [];
+                                    if (
+                                        $trx->dataZakatFitrah &&
+                                        isset($trx->dataZakatFitrah['nama_jiwa']) &&
+                                        count($trx->dataZakatFitrah['nama_jiwa']) > 0
+                                    ) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                                    } elseif (
+                                        $trx->dataZakatFitrahTunai &&
+                                        isset($trx->dataZakatFitrahTunai['nama_jiwa']) &&
+                                        count($trx->dataZakatFitrahTunai['nama_jiwa']) > 0
+                                    ) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                                    } elseif (
+                                        $trx->nama_jiwa_json &&
+                                        is_array($trx->nama_jiwa_json) &&
+                                        count($trx->nama_jiwa_json) > 0
+                                    ) {
+                                        $hasNamaJiwa = true;
+                                        $namaJiwaList = $trx->nama_jiwa_json;
+                                    }
+
                                     // Badge untuk status
-                                    $statusBadge = match($trx->status) {
-                                        'verified' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Verified</span>',
-                                        'pending' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Pending</span>',
-                                        'rejected' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>',
-                                        default => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">' . ucfirst($trx->status) . '</span>',
+                                    $statusBadge = match ($trx->status) {
+                                        'verified'
+                                            => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Verified</span>',
+                                        'pending'
+                                            => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Pending</span>',
+                                        'rejected'
+                                            => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>',
+                                        default
+                                            => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">' .
+                                            ucfirst($trx->status) .
+                                            '</span>',
                                     };
-                                    
+
                                     // Badge untuk konfirmasi (daring)
                                     $konfirmasiBadge = '';
                                     if ($trx->metode_penerimaan === 'daring' && $trx->konfirmasi_status) {
-                                        $konfirmasiBadge = match($trx->konfirmasi_status) {
-                                            'menunggu_konfirmasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Menunggu Konfirmasi</span>',
-                                            'dikonfirmasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Dikonfirmasi</span>',
-                                            'ditolak' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-rose-100 text-rose-800 border border-rose-200">Ditolak</span>',
+                                        $konfirmasiBadge = match ($trx->konfirmasi_status) {
+                                            'menunggu_konfirmasi'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Menunggu Konfirmasi</span>',
+                                            'dikonfirmasi'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Dikonfirmasi</span>',
+                                            'ditolak'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-rose-100 text-rose-800 border border-rose-200">Ditolak</span>',
                                             default => '',
                                         };
                                     }
-                                    
+
                                     // Badge untuk status penjemputan (dijemput)
                                     $penjemputanBadge = '';
                                     if ($trx->metode_penerimaan === 'dijemput' && $trx->status_penjemputan) {
-                                        $penjemputanBadge = match($trx->status_penjemputan) {
-                                            'menunggu' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">Menunggu</span>',
-                                            'diterima' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diterima Amil</span>',
-                                            'dalam_perjalanan' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">Dalam Perjalanan</span>',
-                                            'sampai_lokasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 border border-purple-200">Sampai Lokasi</span>',
-                                            'selesai' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>',
+                                        $penjemputanBadge = match ($trx->status_penjemputan) {
+                                            'menunggu'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">Menunggu</span>',
+                                            'diterima'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diterima Amil</span>',
+                                            'dalam_perjalanan'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">Dalam Perjalanan</span>',
+                                            'sampai_lokasi'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 border border-purple-200">Sampai Lokasi</span>',
+                                            'selesai'
+                                                => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>',
                                             default => '',
                                         };
                                     }
@@ -383,6 +430,11 @@
                                                         class="font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }}
                                                         kg</span>
                                                 @endif
+                                                @if ($hasNamaJiwa)
+                                                    &middot; <span
+                                                        class="text-xs text-blue-600">{{ count($namaJiwaList) }}
+                                                        jiwa</span>
+                                                @endif
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $statusBadge !!}
@@ -400,7 +452,8 @@
                                                     </span>
                                                 @endif
                                                 @if ($trx->metode_penerimaan === 'daring' && $trx->konfirmasi_status === 'dikonfirmasi')
-                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                                    <span
+                                                        class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                                                         Sudah Dikonfirmasi
                                                     </span>
                                                 @endif
@@ -488,7 +541,8 @@
 
                                                     {{-- Kolom 2: Detail Transaksi --}}
                                                     <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Transaksi
+                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Detail
+                                                            Transaksi
                                                         </h4>
                                                         <div class="space-y-3">
                                                             <div class="flex items-start">
@@ -556,7 +610,8 @@
                                                                             d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah (Uang)</p>
+                                                                        <p class="text-xs text-gray-500">Jumlah (Uang)
+                                                                        </p>
                                                                         <p class="text-sm font-semibold text-green-600">
                                                                             Rp
                                                                             {{ number_format($trx->jumlah, 0, ',', '.') }}
@@ -584,7 +639,8 @@
                                                                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah (Beras)</p>
+                                                                        <p class="text-xs text-gray-500">Jumlah (Beras)
+                                                                        </p>
                                                                         <p class="text-sm font-semibold text-amber-600">
                                                                             {{ $trx->jumlah_beras_kg }} kg</p>
                                                                         @if ($trx->jumlah_beras_liter > 0)
@@ -594,12 +650,47 @@
                                                                     </div>
                                                                 </div>
                                                             @endif
+
+                                                            {{-- Nama Jiwa (jika ada) --}}
+                                                            @if ($hasNamaJiwa)
+                                                                <div class="flex items-start">
+                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0"
+                                                                        fill="none" stroke="currentColor"
+                                                                        viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round"
+                                                                            stroke-linejoin="round" stroke-width="2"
+                                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                                    </svg>
+                                                                    <div>
+                                                                        <p class="text-xs text-gray-500">
+                                                                            Nama Jiwa
+                                                                            <span
+                                                                                class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }}
+                                                                                orang)</span>
+                                                                        </p>
+                                                                        <div
+                                                                            class="text-sm text-gray-700 mt-1 flex flex-wrap gap-1">
+                                                                            @foreach ($namaJiwaList as $index => $nama)
+                                                                                @if ($nama && trim($nama) !== '')
+                                                                                    <span
+                                                                                        class="inline-flex items-center bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
+                                                                                        <span
+                                                                                            class="font-medium text-gray-500 mr-1">{{ $index + 1 }}.</span>
+                                                                                        {{ $nama }}
+                                                                                    </span>
+                                                                                @endif
+                                                                            @endforeach
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                     </div>
 
                                                     {{-- Kolom 3: Metode & Status --}}
                                                     <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Metode & Status
+                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Metode &
+                                                            Status
                                                         </h4>
                                                         <div class="space-y-3">
                                                             <div class="flex items-start">
@@ -611,7 +702,8 @@
                                                                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                                 </svg>
                                                                 <div>
-                                                                    <p class="text-xs text-gray-500">Metode Penerimaan</p>
+                                                                    <p class="text-xs text-gray-500">Metode Penerimaan
+                                                                    </p>
                                                                     <span
                                                                         class="inline-block px-2 py-1 text-xs font-medium rounded-full
                                                                     @if ($trx->metode_penerimaan == 'datang_langsung') bg-blue-100 text-blue-800
@@ -631,7 +723,8 @@
                                                                             d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Metode Pembayaran
+                                                                        <p class="text-xs text-gray-500">Metode
+                                                                            Pembayaran
                                                                         </p>
                                                                         <span
                                                                             class="inline-block px-2 py-1 text-xs font-medium rounded-full
@@ -647,15 +740,16 @@
                                                                 <p class="text-xs text-gray-500 mb-1">Status</p>
                                                                 {!! $statusBadge !!}
                                                             </div>
-                                                            
+
                                                             @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status)
                                                                 <div>
-                                                                    <p class="text-xs text-gray-500 mb-1">Status Konfirmasi
+                                                                    <p class="text-xs text-gray-500 mb-1">Status
+                                                                        Konfirmasi
                                                                     </p>
                                                                     {!! $konfirmasiBadge !!}
                                                                 </div>
                                                             @endif
-                                                            
+
                                                             @if ($trx->metode_penerimaan == 'dijemput' && $trx->status_penjemputan)
                                                                 <div>
                                                                     <p class="text-xs text-gray-500 mb-1">Status
@@ -663,7 +757,7 @@
                                                                     {!! $penjemputanBadge !!}
                                                                 </div>
                                                             @endif
-                                                            
+
                                                             @if ($trx->status == 'rejected' && $trx->alasan_penolakan)
                                                                 <div
                                                                     class="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
@@ -673,11 +767,12 @@
                                                                         {{ $trx->alasan_penolakan }}</p>
                                                                 </div>
                                                             @endif
-                                                            
+
                                                             @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status == 'ditolak' && $trx->catatan_konfirmasi)
                                                                 <div
                                                                     class="mt-2 p-2 bg-rose-50 border border-rose-200 rounded-lg">
-                                                                    <p class="text-xs text-rose-600 font-medium">Catatan Penolakan:</p>
+                                                                    <p class="text-xs text-rose-600 font-medium">Catatan
+                                                                        Penolakan:</p>
                                                                     <p class="text-xs text-rose-700">
                                                                         {{ $trx->catatan_konfirmasi }}</p>
                                                                 </div>
@@ -690,7 +785,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
 
@@ -699,13 +794,46 @@
                     @foreach ($transaksis as $trx)
                         @php
                             $menungguKonfirmasi =
-                                $trx->metode_penerimaan === 'daring' && $trx->konfirmasi_status === 'menunggu_konfirmasi';
-                            
-                            $statusBadge = match($trx->status) {
-                                'verified' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Verified</span>',
-                                'pending' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
-                                'rejected' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Ditolak</span>',
-                                default => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">' . ucfirst($trx->status) . '</span>',
+                                $trx->metode_penerimaan === 'daring' &&
+                                $trx->konfirmasi_status === 'menunggu_konfirmasi';
+
+                            // Deteksi nama jiwa
+                            $hasNamaJiwa = false;
+                            $namaJiwaList = [];
+                            if (
+                                $trx->dataZakatFitrah &&
+                                isset($trx->dataZakatFitrah['nama_jiwa']) &&
+                                count($trx->dataZakatFitrah['nama_jiwa']) > 0
+                            ) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
+                            } elseif (
+                                $trx->dataZakatFitrahTunai &&
+                                isset($trx->dataZakatFitrahTunai['nama_jiwa']) &&
+                                count($trx->dataZakatFitrahTunai['nama_jiwa']) > 0
+                            ) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
+                            } elseif (
+                                $trx->nama_jiwa_json &&
+                                is_array($trx->nama_jiwa_json) &&
+                                count($trx->nama_jiwa_json) > 0
+                            ) {
+                                $hasNamaJiwa = true;
+                                $namaJiwaList = $trx->nama_jiwa_json;
+                            }
+
+                            $statusBadge = match ($trx->status) {
+                                'verified'
+                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Verified</span>',
+                                'pending'
+                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
+                                'rejected'
+                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Ditolak</span>',
+                                default
+                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">' .
+                                    ucfirst($trx->status) .
+                                    '</span>',
                             };
                         @endphp
                         <div class="expandable-card {{ $menungguKonfirmasi ? 'bg-blue-50/30' : '' }}">
@@ -725,8 +853,13 @@
                                                 <span class="text-xs font-semibold text-green-600">Rp
                                                     {{ number_format($trx->jumlah, 0, ',', '.') }}</span>
                                             @elseif($trx->jumlah_beras_kg > 0)
-                                                <span class="text-xs font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }}
+                                                <span
+                                                    class="text-xs font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }}
                                                     kg</span>
+                                            @endif
+                                            @if ($hasNamaJiwa)
+                                                <span class="text-xs text-blue-600">{{ count($namaJiwaList) }}
+                                                    jiwa</span>
                                             @endif
                                             <span
                                                 class="px-2 py-0.5 text-xs font-medium rounded-full
@@ -746,7 +879,8 @@
                                         @endif
                                         @if ($trx->metode_penerimaan === 'daring' && $trx->konfirmasi_status === 'dikonfirmasi')
                                             <div class="mt-1">
-                                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800">
+                                                <span
+                                                    class="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800">
                                                     Sudah Dikonfirmasi
                                                 </span>
                                             </div>
@@ -755,7 +889,8 @@
                                     <div class="flex items-center gap-1 ml-2">
                                         <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
                                             class="inline-flex items-center p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -779,26 +914,30 @@
                                             <h4 class="text-sm font-medium text-gray-900 mb-2">Detail Transaksi</h4>
                                             <div class="space-y-2">
                                                 <div class="flex items-start text-sm">
-                                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
+                                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
                                                             d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                                     </svg>
                                                     <div>
                                                         <p class="text-xs text-gray-500">No. Transaksi</p>
-                                                        <p class="text-sm font-mono text-gray-900">{{ $trx->no_transaksi }}</p>
+                                                        <p class="text-sm font-mono text-gray-900">
+                                                            {{ $trx->no_transaksi }}</p>
                                                     </div>
                                                 </div>
                                                 @if ($trx->muzakki_telepon)
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                                         </svg>
                                                         <div>
                                                             <p class="text-xs text-gray-500">Telepon</p>
-                                                            <p class="text-sm text-gray-900">{{ $trx->muzakki_telepon }}</p>
+                                                            <p class="text-sm text-gray-900">{{ $trx->muzakki_telepon }}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -806,14 +945,16 @@
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         </svg>
                                                         <div>
                                                             <p class="text-xs text-gray-500">Alamat</p>
-                                                            <p class="text-sm text-gray-700">{{ $trx->muzakki_alamat }}</p>
+                                                            <p class="text-sm text-gray-700">{{ $trx->muzakki_alamat }}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -821,7 +962,8 @@
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                         </svg>
                                                         <div>
@@ -840,7 +982,8 @@
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                         </svg>
                                                         <div>
@@ -850,7 +993,8 @@
                                                             </p>
                                                             @if ($trx->jumlah_infaq > 0)
                                                                 <p class="text-xs text-gray-500">+ Infaq Rp
-                                                                    {{ number_format($trx->jumlah_infaq, 0, ',', '.') }}</p>
+                                                                    {{ number_format($trx->jumlah_infaq, 0, ',', '.') }}
+                                                                </p>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -859,7 +1003,8 @@
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-amber-500 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                                         </svg>
                                                         <div>
@@ -870,11 +1015,44 @@
                                                         </div>
                                                     </div>
                                                 @endif
+
+                                                {{-- Nama Jiwa (jika ada) --}}
+                                                @if ($hasNamaJiwa)
+                                                    <div class="flex items-start text-sm">
+                                                        <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                                        </svg>
+                                                        <div>
+                                                            <p class="text-xs text-gray-500">
+                                                                Nama Jiwa
+                                                                <span
+                                                                    class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }}
+                                                                    orang)</span>
+                                                            </p>
+                                                            <div class="text-xs text-gray-700 mt-1 space-y-1">
+                                                                @foreach ($namaJiwaList as $index => $nama)
+                                                                    @if ($nama && trim($nama) !== '')
+                                                                        <div class="flex items-start">
+                                                                            <span
+                                                                                class="text-gray-400 w-4 flex-shrink-0">{{ $index + 1 }}.</span>
+                                                                            <span>{{ $nama }}</span>
+                                                                        </div>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+
                                                 @if ($trx->metode_pembayaran)
                                                     <div class="flex items-start text-sm">
                                                         <svg class="w-4 h-4 text-gray-400 mr-2 mt-0.5 flex-shrink-0"
                                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                                         </svg>
                                                         <div>
@@ -889,44 +1067,52 @@
                                                         </div>
                                                     </div>
                                                 @endif
-                                                
+
                                                 <div>
                                                     <p class="text-xs text-gray-500 mb-1">Status</p>
                                                     {!! $statusBadge !!}
                                                 </div>
-                                                
+
                                                 @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status)
                                                     <div>
                                                         <p class="text-xs text-gray-500 mb-1">Status Konfirmasi</p>
                                                         @php
-                                                            $konfirmasiBadgeMobile = match($trx->konfirmasi_status) {
-                                                                'menunggu_konfirmasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Menunggu Konfirmasi</span>',
-                                                                'dikonfirmasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Dikonfirmasi</span>',
-                                                                'ditolak' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>',
+                                                            $konfirmasiBadgeMobile = match ($trx->konfirmasi_status) {
+                                                                'menunggu_konfirmasi'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 border border-yellow-200">Menunggu Konfirmasi</span>',
+                                                                'dikonfirmasi'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Dikonfirmasi</span>',
+                                                                'ditolak'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 border border-red-200">Ditolak</span>',
                                                                 default => '',
                                                             };
                                                         @endphp
                                                         {!! $konfirmasiBadgeMobile !!}
                                                     </div>
                                                 @endif
-                                                
+
                                                 @if ($trx->metode_penerimaan == 'dijemput' && $trx->status_penjemputan)
                                                     <div>
                                                         <p class="text-xs text-gray-500 mb-1">Status Penjemputan</p>
                                                         @php
-                                                            $penjemputanBadgeMobile = match($trx->status_penjemputan) {
-                                                                'menunggu' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">Menunggu</span>',
-                                                                'diterima' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diterima Amil</span>',
-                                                                'dalam_perjalanan' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">Dalam Perjalanan</span>',
-                                                                'sampai_lokasi' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 border border-purple-200">Sampai Lokasi</span>',
-                                                                'selesai' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>',
+                                                            $penjemputanBadgeMobile = match ($trx->status_penjemputan) {
+                                                                'menunggu'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 border border-gray-200">Menunggu</span>',
+                                                                'diterima'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 border border-blue-200">Diterima Amil</span>',
+                                                                'dalam_perjalanan'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">Dalam Perjalanan</span>',
+                                                                'sampai_lokasi'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 border border-purple-200">Sampai Lokasi</span>',
+                                                                'selesai'
+                                                                    => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">Selesai</span>',
                                                                 default => '',
                                                             };
                                                         @endphp
                                                         {!! $penjemputanBadgeMobile !!}
                                                     </div>
                                                 @endif
-                                                
+
                                                 @if ($trx->status == 'rejected' && $trx->alasan_penolakan)
                                                     <div class="p-2 bg-red-50 border border-red-200 rounded-lg">
                                                         <p class="text-xs text-red-600 font-medium">Alasan Ditolak:</p>
@@ -963,7 +1149,8 @@
                 @endif
             @else
                 <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
+                    <div
+                        class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
                         <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -983,11 +1170,13 @@
                             'periode',
                         ]))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">Tidak ada transaksi yang sesuai dengan filter yang dipilih</p>
+                        <p class="text-sm text-gray-500 mb-6">Tidak ada transaksi yang sesuai dengan filter yang dipilih
+                        </p>
                         <a href="{{ route('pemantauan-transaksi.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
                             </svg>
                             Reset Pencarian
                         </a>
@@ -1056,7 +1245,6 @@
             document.getElementById('filter-panel').classList.toggle('hidden');
         }
 
-        // Inisialisasi Alpine.js untuk dropdown jika belum ada
         document.addEventListener('alpine:init', function() {
             Alpine.data('dropdown', () => ({
                 open: false,
