@@ -1048,6 +1048,8 @@ class TransaksiPenerimaanController extends Controller
         }
 
         $isPembayaranBeras = $request->is_pembayaran_beras == '1';
+        // PERBAIKAN: Deteksi fidyah
+        $isFidyah = $request->filled('fidyah_jumlah_hari') && $request->fidyah_jumlah_hari > 0;
 
         $rules = [
             'jenis_zakat_id'    => 'required|exists:jenis_zakat,id',
@@ -1064,7 +1066,17 @@ class TransaksiPenerimaanController extends Controller
             'jumlah_dibayar'    => 'nullable|numeric|min:0',
         ];
 
-        if (!$isPembayaranBeras) {
+        // PERBAIKAN: Rules khusus untuk fidyah
+        if ($isFidyah) {
+            $rules['fidyah_jumlah_hari'] = 'required|integer|min:1';
+            $rules['fidyah_tipe'] = 'required|in:mentah,matang,tunai';
+            
+            // Untuk fidyah tunai, metode pembayaran required
+            if ($request->fidyah_tipe == 'tunai' && !$isPembayaranBeras) {
+                $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
+            }
+        } elseif (!$isPembayaranBeras) {
+            // Untuk non-fidyah non-beras, metode pembayaran required
             $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
         }
 
@@ -1076,7 +1088,38 @@ class TransaksiPenerimaanController extends Controller
         DB::beginTransaction();
         try {
             $this->isiDetailZakat($transaksi, $request, $isPembayaranBeras);
-            $this->isiMetodePembayaranPickup($transaksi, $request, $isPembayaranBeras);
+            
+            // PERBAIKAN: Handle fidyah secara spesifik
+            if ($isFidyah) {
+                // Set tipe zakat untuk fidyah
+                $tipeZakat = TipeZakat::where('uuid', $request->tipe_zakat_id)->firstOrFail();
+                $transaksi->jenis_zakat_id = $request->jenis_zakat_id;
+                $transaksi->tipe_zakat_id = $tipeZakat->id;
+                $transaksi->program_zakat_id = $request->program_zakat_id;
+                
+                // Isi data fidyah
+                $this->isiDataFidyah($transaksi, $request);
+                
+                if ($request->fidyah_tipe == 'tunai') {
+                    // Untuk fidyah tunai, gunakan metode pembayaran biasa
+                    $this->isiMetodePembayaranPickup($transaksi, $request, $isPembayaranBeras);
+                } else {
+                    // Untuk fidyah mentah/matang
+                    $transaksi->metode_pembayaran = $request->fidyah_tipe === 'mentah' 
+                        ? 'bahan_mentah' 
+                        : 'makanan_matang';
+                    $transaksi->jumlah_dibayar = 0;
+                    $transaksi->jumlah_infaq = 0;
+                    $transaksi->has_infaq = false;
+                    $transaksi->status = 'verified';
+                    $transaksi->verified_by = $this->user->id;
+                    $transaksi->verified_at = now();
+                }
+            } else {
+                // Untuk non-fidyah, gunakan metode biasa
+                $this->isiMetodePembayaranPickup($transaksi, $request, $isPembayaranBeras);
+            }
+            
             $transaksi->save();
 
             DB::commit();
@@ -1463,7 +1506,17 @@ class TransaksiPenerimaanController extends Controller
 
                 // Rules khusus berdasarkan tipe zakat
                 if ($isFidyah) {
-                    // ✅ FIX Bug 1: Set jenis_zakat_id dan tipe_zakat_id ke transaksi
+                    // PERBAIKAN: Tambahkan rules untuk fidyah
+                    $rules['fidyah_jumlah_hari'] = 'required|integer|min:1';
+                    $rules['fidyah_tipe'] = 'required|in:mentah,matang,tunai';
+                    
+                    // Untuk fidyah tunai, metode pembayaran required
+                    if ($request->fidyah_tipe == 'tunai') {
+                        $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
+                        $rules['jumlah'] = 'required|numeric|min:1000';
+                    }
+
+                    // Set jenis_zakat_id dan tipe_zakat_id ke transaksi
                     $tipeZakat = TipeZakat::where('uuid', $request->tipe_zakat_id)->firstOrFail();
                     $transaksi->jenis_zakat_id = $request->jenis_zakat_id;
                     $transaksi->tipe_zakat_id  = $tipeZakat->id;
@@ -1500,7 +1553,7 @@ class TransaksiPenerimaanController extends Controller
                             }
                         }
                     } else {
-                        // ✅ FIX Bug 2: Untuk fidyah mentah/matang, set metode yang benar
+                        // PERBAIKAN: Untuk fidyah mentah/matang, set metode yang benar
                         $transaksi->metode_pembayaran = $request->fidyah_tipe === 'mentah'
                             ? 'bahan_mentah'
                             : 'makanan_matang';
@@ -1611,13 +1664,16 @@ class TransaksiPenerimaanController extends Controller
                             }
                         }
                     } else {
-                        // Untuk fidyah non-tunai (mentah/matang)
+                        // PERBAIKAN: Untuk fidyah non-tunai (mentah/matang)
+                        $transaksi->metode_pembayaran = $request->fidyah_tipe === 'mentah'
+                            ? 'bahan_mentah'
+                            : 'makanan_matang';
+
                         $transaksi->status = 'verified';
                         $transaksi->verified_by = $this->user->id;
                         $transaksi->verified_at = now();
                         $transaksi->status_penjemputan = 'selesai';
                         $transaksi->waktu_selesai = now();
-                        $transaksi->metode_pembayaran = 'tunai'; // Default
                     }
                 } elseif ($isBeras) {
                     // Isi detail zakat untuk beras

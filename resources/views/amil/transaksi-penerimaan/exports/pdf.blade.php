@@ -151,6 +151,24 @@
             color: #b2bec3;
             border-top: 1px dashed #dfe6e9;
         }
+
+        /* Fidyah Styles */
+        .fidyah-info {
+            background-color: #fff3e0;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 8px;
+            margin-top: 2px;
+        }
+
+        .fidyah-badge {
+            background-color: #ff9800;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 8px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -211,9 +229,23 @@
                     }
 
                     if (!empty($filters['metode_penerimaan'])) {
-                        $penerimaanText =
-                            $filters['metode_penerimaan'] == 'datang_langsung' ? 'Datang Langsung' : 'Dijemput';
+                        $penerimaanText = match($filters['metode_penerimaan']) {
+                            'datang_langsung' => 'Datang Langsung',
+                            'dijemput' => 'Dijemput',
+                            'daring' => 'Daring',
+                            default => $filters['metode_penerimaan'],
+                        };
                         $appliedFilters[] = 'Penerimaan: ' . $penerimaanText;
+                    }
+
+                    if (!empty($filters['fidyah_tipe'])) {
+                        $fidyahText = match($filters['fidyah_tipe']) {
+                            'mentah' => 'Fidyah Bahan Mentah',
+                            'matang' => 'Fidyah Makanan Matang',
+                            'tunai' => 'Fidyah Tunai',
+                            default => 'Fidyah',
+                        };
+                        $appliedFilters[] = $fidyahText;
                     }
                 @endphp
 
@@ -230,8 +262,9 @@
             <div class="info-value">:
                 <strong>{{ number_format($totalTransaksi, 0, ',', '.') }}</strong> Total |
                 <span style="color: #01579b;">{{ $totalVerified }} Terverifikasi</span> |
-                <span style="color: #f57f17;">{{ $totalPending }} Menunggu Konfirmasi</span> |
-                <strong>Rp {{ number_format($totalNominal, 0, ',', '.') }}</strong>
+                <span style="color: #f57f17;">{{ $totalPending }} Menunggu</span> |
+                <strong>Rp {{ number_format($totalNominal, 0, ',', '.') }}</strong> |
+                <span style="color: #e67e22;">Infaq: Rp {{ number_format($totalInfaq, 0, ',', '.') }}</span>
             </div>
         </div>
 
@@ -249,7 +282,7 @@
                 <th rowspan="2" style="width: 60px;">Tanggal</th>
                 <th rowspan="2">Muzakki</th>
                 <th colspan="4">Detail Zakat</th>
-                <th rowspan="2" style="width: 70px;">Jumlah Jiwa</th>
+                <th rowspan="2" style="width: 70px;">Jumlah Jiwa / Fidyah</th>
                 <th colspan="3">Pembayaran</th>
                 <th colspan="2">Status</th>
                 <th rowspan="2">Amil</th>
@@ -283,14 +316,35 @@
                         default => '-',
                     };
 
-                    // Bangun teks jumlah jiwa
-                    $jiwaText = '-';
+                    // Deteksi apakah ini transaksi fidyah
+                    $isFidyah = $transaksi->fidyah_jumlah_hari > 0 && $transaksi->jenisZakat && stripos($transaksi->jenisZakat->nama, 'fidyah') !== false;
 
-                    if ($transaksi->jumlah_beras_kg > 0) {
+                    // Bangun teks untuk kolom Jumlah Jiwa / Fidyah
+                    $detailText = '-';
+
+                    if ($isFidyah) {
+                        $fidyahTipe = $transaksi->fidyah_tipe ?? '-';
+                        $jumlahHari = $transaksi->fidyah_jumlah_hari ?? 0;
+
+                        $detailText = "FIDYAH: {$jumlahHari} hari";
+
+                        if ($fidyahTipe == 'mentah') {
+                            $beratKg = $transaksi->fidyah_total_berat_kg ?? 0;
+                            $bahan = $transaksi->fidyah_nama_bahan ?? 'Bahan Pokok';
+                            $detailText .= "\n{$bahan}: {$beratKg} kg";
+                        } elseif ($fidyahTipe == 'matang') {
+                            $box = $transaksi->fidyah_jumlah_box ?? $jumlahHari;
+                            $menu = $transaksi->fidyah_menu_makanan ?: 'Makanan';
+                            $detailText .= "\n{$menu}: {$box} box";
+                        } elseif ($fidyahTipe == 'tunai') {
+                            $total = $transaksi->jumlah ?? 0;
+                            $detailText .= "\nRp " . number_format($total, 0, ',', '.');
+                        }
+                    } elseif ($transaksi->jumlah_beras_kg > 0) {
                         // Zakat fitrah beras
-                        $jiwaText = $transaksi->jumlah_beras_kg . ' kg';
+                        $detailText = $transaksi->jumlah_beras_kg . ' kg';
                         if ($transaksi->jumlah_jiwa > 0) {
-                            $jiwaText .= ' (' . $transaksi->jumlah_jiwa . ' jiwa)';
+                            $detailText .= ' (' . $transaksi->jumlah_jiwa . ' jiwa)';
                         }
                     } elseif ($transaksi->jumlah_jiwa > 0) {
                         // Zakat fitrah uang — tampilkan jumlah jiwa + nama-nama
@@ -298,13 +352,31 @@
 
                         if (!empty($namaJiwa) && is_array($namaJiwa)) {
                             // Ada nama jiwa tersimpan
-                            $jiwaText = $transaksi->jumlah_jiwa . ' jiwa:' . "\n";
-                            foreach ($namaJiwa as $i => $nama) {
-                                $jiwaText .= $i + 1 . '. ' . $nama . "\n";
+                            $detailText = $transaksi->jumlah_jiwa . ' jiwa:' . "\n";
+                            $limit = min(count($namaJiwa), 3); // Tampilkan maksimal 3 nama
+                            for ($i = 0; $i < $limit; $i++) {
+                                $detailText .= ($i + 1) . '. ' . $namaJiwa[$i] . "\n";
+                            }
+                            if (count($namaJiwa) > 3) {
+                                $detailText .= '...dan ' . (count($namaJiwa) - 3) . ' lainnya';
                             }
                         } else {
                             // Tidak ada nama jiwa, tampilkan jumlah saja
-                            $jiwaText = $transaksi->jumlah_jiwa . ' jiwa';
+                            $detailText = $transaksi->jumlah_jiwa . ' jiwa';
+                        }
+                    }
+
+                    // Format total dibayar
+                    $totalDibayarText = '-';
+                    if ($transaksi->jumlah_dibayar > 0) {
+                        $totalDibayarText = number_format($transaksi->jumlah_dibayar, 0, ',', '.');
+                    } elseif ($transaksi->jumlah_beras_kg > 0) {
+                        $totalDibayarText = $transaksi->jumlah_beras_kg . ' kg';
+                    } elseif ($isFidyah && $transaksi->fidyah_tipe != 'tunai') {
+                        if ($transaksi->fidyah_tipe == 'mentah') {
+                            $totalDibayarText = ($transaksi->fidyah_total_berat_kg ?? 0) . ' kg';
+                        } elseif ($transaksi->fidyah_tipe == 'matang') {
+                            $totalDibayarText = ($transaksi->fidyah_jumlah_box ?? 0) . ' box';
                         }
                     }
                 @endphp
@@ -312,32 +384,43 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td class="text-left" style="font-size: 8px;">{{ $transaksi->no_transaksi }}</td>
                     <td class="text-center">{{ $transaksi->tanggal_transaksi->format('d/m/Y') }}</td>
-                    <td class="text-left"><strong>{{ $transaksi->muzakki_nama }}</strong></td>
-                    <td class="text-left">{{ $transaksi->jenisZakat->nama ?? '-' }}</td>
+                    <td class="text-left">
+                        <strong>{{ $transaksi->muzakki_nama }}</strong>
+                        @if($transaksi->diinput_muzakki)
+                            <span style="color: #27ae60; font-size: 7px;">(Online)</span>
+                        @endif
+                    </td>
+                    <td class="text-left">
+                        {{ $transaksi->jenisZakat->nama ?? '-' }}
+                    </td>
                     <td class="text-left">{{ $transaksi->tipeZakat->nama ?? '-' }}</td>
                     <td class="text-left" style="font-size: 8px;">
-                        {{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}</td>
+                        {{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}
+                    </td>
                     <td class="text-right">
-                        {{ $transaksi->jumlah > 0 ? number_format($transaksi->jumlah, 0, ',', '.') : '-' }}</td>
-                    <td class="text-left" style="font-size: 8px; white-space: pre-wrap;">{{ $jiwaText }}</td>
+                        {{ $transaksi->jumlah > 0 ? number_format($transaksi->jumlah, 0, ',', '.') : '-' }}
+                    </td>
+                    <td class="text-left" style="font-size: 8px; white-space: pre-wrap;">{{ $detailText }}</td>
                     <td class="text-center">
-                        {{ $transaksi->metode_pembayaran ? ucfirst($transaksi->metode_pembayaran) : '-' }}</td>
+                        @php
+                            $metode = $transaksi->metode_pembayaran;
+                            $metodeText = match($metode) {
+                                'bahan_mentah' => 'Bahan Mentah',
+                                'makanan_matang' => 'Makanan Matang',
+                                default => $metode ? ucfirst($metode) : '-',
+                            };
+                        @endphp
+                        {{ $metodeText }}
+                    </td>
                     <td class="text-right">
                         {{ $transaksi->jumlah_infaq > 0 ? number_format($transaksi->jumlah_infaq, 0, ',', '.') : '-' }}
                     </td>
-                    <td class="text-right">
-                        @if ($transaksi->jumlah_dibayar > 0)
-                            {{ number_format($transaksi->jumlah_dibayar, 0, ',', '.') }}
-                        @elseif($transaksi->jumlah_beras_kg > 0)
-                            {{ $transaksi->jumlah_beras_kg }} kg
-                        @else
-                            -
-                        @endif
-                    </td>
+                    <td class="text-right">{{ $totalDibayarText }}</td>
                     <td class="text-center">{{ $statusText }}</td>
                     <td class="text-center">{{ $konfirmasiStatusText }}</td>
                     <td class="text-left">
-                        {{ $transaksi->amil->pengguna->name ?? ($transaksi->amil->nama_lengkap ?? '-') }}</td>
+                        {{ $transaksi->amil->pengguna->name ?? ($transaksi->amil->nama_lengkap ?? '-') }}
+                    </td>
                 </tr>
             @empty
                 <tr>
@@ -369,8 +452,9 @@
 
     <div class="footer-note">
         <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $masjid->nama ?? 'Masjid' }}.</p>
-        <p>*Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti
-            transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
+        <p>*Zakat Fitrah: Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'] ?? 50000, 0, ',', '.') }}/jiwa atau {{ ($zakatFitrahInfo['beras_kg'] ?? 2.5) }} kg ({{ ($zakatFitrahInfo['beras_liter'] ?? 3.5) }} liter) beras.</p>
+        <p>*Fidyah: 1 mud = {{ ($fidyahInfo['berat_per_hari_gram'] ?? 675) }} gram bahan pokok per hari, atau makanan siap santap, atau uang senilai makanan.</p>
+        <p>Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
         <p>Dicetak pada: {{ $tanggalExport }}</p>
     </div>
 </body>
