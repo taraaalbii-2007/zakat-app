@@ -9,9 +9,11 @@
       - Kolom status_penjemputan (menunggu/diterima/dalam_perjalanan/sampai_lokasi/selesai)
       - Tombol "Lengkapi Zakat" untuk transaksi yang belum ada detail zakatnya
       - Tombol update status penjemputan (AJAX)
-      - ✅ SEMUA METODE PEMBAYARAN (TUNAI, TRANSFER, QRIS) AUTO VERIFIED
-      - Ada tombol Create baru (berbeda dengan daring)
-      - ✅ TAMPIL NAMA JIWA JSON (seperti index-daring)
+      - ✅ SEMUA METODE PEMBAYARAN (TUNAI, TRANSFER, QRIS, BERAS, MAKANAN MATANG, BAHAN MENTAH) AUTO VERIFIED
+      - ✅ LABEL METODE PEMBAYARAN DESKRIPTIF (bukan hanya capitalize)
+      - ✅ TAMPIL INFO FIDYAH (tipe, jumlah hari, detail bahan/box/tunai)
+      - ✅ TAMPIL NAMA JIWA JSON
+      - Ada tombol Create baru
 
     VARIABEL      : $transaksis (paginated), $amilList, $stats
 --}}
@@ -19,6 +21,33 @@
 @extends('layouts.app')
 
 @section('title', 'Transaksi Dijemput')
+
+@php
+    /**
+     * Helper: label metode pembayaran yang deskriptif
+     * Sesuai dengan $labelMetode di storeDijemput
+     */
+    $labelMetode = [
+        'tunai'          => 'Tunai',
+        'transfer'       => 'Transfer Bank',
+        'qris'           => 'QRIS',
+        'beras'          => 'Beras',
+        'makanan_matang' => 'Makanan Siap Santap',
+        'bahan_mentah'   => 'Bahan Makanan Mentah',
+    ];
+
+    /**
+     * Helper: warna badge metode pembayaran
+     */
+    $badgeMetode = [
+        'tunai'          => 'bg-gray-100 text-gray-700',
+        'transfer'       => 'bg-blue-100 text-blue-700',
+        'qris'           => 'bg-purple-100 text-purple-700',
+        'beras'          => 'bg-amber-100 text-amber-700',
+        'makanan_matang' => 'bg-orange-100 text-orange-700',
+        'bahan_mentah'   => 'bg-yellow-100 text-yellow-700',
+    ];
+@endphp
 
 @section('content')
     <div class="space-y-4 sm:space-y-6">
@@ -284,36 +313,60 @@
                             @foreach ($transaksis as $trx)
                                 @php
                                     $statusPenjemputan = $trx->status_penjemputan ?? 'menunggu';
-                                    $sudahDijemput = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
-                                    $perluLengkapi = $sudahDijemput && !$trx->jenis_zakat_id;
-                                    $isAutoVerified = $trx->status == 'verified' && $trx->metode_pembayaran;
+                                    $sudahDijemput     = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
+                                    $isAutoVerified    = $trx->status == 'verified' && $trx->metode_pembayaran;
 
-                                    $nextStatus =
-                                        [
-                                            'menunggu'         => ['diterima', 'Terima'],
-                                            'diterima'         => ['dalam_perjalanan', 'Berangkat'],
-                                            'dalam_perjalanan' => ['sampai_lokasi', 'Sampai'],
-                                            'sampai_lokasi'    => ['selesai', 'Selesai'],
-                                        ][$statusPenjemputan] ?? null;
+                                    // ── Deteksi tipe transaksi (sesuai storeDijemput) ──
+                                    $isBeras   = $trx->metode_pembayaran === 'beras' || ($trx->jumlah_beras_kg > 0 && $trx->metode_pembayaran === 'tunai');
+                                    $isFidyah  = !empty($trx->fidyah_tipe);
 
-                                    // Deteksi nama jiwa (sama seperti index-daring)
-                                    $hasNamaJiwa = false;
+                                    // Perlu dilengkapi: sudah dijemput, belum verified, belum ada jenis zakat
+                                    // Fidyah yang sudah verified (walau tanpa jenis_zakat_id) = TIDAK perlu dilengkapi
+                                    $perluLengkapi = $sudahDijemput
+                                        && !$trx->jenis_zakat_id
+                                        && $trx->status !== 'verified'
+                                        && !$isFidyah;
+                                    $isMakananMatang = $trx->metode_pembayaran === 'makanan_matang';
+                                    $isBahanMentah   = $trx->metode_pembayaran === 'bahan_mentah';
+                                    $isNonUang = $isBeras || $isMakananMatang || $isBahanMentah;
+
+                                    $nextStatus = [
+                                        'menunggu'         => ['diterima', 'Terima'],
+                                        'diterima'         => ['dalam_perjalanan', 'Berangkat'],
+                                        'dalam_perjalanan' => ['sampai_lokasi', 'Sampai'],
+                                        'sampai_lokasi'    => ['selesai', 'Selesai'],
+                                    ][$statusPenjemputan] ?? null;
+
+                                    // ── Deteksi nama jiwa ──
+                                    $hasNamaJiwa  = false;
                                     $namaJiwaList = [];
                                     if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
-                                        $hasNamaJiwa = true;
+                                        $hasNamaJiwa  = true;
                                         $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
                                     } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
-                                        $hasNamaJiwa = true;
+                                        $hasNamaJiwa  = true;
                                         $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
                                     } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
-                                        $hasNamaJiwa = true;
+                                        $hasNamaJiwa  = true;
                                         $namaJiwaList = $trx->nama_jiwa_json;
                                     }
+
+                                    // ── Label metode pembayaran deskriptif ──
+                                    // Jika ada jumlah_beras_kg dan metode tunai → kemungkinan zakat fitrah beras
+                                    // yang disimpan storeDatangLangsung (metode = tunai tapi hakikatnya beras)
+                                    // Prioritaskan $isBeras dari metode_pembayaran langsung
+                                    $metodeKey   = $trx->metode_pembayaran ?? '';
+                                    // Override: jika ada beras_kg & metode = tunai → tampilkan sebagai Beras
+                                    if ($trx->jumlah_beras_kg > 0 && $metodeKey === 'tunai') {
+                                        $metodeKey = 'beras';
+                                    }
+                                    $namaMetode  = $labelMetode[$metodeKey] ?? ucfirst($metodeKey);
+                                    $classBadge  = $badgeMetode[$metodeKey] ?? 'bg-gray-100 text-gray-700';
                                 @endphp
 
                                 <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
                                     {{ $perluLengkapi ? 'bg-orange-50/30' : '' }}
-                                    {{ $isAutoVerified ? 'bg-green-50/30' : '' }}"
+                                    {{ $isAutoVerified && !$perluLengkapi ? 'bg-green-50/20' : '' }}"
                                     data-target="detail-{{ $trx->uuid }}">
                                     <td class="px-4 py-4">
                                         <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
@@ -326,24 +379,41 @@
                                     <td class="px-6 py-4">
                                         <div class="flex-1">
                                             <div class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</div>
-                                            <div class="text-xs text-gray-500 mt-0.5">
-                                                {{ $trx->tanggal_transaksi->format('d/m/Y') }}
+                                            <div class="text-xs text-gray-500 mt-0.5 flex items-center flex-wrap gap-1.5">
+                                                <span>{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
                                                 @if ($trx->waktu_transaksi)
-                                                    · {{ $trx->waktu_transaksi->format('H:i') }}
+                                                    <span>· {{ $trx->waktu_transaksi->format('H:i') }}</span>
                                                 @endif
+                                                {{-- Jumlah: hanya tampil jika ada uang --}}
                                                 @if ($trx->jumlah > 0)
-                                                    · <span class="font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span>
+                                                    <span>· <span class="font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span></span>
                                                 @endif
                                                 @if ($hasNamaJiwa)
-                                                    · <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
+                                                    <span>· <span class="text-blue-600">{{ count($namaJiwaList) }} jiwa</span></span>
+                                                @endif
+                                                {{-- Tampil info beras --}}
+                                                @if ($isBeras && $trx->jumlah_beras_kg)
+                                                    <span>· <span class="font-semibold text-amber-700">{{ $trx->jumlah_beras_kg }} kg beras</span></span>
+                                                @endif
+                                                {{-- Tampil info fidyah ringkas --}}
+                                                @if ($isFidyah && $trx->fidyah_jumlah_hari)
+                                                    <span>· <span class="font-semibold text-orange-700">Fidyah {{ $trx->fidyah_jumlah_hari }} hari</span></span>
+                                                    @if ($trx->fidyah_tipe === 'tunai' && $trx->jumlah_dibayar > 0)
+                                                        <span>· <span class="font-semibold text-green-700">Rp {{ number_format($trx->jumlah_dibayar, 0, ',', '.') }}</span></span>
+                                                    @elseif ($trx->fidyah_tipe === 'mentah' && $trx->fidyah_total_berat_kg)
+                                                        <span>· <span class="font-semibold text-amber-700">{{ $trx->fidyah_total_berat_kg }} kg</span></span>
+                                                    @elseif ($trx->fidyah_tipe === 'matang' && $trx->fidyah_jumlah_box)
+                                                        <span>· <span class="font-semibold text-orange-600">{{ $trx->fidyah_jumlah_box }} box</span></span>
+                                                    @endif
                                                 @endif
                                             </div>
                                             <div class="flex items-center gap-2 mt-2 flex-wrap">
                                                 {!! $trx->status_badge !!}
 
+                                                {{-- Badge Auto Verified --}}
                                                 @if ($isAutoVerified)
-                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
-                                                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                                         </svg>
                                                         Auto Verified
@@ -353,17 +423,22 @@
                                                 {!! $trx->status_penjemputan_badge !!}
 
                                                 @if ($perluLengkapi)
-                                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
                                                         Perlu Dilengkapi
                                                     </span>
                                                 @endif
+
+                                                {{-- Badge metode pembayaran deskriptif --}}
+                                                @if ($trx->metode_pembayaran)
+                                                    <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full {{ $classBadge }}">
+                                                        {{ $namaMetode }}
+                                                    </span>
+                                                @endif
                                             </div>
-                                            @if ($trx->metode_pembayaran)
-                                                <div class="text-xs text-gray-400 mt-1">
-                                                    Metode: <span class="capitalize">{{ $trx->metode_pembayaran }}</span>
-                                                </div>
-                                            @endif
-                                            <div class="text-xs text-gray-400 mt-0.5">Klik untuk melihat detail</div>
+                                            <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
@@ -393,10 +468,12 @@
                                             <div class="px-6 py-4">
                                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                                                    {{-- Kolom 1: Data Muzakki --}}
+                                                    {{-- ── Kolom 1: Data Muzakki ── --}}
                                                     <div>
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Data Muzakki</h4>
                                                         <div class="space-y-3">
+
+                                                            {{-- Nama --}}
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -407,7 +484,7 @@
                                                                 </div>
                                                             </div>
 
-                                                            {{-- ✅ NAMA JIWA (seperti index-daring) --}}
+                                                            {{-- Nama Jiwa --}}
                                                             @if ($hasNamaJiwa)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -416,13 +493,13 @@
                                                                     </svg>
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Nama Jiwa
-                                                                            <span class="text-xs text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
+                                                                            <span class="text-gray-400 ml-1">({{ count($namaJiwaList) }} orang)</span>
                                                                         </p>
-                                                                        <div class="text-sm text-gray-700 mt-1 flex flex-wrap gap-1">
+                                                                        <div class="flex flex-wrap gap-1 mt-1">
                                                                             @foreach ($namaJiwaList as $index => $nama)
                                                                                 @if ($nama && trim($nama) !== '')
                                                                                     <span class="inline-flex items-center bg-white border border-gray-200 rounded-lg px-2.5 py-1 text-xs">
-                                                                                        <span class="font-medium text-gray-500 mr-1">{{ $index + 1 }}.</span>
+                                                                                        <span class="font-medium text-gray-400 mr-1">{{ $index + 1 }}.</span>
                                                                                         {{ $nama }}
                                                                                     </span>
                                                                                 @endif
@@ -432,6 +509,7 @@
                                                                 </div>
                                                             @endif
 
+                                                            {{-- Telepon --}}
                                                             @if ($trx->muzakki_telepon)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,6 +525,8 @@
                                                                     </div>
                                                                 </div>
                                                             @endif
+
+                                                            {{-- Alamat + Maps --}}
                                                             @if ($trx->muzakki_alamat)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -467,10 +547,12 @@
                                                         </div>
                                                     </div>
 
-                                                    {{-- Kolom 2: Detail Zakat --}}
+                                                    {{-- ── Kolom 2: Detail Zakat & Pembayaran ── --}}
                                                     <div>
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Zakat</h4>
                                                         <div class="space-y-3">
+
+                                                            {{-- Tanggal --}}
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -483,6 +565,8 @@
                                                                     @endif
                                                                 </div>
                                                             </div>
+
+                                                            {{-- Jenis & Tipe Zakat --}}
                                                             @if ($trx->jenisZakat)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -509,17 +593,28 @@
                                                                     </div>
                                                                 </div>
                                                             @endif
+
+                                                            {{-- Jumlah Uang --}}
                                                             @if ($trx->jumlah > 0)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                                     </svg>
                                                                     <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah</p>
+                                                                        <p class="text-xs text-gray-500">Jumlah Zakat</p>
                                                                         <p class="text-sm font-semibold text-green-600">{{ $trx->jumlah_formatted }}</p>
+                                                                        @if ($trx->jumlah_dibayar > 0 && $trx->jumlah_dibayar != $trx->jumlah)
+                                                                            <p class="text-xs text-gray-400 mt-0.5">Dibayar: Rp {{ number_format($trx->jumlah_dibayar, 0, ',', '.') }}</p>
+                                                                        @endif
+                                                                        @if ($trx->jumlah_infaq > 0)
+                                                                            <p class="text-xs text-blue-600 mt-0.5">+ Infaq: Rp {{ number_format($trx->jumlah_infaq, 0, ',', '.') }}</p>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
-                                                            @elseif (isset($trx->jumlah_beras_kg) && $trx->jumlah_beras_kg > 0)
+                                                            @endif
+
+                                                            {{-- Jumlah Beras (metode_pembayaran = beras) --}}
+                                                            @if ($isBeras && $trx->jumlah_beras_kg)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-amber-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -527,9 +622,61 @@
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Jumlah Beras</p>
                                                                         <p class="text-sm font-semibold text-amber-700">{{ $trx->jumlah_beras_kg }} kg</p>
+                                                                        @if ($trx->jumlah_jiwa)
+                                                                            <p class="text-xs text-gray-400 mt-0.5">{{ $trx->jumlah_jiwa }} jiwa</p>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             @endif
+
+                                                            {{-- Detail Fidyah --}}
+                                                            @if ($isFidyah)
+                                                                <div class="flex items-start">
+                                                                    <svg class="w-4 h-4 text-orange-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                                    </svg>
+                                                                    <div>
+                                                                        <p class="text-xs text-gray-500">Fidyah</p>
+                                                                        <p class="text-sm font-semibold text-orange-700">{{ $trx->fidyah_jumlah_hari }} hari</p>
+                                                                        @php
+                                                                            $fidyahLabel = match($trx->fidyah_tipe) {
+                                                                                'mentah' => 'Bahan Makanan Mentah',
+                                                                                'matang' => 'Makanan Siap Santap',
+                                                                                'tunai'  => 'Tunai',
+                                                                                default  => ucfirst($trx->fidyah_tipe ?? ''),
+                                                                            };
+                                                                        @endphp
+                                                                        <p class="text-xs text-gray-400 mt-0.5">Tipe: {{ $fidyahLabel }}</p>
+
+                                                                        {{-- Detail mentah --}}
+                                                                        @if ($trx->fidyah_tipe === 'mentah')
+                                                                            @if ($trx->fidyah_nama_bahan)
+                                                                                <p class="text-xs text-gray-400">Bahan: {{ $trx->fidyah_nama_bahan }}</p>
+                                                                            @endif
+                                                                            @if ($trx->fidyah_total_berat_kg)
+                                                                                <p class="text-xs text-amber-600">Total: {{ $trx->fidyah_total_berat_kg }} kg</p>
+                                                                            @endif
+                                                                        @endif
+
+                                                                        {{-- Detail matang --}}
+                                                                        @if ($trx->fidyah_tipe === 'matang')
+                                                                            @if ($trx->fidyah_jumlah_box)
+                                                                                <p class="text-xs text-gray-400">{{ $trx->fidyah_jumlah_box }} box</p>
+                                                                            @endif
+                                                                            @if ($trx->fidyah_menu_makanan)
+                                                                                <p class="text-xs text-gray-400">Menu: {{ $trx->fidyah_menu_makanan }}</p>
+                                                                            @endif
+                                                                        @endif
+
+                                                                        {{-- Detail tunai --}}
+                                                                        @if ($trx->fidyah_tipe === 'tunai' && $trx->jumlah > 0)
+                                                                            <p class="text-xs text-green-600">{{ $trx->jumlah_formatted }}</p>
+                                                                        @endif
+                                                                    </div>
+                                                                </div>
+                                                            @endif
+
+                                                            {{-- Metode Pembayaran --}}
                                                             @if ($trx->metode_pembayaran)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,26 +684,30 @@
                                                                     </svg>
                                                                     <div>
                                                                         <p class="text-xs text-gray-500">Metode Pembayaran</p>
-                                                                        <p class="text-sm font-medium text-gray-900 capitalize">
-                                                                            {{ $trx->metode_pembayaran }}
-                                                                            @if ($isAutoVerified)
-                                                                                <span class="text-xs text-green-600 ml-1">(Auto Verified)</span>
-                                                                            @endif
-                                                                        </p>
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $classBadge }}">
+                                                                            {{ $namaMetode }}
+                                                                        </span>
+                                                                        @if ($isAutoVerified)
+                                                                            <span class="text-xs text-green-600 ml-1">· Auto Verified</span>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             @endif
                                                         </div>
                                                     </div>
 
-                                                    {{-- Kolom 3: Status Penjemputan --}}
+                                                    {{-- ── Kolom 3: Status & Amil ── --}}
                                                     <div>
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Status & Amil</h4>
                                                         <div class="space-y-3">
+
+                                                            {{-- Status Penjemputan (hanya 1x, tidak duplikasi) --}}
                                                             <div>
                                                                 <p class="text-xs text-gray-500 mb-1">Status Penjemputan</p>
                                                                 {!! $trx->status_penjemputan_badge !!}
                                                             </div>
+
+                                                            {{-- Status Transaksi --}}
                                                             <div>
                                                                 <p class="text-xs text-gray-500 mb-1">Status Transaksi</p>
                                                                 {!! $trx->status_badge !!}
@@ -564,6 +715,8 @@
                                                                     <span class="ml-1 text-xs text-green-600">(Auto Verified)</span>
                                                                 @endif
                                                             </div>
+
+                                                            {{-- Amil --}}
                                                             @if ($trx->amil)
                                                                 <div class="flex items-start">
                                                                     <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -578,6 +731,8 @@
                                                                     </div>
                                                                 </div>
                                                             @endif
+
+                                                            {{-- Tracking Waktu --}}
                                                             @if ($trx->waktu_selesai || $trx->waktu_sampai || $trx->waktu_berangkat || $trx->waktu_diterima_amil)
                                                                 <div>
                                                                     <p class="text-xs text-gray-500 mb-1">Tracking Waktu</p>
@@ -598,6 +753,7 @@
                                                                 </div>
                                                             @endif
                                                         </div>
+
                                                         @if ($trx->keterangan)
                                                             <div class="mt-4 pt-4 border-t border-gray-200">
                                                                 <p class="text-xs text-gray-500 mb-1">Keterangan</p>
@@ -607,13 +763,14 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Tombol Aksi di Expandable --}}
+                                                {{-- ── Tombol Aksi di Expandable ── --}}
                                                 <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-3">
                                                     <div class="text-xs text-gray-500">
                                                         No. Transaksi: <span class="font-medium text-gray-700">{{ $trx->no_transaksi }}</span>
                                                     </div>
                                                     <div class="flex gap-2 flex-wrap">
 
+                                                        {{-- Tombol Update Status Penjemputan --}}
                                                         @if ($nextStatus && (auth()->user()->isAmil() || auth()->user()->isAdminMasjid()))
                                                             <button type="button"
                                                                 onclick="updateStatusPenjemputan('{{ $trx->uuid }}', '{{ $nextStatus[0] }}', this)"
@@ -625,6 +782,7 @@
                                                             </button>
                                                         @endif
 
+                                                        {{-- Tombol Lengkapi Zakat --}}
                                                         @if ($perluLengkapi)
                                                             <a href="{{ route('transaksi-dijemput.edit', $trx->uuid) }}"
                                                                 class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 text-xs font-medium rounded-lg transition-all">
@@ -635,6 +793,7 @@
                                                             </a>
                                                         @endif
 
+                                                        {{-- Tombol Maps --}}
                                                         @if ($trx->latitude && $trx->longitude)
                                                             <a href="https://maps.google.com/?q={{ $trx->latitude }},{{ $trx->longitude }}"
                                                                 target="_blank"
@@ -647,6 +806,7 @@
                                                             </a>
                                                         @endif
 
+                                                        {{-- Tombol Detail --}}
                                                         <a href="{{ route('transaksi-dijemput.show', $trx->uuid) }}"
                                                             class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
                                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -671,34 +831,49 @@
                     @foreach ($transaksis as $trx)
                         @php
                             $statusPenjemputan = $trx->status_penjemputan ?? 'menunggu';
-                            $sudahDijemput = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
-                            $perluLengkapi = $sudahDijemput && !$trx->jenis_zakat_id;
-                            $isAutoVerified = $trx->status == 'verified' && $trx->metode_pembayaran;
+                            $sudahDijemput     = in_array($statusPenjemputan, ['sampai_lokasi', 'selesai']);
+                            $isAutoVerified    = $trx->status == 'verified' && $trx->metode_pembayaran;
 
-                            $nextStatus =
-                                [
-                                    'menunggu'         => ['diterima', 'Terima'],
-                                    'diterima'         => ['dalam_perjalanan', 'Berangkat'],
-                                    'dalam_perjalanan' => ['sampai_lokasi', 'Sampai'],
-                                    'sampai_lokasi'    => ['selesai', 'Selesai'],
-                                ][$statusPenjemputan] ?? null;
+                            $isBeras         = $trx->metode_pembayaran === 'beras' || ($trx->jumlah_beras_kg > 0 && $trx->metode_pembayaran === 'tunai');
+                            $isFidyah        = !empty($trx->fidyah_tipe);
+                            $isMakananMatang = $trx->metode_pembayaran === 'makanan_matang';
+                            $isBahanMentah   = $trx->metode_pembayaran === 'bahan_mentah';
 
-                            // Deteksi nama jiwa (sama seperti index-daring)
-                            $hasNamaJiwa = false;
+                            // Fidyah yang sudah verified = TIDAK perlu dilengkapi
+                            $perluLengkapi = $sudahDijemput
+                                && !$trx->jenis_zakat_id
+                                && $trx->status !== 'verified'
+                                && !$isFidyah;
+
+                            $nextStatus = [
+                                'menunggu'         => ['diterima', 'Terima'],
+                                'diterima'         => ['dalam_perjalanan', 'Berangkat'],
+                                'dalam_perjalanan' => ['sampai_lokasi', 'Sampai'],
+                                'sampai_lokasi'    => ['selesai', 'Selesai'],
+                            ][$statusPenjemputan] ?? null;
+
+                            $hasNamaJiwa  = false;
                             $namaJiwaList = [];
                             if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
-                                $hasNamaJiwa = true;
+                                $hasNamaJiwa  = true;
                                 $namaJiwaList = $trx->dataZakatFitrah['nama_jiwa'];
                             } elseif (!empty($trx->dataZakatFitrahTunai['nama_jiwa'])) {
-                                $hasNamaJiwa = true;
+                                $hasNamaJiwa  = true;
                                 $namaJiwaList = $trx->dataZakatFitrahTunai['nama_jiwa'];
                             } elseif (!empty($trx->nama_jiwa_json) && is_array($trx->nama_jiwa_json)) {
-                                $hasNamaJiwa = true;
+                                $hasNamaJiwa  = true;
                                 $namaJiwaList = $trx->nama_jiwa_json;
                             }
+
+                            $metodeKey  = $trx->metode_pembayaran ?? '';
+                            if ($trx->jumlah_beras_kg > 0 && $metodeKey === 'tunai') {
+                                $metodeKey = 'beras';
+                            }
+                            $namaMetode = $labelMetode[$metodeKey] ?? ucfirst($metodeKey);
+                            $classBadge = $badgeMetode[$metodeKey] ?? 'bg-gray-100 text-gray-700';
                         @endphp
 
-                        <div class="expandable-card {{ $perluLengkapi ? 'bg-orange-50/30' : '' }} {{ $isAutoVerified ? 'bg-green-50/30' : '' }}">
+                        <div class="expandable-card {{ $perluLengkapi ? 'bg-orange-50/30' : '' }} {{ $isAutoVerified && !$perluLengkapi ? 'bg-green-50/20' : '' }}">
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                                 data-target="detail-mobile-{{ $trx->uuid }}">
                                 <div class="flex items-center justify-between">
@@ -712,6 +887,19 @@
                                             @if ($trx->jumlah > 0)
                                                 <span class="text-xs font-semibold text-gray-700">{{ $trx->jumlah_formatted }}</span>
                                             @endif
+                                            @if ($isBeras && $trx->jumlah_beras_kg)
+                                                <span class="text-xs font-semibold text-amber-700">{{ $trx->jumlah_beras_kg }} kg beras</span>
+                                            @endif
+                                            @if ($isFidyah && $trx->fidyah_jumlah_hari)
+                                                <span class="text-xs font-semibold text-orange-700">Fidyah {{ $trx->fidyah_jumlah_hari }} hari</span>
+                                                @if ($trx->fidyah_tipe === 'tunai' && $trx->jumlah_dibayar > 0)
+                                                    <span class="text-xs font-semibold text-green-700">Rp {{ number_format($trx->jumlah_dibayar, 0, ',', '.') }}</span>
+                                                @elseif ($trx->fidyah_tipe === 'mentah' && $trx->fidyah_total_berat_kg)
+                                                    <span class="text-xs font-semibold text-amber-700">{{ $trx->fidyah_total_berat_kg }} kg</span>
+                                                @elseif ($trx->fidyah_tipe === 'matang' && $trx->fidyah_jumlah_box)
+                                                    <span class="text-xs font-semibold text-orange-600">{{ $trx->fidyah_jumlah_box }} box</span>
+                                                @endif
+                                            @endif
                                             @if ($hasNamaJiwa)
                                                 <span class="text-xs text-blue-600">{{ count($namaJiwaList) }} jiwa</span>
                                             @endif
@@ -720,8 +908,8 @@
                                             {!! $trx->status_penjemputan_badge !!}
 
                                             @if ($isAutoVerified)
-                                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
-                                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 border border-green-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                                     </svg>
                                                     Auto Verified
@@ -729,14 +917,14 @@
                                             @endif
 
                                             @if ($perluLengkapi)
-                                                <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Perlu Dilengkapi</span>
+                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Perlu Dilengkapi</span>
+                                            @endif
+
+                                            {{-- Badge metode deskriptif --}}
+                                            @if ($trx->metode_pembayaran)
+                                                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full {{ $classBadge }}">{{ $namaMetode }}</span>
                                             @endif
                                         </div>
-                                        @if ($trx->metode_pembayaran)
-                                            <div class="text-xs text-gray-400 mt-1">
-                                                Metode: <span class="capitalize">{{ $trx->metode_pembayaran }}</span>
-                                            </div>
-                                        @endif
                                     </div>
                                     <div class="flex items-center gap-1 ml-2">
                                         <button type="button"
@@ -768,7 +956,7 @@
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
                                     <div class="space-y-4">
 
-                                        {{-- ✅ NAMA JIWA MOBILE (seperti index-daring) --}}
+                                        {{-- Nama Jiwa --}}
                                         @if ($hasNamaJiwa)
                                             <div>
                                                 <h4 class="text-sm font-medium text-gray-900 mb-2">Nama Jiwa</h4>
@@ -794,6 +982,39 @@
                                             </div>
                                         @endif
 
+                                        {{-- Info Fidyah (mobile) --}}
+                                        @if ($isFidyah)
+                                            <div>
+                                                <h4 class="text-sm font-medium text-gray-900 mb-2">Detail Fidyah</h4>
+                                                <div class="bg-orange-50 border border-orange-100 rounded-lg p-3 space-y-1">
+                                                    <p class="text-xs font-medium text-orange-800">{{ $trx->fidyah_jumlah_hari }} hari
+                                                        @php
+                                                            $fidyahLabel = match($trx->fidyah_tipe) {
+                                                                'mentah' => '· Bahan Makanan Mentah',
+                                                                'matang' => '· Makanan Siap Santap',
+                                                                'tunai'  => '· Tunai',
+                                                                default  => '',
+                                                            };
+                                                        @endphp
+                                                        <span class="font-normal text-orange-600">{{ $fidyahLabel }}</span>
+                                                    </p>
+                                                    @if ($trx->fidyah_tipe === 'mentah' && $trx->fidyah_nama_bahan)
+                                                        <p class="text-xs text-orange-600">Bahan: {{ $trx->fidyah_nama_bahan }}</p>
+                                                    @endif
+                                                    @if ($trx->fidyah_tipe === 'mentah' && $trx->fidyah_total_berat_kg)
+                                                        <p class="text-xs text-orange-600">Total: {{ $trx->fidyah_total_berat_kg }} kg</p>
+                                                    @endif
+                                                    @if ($trx->fidyah_tipe === 'matang' && $trx->fidyah_jumlah_box)
+                                                        <p class="text-xs text-orange-600">{{ $trx->fidyah_jumlah_box }} box</p>
+                                                    @endif
+                                                    @if ($trx->fidyah_tipe === 'matang' && $trx->fidyah_menu_makanan)
+                                                        <p class="text-xs text-orange-600">Menu: {{ $trx->fidyah_menu_makanan }}</p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Kontak & Lokasi --}}
                                         @if ($trx->muzakki_telepon || $trx->muzakki_alamat)
                                             <div>
                                                 <h4 class="text-sm font-medium text-gray-900 mb-2">Kontak & Lokasi</h4>
@@ -821,6 +1042,7 @@
                                             </div>
                                         @endif
 
+                                        {{-- Detail Zakat --}}
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 mb-2">Detail Zakat</h4>
                                             <div class="space-y-2">
@@ -834,6 +1056,7 @@
                                                         </span>
                                                     </div>
                                                 @endif
+
                                                 @if ($trx->jumlah > 0)
                                                     <div class="flex items-center text-sm">
                                                         <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -844,9 +1067,32 @@
                                                             @if ($isAutoVerified)
                                                                 <span class="text-xs text-green-600 ml-1">(Auto Verified)</span>
                                                             @endif
+                                                            @if ($trx->jumlah_infaq > 0)
+                                                                <span class="text-xs text-blue-500 ml-1">+ Infaq Rp {{ number_format($trx->jumlah_infaq, 0, ',', '.') }}</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 @endif
+
+                                                @if ($isBeras && $trx->jumlah_beras_kg)
+                                                    <div class="flex items-center text-sm">
+                                                        <svg class="w-4 h-4 text-amber-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                        </svg>
+                                                        <span class="font-semibold text-amber-700">{{ $trx->jumlah_beras_kg }} kg beras</span>
+                                                    </div>
+                                                @endif
+
+                                                {{-- Metode deskriptif --}}
+                                                @if ($trx->metode_pembayaran)
+                                                    <div class="flex items-center text-sm">
+                                                        <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                        </svg>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $classBadge }}">{{ $namaMetode }}</span>
+                                                    </div>
+                                                @endif
+
                                                 @if ($trx->amil)
                                                     <div class="flex items-center text-sm">
                                                         <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -858,6 +1104,7 @@
                                             </div>
                                         </div>
 
+                                        {{-- Aksi Mobile --}}
                                         <div class="pt-3 border-t border-gray-200">
                                             <div class="flex gap-2 flex-wrap">
 
@@ -904,6 +1151,7 @@
                         {{ $transaksis->withQueryString()->links() }}
                     </div>
                 @endif
+
             @else
                 <div class="p-8 sm:p-12 text-center">
                     <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-50 mb-4">
@@ -1136,14 +1384,14 @@
         // ============================================================
         document.addEventListener('DOMContentLoaded', function () {
 
-            const dropdown            = document.getElementById('dropdown-container');
-            const ddDetail            = document.getElementById('dd-detail');
-            const ddNextStatus        = document.getElementById('dd-next-status');
-            const ddNextLabel         = document.getElementById('dd-next-label');
-            const ddLengkapi          = document.getElementById('dd-lengkapi');
-            const ddMaps              = document.getElementById('dd-maps');
-            const ddDelete            = document.getElementById('dd-delete');
-            const ddDividerDelete     = document.getElementById('dd-divider-delete');
+            const dropdown        = document.getElementById('dropdown-container');
+            const ddDetail        = document.getElementById('dd-detail');
+            const ddNextStatus    = document.getElementById('dd-next-status');
+            const ddNextLabel     = document.getElementById('dd-next-label');
+            const ddLengkapi      = document.getElementById('dd-lengkapi');
+            const ddMaps          = document.getElementById('dd-maps');
+            const ddDelete        = document.getElementById('dd-delete');
+            const ddDividerDelete = document.getElementById('dd-divider-delete');
 
             // ── Desktop expandable rows ──
             document.querySelectorAll('.expandable-row').forEach(row => {

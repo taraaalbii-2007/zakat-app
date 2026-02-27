@@ -141,7 +141,6 @@
     @stack('styles')
 </head>
 <body>
-    @include('partials.splash-screen')
 
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>

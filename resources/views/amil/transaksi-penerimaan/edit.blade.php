@@ -7,6 +7,7 @@
     4. Menampilkan ringkasan data muzakki yang sudah diisi
     5. QRIS dari KonfigurasiQris (tanpa input no referensi)
     6. Fitur nama jiwa seperti di create
+    7. [TAMBAHAN] Panel fidyah (mentah/matang/tunai) + hidden inputs fidyah
 --}}
 
 @extends('layouts.app')
@@ -73,6 +74,16 @@
                 <input type="hidden" name="latitude" value="{{ $transaksi->latitude }}">
                 <input type="hidden" name="longitude" value="{{ $transaksi->longitude }}">
                 <input type="hidden" name="amil_id" value="{{ $transaksi->amil_id }}">
+
+                {{-- [TAMBAHAN] Hidden inputs untuk fidyah --}}
+                <input type="hidden" name="fidyah_jumlah_hari" id="hdnFidyahHari" value="{{ old('fidyah_jumlah_hari', $transaksi->fidyah_jumlah_hari) }}">
+                <input type="hidden" name="fidyah_tipe" id="hdnFidyahTipe" value="{{ old('fidyah_tipe', $transaksi->fidyah_tipe) }}">
+                <input type="hidden" name="fidyah_nama_bahan" id="hdnFidyahNamaBahan" value="{{ old('fidyah_nama_bahan', $transaksi->fidyah_nama_bahan) }}">
+                <input type="hidden" name="fidyah_berat_per_hari_gram" id="hdnFidyahBeratPerHari" value="{{ old('fidyah_berat_per_hari_gram', $transaksi->fidyah_berat_per_hari_gram ?? $fidyahInfo['berat_per_hari_gram']) }}">
+                <input type="hidden" name="fidyah_jumlah_box" id="hdnFidyahJumlahBox" value="{{ old('fidyah_jumlah_box', $transaksi->fidyah_jumlah_box) }}">
+                <input type="hidden" name="fidyah_menu_makanan" id="hdnFidyahMenu" value="{{ old('fidyah_menu_makanan', $transaksi->fidyah_menu_makanan) }}">
+                <input type="hidden" name="fidyah_harga_per_box" id="hdnFidyahHargaBox" value="{{ old('fidyah_harga_per_box', $transaksi->fidyah_harga_per_box ?? 0) }}">
+                <input type="hidden" name="fidyah_cara_serah" id="hdnFidyahCaraSerah" value="{{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) }}">
 
                 {{-- PROGRESS DOTS (Langsung ke step 2) --}}
                 <div class="mb-8">
@@ -395,6 +406,194 @@
                             </div>
                         </div>
 
+                        {{-- [TAMBAHAN] ══ PANEL FIDYAH ══ --}}
+                        <div id="panelFidyah" class="hidden space-y-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="text-sm font-semibold text-amber-800">Pembayaran Fidyah</p>
+                                </div>
+                                <p class="text-xs text-amber-700">
+                                    Fidyah: 1 mud ({{ $fidyahInfo['berat_per_hari_gram'] }} gram) bahan pokok per hari,
+                                    atau makanan siap santap sekali makan, atau uang senilai makanan.
+                                </p>
+                            </div>
+
+                            {{-- Jumlah Hari --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Jumlah Hari <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="fidyahHari" min="1" step="1"
+                                    value="{{ old('fidyah_jumlah_hari', $transaksi->fidyah_jumlah_hari ?? 1) }}"
+                                    class="w-full sm:w-48 px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500"
+                                    placeholder="Jumlah hari puasa yang ditinggalkan">
+                            </div>
+
+                            {{-- Tipe Fidyah --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Cara Pembayaran Fidyah <span class="text-red-500">*</span>
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <label id="fidyahCardMentah"
+                                        class="fidyah-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all border-gray-200 hover:bg-gray-50">
+                                        <input type="radio" name="_fidyah_tipe_ui" value="mentah" class="hidden fidyah-radio"
+                                            {{ old('fidyah_tipe', $transaksi->fidyah_tipe) === 'mentah' ? 'checked' : '' }}>
+                                        <div class="w-11 h-11 rounded-full bg-yellow-100 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-900">Bahan Mentah</p>
+                                        <p class="text-xs text-gray-500 text-center">Bahan pokok (beras, dll)</p>
+                                    </label>
+                                    <label id="fidyahCardMatang"
+                                        class="fidyah-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all border-gray-200 hover:bg-gray-50">
+                                        <input type="radio" name="_fidyah_tipe_ui" value="matang" class="hidden fidyah-radio"
+                                            {{ old('fidyah_tipe', $transaksi->fidyah_tipe) === 'matang' ? 'checked' : '' }}>
+                                        <div class="w-11 h-11 rounded-full bg-orange-100 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-900">Makanan Siap Santap</p>
+                                        <p class="text-xs text-gray-500 text-center">Makanan matang/box</p>
+                                    </label>
+                                    <label id="fidyahCardTunai"
+                                        class="fidyah-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all border-gray-200 hover:bg-gray-50">
+                                        <input type="radio" name="_fidyah_tipe_ui" value="tunai" class="hidden fidyah-radio"
+                                            {{ old('fidyah_tipe', $transaksi->fidyah_tipe) === 'tunai' ? 'checked' : '' }}>
+                                        <div class="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                            </svg>
+                                        </div>
+                                        <p class="text-sm font-semibold text-gray-900">Tunai / Uang</p>
+                                        <p class="text-xs text-gray-500 text-center">Uang senilai makanan</p>
+                                    </label>
+                                </div>
+                            </div>
+
+                            {{-- Sub-panel MENTAH --}}
+                            <div id="fidyahPanelMentah" class="hidden space-y-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Nama Bahan Pokok <span class="text-red-500">*</span>
+                                    </label>
+                                    <input type="text" id="fidyahNamaBahan"
+                                        value="{{ old('fidyah_nama_bahan', $transaksi->fidyah_nama_bahan) }}"
+                                        placeholder="Contoh: Beras putih, Beras merah, dll"
+                                        maxlength="100"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Berat per Hari (gram)
+                                            <span class="text-xs text-gray-400">(default: {{ $fidyahInfo['berat_per_hari_gram'] }}g = 1 mud)</span>
+                                        </label>
+                                        <input type="number" id="fidyahBeratPerHari"
+                                            value="{{ old('fidyah_berat_per_hari_gram', $transaksi->fidyah_berat_per_hari_gram ?? $fidyahInfo['berat_per_hari_gram']) }}"
+                                            min="100" max="2000" step="1"
+                                            class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Berat</label>
+                                        <div class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg">
+                                            <span id="fidyahTotalBeratDisp" class="font-semibold text-amber-700">0 kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Sub-panel MATANG --}}
+                            <div id="fidyahPanelMatang" class="hidden space-y-4 bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Jumlah Box <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="number" id="fidyahJumlahBox"
+                                            value="{{ old('fidyah_jumlah_box', $transaksi->fidyah_jumlah_box) }}"
+                                            min="1" step="1"
+                                            class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500"
+                                            placeholder="Otomatis = jumlah hari">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Harga per Box (Rp) <span class="text-xs text-gray-400">(opsional)</span>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                            <input type="number" id="fidyahHargaBox"
+                                                value="{{ old('fidyah_harga_per_box', $transaksi->fidyah_harga_per_box ?? 0) }}"
+                                                min="0" step="1000"
+                                                class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Menu Makanan <span class="text-xs text-gray-400">(opsional)</span>
+                                    </label>
+                                    <input type="text" id="fidyahMenu"
+                                        value="{{ old('fidyah_menu_makanan', $transaksi->fidyah_menu_makanan) }}"
+                                        placeholder="Contoh: Nasi + lauk + sayur"
+                                        maxlength="200"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Cara Serah <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="fidyahCaraSerah"
+                                        class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-amber-500">
+                                        <option value="">-- Pilih cara penyerahan --</option>
+                                        <option value="dibagikan" {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'dibagikan' ? 'selected' : '' }}>Dibagikan kepada mustahik</option>
+                                        <option value="dijamu"    {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'dijamu'    ? 'selected' : '' }}>Dijamu (makan bersama)</option>
+                                        <option value="via_lembaga" {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'via_lembaga' ? 'selected' : '' }}>Diserahkan via lembaga/masjid</option>
+                                    </select>
+                                </div>
+                                <div class="bg-white border border-orange-200 rounded-lg p-3">
+                                    <p class="text-xs text-gray-600">
+                                        Total: <strong id="fidyahTotalMatangDisp" class="text-orange-700">0 box</strong>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {{-- Sub-panel TUNAI --}}
+                            <div id="fidyahPanelTunai" class="hidden space-y-4 bg-green-50 border border-green-200 rounded-lg p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                                            Harga per Hari (Rp) <span class="text-red-500">*</span>
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                            <input type="number" id="fidyahHargaPerHari"
+                                                value="{{ old('_fidyah_harga_per_hari', $transaksi->fidyah_jumlah_hari > 0 && $transaksi->jumlah > 0 ? intval($transaksi->jumlah / $transaksi->fidyah_jumlah_hari) : 0) }}"
+                                                min="0" step="1000"
+                                                class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-green-500"
+                                                placeholder="Harga makanan per hari">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Fidyah</label>
+                                        <div class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg">
+                                            <span id="fidyahTotalTunaiDisp" class="font-semibold text-green-700">Rp 0</span>
+                                        </div>
+                                        <input type="hidden" name="jumlah" id="hdnJumlahFidyahTunai" value="{{ old('jumlah', $transaksi->jumlah ?? 0) }}">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-600">
+                                    Total = harga per hari × jumlah hari. Pembayaran dilanjutkan ke step berikutnya.
+                                </p>
+                            </div>
+                        </div>{{-- /panelFidyah --}}
+
                     </div>{{-- /space-y-5 --}}
 
                     <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
@@ -415,13 +614,14 @@
                                         d="M9 5l7 7-7 7" />
                                 </svg>
                             </button>
+                            {{-- [TAMBAHAN] label sekarang pakai <span> agar bisa diganti JS --}}
                             <button type="submit" id="btnBerasSave"
                                 class="hidden inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7" />
                                 </svg>
-                                Simpan Transaksi Beras
+                                <span id="btnBerasSaveLabel">Simpan Transaksi Beras</span>
                             </button>
                         </div>
                     </div>
@@ -627,10 +827,14 @@
             berasKg: {{ $zakatFitrahInfo['beras_kg'] }},
             berasLiter: {{ $zakatFitrahInfo['beras_liter'] }},
         };
+        // [TAMBAHAN] konstanta fidyah
+        const FIDYAH_BERAT_DEFAULT = {{ $fidyahInfo['berat_per_hari_gram'] }};
         const TIPE_DATA = @json($tipeZakatList ?? []);
         const TRANSaksi = @json($transaksi);
 
-        let activePanelZ = null; // 'beras' | 'tunaiF' | 'mal' | null
+        let activePanelZ = null; // 'beras' | 'tunaiF' | 'mal' | 'fidyah' | null
+        // [TAMBAHAN] state fidyah
+        let activeFidyahTipe = null; // 'mentah' | 'matang' | 'tunai' | null
         let currentStep = 2; // Mulai dari step 2
 
         // ══════════════════════════════════════════════════════════════
@@ -693,6 +897,27 @@
                         alert('Jumlah beras harus > 0.');
                         return false;
                     }
+                // [TAMBAHAN] validasi fidyah
+                } else if (activePanelZ === 'fidyah') {
+                    const hari = parseInt(document.getElementById('fidyahHari').value) || 0;
+                    if (hari <= 0) { alert('Jumlah hari fidyah harus > 0.'); return false; }
+                    if (!activeFidyahTipe) { alert('Pilih cara pembayaran fidyah.'); return false; }
+                    if (activeFidyahTipe === 'mentah') {
+                        if (!document.getElementById('fidyahNamaBahan').value.trim()) {
+                            alert('Nama bahan pokok harus diisi.'); return false;
+                        }
+                    } else if (activeFidyahTipe === 'matang') {
+                        if ((parseInt(document.getElementById('fidyahJumlahBox').value) || 0) <= 0) {
+                            alert('Jumlah box harus > 0.'); return false;
+                        }
+                        if (!document.getElementById('fidyahCaraSerah').value) {
+                            alert('Pilih cara penyerahan fidyah.'); return false;
+                        }
+                    } else if (activeFidyahTipe === 'tunai') {
+                        if ((parseFloat(document.getElementById('fidyahHargaPerHari').value) || 0) <= 0) {
+                            alert('Harga per hari fidyah tunai harus diisi.'); return false;
+                        }
+                    }
                 } else {
                     if (getJumlahZakat() <= 0) {
                         alert('Jumlah zakat tidak valid.');
@@ -707,6 +932,9 @@
         function getJumlahZakat() {
             if (activePanelZ === 'tunaiF') return parseFloat(document.getElementById('hdnJumlahTunai').value) || 0;
             if (activePanelZ === 'mal') return parseFloat(document.getElementById('hdnJumlahMal').value) || 0;
+            // [TAMBAHAN]
+            if (activePanelZ === 'fidyah' && activeFidyahTipe === 'tunai')
+                return parseFloat(document.getElementById('hdnJumlahFidyahTunai').value) || 0;
             return 0;
         }
 
@@ -828,20 +1056,30 @@
             
             const isFitrah = namaJenis.includes('fitrah');
             const isMal = namaJenis.includes('mal');
+            // [TAMBAHAN]
+            const isFidyah = namaJenis.includes('fidyah');
             const isBeras = namaTipe.includes('beras');
             
             if (isFitrah && isBeras) tampilPanelBeras();
             else if (isFitrah) tampilPanelFitrahTunai();
             else if (isMal) tampilPanelMal(this.options[this.selectedIndex]);
+            // [TAMBAHAN]
+            else if (isFidyah) tampilPanelFidyah();
         });
 
         function resetPanelZakat() {
-            ['panelBeras', 'panelFitrahTunai', 'panelMal'].forEach(id =>
+            // [TAMBAHAN] tambah 'panelFidyah'
+            ['panelBeras', 'panelFitrahTunai', 'panelMal', 'panelFidyah'].forEach(id =>
                 document.getElementById(id)?.classList.add('hidden')
             );
             document.getElementById('btnBerasSave').classList.add('hidden');
+            document.getElementById('btnS2Next').classList.remove('hidden');
             document.getElementById('hdnBeras').value = '0';
+            // [TAMBAHAN] reset state fidyah
+            document.getElementById('hdnFidyahHari').value = '0';
+            document.getElementById('hdnFidyahTipe').value = '';
             activePanelZ = null;
+            activeFidyahTipe = null;
         }
 
         // ─── PANEL BERAS ───────────────────────────────────────
@@ -851,6 +1089,8 @@
             document.getElementById('panelBeras').classList.remove('hidden');
             document.getElementById('btnBerasSave').classList.remove('hidden');
             document.getElementById('btnS2Next').classList.add('hidden');
+            // [TAMBAHAN] set label tombol
+            document.getElementById('btnBerasSaveLabel').textContent = 'Simpan Transaksi Beras';
 
             const jiwa = parseInt(document.getElementById('berasJiwa').value) || 1;
             const existingNames = TRANSaksi?.nama_jiwa_json || [];
@@ -937,6 +1177,153 @@
         document.getElementById('sudahHaul')?.addEventListener('change', function() {
             document.getElementById('wrapHaul').classList.toggle('hidden', !this.checked);
         });
+
+        // ══════════════════════════════════════════════════════════════
+        // [TAMBAHAN] PANEL FIDYAH
+        // ══════════════════════════════════════════════════════════════
+        function tampilPanelFidyah() {
+            activePanelZ = 'fidyah';
+            document.getElementById('panelFidyah').classList.remove('hidden');
+
+            // Restore tipe fidyah jika edit mode
+            const existingTipe = TRANSaksi?.fidyah_tipe || null;
+            if (existingTipe) {
+                const radio = document.querySelector(`.fidyah-radio[value="${existingTipe}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    pilihTipeFidyah(existingTipe);
+                }
+            }
+            hitungFidyah();
+        }
+
+        document.querySelectorAll('.fidyah-radio').forEach(r => {
+            r.addEventListener('change', function() {
+                pilihTipeFidyah(this.value);
+            });
+        });
+
+        function pilihTipeFidyah(tipe) {
+            activeFidyahTipe = tipe;
+            document.getElementById('hdnFidyahTipe').value = tipe;
+
+            // Warna kartu
+            document.querySelectorAll('.fidyah-card').forEach(c => {
+                const checked = c.querySelector('input').checked;
+                c.classList.toggle('border-amber-500', checked);
+                c.classList.toggle('bg-amber-50', checked);
+                c.classList.toggle('border-gray-200', !checked);
+            });
+
+            // Sembunyikan semua sub-panel fidyah
+            ['fidyahPanelMentah', 'fidyahPanelMatang', 'fidyahPanelTunai'].forEach(id =>
+                document.getElementById(id).classList.add('hidden')
+            );
+
+            if (tipe === 'mentah') {
+                document.getElementById('fidyahPanelMentah').classList.remove('hidden');
+                document.getElementById('btnBerasSave').classList.remove('hidden');
+                document.getElementById('btnS2Next').classList.add('hidden');
+                document.getElementById('btnBerasSaveLabel').textContent = 'Simpan Fidyah Bahan Mentah';
+            } else if (tipe === 'matang') {
+                document.getElementById('fidyahPanelMatang').classList.remove('hidden');
+                const hari = parseInt(document.getElementById('fidyahHari').value) || 1;
+                const boxEl = document.getElementById('fidyahJumlahBox');
+                if (!boxEl.value || parseInt(boxEl.value) <= 0) boxEl.value = hari;
+                document.getElementById('btnBerasSave').classList.remove('hidden');
+                document.getElementById('btnS2Next').classList.add('hidden');
+                document.getElementById('btnBerasSaveLabel').textContent = 'Simpan Fidyah Makanan Matang';
+            } else if (tipe === 'tunai') {
+                document.getElementById('fidyahPanelTunai').classList.remove('hidden');
+                document.getElementById('btnBerasSave').classList.add('hidden');
+                document.getElementById('btnS2Next').classList.remove('hidden');
+                hitungFidyahTunai();
+            }
+            hitungFidyah();
+        }
+
+        document.getElementById('fidyahHari')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahHari').value = this.value;
+            if (activeFidyahTipe === 'matang') {
+                document.getElementById('fidyahJumlahBox').value = parseInt(this.value) || 1;
+                hitungFidyahMatang();
+            }
+            hitungFidyah();
+        });
+
+        document.getElementById('fidyahBeratPerHari')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahBeratPerHari').value = this.value;
+            hitungFidyahMentah();
+        });
+
+        document.getElementById('fidyahNamaBahan')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahNamaBahan').value = this.value;
+        });
+
+        document.getElementById('fidyahJumlahBox')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahJumlahBox').value = this.value;
+            hitungFidyahMatang();
+        });
+
+        document.getElementById('fidyahMenu')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahMenu').value = this.value;
+        });
+
+        document.getElementById('fidyahHargaBox')?.addEventListener('input', function() {
+            document.getElementById('hdnFidyahHargaBox').value = this.value;
+            hitungFidyahMatang();
+        });
+
+        document.getElementById('fidyahCaraSerah')?.addEventListener('change', function() {
+            document.getElementById('hdnFidyahCaraSerah').value = this.value;
+        });
+
+        document.getElementById('fidyahHargaPerHari')?.addEventListener('input', hitungFidyahTunai);
+
+        function hitungFidyah() {
+            const hari = parseInt(document.getElementById('fidyahHari').value) || 0;
+            document.getElementById('hdnFidyahHari').value = hari;
+            if (activeFidyahTipe === 'mentah') hitungFidyahMentah();
+            if (activeFidyahTipe === 'matang') hitungFidyahMatang();
+            if (activeFidyahTipe === 'tunai')  hitungFidyahTunai();
+        }
+
+        function hitungFidyahMentah() {
+            const hari  = parseInt(document.getElementById('fidyahHari').value) || 0;
+            const berat = parseInt(document.getElementById('fidyahBeratPerHari').value) || FIDYAH_BERAT_DEFAULT;
+            const totalKg = ((hari * berat) / 1000).toFixed(2);
+            document.getElementById('fidyahTotalBeratDisp').textContent = totalKg + ' kg';
+            document.getElementById('hdnFidyahBeratPerHari').value = berat;
+        }
+
+        function hitungFidyahMatang() {
+            const box = parseInt(document.getElementById('fidyahJumlahBox').value) || 0;
+            document.getElementById('fidyahTotalMatangDisp').textContent = box + ' box';
+            document.getElementById('hdnFidyahJumlahBox').value = box;
+            document.getElementById('hdnFidyahHargaBox').value = parseFloat(document.getElementById('fidyahHargaBox').value) || 0;
+        }
+
+        function hitungFidyahTunai() {
+            const hari  = parseInt(document.getElementById('fidyahHari').value) || 0;
+            const harga = parseFloat(document.getElementById('fidyahHargaPerHari').value) || 0;
+            const total = hari * harga;
+            document.getElementById('fidyahTotalTunaiDisp').textContent = 'Rp ' + fmt(total);
+            document.getElementById('hdnJumlahFidyahTunai').value = Math.round(total);
+        }
+
+        function syncHiddenFidyah() {
+            document.getElementById('hdnFidyahHari').value = document.getElementById('fidyahHari').value || 0;
+            document.getElementById('hdnFidyahTipe').value = activeFidyahTipe || '';
+            if (activeFidyahTipe === 'mentah') {
+                document.getElementById('hdnFidyahNamaBahan').value  = document.getElementById('fidyahNamaBahan').value;
+                document.getElementById('hdnFidyahBeratPerHari').value = document.getElementById('fidyahBeratPerHari').value;
+            } else if (activeFidyahTipe === 'matang') {
+                document.getElementById('hdnFidyahJumlahBox').value  = document.getElementById('fidyahJumlahBox').value;
+                document.getElementById('hdnFidyahMenu').value       = document.getElementById('fidyahMenu').value;
+                document.getElementById('hdnFidyahHargaBox').value   = document.getElementById('fidyahHargaBox').value;
+                document.getElementById('hdnFidyahCaraSerah').value  = document.getElementById('fidyahCaraSerah').value;
+            }
+        }
 
         // ══════════════════════════════════════════════════════════════
         // STEP 3: METODE PEMBAYARAN
@@ -1026,6 +1413,14 @@
                 return true;
             }
 
+            // [TAMBAHAN] fidyah non-tunai — langsung submit tanpa step 3
+            if (activePanelZ === 'fidyah' && activeFidyahTipe !== 'tunai') {
+                if (!validateStep(2)) { e.preventDefault(); return false; }
+                syncHiddenFidyah();
+                spinBtn(document.getElementById('btnBerasSave'), 'Menyimpan...');
+                return true;
+            }
+
             if (!document.getElementById('jenisId').value) {
                 e.preventDefault();
                 alert('Pilih jenis zakat.');
@@ -1038,7 +1433,8 @@
                 return false;
             }
             
-            if (getJumlahZakat() <= 0) {
+            // [TAMBAHAN] fidyah tunai ikut ke step 3
+            if (activePanelZ !== 'fidyah' && getJumlahZakat() <= 0) {
                 e.preventDefault();
                 alert('Jumlah zakat tidak valid.');
                 return false;
@@ -1049,6 +1445,11 @@
                 e.preventDefault();
                 alert('Pilih metode pembayaran.');
                 return false;
+            }
+
+            // [TAMBAHAN] sync hidden fidyah tunai sebelum submit
+            if (activePanelZ === 'fidyah' && activeFidyahTipe === 'tunai') {
+                syncHiddenFidyah();
             }
 
             spinBtn(document.getElementById('btnFinalSave'), 'Menyimpan...');
@@ -1100,7 +1501,8 @@
                 }, 100);
             @endif
 
-            @if($transaksi->metode_pembayaran)
+            // [TAMBAHAN] skip restore metode pembayaran jika fidyah non-tunai
+            @if($transaksi->metode_pembayaran && !in_array($transaksi->metode_pembayaran, ['beras','makanan_matang','bahan_mentah']))
                 setTimeout(() => {
                     const radio = document.querySelector(`.pay-radio[value="{{ $transaksi->metode_pembayaran }}"]`);
                     if (radio) radio.dispatchEvent(new Event('change'));
