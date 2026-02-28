@@ -95,7 +95,10 @@
     ══════════════════════════════════════════════════════════ --}}
             <div id="panelDaring" class="hidden">
 
-                {{-- Modal Niat Doa Zakat --}}
+                {{-- ===================================================
+                     MODAL NIAT DOA ZAKAT (muncul saat pilih daring)
+                     HANYA berisi niat zakat fitrah & mal
+                ====================================================== --}}
                 <div id="modalNiatDoa"
                     class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
                     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
@@ -104,10 +107,10 @@
                         <div class="px-6 py-4 bg-primary text-white flex-shrink-0">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                                    <span class="text-xl">قرآن</span>
+                                    <span class="text-xl">☪</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-base font-bold">Niat & Doa Zakat</h3>
+                                    <h3 class="text-base font-bold">Niat Zakat</h3>
                                     <p class="text-xs text-primary-100">Baca dengan khusyuk sebelum membayar</p>
                                 </div>
                             </div>
@@ -116,45 +119,59 @@
                         {{-- Konten Doa (scrollable) --}}
                         <div class="overflow-y-auto flex-1 px-6 py-5 space-y-5" id="doaScrollArea">
 
-                            {{-- Niat Zakat Fitrah --}}
+                            {{-- ── Niat Zakat Fitrah untuk Diri Sendiri ── --}}
                             <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
-                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Fitrah</h4>
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Fitrah — Diri Sendiri</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
-                                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ الْفِطْرِ عَنْ نَفْسِي فَرْضًا لِلَّهِ تَعَالَى
+                                    ﻧَﻮَﻳْﺖُ أَﻥْ أُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻔِﻄْﺮِ ﻋَﻦْ ﻧَﻔْسيْ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
                                 <p class="text-xs text-gray-600 italic">
-                                    "Nawaitu an ukhrija zakaatal fithri 'an nafsii fardhon lillahi ta'aalaa."
+                                    "Nawaitu an ukhrija zakaatal fithri 'an nafsii fardhan lillaahi ta'aalaa."
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1.5">
-                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah dari diriku sendiri, fardhu karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku sendiri, fardu karena Allah Ta'ala."</em>
                                 </p>
                             </div>
 
-                            {{-- Niat Zakat Mal --}}
+                            {{-- ── Niat Zakat Fitrah untuk Seluruh Keluarga ── --}}
                             <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
-                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Mal (Harta)</h4>
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Fitrah — Seluruh Keluarga</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
-                                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي فَرْضًا لِلَّهِ تَعَالَى
+                                    ﻧَﻮَﻳْﺖُ ﺃَﻥْ ﺃُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻔِﻄْﺮِ ﻋَنِّيْ ﻭَﻋَﻦْ ﺟَﻤِﻴْﻊِ ﻣَﺎ ﻳَﻠْﺰَﻣُنِيْ ﻧَﻔَﻘَﺎﺗُﻬُﻢْ ﺷَﺮْﻋًﺎ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
                                 <p class="text-xs text-gray-600 italic">
-                                    "Nawaitu an ukhrija zakaata maalii fardhon lillahi ta'aalaa."
+                                    "Nawaitu an ukhrija zakaata al-fithri 'anni wa 'an jami'i ma ya'lunihi fardhan lillahi ta'ala."
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1.5">
-                                    Artinya: <em>"Aku niat mengeluarkan zakat hartaku, fardhu karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
                                 </p>
                             </div>
 
-                            {{-- Doa Setelah Zakat --}}
+                            {{-- ── Niat Zakat Mal — Diri Sendiri (Umum) ── --}}
                             <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
-                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Doa Setelah Zakat</h4>
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Mal — Diri Sendiri</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
-                                    اَللَّهُمَّ اجْعَلْهَا مَغْنَمًا وَلاَ تَجْعَلْهَا مَغْرَمًا
+                                    ﻧَﻮَﻳْﺖُ أَﻥْ أُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻤَﺎﻝِ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
                                 <p class="text-xs text-gray-600 italic">
-                                    "Allahummaj'alhaa maghnamaw walaa taj'alhaa maghraman."
+                                    "Nawaitu an ukhrija zakaata maali fardhan lillaahi ta'aala."
                                 </p>
                                 <p class="text-xs text-gray-500 mt-1.5">
-                                    Artinya: <em>"Ya Allah, jadikanlah ini sebagai keuntungan dan jangan jadikan kerugian."</em>
+                                    Artinya: <em>"Saya niat mengeluarkan zakat harta dari diri sendiri karena Allah Ta'ala."</em>
+                                </p>
+                            </div>
+
+                            {{-- ── Niat Zakat Mal — Diri Sendiri & Keluarga ── --}}
+                            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Niat Zakat Mal — Diri Sendiri & Keluarga</h4>
+                                <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
+                                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي عَنِّيْ وَعَنْ جَمِيْعِ مَا يَلْزَمُنِيْ نَفَقَاتُهُمْ فَرْضًا لِلَّهِ تَعَالَى
+                                </p>
+                                <p class="text-xs text-gray-600 italic">
+                                    "Nawaitu an ukhrija zakaata maali 'anni wa 'an jami'i ma ya'lunihi fardhan lillaahi ta'aala."
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1.5">
+                                    Artinya: <em>"Aku niat mengeluarkan zakat harta dari diriku dan seluruh orang yang nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
                                 </p>
                             </div>
 
@@ -184,7 +201,7 @@
                                 <input type="checkbox" id="chkSudahBaca"
                                     class="w-4 h-4 text-primary-600 border-gray-300 rounded mt-0.5 cursor-pointer">
                                 <label for="chkSudahBaca" class="text-xs text-primary-800 cursor-pointer leading-relaxed">
-                                    Saya telah membaca niat dan doa zakat di atas, serta niat untuk menunaikan kewajiban zakat dengan ikhlas karena Allah Ta'ala.
+                                    Saya telah membaca niat zakat di atas dan berniat menunaikan kewajiban zakat dengan ikhlas karena Allah Ta'ala.
                                 </label>
                             </div>
                             <button type="button" id="btnSudahBaca" disabled onclick="konfirmasiSudahBaca()"
@@ -192,6 +209,76 @@
                                 Sudah Membaca — Lanjut Isi Form
                             </button>
                             <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan tombol</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ===================================================
+                     MODAL DOA SETELAH ZAKAT (muncul saat klik "Kirim Transaksi Zakat")
+                ====================================================== --}}
+                <div id="modalDoaSetelahZakat"
+                    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
+
+                        {{-- Header --}}
+                        <div class="px-6 py-4 bg-primary text-white flex-shrink-0">
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <h3 class="text-base font-bold">Doa Setelah Zakat</h3>
+                                    <p class="text-xs text-primary-100">Baca doa ini setelah menunaikan zakat</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Konten --}}
+                        <div class="overflow-y-auto flex-1 px-6 py-5 space-y-4">
+
+                            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Doa Setelah Berzakat</h4>
+                                <p class="text-right text-xl leading-loose text-gray-800 font-arabic mb-3">
+                                    اَللَّهُمَّ اجْعَلْهَا مَغْنَمًا وَلاَ تَجْعَلْهَا مَغْرَمًا
+                                </p>
+                                <p class="text-sm text-gray-600 italic text-center mb-2">
+                                    "Allahummaj'alhaa maghnamaw walaa taj'alhaa maghraman."
+                                </p>
+                                <p class="text-xs text-gray-500 text-center">
+                                    Artinya: <em>"Ya Allah, jadikanlah ini sebagai keuntungan dan jangan jadikan kerugian."</em>
+                                </p>
+                            </div>
+
+                            <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
+                                <h4 class="text-xs font-bold text-primary-900 uppercase tracking-wider mb-3">Doa dari Amil kepada Muzakki</h4>
+                                <p class="text-right text-xl leading-loose text-gray-800 font-arabic mb-3">
+                                    آجَرَكَ اللهُ فِيمَا أَعْطَيْتَ وَبَارَكَ فِيمَا أَبْقَيْتَ وَجَعَلَهُ لَكَ طَهُورًا
+                                </p>
+                                <p class="text-sm text-gray-600 italic text-center mb-2">
+                                    "Aajaraka Allaahu fiimaa a'thayta wa baaraka fiimaa abqayta wa ja'alahu laka thahuuran."
+                                </p>
+                                <p class="text-xs text-gray-500 text-center">
+                                    Artinya: <em>"Semoga Allah memberimu pahala atas apa yang engkau berikan, memberkahi apa yang masih tersisa, dan menjadikannya sebagai penyuci bagimu."</em>
+                                </p>
+                            </div>
+
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                                <p class="font-semibold mb-1">📌 Catatan</p>
+                                <p>Transaksi zakat Anda akan segera diproses. Amil akan menghubungi Anda untuk konfirmasi pembayaran.</p>
+                            </div>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+                            <div class="mb-3 flex items-start gap-2 p-3 bg-primary-50 border border-primary-200 rounded-xl">
+                                <input type="checkbox" id="chkSudahBacaDoa"
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded mt-0.5 cursor-pointer">
+                                <label for="chkSudahBacaDoa" class="text-xs text-primary-800 cursor-pointer leading-relaxed">
+                                    Saya telah membaca doa setelah zakat di atas dengan ikhlas karena Allah Ta'ala.
+                                </label>
+                            </div>
+                            <button type="button" id="btnKonfirmasiDanSimpan" disabled onclick="konfirmasiDoaLaluSimpan()"
+                                class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all bg-gray-300 cursor-not-allowed opacity-60">
+                                <span id="btnKonfirmasiText">Simpan Transaksi Zakat</span>
+                            </button>
+                            <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan tombol simpan</p>
                         </div>
                     </div>
                 </div>
@@ -289,9 +376,21 @@
                                         class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                         <option value="">-- Pilih Jenis --</option>
                                         @foreach ($jenisZakatList as $jz)
-                                            <option value="{{ $jz->id }}" data-nama="{{ strtolower($jz->nama) }}">{{ $jz->nama }}</option>
+                                            @php
+                                                // Sembunyikan fidyah dari pilihan metode daring
+                                                $isFidyah = stripos($jz->nama, 'fidyah') !== false;
+                                            @endphp
+                                            @if (!$isFidyah)
+                                                <option value="{{ $jz->id }}" data-nama="{{ strtolower($jz->nama) }}">{{ $jz->nama }}</option>
+                                            @endif
                                         @endforeach
                                     </select>
+                                    <p class="text-xs text-gray-400 mt-1">
+                                        <svg class="w-3.5 h-3.5 inline mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Fidyah tidak tersedia via daring. Gunakan metode <strong>Dijemput Amil</strong>.
+                                    </p>
                                 </div>
                                 <div id="dWrapTipe" class="hidden">
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Tipe Spesifik <span class="text-red-500">*</span></label>
@@ -506,14 +605,16 @@
                                 </div>
                             </div>
 
-                            {{-- Info QRIS --}}
+                            {{-- Info QRIS — DIPERBESAR --}}
                             <div id="dInfoQris" class="hidden space-y-3">
                                 <div class="bg-primary-50 border border-primary-200 rounded-xl p-4">
-                                    <p class="text-sm font-bold text-primary-800 mb-3">QRIS Masjid</p>
+                                    <p class="text-sm font-bold text-primary-800 mb-4">QRIS Masjid</p>
                                     @if ($konfigurasiQris && !empty($konfigurasiQris->qris_image_path))
                                         <div class="flex justify-center">
-                                            <div class="bg-white p-3 rounded-xl border border-primary-200 shadow-sm w-52">
-                                                <img src="{{ $konfigurasiQris->qris_image_url }}" class="w-full object-contain" alt="QRIS">
+                                            {{-- PERUBAHAN: Diperbesar dari w-52 menjadi w-72 sm:w-80, padding lebih besar --}}
+                                            <div class="bg-white p-4 rounded-2xl border-2 border-primary-300 shadow-md w-72 sm:w-80">
+                                                <img src="{{ $konfigurasiQris->qris_image_url }}" class="w-full object-contain rounded-lg" alt="QRIS Masjid">
+                                                <p class="text-center text-xs text-primary-700 font-semibold mt-3">Scan untuk Membayar Zakat</p>
                                             </div>
                                         </div>
                                     @else
@@ -630,7 +731,8 @@
                                 </svg>
                                 Kembali
                             </button>
-                            <button type="submit" id="btnSimpanDaring"
+                            {{-- PERUBAHAN: Tombol ini sekarang membuka modal doa dulu --}}
+                            <button type="button" id="btnSimpanDaring" onclick="bukaTampilDoaSetelahZakat()"
                                 class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-nz hover:shadow-nz-lg hover:bg-primary-600 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -817,7 +919,10 @@
             document.getElementById('panelPilihMetode').classList.add('hidden');
             if (metode === 'daring') {
                 document.getElementById('panelDaring').classList.remove('hidden');
-                document.getElementById('modalNiatDoa').classList.remove('hidden');
+                // Tampilkan modal niat doa
+                const modal = document.getElementById('modalNiatDoa');
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             } else {
                 document.getElementById('panelDijemput').classList.remove('hidden');
@@ -831,6 +936,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // ── Checkbox modal niat doa ──
             const chk = document.getElementById('chkSudahBaca');
             const btn = document.getElementById('btnSudahBaca');
             if (chk && btn) {
@@ -843,6 +949,23 @@
                         btn.disabled = true;
                         btn.classList.add('bg-gray-300', 'cursor-not-allowed', 'opacity-60');
                         btn.classList.remove('bg-primary', 'hover:bg-primary-600', 'cursor-pointer');
+                    }
+                });
+            }
+
+            // ── Checkbox modal doa setelah zakat ──
+            const chkDoa = document.getElementById('chkSudahBacaDoa');
+            const btnDoa = document.getElementById('btnKonfirmasiDanSimpan');
+            if (chkDoa && btnDoa) {
+                chkDoa.addEventListener('change', function() {
+                    if (this.checked) {
+                        btnDoa.disabled = false;
+                        btnDoa.classList.remove('bg-gray-300', 'cursor-not-allowed', 'opacity-60');
+                        btnDoa.classList.add('bg-primary', 'hover:bg-primary-600', 'cursor-pointer');
+                    } else {
+                        btnDoa.disabled = true;
+                        btnDoa.classList.add('bg-gray-300', 'cursor-not-allowed', 'opacity-60');
+                        btnDoa.classList.remove('bg-primary', 'hover:bg-primary-600', 'cursor-pointer');
                     }
                 });
             }
@@ -913,8 +1036,51 @@
 
         function konfirmasiSudahBaca() {
             sudahBacaDoa = true;
-            document.getElementById('modalNiatDoa').classList.add('hidden');
+            const modal = document.getElementById('modalNiatDoa');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
             document.body.style.overflow = '';
+        }
+
+        // ── Buka modal doa setelah zakat saat klik "Kirim Transaksi Zakat" ──
+        function bukaTampilDoaSetelahZakat() {
+            // Validasi ulang sebelum membuka modal
+            const telepon = document.querySelector('#formDaring [name="muzakki_telepon"]').value.trim();
+            const alamat = document.querySelector('#formDaring [name="muzakki_alamat"]').value.trim();
+            if (!telepon) { alert('Nomor telepon wajib diisi.'); dGoStep(1); return; }
+            if (!alamat) { alert('Alamat wajib diisi.'); dGoStep(1); return; }
+            if (!document.getElementById('dJenisId').value) { alert('Pilih jenis zakat.'); dGoStep(1); return; }
+            if (!document.getElementById('dTipeId').value) { alert('Pilih tipe zakat.'); dGoStep(1); return; }
+            if (getJumlahZakatD() <= 0) { alert('Jumlah zakat tidak valid.'); dGoStep(1); return; }
+            if (!document.getElementById('dMetodePembayaran').value) { alert('Pilih metode pembayaran.'); dGoStep(2); return; }
+
+            // Reset checkbox dan tombol modal doa
+            const chkDoa = document.getElementById('chkSudahBacaDoa');
+            const btnDoa = document.getElementById('btnKonfirmasiDanSimpan');
+            chkDoa.checked = false;
+            btnDoa.disabled = true;
+            btnDoa.classList.add('bg-gray-300', 'cursor-not-allowed', 'opacity-60');
+            btnDoa.classList.remove('bg-primary', 'hover:bg-primary-600', 'cursor-pointer');
+
+            // Tampilkan modal
+            const modal = document.getElementById('modalDoaSetelahZakat');
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ── Submit form setelah baca doa setelah zakat ──
+        function konfirmasiDoaLaluSimpan() {
+            const modal = document.getElementById('modalDoaSetelahZakat');
+            modal.style.display = 'none';
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+
+            // Update tombol dan submit
+            const btn = document.getElementById('btnKonfirmasiDanSimpan');
+            btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
+
+            document.getElementById('formDaring').submit();
         }
 
         function dResetPanelZakat() {
@@ -1149,20 +1315,6 @@
             if (!lat) { e.preventDefault(); alert('Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".'); return; }
             if (!amil) { e.preventDefault(); alert('Pilih amil penjemput terlebih dahulu.'); return; }
             const btn = document.getElementById('btnSimpanDijemput');
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
-        });
-
-        document.getElementById('formDaring')?.addEventListener('submit', function(e) {
-            const telepon = this.querySelector('[name="muzakki_telepon"]').value.trim();
-            const alamat = this.querySelector('[name="muzakki_alamat"]').value.trim();
-            if (!telepon) { e.preventDefault(); alert('Nomor telepon wajib diisi.'); return; }
-            if (!alamat) { e.preventDefault(); alert('Alamat wajib diisi.'); return; }
-            if (!document.getElementById('dJenisId').value) { e.preventDefault(); alert('Pilih jenis zakat.'); dGoStep(1); return; }
-            if (!document.getElementById('dTipeId').value) { e.preventDefault(); alert('Pilih tipe zakat.'); dGoStep(1); return; }
-            if (getJumlahZakatD() <= 0) { e.preventDefault(); alert('Jumlah zakat tidak valid.'); dGoStep(1); return; }
-            if (!document.getElementById('dMetodePembayaran').value) { e.preventDefault(); alert('Pilih metode pembayaran.'); dGoStep(2); return; }
-            const btn = document.getElementById('btnSimpanDaring');
             btn.disabled = true;
             btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
         });
