@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-4 sm:space-y-6">
 
-    {{-- ── Statistics Cards ── --}}
+    {{-- Statistics Cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
         @php
             $statPending  = $summary['pending']  ?? null;
@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    {{-- ── Main Card ── --}}
+    {{-- Main Card --}}
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
 
         {{-- Header --}}
@@ -127,7 +127,7 @@
 
         @if($setorans->count() > 0)
 
-            {{-- ── Desktop View ── --}}
+            {{-- Desktop View --}}
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -178,7 +178,8 @@
                                         data-no="{{ $setor->no_setor }}"
                                         data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
                                         data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                        data-periode="{{ $setor->periode_formatted }}">
+                                        data-periode="{{ $setor->periode_formatted }}"
+                                        data-foto="{{ $setor->bukti_foto }}">
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                         </svg>
@@ -262,9 +263,9 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Kolom 3: Status --}}
+                                                {{-- Kolom 3: Status & Foto --}}
                                                 <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Status</h4>
+                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Status & Bukti</h4>
                                                     <div class="space-y-3">
                                                         <div>
                                                             <p class="text-xs text-gray-500 mb-1">Status Review</p>
@@ -272,6 +273,29 @@
                                                                 Menunggu Review
                                                             </span>
                                                         </div>
+                                                        
+                                                        {{-- Foto Bukti Preview --}}
+                                                        <div>
+                                                            <p class="text-xs text-gray-500 mb-1">Foto Bukti</p>
+                                                            @if($setor->bukti_foto)
+                                                                <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="inline-block">
+                                                                    <div class="w-16 h-16 rounded-lg border border-gray-200 overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity">
+                                                                        <img src="{{ Storage::url($setor->bukti_foto) }}" 
+                                                                             alt="Bukti Setor" 
+                                                                             class="w-full h-full object-cover">
+                                                                    </div>
+                                                                </a>
+                                                                <p class="text-xs text-blue-600 mt-1">Klik untuk perbesar</p>
+                                                            @else
+                                                                <div class="flex items-center text-gray-400 text-xs">
+                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                    </svg>
+                                                                    Tidak ada foto
+                                                                </div>
+                                                            @endif
+                                                        </div>
+
                                                         @if($setor->catatan)
                                                             <div class="mt-4 pt-4 border-t border-gray-200">
                                                                 <p class="text-xs text-gray-500 mb-1">Catatan</p>
@@ -294,6 +318,7 @@
                                                         data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
                                                         data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
                                                         data-periode="{{ $setor->periode_formatted }}"
+                                                        data-foto="{{ $setor->bukti_foto }}"
                                                         onclick="openReviewModal(this)"
                                                         class="inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
                                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -320,7 +345,7 @@
                 </table>
             </div>
 
-            {{-- ── Mobile View ── --}}
+            {{-- Mobile View --}}
             <div class="md:hidden divide-y divide-gray-200">
                 @foreach($setorans as $setor)
                     <div class="expandable-card">
@@ -342,6 +367,16 @@
                                         <span class="text-xs font-semibold text-gray-700">{{ $setor->jumlah_disetor_formatted }}</span>
                                     </div>
                                     <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $setor->no_setor }}</p>
+                                    
+                                    {{-- Foto Preview Mobile --}}
+                                    @if($setor->bukti_foto)
+                                        <div class="mt-2 flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span class="text-xs text-blue-600">Ada foto bukti</span>
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="flex items-center gap-1 ml-2">
                                     <button type="button"
@@ -350,7 +385,8 @@
                                         data-no="{{ $setor->no_setor }}"
                                         data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
                                         data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                        data-periode="{{ $setor->periode_formatted }}">
+                                        data-periode="{{ $setor->periode_formatted }}"
+                                        data-foto="{{ $setor->bukti_foto }}">
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
                                         </svg>
@@ -383,6 +419,20 @@
                                                 </svg>
                                                 <span class="font-semibold text-green-600">{{ $setor->jumlah_disetor_formatted }}</span>
                                             </div>
+                                            
+                                            {{-- Foto Bukti Mobile --}}
+                                            @if($setor->bukti_foto)
+                                                <div class="mt-3">
+                                                    <p class="text-xs text-gray-500 mb-1">Foto Bukti:</p>
+                                                    <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="block">
+                                                        <div class="w-full h-32 rounded-lg border border-gray-200 overflow-hidden bg-gray-100">
+                                                            <img src="{{ Storage::url($setor->bukti_foto) }}" 
+                                                                 alt="Bukti Setor" 
+                                                                 class="w-full h-full object-contain">
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -394,6 +444,7 @@
                                                 data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
                                                 data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
                                                 data-periode="{{ $setor->periode_formatted }}"
+                                                data-foto="{{ $setor->bukti_foto }}"
                                                 onclick="openReviewModal(this)"
                                                 class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -450,7 +501,7 @@
     </div>
 </div>
 
-{{-- ── Dropdown Container ── --}}
+{{-- Dropdown Container --}}
 <div id="dropdown-container" class="fixed hidden z-[9999]" style="min-width:200px;">
     <div class="w-52 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
         <div class="py-1">
@@ -473,7 +524,7 @@
     </div>
 </div>
 
-{{-- ── Modal: Review Setoran ── --}}
+{{-- Modal: Review Setoran --}}
 <div id="review-modal" class="fixed inset-0 bg-gray-900/60 hidden z-[10000] flex items-center justify-center p-4" style="backdrop-filter: blur(2px);">
     <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col" style="max-height: 90vh;">
 
@@ -520,6 +571,30 @@
                             <span class="text-gray-500">Periode</span>
                             <span class="text-gray-900 text-right font-medium" id="modal-periode"></span>
                         </div>
+                    </div>
+
+                    {{-- Foto Bukti dari Amil --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Foto Bukti Setoran
+                            </span>
+                        </label>
+                        <div id="modal-foto-bukti" class="mt-2 rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
+                            {{-- Foto akan diisi oleh JavaScript --}}
+                            <div class="flex items-center justify-center p-8 text-center text-gray-400">
+                                <div>
+                                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <p class="text-sm">Tidak ada foto bukti</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mt-1.5 text-xs text-gray-400">Foto bukti setoran yang diupload oleh amil</p>
                     </div>
 
                     {{-- Hitung Fisik --}}
@@ -636,12 +711,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // ── Referensi elemen ──────────────────────────────────────────
+    // Referensi elemen
     const dropdown = document.getElementById('dropdown-container');
     const ddDetail = document.getElementById('dd-detail');
     const ddReview = document.getElementById('dd-review');
 
-    // ── Desktop expandable rows ───────────────────────────────────
+    // Desktop expandable rows
     document.querySelectorAll('.expandable-row').forEach(row => {
         row.addEventListener('click', function (e) {
             if (e.target.closest('a, .dropdown-toggle, button')) return;
@@ -652,7 +727,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ── Mobile expandable cards ───────────────────────────────────
+    // Mobile expandable cards
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function (e) {
             if (e.target.closest('a, .dropdown-toggle, button')) return;
@@ -663,7 +738,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // ── Dropdown ─────────────────────────────────────────────────
+    // Dropdown functionality
     function closeDropdown() {
         dropdown.classList.add('hidden');
         dropdown.removeAttribute('data-uuid');
@@ -700,6 +775,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const amil    = toggle.dataset.amil;
             const jumlah  = toggle.dataset.jumlah;
             const periode = toggle.dataset.periode;
+            const foto    = toggle.dataset.foto;
 
             if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
                 closeDropdown(); return;
@@ -710,7 +786,16 @@ document.addEventListener('DOMContentLoaded', function () {
             ddDetail.href = `/admin-setor-kas/${uuid}`;
             ddReview.onclick = () => {
                 closeDropdown();
-                openReviewModal({ dataset: { uuid, no, amil, jumlah, periode } });
+                openReviewModal({ 
+                    dataset: { 
+                        uuid, 
+                        no, 
+                        amil, 
+                        jumlah, 
+                        periode,
+                        foto 
+                    } 
+                });
             };
 
             dropdown.classList.remove('hidden');
@@ -724,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('scroll', closeDropdown, true);
     window.addEventListener('resize', closeDropdown);
 
-    // ── Backdrop klik modal ───────────────────────────────────────
+    // Backdrop klik modal
     document.getElementById('review-modal').addEventListener('click', function (e) {
         if (e.target === this) closeReviewModal();
     });
@@ -733,9 +818,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape') closeReviewModal();
     });
 
-    // ── Validasi sebelum submit ───────────────────────────────────
+    // Validasi sebelum submit
     document.getElementById('review-form').addEventListener('submit', function (e) {
-        e.preventDefault(); // Selalu prevent dulu, baru submit manual
+        e.preventDefault();
 
         const form = this;
         const aksi = form.querySelector('input[name="aksi"]:checked');
@@ -754,7 +839,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Pastikan action sudah ter-set
         if (!form.action || form.action.endsWith('#') || !form.action.includes('/proses')) {
             showModalAlert('Terjadi kesalahan konfigurasi form. Coba tutup dan buka modal kembali.');
             return;
@@ -762,13 +846,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Simpan TTD ke hidden field
         const ttdInput = document.getElementById('ttd_penerima_input');
-        if (sigCanvas && ttdInput.value.length < 100) {
-            try { ttdInput.value = sigCanvas.toDataURL('image/png'); } catch(_) {}
+        if (window.sigCanvas && ttdInput.value.length < 100) {
+            try { ttdInput.value = window.sigCanvas.toDataURL('image/png'); } catch(_) {}
         }
 
-        // Submit manual via fetch agar method POST terjamin
         const formData = new FormData(form);
-
         const btnSubmit = document.getElementById('btn-submit-review');
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Menyimpan...';
@@ -788,7 +870,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             if (res.ok) {
-                // Redirect ke halaman yang sama untuk refresh data
                 window.location.reload();
                 return;
             }
@@ -820,7 +901,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// ── Search ────────────────────────────────────────────────────────
+// Search functionality
 function toggleSearch() {
     const btn       = document.getElementById('search-button');
     const form      = document.getElementById('search-form');
@@ -838,7 +919,7 @@ function toggleSearch() {
     }
 }
 
-// ── Review Modal ──────────────────────────────────────────────────
+// Review Modal Functions
 function openReviewModal(btn) {
     document.getElementById('modal-no-setor').textContent = btn.dataset.no;
     document.getElementById('modal-amil').textContent     = btn.dataset.amil;
@@ -860,6 +941,33 @@ function openReviewModal(btn) {
         .replace(/border-green-\d+|bg-green-\d+/g, '').trim() + ' border-gray-200';
     document.getElementById('label-ditolak').className = document.getElementById('label-ditolak').className
         .replace(/border-red-\d+|bg-red-\d+/g, '').trim() + ' border-gray-200';
+
+    // Tampilkan foto bukti
+    const fotoContainer = document.getElementById('modal-foto-bukti');
+    if (btn.dataset.foto && btn.dataset.foto !== 'null' && btn.dataset.foto !== '') {
+        const fotoUrl = '/storage/' + btn.dataset.foto;
+        fotoContainer.innerHTML = `
+            <div class="relative">
+                <img src="${fotoUrl}" alt="Foto Bukti Setoran" class="w-full h-auto max-h-64 object-contain bg-gray-100">
+                <a href="${fotoUrl}" target="_blank" class="absolute bottom-2 right-2 bg-white rounded-lg p-2 shadow-md hover:bg-gray-50 transition-colors">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                </a>
+            </div>
+        `;
+    } else {
+        fotoContainer.innerHTML = `
+            <div class="flex items-center justify-center p-8 text-center text-gray-400">
+                <div>
+                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <p class="text-sm">Tidak ada foto bukti</p>
+                </div>
+            </div>
+        `;
+    }
 
     document.getElementById('review-modal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -895,7 +1003,6 @@ function toggleAksi(radio) {
         infoEl.classList.remove('hidden');
         textEl.textContent = '✓ Setoran akan dikonfirmasi';
         textEl.className = 'text-xs text-green-600 font-medium';
-        // Re-init canvas ukuran
         setTimeout(initSignaturePad, 80);
     } else {
         document.getElementById('label-ditolak').classList.remove('border-gray-200');
@@ -909,38 +1016,38 @@ function toggleAksi(radio) {
     }
 }
 
-// ── Signature Pad ─────────────────────────────────────────────────
+// Signature Pad for Penerima
 let sigCanvas, sigCtx, sigDrawing = false, sigLastX = 0, sigLastY = 0;
 
 function initSignaturePad() {
     sigCanvas = document.getElementById('signature-pad-penerima');
     if (!sigCanvas) return;
+    
+    // Make canvas globally accessible
+    window.sigCanvas = sigCanvas;
     sigCtx = sigCanvas.getContext('2d');
 
     const container = sigCanvas.parentElement;
     const rect      = container.getBoundingClientRect();
     const dpr       = window.devicePixelRatio || 1;
 
-    // Set ukuran canvas sesuai container (support retina/HiDPI)
     sigCanvas.width  = rect.width  * dpr;
     sigCanvas.height = 140         * dpr;
     sigCanvas.style.width  = rect.width + 'px';
     sigCanvas.style.height = '140px';
     sigCtx.scale(dpr, dpr);
 
-    // Bersihkan & tampilkan placeholder
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
     document.getElementById('ttd-placeholder').style.display = 'flex';
     document.getElementById('ttd_penerima_input').value = '';
 
-    // Hapus event listener lama (clone trick)
     const newCanvas = sigCanvas.cloneNode(true);
     sigCanvas.parentNode.replaceChild(newCanvas, sigCanvas);
     sigCanvas = newCanvas;
-    sigCtx    = sigCanvas.getContext('2d');
+    window.sigCanvas = sigCanvas;
+    sigCtx = sigCanvas.getContext('2d');
     sigCtx.scale(dpr, dpr);
 
-    // Pasang event listeners baru
     function getPos(e) {
         const r = sigCanvas.getBoundingClientRect();
         if (e.touches) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
@@ -973,7 +1080,6 @@ function initSignaturePad() {
     function endDraw() {
         if (!sigDrawing) return;
         sigDrawing = false;
-        // Simpan otomatis ke hidden input
         document.getElementById('ttd_penerima_input').value = sigCanvas.toDataURL('image/png');
     }
 
@@ -987,14 +1093,14 @@ function initSignaturePad() {
 }
 
 function signatureHasContent() {
-    return sigCanvas
+    return window.sigCanvas
         && document.getElementById('ttd_penerima_input').value.length > 100;
 }
 
 function clearSignaturePenerima() {
-    if (!sigCanvas || !sigCtx) return;
+    if (!window.sigCanvas || !sigCtx) return;
     const dpr = window.devicePixelRatio || 1;
-    sigCtx.clearRect(0, 0, sigCanvas.width / dpr, sigCanvas.height / dpr);
+    sigCtx.clearRect(0, 0, window.sigCanvas.width / dpr, window.sigCanvas.height / dpr);
     document.getElementById('ttd_penerima_input').value = '';
     document.getElementById('ttd-placeholder').style.display = 'flex';
 }

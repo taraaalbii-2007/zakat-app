@@ -1387,6 +1387,29 @@ class TransaksiPenerimaanController extends Controller
         return view('amil.transaksi-penerimaan.show-pemantauan', compact('transaksi'));
     }
 
+    public function showKas($uuid)
+    {
+        $query = TransaksiPenerimaan::with([
+            'masjid',
+            'jenisZakat',
+            'tipeZakat',
+            'programZakat',
+            'amil.pengguna',
+            'verifiedBy'
+        ])->where('uuid', $uuid);
+
+        if ($this->user->isMuzakki() && $this->user->muzakki) {
+            $query->where('muzakki_id', $this->user->muzakki->id);
+        } else {
+            $query->byMasjid($this->masjid->id);
+        }
+
+        $transaksi = $query->firstOrFail();
+
+        return view('amil.kas-harian.show', compact('transaksi'));
+    }
+
+
     // ================================================================
     // EDIT
     // ================================================================

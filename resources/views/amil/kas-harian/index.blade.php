@@ -196,7 +196,7 @@
                                     {{ $trx->jumlah_formatted }}
                                 </td>
                                 <td class="px-4 py-3 text-center">
-                                    <a href="{{ route('transaksi-penerimaan.show', $trx->uuid) }}"
+                                    <a href="{{ route('kas-harian.show', $trx->uuid) }}"
                                        class="text-xs text-blue-600 hover:text-blue-800 font-medium">Detail</a>
                                 </td>
                             </tr>

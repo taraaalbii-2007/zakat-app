@@ -336,12 +336,12 @@
                             <p class="text-xs text-gray-500 mb-3 italic">Field yang dicetak tebal tidak dapat diubah.</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Nama Lengkap <span class="text-red-500">*</span> <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
+                                    <label class="block text-xs text-gray-500 mb-1">Nama Lengkap</label>
                                     <input type="text" name="muzakki_nama" value="{{ $muzakkiData['nama'] }}" readonly
                                         class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Email <span class="text-xs font-bold text-gray-600">(readonly)</span></label>
+                                    <label class="block text-xs text-gray-500 mb-1">Email</label>
                                     <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}" readonly
                                         class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-100 rounded-lg cursor-not-allowed text-gray-600 select-none">
                                 </div>

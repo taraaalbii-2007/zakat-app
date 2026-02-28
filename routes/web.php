@@ -236,32 +236,32 @@ Route::middleware(['auth', 'active.user', 'admin.masjid', 'complete.profile'])->
         Route::get('/amil/{amilId}/muzaki', [App\Http\Controllers\Admin_masjid\AdminMasjidMuzakiController::class, 'getMuzakiByAmil'])->name('amil.muzaki');
     });
 
- Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
-    // GET - Tampilkan konfigurasi (status WhatsApp & QRIS)
-    Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])
-        ->name('show');
-    
-    // GET - Form edit konfigurasi
-    Route::get('/edit', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'edit'])
-        ->name('edit');
-    
-    // POST - Simpan perubahan (WhatsApp & QRIS - upload foto)
-    // MENGGUNAKAN POST BUKAN PUT (lebih cocok untuk file upload)
-    Route::post('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'update'])
-        ->name('update');
-    
-    // POST - Test koneksi WhatsApp
-    Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])
-        ->name('test-whatsapp');
+    Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
+        // GET - Tampilkan konfigurasi (status WhatsApp & QRIS)
+        Route::get('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'show'])
+            ->name('show');
 
-    // POST - Toggle WhatsApp status (aktif/tidak aktif)
-    Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])
-        ->name('toggle-whatsapp');
-    
-    // POST - Toggle QRIS status (aktif/tidak aktif)
-    Route::post('/toggle-qris', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleQrisStatus'])
-        ->name('toggle-qris');
-});
+        // GET - Form edit konfigurasi
+        Route::get('/edit', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'edit'])
+            ->name('edit');
+
+        // POST - Simpan perubahan (WhatsApp & QRIS - upload foto)
+        // MENGGUNAKAN POST BUKAN PUT (lebih cocok untuk file upload)
+        Route::post('/', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'update'])
+            ->name('update');
+
+        // POST - Test koneksi WhatsApp
+        Route::post('/test-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'testWhatsapp'])
+            ->name('test-whatsapp');
+
+        // POST - Toggle WhatsApp status (aktif/tidak aktif)
+        Route::post('/toggle-whatsapp', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleWhatsappStatus'])
+            ->name('toggle-whatsapp');
+
+        // POST - Toggle QRIS status (aktif/tidak aktif)
+        Route::post('/toggle-qris', [App\Http\Controllers\Admin_masjid\KonfigurasiIntegrasiController::class, 'toggleQrisStatus'])
+            ->name('toggle-qris');
+    });
 
     Route::prefix('program-zakat')->name('program-zakat.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin_masjid\ProgramZakatController::class, 'index'])->name('index');
@@ -519,6 +519,9 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         Route::post('/buka', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'bukaKas'])
             ->name('buka');
 
+        Route::get('/{uuid}', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'showKas'])
+            ->name('show')->whereUuid('uuid');
+
         // Tutup kas hari ini
         Route::post('/tutup', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'tutupKas'])
             ->name('tutup');
@@ -538,6 +541,10 @@ Route::middleware(['auth', 'active.user', 'amil', 'masjid.access'])->group(funct
         // Export Excel history
         Route::get('/export-excel', [App\Http\Controllers\Amil\KasHarianAmilController::class, 'exportExcel'])
             ->name('export-excel');
+
+        Route::get('/kunjungan/{uuid}/edit', [App\Http\Controllers\Amil\KunjunganMustahikController::class, 'edit'])->name('amil.kunjungan.edit');
+        Route::put('/kunjungan/{uuid}', [App\Http\Controllers\Amil\KunjunganMustahikController::class, 'update'])->name('amil.kunjungan.update');
+        Route::patch('/kunjungan/{uuid}/cancel', [App\Http\Controllers\Amil\KunjunganMustahikController::class, 'cancel'])->name('amil.kunjungan.cancel');
     });
 
     Route::prefix('setor-kas')->name('amil.setor-kas.')->group(function () {
