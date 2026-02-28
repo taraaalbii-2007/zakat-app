@@ -49,4 +49,14 @@ class LandingController extends Controller
             'totalProgram'
         ));
     }
+
+    public function hitungZakat()
+    {
+        $hargaTerbaru    = HargaEmasPerak::where('is_active', true)->orderBy('tanggal', 'desc')->first();
+        $hargaEmasPerGram = $hargaTerbaru ? (int) $hargaTerbaru->harga_emas_per_gram : 1900000;
+        $nisabMaal        = $hargaEmasPerGram * 85;
+        $nisabBulanan     = (int) round($nisabMaal / 12);
+
+        return view('pages.hitung-zakat', compact('hargaTerbaru', 'hargaEmasPerGram', 'nisabMaal', 'nisabBulanan'));
+    }
 }

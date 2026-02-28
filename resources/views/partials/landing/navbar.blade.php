@@ -53,7 +53,7 @@
                 </a>
 
                 {{-- Hitung Zakat --}}
-                <a href=""
+                <a href="/hitung-zakat"
                    data-nav="hitung-zakat"
                    class="nav-link relative px-4 py-2 text-sm font-semibold text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Hitung Zakat

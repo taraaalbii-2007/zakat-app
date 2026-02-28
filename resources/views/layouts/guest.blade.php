@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Niat Zakat - Platform Digital Pengelolaan Zakat Transparan & Amanah">
-    <title>Niat Zakat - Sistem Zakat Digital</title>
+    <meta name="description" content="@yield('meta_description', 'Niat Zakat - Platform Digital Pengelolaan Zakat Transparan & Amanah')">
+    <title>@yield('title', 'Niat Zakat - Sistem Zakat Digital')</title>
 
     {{-- Google Fonts: Poppins --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +25,9 @@
             scroll-behavior: smooth;
         }
     </style>
+
+    {{-- Styles tambahan per halaman --}}
+    @yield('styles')
 </head>
 
 <body class="bg-neutral-50 text-neutral-900 antialiased">
@@ -33,11 +36,16 @@
     {{-- Navbar --}}
     @include('partials.landing.navbar')
 
-    {{-- Hero Section --}}
-    @include('partials.landing.hero')
+    {{-- Konten utama: default landing, bisa di-override --}}
+    @hasSection('content')
+        @yield('content')
+    @else
+        {{-- Hero Section --}}
+        @include('partials.landing.hero')
 
-    {{-- Isi Halaman (Fitur, Statistik, Cara Kerja, Testimoni) --}}
-    @include('partials.landing.content')
+        {{-- Isi Halaman (Fitur, Statistik, Cara Kerja, Testimoni) --}}
+        @include('partials.landing.content')
+    @endif
 
     {{-- Footer --}}
     @include('partials.landing.footer')
@@ -86,6 +94,9 @@
             }
         });
     </script>
+
+    {{-- Scripts tambahan per halaman --}}
+    @yield('scripts')
 </body>
 
 </html>

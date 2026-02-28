@@ -28,6 +28,9 @@ use App\Http\Controllers\LandingController;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 
+Route::get('/hitung-zakat', [LandingController::class, 'hitungZakat'])->name('hitung-zakat');
+
+
 // ============================================
 // AUTHENTICATION ROUTES (PUBLIC)
 // ============================================
