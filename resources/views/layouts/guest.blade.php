@@ -30,7 +30,7 @@
     @yield('styles')
 </head>
 
-<body class="bg-neutral-50 text-neutral-900 antialiased">
+<body class="bg-white text-neutral-900 antialiased">
     @include('partials.splash-screen')
 
     {{-- Navbar --}}

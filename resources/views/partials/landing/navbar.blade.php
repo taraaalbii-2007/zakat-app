@@ -45,7 +45,7 @@
             <div class="hidden lg:flex items-center gap-1">
 
                 {{-- Beranda --}}
-                <a href="/"
+                <a href="{{ route('landing') }}"
                    data-nav="beranda"
                    class="nav-link relative px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Beranda
@@ -53,7 +53,7 @@
                 </a>
 
                 {{-- Hitung Zakat --}}
-                <a href="/hitung-zakat"
+                <a href="{{ route('hitung-zakat') }}"
                    data-nav="hitung-zakat"
                    class="nav-link relative px-4 py-2 text-sm font-semibold text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Hitung Zakat
@@ -75,7 +75,7 @@
                     {{-- Dropdown --}}
                     <div class="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-neutral-100 opacity-0 invisible group-hover/panduan:opacity-100 group-hover/panduan:visible transition-all duration-200 translate-y-1 group-hover/panduan:translate-y-0 z-50">
                         <div class="p-1.5 flex flex-col">
-                            <a href=""
+                            <a href="{{ route('panduan-zakat') }}"
                                data-nav="panduan-zakat"
                                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                                 Panduan Zakat
@@ -124,13 +124,13 @@
     <div id="mobileMenu" class="hidden lg:hidden bg-white border-t border-neutral-100 shadow-soft-lg">
         <div class="w-full px-4 sm:px-10 py-4 flex flex-col gap-1">
 
-            <a href="/"
+            <a href="{{ route('landing') }}"
                data-nav="beranda"
                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                 Beranda
             </a>
 
-            <a href=""
+            <a href="{{ route('hitung-zakat') }}"
                data-nav="hitung-zakat"
                class="nav-link px-4 py-2.5 rounded-lg text-sm font-semibold text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                 Hitung Zakat
@@ -147,7 +147,7 @@
                     </svg>
                 </button>
                 <div id="panduan-mobile" class="hidden pl-4 flex flex-col gap-0.5 mt-0.5">
-                    <a href=""
+                    <a href="{{ route('panduan-zakat') }}"
                        data-nav="panduan-zakat"
                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                         Panduan Zakat

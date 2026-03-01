@@ -10,9 +10,8 @@
         position: relative;
         overflow: hidden;
         background: #f0fdf4;
-        clip-path: ellipse(110% 100% at 50% 0%);
         padding-top: 7rem;
-        padding-bottom: 5.5rem;
+        padding-bottom: 0;
         text-align: center;
     }
 
@@ -62,7 +61,7 @@
     .hero-orb-2 {
         width: 280px; height: 280px;
         background: rgba(74,222,128,0.18);
-        bottom: -40px; right: -60px;
+        bottom: 80px; right: -60px;
         animation: orbDrift 12s ease-in-out infinite reverse;
     }
     @keyframes orbDrift {
@@ -176,7 +175,7 @@
         z-index: 10;
         max-width: 44rem;
         margin: 0 auto;
-        padding: 0 1.5rem;
+         padding: 0 1.5rem 1.5rem;
     }
 
     /* ══ TITLE ════════════════════════════════ */
@@ -246,6 +245,16 @@
         0%   { opacity: 0; transform: translateY(16px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+
+    /* ══ WAVE ═════════════════════════════════ */
+    .hero-wave-bottom {
+        position: relative;
+        z-index: 10;
+        line-height: 0;
+        display: block;
+        margin-top: -1px;
+    }
+    
 </style>
 
 <section class="page-hero-wrap">
@@ -295,7 +304,6 @@
     </div>
 
     <div class="page-hero-inner">
-
         <h1 class="hero-h1" aria-label="{{ $heroTitle }}">
             @php
                 $words = explode(' ', $heroTitle);
@@ -311,7 +319,13 @@
         @if($heroSubtitle)
             <p class="hero-subtitle">{{ $heroSubtitle }}</p>
         @endif
-
     </div>
 
+    {{-- Wave putih melengkung di bagian bawah hero --}}
+   <div class="hero-wave-bottom">
+    <svg viewBox="0 0 1440 50" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
+         style="display:block; width:100%; height:50px;">
+        <path d="M0,0 C480,50 960,50 1440,0 L1440,50 L0,50 Z" fill="#ffffff"/>
+    </svg>
+</div>
 </section>

@@ -5,6 +5,10 @@
 
 @section('styles')
 <style>
+    body {
+        background: #ffffff !important;
+    }
+
     .nz-label {
         display: block;
         font-size: 0.75rem;
@@ -23,7 +27,7 @@
         font-size: 0.9rem;
         font-weight: 500;
         color: #171717;
-        background: #fafafa;
+        background: #f4f4f5;
         transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
         outline: none;
     }
@@ -72,7 +76,7 @@
     }
 
     .nz-result-card {
-        background: #f9fafb;
+        background: #f4f4f5;
         border: 1.5px solid #e5e7eb;
         border-radius: 1rem;
         padding: 1.25rem 1.5rem;
@@ -109,7 +113,34 @@
     }
 
     .nz-stepper-btn:hover { background: #e5e5e5; }
-    .nz-divider { height: 1px; background: #f0f0f0; margin: 1.25rem 0; }
+
+    .nz-divider {
+        height: 1px;
+        background: #f0f0f0;
+        margin: 1.25rem 0;
+    }
+
+    /* Background dengan dot grid subtle */
+.nz-bg {
+    background-color: #ffffff;
+    background-image: radial-gradient(circle, #d1fae5 1px, transparent 1px);
+    background-size: 24px 24px;
+    position: relative;
+}
+
+/* Fade out dot grid di bagian bawah */
+.nz-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent 40%,
+        #ffffff 100%
+    );
+    pointer-events: none;
+}
 </style>
 @endsection
 
@@ -124,8 +155,10 @@
 ])
 
 {{-- ── KALKULATOR ───────────────────────────────────────────────────── --}}
-<section class="py-14 bg-neutral-50">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="pt-2 pb-14 nz-bg" style="position: relative; overflow: hidden;">
+
+    
+    <div class="relative z-10 px-4 sm:px-10 lg:px-20">
 
         {{-- Tab Navigation --}}
         <div class="flex justify-center mb-10">
@@ -232,9 +265,6 @@
                             <p class="text-xs text-neutral-400 mt-1" id="pg-r-zakat-info">2.5% dari penghasilan bersih</p>
                         </div>
 
-                        <div id="pg-status" class="nz-status nz-status-empty mb-6">
-                            Masukkan data penghasilan untuk menghitung kewajiban zakat Anda.
-                        </div>
 
                         <div class="mt-auto">
                             <a href="{{ route('login') }}"
@@ -526,13 +556,7 @@
         document.getElementById('pg-r-zakat-info').textContent =
             '2.5% dari penghasilan bersih ' + (pgPeriode === 'bulan' ? 'per bulan' : 'per tahun');
 
-        if (total === 0) {
-            setStatus('pg-status', 'empty', 'Masukkan data penghasilan untuk menghitung kewajiban zakat Anda.');
-        } else if (bersih < nisab) {
-            setStatus('pg-status', 'no', 'Penghasilan bersih belum mencapai nisab. Tidak wajib zakat, namun Anda tetap bisa berinfak.');
-        } else {
-            setStatus('pg-status', 'ok', 'Penghasilan Anda telah mencapai nisab. Wajib membayar zakat sebesar ' + rp(zakat) + (pgPeriode === 'bulan' ? ' per bulan.' : ' per tahun.'));
-        }
+       
     };
 
     // ── Maal ─────────────────────────────────────────────────────

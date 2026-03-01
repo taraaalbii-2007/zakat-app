@@ -59,4 +59,9 @@ class LandingController extends Controller
 
         return view('pages.hitung-zakat', compact('hargaTerbaru', 'hargaEmasPerGram', 'nisabMaal', 'nisabBulanan'));
     }
+
+    public function panduanZakat()
+    {
+        return view('pages.panduan-zakat');
+    }
 }
