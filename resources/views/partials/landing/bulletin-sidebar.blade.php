@@ -14,7 +14,7 @@
                     $relDate  = \Carbon\Carbon::parse($rel->published_at ?? $rel->created_at)->isoFormat('DD MMM YYYY');
                 @endphp
                 <article class="group">
-                    <a href="{{ route('artikel.show', $rel->uuid) }}" class="flex gap-3">
+                    <a href="{{ route('artikel.show', $rel->slug) }}" class="flex gap-3">
                         <div class="w-24 lg:w-28 flex-shrink-0 overflow-hidden rounded bg-white">
                             <div class="relative w-full" style="aspect-ratio: 4/3; background-color: #f0fdf4;">
                                 @if($relThumb)

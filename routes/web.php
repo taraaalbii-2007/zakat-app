@@ -32,8 +32,7 @@ Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/hitung-zakat', [LandingController::class, 'hitungZakat'])->name('hitung-zakat');
 Route::get('/panduan-zakat', [LandingController::class, 'panduanZakat'])->name('panduan-zakat');
 Route::get('/artikel', [LandingController::class, 'artikel'])->name('artikel.index');
-Route::get('/artikel/{bulletin:uuid}', [LandingController::class, 'artikelShow'])->name('artikel.show');
-
+Route::get('/artikel/{bulletin:slug}', [LandingController::class, 'artikelShow'])->name('artikel.show');
 
 // ============================================
 // AUTHENTICATION ROUTES (PUBLIC)

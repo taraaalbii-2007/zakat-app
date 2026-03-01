@@ -25,39 +25,85 @@
         padding-bottom: 5rem;
     }
 
-    /* ── FILTER BAR ─────────────────────────────── */
+    /* ── FILTER + SEARCH WRAP (sticky) ──────────── */
     .bul-filter-wrap {
         background: #ffffff;
         border-bottom: 1.5px solid #bbf7d0;
         position: sticky;
         top: 0;
         z-index: 40;
+        padding: 1rem 0 0.75rem;
     }
+
+    /* ── SEARCH ROW (baris atas, centered) ─────── */
+    .bul-search-row {
+        display: flex;
+        justify-content: center;
+        padding: 0 5rem;
+        margin-bottom: 0.85rem;
+    }
+    @media (max-width: 1024px) { .bul-search-row { padding: 0 2.5rem; } }
+    @media (max-width: 640px)  { .bul-search-row { padding: 0 1rem; } }
+
+    .bul-search-wrap {
+        position: relative;
+        width: 480px;
+        max-width: 100%;
+    }
+    .bul-search-input {
+        width: 100%;
+        border: 1.5px solid #d1d5db;
+        border-radius: 99px;
+        background: #ffffff;
+        outline: none;
+        padding: 0.62rem 3rem 0.62rem 1.35rem;
+        font-size: 0.88rem;
+        color: #374151;
+        transition: border-color .18s, box-shadow .18s;
+        box-sizing: border-box;
+    }
+    .bul-search-input::placeholder { color: #9ca3af; }
+    .bul-search-input:focus {
+        border-color: #9ca3af;
+        box-shadow: 0 0 0 3px rgba(156,163,175,0.15);
+    }
+    .bul-search-btn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        padding: 0;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: color .18s;
+        line-height: 1;
+    }
+    .bul-search-btn:hover { color: #6b7280; }
+
+    /* ── FILTER PILLS ROW (baris bawah) ─────────── */
     .bul-filter-inner {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 5rem;               /* sama dengan hero padding kiri-kanan */
+        padding: 0 5rem;
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
         flex-wrap: wrap;
-        min-height: 56px;
+        min-height: 36px;
     }
     @media (max-width: 1024px) { .bul-filter-inner { padding: 0 2.5rem; } }
     @media (max-width: 640px)  { .bul-filter-inner { padding: 0 1rem; } }
 
-    .bul-filter__label {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #4b7a52;
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-        margin-right: 0.4rem;
-    }
     .bul-filter__btn {
         display: inline-flex;
         align-items: center;
-        padding: 0.3rem 0.9rem;
+        padding: 0.32rem 1rem;
         border-radius: 99px;
         border: 1.5px solid #bbf7d0;
         background: #ffffff;
@@ -80,47 +126,10 @@
     .bul-section {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 3rem 5rem 0;          /* padding kiri-kanan sama dengan hero */
+        padding: 3rem 5rem 0;
     }
     @media (max-width: 1024px) { .bul-section { padding: 2.5rem 2.5rem 0; } }
     @media (max-width: 640px)  { .bul-section { padding: 2rem 1rem 0; } }
-
-    /* ── SECTION HEADING ────────────────────────── */
-    .bul-section__head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-    .bul-section__title {
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: #166534;
-        letter-spacing: -0.01em;
-        margin: 0;
-    }
-    .bul-section__title span {
-        display: inline-block;
-        width: 6px; height: 6px;
-        border-radius: 50%;
-        background: #16a34a;
-        vertical-align: middle;
-        margin-right: 0.45rem;
-        margin-bottom: 2px;
-    }
-    .bul-section__more {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #16a34a;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        transition: gap .18s;
-    }
-    .bul-section__more:hover { gap: 0.55rem; }
 
     /* ── GRID 3 KOLOM ───────────────────────────── */
     .bul-grid {
@@ -163,9 +172,7 @@
         object-fit: cover;
         transition: transform .35s ease;
     }
-    .bul-card:hover .bul-card__thumb {
-        transform: scale(1.04);
-    }
+    .bul-card:hover .bul-card__thumb { transform: scale(1.04); }
     .bul-card__thumb-placeholder {
         width: 100%;
         height: 100%;
@@ -199,7 +206,7 @@
         line-height: 1;
     }
 
-    /* Meta: tanggal & views */
+    /* Meta */
     .bul-card__meta {
         display: flex;
         align-items: center;
@@ -337,14 +344,37 @@
 ══════════════════════════════════════════════ --}}
 <div class="bul-page">
 
-    {{-- ── FILTER KATEGORI (sticky) ────────────── --}}
+    {{-- ── SEARCH + FILTER BAR (sticky) ──────────── --}}
     <div class="bul-filter-wrap">
-        <div class="bul-filter-inner">
-            <span class="bul-filter__label">Kategori:</span>
 
-            <a href="{{ route('artikel.index') }}"
+        {{-- Baris 1: Search bar — center --}}
+        <div class="bul-search-row">
+            <form action="{{ route('artikel.index') }}" method="GET" style="width:100%;display:flex;justify-content:center;">
+                @if(request('kategori'))
+                    <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+                @endif
+                <div class="bul-search-wrap">
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ request('q') }}"
+                        placeholder="Cari buletin..."
+                        class="bul-search-input"
+                    >
+                    <button type="submit" class="bul-search-btn" aria-label="Cari">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {{-- Baris 2: Filter pills --}}
+        <div class="bul-filter-inner">
+            <a href="{{ route('artikel.index', ['q' => request('q')]) }}"
                class="bul-filter__btn {{ !request('kategori') ? 'active' : '' }}">
-                Semua
+                Semua Kategori
             </a>
 
             @foreach($kategoriList as $kat)
@@ -354,50 +384,11 @@
                 </a>
             @endforeach
         </div>
+
     </div>
 
     {{-- ── GRID BULLETIN ───────────────────────── --}}
     <section class="bul-section">
-
-        <div class="bul-section__head">
-            <h2 class="bul-section__title">
-                <span></span>
-                @if(request('kategori') && $kategoriList->firstWhere('id', request('kategori')))
-                    {{ $kategoriList->firstWhere('id', request('kategori'))->nama_kategori }}
-                @else
-                    Semua Artikel
-                @endif
-                <span style="font-weight:400; font-size:0.9rem; color:#6b7280; margin-left:0.4rem;">
-                    ({{ $bulletins->total() }})
-                </span>
-            </h2>
-
-            {{-- Search mini --}}
-            <form action="{{ route('artikel.index') }}" method="GET" style="display:flex;gap:0.5rem;align-items:center;">
-                @if(request('kategori'))
-                    <input type="hidden" name="kategori" value="{{ request('kategori') }}">
-                @endif
-                <div style="position:relative;">
-                    <span style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:#16a34a;pointer-events:none;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                    </span>
-                    <input
-                        type="text"
-                        name="q"
-                        value="{{ request('q') }}"
-                        placeholder="Cari artikel..."
-                        style="padding:0.45rem 1rem 0.45rem 2.4rem;border:1.5px solid #bbf7d0;border-radius:99px;background:#f0fdf4;font-size:0.83rem;color:#166534;outline:none;width:220px;transition:border-color .18s,box-shadow .18s;"
-                        onfocus="this.style.borderColor='#16a34a';this.style.boxShadow='0 0 0 3px rgba(22,163,74,0.12)';"
-                        onblur="this.style.borderColor='#bbf7d0';this.style.boxShadow='none';"
-                    >
-                </div>
-                <button type="submit" style="display:none;"></button>
-            </form>
-        </div>
-
-        {{-- Grid 3 kolom --}}
         <div class="bul-grid">
             @forelse($bulletins as $bulletin)
                 @include('partials.landing.card-bulletin', ['bulletin' => $bulletin])
@@ -411,7 +402,6 @@
                 </div>
             @endforelse
         </div>
-
     </section>
 
     {{-- ── PAGINATION ───────────────────────────── --}}

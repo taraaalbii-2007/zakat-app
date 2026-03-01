@@ -14,7 +14,7 @@
                         ? \Carbon\Carbon::parse($bulletin->published_at)->isoFormat('DD MMM YYYY')
                         : \Carbon\Carbon::parse($bulletin->created_at)->isoFormat('DD MMM YYYY');
     $views         = $bulletin->view_count ?? 0;
-    $url           = route('artikel.show', $bulletin->uuid);
+    $url           = route('artikel.show', $bulletin->slug);
 @endphp
 
 <article class="bul-card">

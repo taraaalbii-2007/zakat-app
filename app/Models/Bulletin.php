@@ -92,8 +92,8 @@ class Bulletin extends Model
     {
         return $query->where(function ($q) use ($keyword) {
             $q->where('judul', 'like', "%{$keyword}%")
-              ->orWhere('konten', 'like', "%{$keyword}%")
-              ->orWhere('lokasi', 'like', "%{$keyword}%");
+                ->orWhere('konten', 'like', "%{$keyword}%")
+                ->orWhere('lokasi', 'like', "%{$keyword}%");
         });
     }
 
@@ -105,7 +105,7 @@ class Bulletin extends Model
     public function scopePublished($query)
     {
         return $query->whereNotNull('published_at')
-                     ->where('published_at', '<=', now());
+            ->where('published_at', '<=', now());
     }
 
     // ============================================
@@ -113,7 +113,7 @@ class Bulletin extends Model
     // ============================================
     public function getRouteKeyName(): string
     {
-        return 'uuid';
+        return 'slug';
     }
 
     public function incrementViewCount(): void
