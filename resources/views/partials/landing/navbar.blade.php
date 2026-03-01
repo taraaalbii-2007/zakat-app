@@ -80,7 +80,7 @@
                                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                                 Panduan Zakat
                             </a>
-                            <a href=""
+                            <a href="artikel"
                                data-nav="artikel"
                                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                                 Artikel Terkini / Buletin
