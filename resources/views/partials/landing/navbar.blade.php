@@ -91,7 +91,7 @@
 
                 {{-- Kontak --}}
                 <a href="kontak"
-                   data-nav="kontak"
+                   data-nav="/kontak"
                    class="nav-link relative px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Kontak
                     <span class="nav-underline absolute bottom-0 left-4 right-4 h-0.5 bg-primary-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
