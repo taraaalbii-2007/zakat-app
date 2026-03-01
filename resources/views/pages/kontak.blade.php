@@ -4,11 +4,17 @@
 @section('title', 'Hubungi Kami')
 
 @section('content')
+
+
     @include('partials.landing.page-hero', [
         'heroTitle' => 'Hubungi Kami',
         'heroSubtitle' => 'Ada pertanyaan atau butuh bantuan? Kami siap membantu Anda.',
     ])
 
+
+    {{-- ═══════════════════════════════════════════════════════════════ --}}
+    {{-- Konten Utama — padding sesuai hero section                      --}}
+    {{-- ═══════════════════════════════════════════════════════════════ --}}
     <section class="py-10 sm:py-14 bg-white">
         <div class="w-full px-4 sm:px-10 lg:px-20">
 
@@ -25,20 +31,23 @@
             @endif
 
             {{-- reCAPTCHA error --}}
-            @if($errors->has('recaptcha'))
+            @error('recaptcha')
                 <div class="mb-8 rounded-xl bg-red-50 border border-red-200 p-4 flex items-start gap-3">
                     <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    <p class="text-sm font-medium text-red-700">{{ $errors->first('recaptcha') }}</p>
+                    <p class="text-sm font-medium text-red-700">{{ $message }}</p>
                 </div>
-            @endif
+            @enderror
 
             {{-- ── Grid: Form kiri (3), Info kanan (2) ── --}}
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-                {{-- Kolom Kiri: Form Kirim Pesan --}}
+
+                {{-- ════════════════════════════════════════ --}}
+                {{-- Kolom Kiri: Form Kirim Pesan            --}}
+                {{-- ════════════════════════════════════════ --}}
                 <div class="lg:col-span-3 order-2 lg:order-1">
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">
                         <div class="mb-6">
@@ -63,16 +72,12 @@
                         <form action="{{ route('kontak.store') }}" method="POST" class="space-y-5" id="kontak-form">
                             @csrf
 
-                            {{-- Hidden reCAPTCHA v3 token --}}
-                            @if ($recaptcha && $recaptcha->isEnabled())
-                                <input type="hidden" name="recaptcha_token" id="recaptcha_token" value="">
-                                
-                                {{-- Load reCAPTCHA script di sini --}}
-                                <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptcha->RECAPTCHA_SITE_KEY }}"></script>
-                            @endif
+                            {{-- FIX: Hidden reCAPTCHA v3 token — selalu ada di DOM agar bisa diisi JS --}}
+                            <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
                             {{-- Nama & Email --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                                 {{-- Nama --}}
                                 <div>
                                     <label for="nama" class="block text-sm font-medium text-gray-700 mb-1.5">
@@ -151,19 +156,26 @@
                                     </div>
                                     <input type="text" id="subjek" name="subjek" value="{{ old('subjek') }}"
                                         placeholder="Contoh: Pertanyaan tentang zakat fitrah"
+                                        maxlength="255"
                                         class="block w-full pl-10 pr-4 py-2.5 text-sm border rounded-xl bg-white placeholder-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
                                             {{ $errors->has('subjek') ? 'border-red-400 ring-2 ring-red-100' : 'border-gray-200' }}">
                                 </div>
-                                @error('subjek')
-                                    <p class="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-                                        <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                                {{-- FIX: Counter karakter untuk Subjek --}}
+                                <div class="flex items-start justify-between mt-1.5">
+                                    @error('subjek')
+                                        <p class="text-xs text-red-600 flex items-center gap-1">
+                                            <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            {{ $message }}
+                                        </p>
+                                    @else
+                                        <span></span>
+                                    @enderror
+                                    <span id="subjek-char-count" class="text-xs text-gray-400 ml-auto">0 / 255</span>
+                                </div>
                             </div>
 
                             {{-- Pesan --}}
@@ -207,10 +219,12 @@
                     </div>
                 </div>
 
-                {{-- Kolom Kanan: Info Kontak --}}
+                {{-- ════════════════════════════════════════════════════ --}}
+                {{-- Kolom Kanan: Info Kontak — SATU CONTAINER           --}}
+                {{-- ════════════════════════════════════════════════════ --}}
                 <div class="lg:col-span-2 order-1 lg:order-2">
-                    <!-- ... konten info kontak tetap sama ... -->
                     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8 space-y-5 h-full">
+
                         <div>
                             <h2 class="text-xl font-bold text-gray-900">Info Kontak</h2>
                             <p class="mt-1 text-sm text-gray-500 leading-relaxed">
@@ -219,6 +233,7 @@
                         </div>
 
                         <div class="space-y-3">
+
                             {{-- Email Admin --}}
                             @if ($config->email_admin)
                                 <div
@@ -333,9 +348,10 @@
                                     <p class="text-xs text-gray-400 mt-0.5">Respon email dalam 1×24 jam kerja</p>
                                 </div>
                             </div>
+
                         </div>
 
-                        {{-- Social Media --}}
+                        {{-- Social Media (jika ada) --}}
                         @if ($config->instagram_url || $config->facebook_url || $config->twitter_url || $config->youtube_url)
                             <div class="pt-1 border-t border-gray-100">
                                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Media Sosial
@@ -384,90 +400,163 @@
                                 </div>
                             </div>
                         @endif
+
                     </div>
                 </div>
+                {{-- end kolom kanan --}}
+
             </div>
         </div>
     </section>
-@endsection
 
-@push('scripts')
-<script>
-    // Character counter
-    const pesanEl = document.getElementById('pesan');
-    const countEl = document.getElementById('char-count');
-    if (pesanEl && countEl) {
-        const update = () => {
-            const len = pesanEl.value.length;
-            countEl.textContent = len + ' / 5000';
-            countEl.classList.toggle('text-red-500', len > 4800);
-            countEl.classList.toggle('text-gray-400', len <= 4800);
-        };
-        pesanEl.addEventListener('input', update);
-        update();
-    }
+    {{-- FIX: Scroll-to-top button dipindah ke KIRI agar tidak menutupi reCAPTCHA badge (pojok kanan) --}}
+    <button id="scroll-to-top"
+        onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
+        class="fixed bottom-6 left-6 z-40 w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
+        aria-label="Kembali ke atas">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
 
-    // reCAPTCHA v3 handling
+    {{-- reCAPTCHA v3 --}}
     @if ($recaptcha && $recaptcha->isEnabled())
-    const form = document.getElementById('kontak-form');
-    const submitBtn = document.getElementById('submit-btn');
-    
-    if (form && submitBtn) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Disable button
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `
-                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                Memverifikasi...
-            `;
-            
-            // Execute reCAPTCHA
-            grecaptcha.ready(function() {
-                grecaptcha.execute('{{ $recaptcha->RECAPTCHA_SITE_KEY }}', {action: 'kontak'})
-                    .then(function(token) {
-                        // Set token to hidden input
-                        document.getElementById('recaptcha_token').value = token;
-                        // Submit form
-                        form.submit();
-                    })
-                    .catch(function(error) {
-                        console.error('reCAPTCHA error:', error);
-                        // Re-enable button on error
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = `
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                            </svg>
-                            Kirim Pesan
-                        `;
-                        
-                        // Show error message
-                        alert('Gagal memverifikasi reCAPTCHA. Silakan muat ulang halaman dan coba lagi.');
-                    });
-            });
-        });
-    }
-    @else
-    // Without reCAPTCHA: normal form submit with loading state
-    const form2 = document.getElementById('kontak-form');
-    const submitBtn2 = document.getElementById('submit-btn');
-    if (form2 && submitBtn2) {
-        form2.addEventListener('submit', function() {
-            submitBtn2.disabled = true;
-            submitBtn2.innerHTML = `
-                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                Mengirim...
-            `;
-        });
-    }
+        <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptcha->RECAPTCHA_SITE_KEY }}"></script>
     @endif
-</script>
-@endpush
+
+    {{-- ═══════════════════════════════════════════════════════════════════
+         Script diletakkan langsung di dalam @section('content'), SETELAH
+         semua elemen HTML ada di DOM — ini solusi paling andal karena
+         tidak bergantung pada posisi @stack('scripts') di layout.
+    ═══════════════════════════════════════════════════════════════════ --}}
+    <script>
+        // ── Counter karakter: SUBJEK ──────────────────────────────────────
+        (function () {
+            var subjekEl      = document.getElementById('subjek');
+            var subjekCountEl = document.getElementById('subjek-char-count');
+            if (!subjekEl || !subjekCountEl) return;
+
+            function updateSubjek() {
+                var len = subjekEl.value.length;
+                subjekCountEl.textContent = len + ' / 255';
+                if (len > 230) {
+                    subjekCountEl.className = 'text-xs text-red-500 ml-auto';
+                } else if (len > 0 && len < 15) {
+                    subjekCountEl.className = 'text-xs text-amber-500 ml-auto';
+                } else {
+                    subjekCountEl.className = 'text-xs text-gray-400 ml-auto';
+                }
+            }
+
+            subjekEl.addEventListener('input', updateSubjek);
+            subjekEl.addEventListener('keyup', updateSubjek);
+            updateSubjek(); // inisialisasi (untuk old() value)
+        })();
+
+        // ── Counter karakter: PESAN ───────────────────────────────────────
+        (function () {
+            var pesanEl = document.getElementById('pesan');
+            var countEl = document.getElementById('char-count');
+            if (!pesanEl || !countEl) return;
+
+            function updatePesan() {
+                var len = pesanEl.value.length;
+                countEl.textContent = len + ' / 5000';
+                if (len > 4800) {
+                    countEl.classList.add('text-red-500');
+                    countEl.classList.remove('text-gray-400');
+                } else {
+                    countEl.classList.remove('text-red-500');
+                    countEl.classList.add('text-gray-400');
+                }
+            }
+
+            pesanEl.addEventListener('input', updatePesan);
+            pesanEl.addEventListener('keyup', updatePesan);
+            updatePesan(); // inisialisasi (untuk old() value)
+        })();
+
+        // ── Scroll-to-top button ──────────────────────────────────────────
+        (function () {
+            var btn = document.getElementById('scroll-to-top');
+            if (!btn) return;
+            window.addEventListener('scroll', function () {
+                if (window.scrollY > 300) {
+                    btn.classList.remove('opacity-0', 'pointer-events-none');
+                    btn.classList.add('opacity-100');
+                } else {
+                    btn.classList.add('opacity-0', 'pointer-events-none');
+                    btn.classList.remove('opacity-100');
+                }
+            });
+        })();
+
+        // ── reCAPTCHA v3 submit handler ───────────────────────────────────
+        @if ($recaptcha && $recaptcha->isEnabled())
+        (function () {
+            var form      = document.getElementById('kontak-form');
+            var submitBtn = document.getElementById('submit-btn');
+            if (!form || !submitBtn) return;
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML =
+                    '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
+                        '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                        '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
+                    '</svg> Memverifikasi...';
+
+                function doExecute() {
+                    grecaptcha.execute('{{ $recaptcha->RECAPTCHA_SITE_KEY }}', { action: 'kontak' })
+                        .then(function (token) {
+                            document.getElementById('recaptcha_token').value = token;
+                            form.submit();
+                        })
+                        .catch(function () {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML =
+                                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>' +
+                                '</svg> Kirim Pesan';
+                        });
+                }
+
+                if (typeof grecaptcha !== 'undefined') {
+                    grecaptcha.ready(doExecute);
+                } else {
+                    setTimeout(function () {
+                        if (typeof grecaptcha !== 'undefined') {
+                            grecaptcha.ready(doExecute);
+                        } else {
+                            alert('Gagal memuat reCAPTCHA. Silakan muat ulang halaman.');
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML =
+                                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>' +
+                                '</svg> Kirim Pesan';
+                        }
+                    }, 1500);
+                }
+            });
+        })();
+        @else
+        {{-- Tanpa reCAPTCHA --}}
+        (function () {
+            var form      = document.getElementById('kontak-form');
+            var submitBtn = document.getElementById('submit-btn');
+            if (!form || !submitBtn) return;
+            form.addEventListener('submit', function () {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML =
+                    '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
+                        '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                        '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
+                    '</svg> Mengirim...';
+            });
+        })();
+        @endif
+    </script>
+
+@endsection
