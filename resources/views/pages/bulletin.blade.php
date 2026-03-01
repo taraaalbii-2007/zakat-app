@@ -28,11 +28,10 @@
     /* ── FILTER + SEARCH WRAP (sticky) ──────────── */
     .bul-filter-wrap {
         background: #ffffff;
-        border-bottom: 1.5px solid #bbf7d0;
         position: sticky;
         top: 0;
         z-index: 40;
-        padding: 1rem 0 0.75rem;
+        padding: 0.75rem 0 0.5rem;
     }
 
     /* ── SEARCH ROW (baris atas, centered) ─────── */
@@ -40,7 +39,7 @@
         display: flex;
         justify-content: center;
         padding: 0 5rem;
-        margin-bottom: 0.85rem;
+        margin-bottom: 0.6rem;
     }
     @media (max-width: 1024px) { .bul-search-row { padding: 0 2.5rem; } }
     @media (max-width: 640px)  { .bul-search-row { padding: 0 1rem; } }
@@ -126,10 +125,10 @@
     .bul-section {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 3rem 5rem 0;
+        padding: 1.5rem 5rem 0;
     }
-    @media (max-width: 1024px) { .bul-section { padding: 2.5rem 2.5rem 0; } }
-    @media (max-width: 640px)  { .bul-section { padding: 2rem 1rem 0; } }
+    @media (max-width: 1024px) { .bul-section { padding: 1.25rem 2.5rem 0; } }
+    @media (max-width: 640px)  { .bul-section { padding: 1rem 1rem 0; } }
 
     /* ── GRID 3 KOLOM ───────────────────────────── */
     .bul-grid {

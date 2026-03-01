@@ -90,7 +90,7 @@
                 </div>
 
                 {{-- Kontak --}}
-                <a href="#kontak"
+                <a href="kontak"
                    data-nav="kontak"
                    class="nav-link relative px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Kontak

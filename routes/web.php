@@ -26,6 +26,8 @@ use App\Http\Controllers\Superadmin\SuperadminTransaksiPenyaluranController;
 use App\Http\Controllers\Superadmin\ProfilSuperadminController;
 use App\Http\Controllers\Admin_masjid\ProfilAdminMasjidController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\KontakController;
+use App\Http\Controllers\Superadmin\KontakSuperadminController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -33,6 +35,11 @@ Route::get('/hitung-zakat', [LandingController::class, 'hitungZakat'])->name('hi
 Route::get('/panduan-zakat', [LandingController::class, 'panduanZakat'])->name('panduan-zakat');
 Route::get('/artikel', [LandingController::class, 'artikel'])->name('artikel.index');
 Route::get('/artikel/{bulletin:slug}', [LandingController::class, 'artikelShow'])->name('artikel.show');
+
+// kontak
+Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
+Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store');
+
 
 // ============================================
 // AUTHENTICATION ROUTES (PUBLIC)
@@ -252,6 +259,14 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         // API
         Route::get('/api/kategori-list',     [BulletinController::class, 'apiKategoriList'])
             ->name('api.kategori-list');
+    });
+
+    Route::prefix('superadmin-kontak')->name('superadmin.kontak.')->group(function () {
+        Route::get('/',                              [KontakSuperadminController::class, 'index'])->name('index');
+        Route::get('/{kontak}',                      [KontakSuperadminController::class, 'show'])->name('show');
+        Route::post('/{kontak}/balas',               [KontakSuperadminController::class, 'balas'])->name('balas');
+        Route::delete('/{kontak}',                   [KontakSuperadminController::class, 'destroy'])->name('destroy');
+        Route::patch('/{kontak}/tandai-belum-dibaca', [KontakSuperadminController::class, 'tandaiBelumDibaca'])->name('tandai-belum-dibaca');
     });
 });
 

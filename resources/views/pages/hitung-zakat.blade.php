@@ -5,10 +5,6 @@
 
 @section('styles')
 <style>
-    body {
-        background: #ffffff !important;
-    }
-
     .nz-label {
         display: block;
         font-size: 0.75rem;
@@ -119,28 +115,6 @@
         background: #f0f0f0;
         margin: 1.25rem 0;
     }
-
-    /* Background dengan dot grid subtle */
-.nz-bg {
-    background-color: #ffffff;
-    background-image: radial-gradient(circle, #d1fae5 1px, transparent 1px);
-    background-size: 24px 24px;
-    position: relative;
-}
-
-/* Fade out dot grid di bagian bawah */
-.nz-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        transparent 0%,
-        transparent 40%,
-        #ffffff 100%
-    );
-    pointer-events: none;
-}
 </style>
 @endsection
 
@@ -155,10 +129,9 @@
 ])
 
 {{-- ── KALKULATOR ───────────────────────────────────────────────────── --}}
-<section class="pt-2 pb-14 nz-bg" style="position: relative; overflow: hidden;">
+<section class="pt-2 pb-14">
 
-    
-    <div class="relative z-10 px-4 sm:px-10 lg:px-20">
+    <div class="px-4 sm:px-10 lg:px-20">
 
         {{-- Tab Navigation --}}
         <div class="flex justify-center mb-10">
@@ -264,7 +237,6 @@
                             <p class="text-2xl font-extrabold text-primary-600" id="pg-r-zakat">Rp 0</p>
                             <p class="text-xs text-neutral-400 mt-1" id="pg-r-zakat-info">2.5% dari penghasilan bersih</p>
                         </div>
-
 
                         <div class="mt-auto">
                             <a href="{{ route('login') }}"
@@ -555,8 +527,6 @@
         document.getElementById('pg-r-zakat').textContent     = rp(zakat);
         document.getElementById('pg-r-zakat-info').textContent =
             '2.5% dari penghasilan bersih ' + (pgPeriode === 'bulan' ? 'per bulan' : 'per tahun');
-
-       
     };
 
     // ── Maal ─────────────────────────────────────────────────────
