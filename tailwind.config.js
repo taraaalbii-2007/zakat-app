@@ -8,9 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Primary - Hijau Niat Zakat (dari logo)
+        // Primary - Hijau Niat Zakat (diupdate sesuai warna button)
         primary: {
-          DEFAULT: '#2d6936', // Hijau tua dari logo
+          DEFAULT: '#17a34a', // ← Diupdate: hijau cerah dari button
+          50:  '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          300: '#86efac',
+          400: '#4ade80',
+          500: '#22c55e',
+          600: '#17a34a', // ← DEFAULT sama dengan 600
+          700: '#15803d',
+          800: '#166534',
+          900: '#14532d',
+          950: '#052e16',
+        },
+        // Secondary - Hijau tua (dulu primary)
+        secondary: {
+          DEFAULT: '#2d6936',
           50: '#f1f8e9',
           100: '#dcedc8',
           200: '#c5e1a5',
@@ -22,21 +37,6 @@ export default {
           800: '#174119',
           900: '#0f2f12',
           950: '#0a1f0c',
-        },
-        // Secondary - Hijau terang (aksen dari logo)
-        secondary: {
-          DEFAULT: '#7cb342',
-          50: '#f1f8e9',
-          100: '#dcedc8',
-          200: '#c5e1a5',
-          300: '#aed581',
-          400: '#9ccc65',
-          500: '#7cb342',
-          600: '#689f38',
-          700: '#558b2f',
-          800: '#33691e',
-          900: '#1b5e20',
-          950: '#0d3d10',
         },
         // Accent - Untuk CTA dan highlight
         accent: {
@@ -103,26 +103,24 @@ export default {
         body: ['Poppins', 'sans-serif'],
       },
       boxShadow: {
-        // Shadow dengan warna hijau Niat Zakat
-        'nz': '0 4px 6px -1px rgba(45, 105, 54, 0.1), 0 2px 4px -1px rgba(45, 105, 54, 0.06)',
-        'nz-lg': '0 10px 15px -3px rgba(45, 105, 54, 0.15), 0 4px 6px -2px rgba(45, 105, 54, 0.1)',
-        'nz-xl': '0 20px 25px -5px rgba(45, 105, 54, 0.2), 0 10px 10px -5px rgba(45, 105, 54, 0.1)',
-        'card': '0 4px 14px 0 rgba(45, 105, 54, 0.08)',
-        'card-hover': '0 8px 25px 0 rgba(45, 105, 54, 0.15)',
+        'nz': '0 4px 6px -1px rgba(23, 163, 74, 0.1), 0 2px 4px -1px rgba(23, 163, 74, 0.06)',
+        'nz-lg': '0 10px 15px -3px rgba(23, 163, 74, 0.15), 0 4px 6px -2px rgba(23, 163, 74, 0.1)',
+        'nz-xl': '0 20px 25px -5px rgba(23, 163, 74, 0.2), 0 10px 10px -5px rgba(23, 163, 74, 0.1)',
+        'card': '0 4px 14px 0 rgba(23, 163, 74, 0.08)',
+        'card-hover': '0 8px 25px 0 rgba(23, 163, 74, 0.15)',
         'soft': '0 2px 8px 0 rgba(0, 0, 0, 0.06)',
         'soft-lg': '0 4px 16px 0 rgba(0, 0, 0, 0.08)',
         'modal': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
       backgroundImage: {
-        // Gradient dengan warna Niat Zakat
-        'gradient-primary': 'linear-gradient(135deg, #2d6936 0%, #1e5223 100%)',
-        'gradient-secondary': 'linear-gradient(135deg, #7cb342 0%, #558b2f 100%)',
-        'gradient-nz': 'linear-gradient(135deg, #2d6936 0%, #7cb342 100%)',
-        'gradient-nz-radial': 'radial-gradient(circle at top right, #2d6936, #7cb342)',
-        'gradient-light': 'linear-gradient(135deg, #f1f8e9 0%, #dcedc8 100%)',
+        'gradient-primary': 'linear-gradient(135deg, #17a34a 0%, #15803d 100%)',
+        'gradient-secondary': 'linear-gradient(135deg, #2d6936 0%, #1e5223 100%)',
+        'gradient-nz': 'linear-gradient(135deg, #17a34a 0%, #2d6936 100%)',
+        'gradient-nz-radial': 'radial-gradient(circle at top right, #17a34a, #2d6936)',
+        'gradient-light': 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
         'gradient-white': 'linear-gradient(180deg, #ffffff 0%, #fafafa 100%)',
-        'gradient-header': 'linear-gradient(90deg, #2d6936 0%, #7cb342 100%)',
-        'gradient-subtle': 'linear-gradient(180deg, rgba(45, 105, 54, 0.03) 0%, transparent 100%)',
+        'gradient-header': 'linear-gradient(90deg, #17a34a 0%, #22c55e 100%)',
+        'gradient-subtle': 'linear-gradient(180deg, rgba(23, 163, 74, 0.03) 0%, transparent 100%)',
       },
       zIndex: {
         '100': '100',

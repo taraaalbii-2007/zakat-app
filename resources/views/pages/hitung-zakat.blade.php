@@ -115,36 +115,12 @@
 
 @section('content')
 
-{{-- ── PAGE HERO ─────────────────────────────────────────────────── --}}
 @include('partials.landing.page-hero', [
     'breadcrumb'    => 'Hitung Zakat',
     'badge'         => 'Kalkulator Zakat',
     'heroTitle'     => 'Hitung Zakat Anda',
     'heroHighlight' => 'dengan Mudah & Akurat',
-    'heroSubtitle'  => 'Ketahui besaran zakat yang wajib Anda tunaikan. Nisab dihitung berdasarkan harga emas terkini sesuai ketentuan BAZNAS.',
-    'infoStrip'     => [
-        [
-            'label' => 'Harga Emas',
-            'value' => 'Rp ' . number_format($hargaEmasPerGram, 0, ',', '.'),
-            'unit'  => '/gram',
-            'sub'   => $hargaTerbaru
-                        ? \Carbon\Carbon::parse($hargaTerbaru->tanggal)->translatedFormat('d M Y')
-                        : null,
-        ],
-        [
-            'label' => 'Nisab Maal (85gr)',
-            'value' => 'Rp ' . number_format($nisabMaal, 0, ',', '.'),
-        ],
-        [
-            'label' => 'Nisab Penghasilan/bln',
-            'value' => 'Rp ' . number_format($nisabBulanan, 0, ',', '.'),
-        ],
-        [
-            'label'     => 'Kadar Zakat',
-            'value'     => '2.5%',
-            'highlight' => true,
-        ],
-    ],
+    'heroSubtitle'  => 'Ketahui besaran zakat yang wajib Anda tunaikan. Nisab dihitung berdasarkan harga emas terkini sesuai ketentuan BAZNAS.'
 ])
 
 {{-- ── KALKULATOR ───────────────────────────────────────────────────── --}}
