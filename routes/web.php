@@ -12,6 +12,8 @@ use App\Http\Controllers\Superadmin\HargaEmasPerakController;
 use App\Http\Controllers\Superadmin\LogAktivitasController;
 use App\Http\Controllers\Superadmin\LaporanKonsolidasiController;
 use App\Http\Controllers\Superadmin\TipeZakatController;
+use App\Http\Controllers\Superadmin\KategoriBulletinController;
+use App\Http\Controllers\Superadmin\BulletinController;
 use App\Http\Controllers\Admin_masjid\AmilController;
 use App\Http\Controllers\Admin_masjid\MustahikController;
 use App\Http\Controllers\Amil\TransaksiPenerimaanController;
@@ -221,6 +223,34 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         // Routes khusus untuk password
         Route::get('/ubah-password',         [ProfilSuperadminController::class, 'editPassword'])->name('password.edit');
         Route::put('/ubah-password',          [ProfilSuperadminController::class, 'updatePassword'])->name('password.update');
+    });
+
+    Route::prefix('kategori-bulletin')->name('superadmin.kategori-bulletin.')->group(function () {
+        Route::get('/',                                    [KategoriBulletinController::class, 'index'])->name('index');
+        Route::get('/create',                              [KategoriBulletinController::class, 'create'])->name('create');
+        Route::post('/',                                   [KategoriBulletinController::class, 'store'])->name('store');
+        Route::get('/{kategoriBulletin:uuid}/edit',        [KategoriBulletinController::class, 'edit'])->name('edit');
+        Route::put('/{kategoriBulletin:uuid}',             [KategoriBulletinController::class, 'update'])->name('update');
+        Route::delete('/{kategoriBulletin:uuid}',          [KategoriBulletinController::class, 'destroy'])->name('destroy');
+    });
+
+
+    Route::prefix('bulletin')->name('superadmin.bulletin.')->group(function () {
+        Route::get('/',                      [BulletinController::class, 'index'])->name('index');
+        Route::get('/create',                [BulletinController::class, 'create'])->name('create');
+        Route::post('/',                     [BulletinController::class, 'store'])->name('store');
+        Route::get('/{bulletin:uuid}',       [BulletinController::class, 'show'])->name('show');
+        Route::get('/{bulletin:uuid}/edit',  [BulletinController::class, 'edit'])->name('edit');
+        Route::put('/{bulletin:uuid}',       [BulletinController::class, 'update'])->name('update');
+        Route::delete('/{bulletin:uuid}',    [BulletinController::class, 'destroy'])->name('destroy');
+
+        // Hapus thumbnail saja
+        Route::delete('/{bulletin:uuid}/thumbnail', [BulletinController::class, 'deleteThumbnail'])
+            ->name('delete-thumbnail');
+
+        // API
+        Route::get('/api/kategori-list',     [BulletinController::class, 'apiKategoriList'])
+            ->name('api.kategori-list');
     });
 });
 

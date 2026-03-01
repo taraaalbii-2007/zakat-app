@@ -5,20 +5,21 @@
 @section('content')
 
     @include('partials.landing.page-hero', [
-    'breadcrumb'    => 'Panduan Zakat',
-    'badge'         => 'Panduan Zakat',
-    'heroTitle'     => 'Panduan Zakat',
-    'heroSubtitle'  => 'Informasi lengkap jenis zakat, metode penerimaan, dan cara pembayaran yang tersedia di sistem kami.'
-])
+        'breadcrumb'   => 'Panduan Zakat',
+        'badge'        => 'Panduan Zakat',
+        'heroTitle'    => 'Panduan Zakat',
+        'heroSubtitle' => 'Informasi lengkap jenis zakat, metode penerimaan, dan cara pembayaran yang tersedia di sistem kami.'
+    ])
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    {{-- Padding sesuai hero: px-4 sm:px-10 lg:px-20 --}}
+    <div class="w-full px-4 sm:px-10 lg:px-20 py-10">
         <div class="flex flex-col lg:flex-row gap-10">
 
             {{-- SIDEBAR --}}
-            <aside class="lg:w-60 flex-shrink-0">
-                <div class="sticky top-24 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="bg-gradient-to-br from-emerald-600 to-teal-700 px-5 py-4">
-                        <p class="text-xs font-semibold text-emerald-200 uppercase tracking-widest mb-0.5">Daftar Isi</p>
+            <aside class="lg:w-56 flex-shrink-0">
+                <div class="sticky top-24 bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                    <div class="bg-primary-600 px-5 py-4">
+                        <p class="text-xs font-semibold text-primary-200 uppercase tracking-widest mb-0.5">Daftar Isi</p>
                         <h3 class="text-white font-bold text-sm">Panduan Zakat</h3>
                     </div>
                     <nav class="p-3 space-y-0.5">
@@ -36,15 +37,15 @@
                         @endphp
                         @foreach($navItems as $item)
                             <a href="#{{ $item['id'] }}"
-                               class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150">
+                               class="block px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-primary-50 hover:text-primary-700 transition-colors duration-150">
                                 {{ $item['label'] }}
                             </a>
                         @endforeach
                     </nav>
-                    <div class="mx-3 mb-3 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <p class="text-xs text-emerald-700 font-medium mb-2">Siap menunaikan zakat?</p>
+                    <div class="mx-3 mb-3 p-4 bg-primary-50 rounded-xl border border-primary-100">
+                        <p class="text-xs text-primary-700 font-medium mb-2">Siap menunaikan zakat?</p>
                         <a href="{{ route('hitung-zakat') }}"
-                           class="block text-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors">
+                           class="block text-center bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors">
                             Hitung Zakat Sekarang
                         </a>
                     </div>
@@ -52,19 +53,19 @@
             </aside>
 
             {{-- KONTEN UTAMA --}}
-            <main class="flex-1 min-w-0 space-y-14">
+            <main class="flex-1 min-w-0 space-y-10">
 
                 {{-- ===== JENIS ZAKAT ===== --}}
                 <section id="jenis-zakat" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Jenis Zakat</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Jenis Zakat</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Sistem ini melayani empat jenis kewajiban: Zakat Fitrah, Zakat Mal, Zakat Profesi, dan Fidyah.
                         Setiap jenis memiliki nisab, kadar, dan cara perhitungan berbeda.
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @php
                             $daftarJenis = [
                                 ['nama' => 'Zakat Fitrah',  'anchor' => '#zakat-fitrah',  'desc' => 'Wajib setiap Muslim menjelang Idul Fitri. Besarnya 2,5 kg beras atau Rp 50.000 per jiwa (BAZNAS 2024).'],
@@ -75,14 +76,14 @@
                         @endphp
                         @foreach($daftarJenis as $jenis)
                             <a href="{{ $jenis['anchor'] }}"
-                               class="block bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300 hover:shadow-sm transition-all duration-150 group">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="font-bold text-gray-900">{{ $jenis['nama'] }}</h4>
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                               class="block bg-white border border-gray-200 rounded-xl p-4 hover:border-primary-400 hover:shadow-card transition-all duration-150 group">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <h4 class="font-bold text-gray-900 text-sm">{{ $jenis['nama'] }}</h4>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-300 group-hover:text-primary-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed">{{ $jenis['desc'] }}</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">{{ $jenis['desc'] }}</p>
                             </a>
                         @endforeach
                     </div>
@@ -92,16 +93,16 @@
 
                 {{-- ===== ZAKAT FITRAH ===== --}}
                 <section id="zakat-fitrah" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Zakat Fitrah</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Zakat Fitrah</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Wajib ditunaikan sebelum shalat Idul Fitri. Dapat dibayar untuk diri sendiri maupun ditanggung untuk anggota
-                        keluarga yang menjadi tanggungan. Sistem menggunakan konstanta <strong>Rp 50.000/jiwa</strong> dan
-                        <strong>2,5 kg/jiwa</strong> sesuai ketetapan BAZNAS 2024.
+                        keluarga yang menjadi tanggungan. Sistem menggunakan konstanta <strong class="text-primary-700">Rp 50.000/jiwa</strong> dan
+                        <strong class="text-primary-700">2,5 kg/jiwa</strong> sesuai ketetapan BAZNAS 2024.
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                         @php
                             $ketentuanFitrah = [
                                 ['label' => 'Uang per Jiwa',  'nilai' => 'Rp 50.000', 'sub' => 'BAZNAS 2024'],
@@ -110,14 +111,14 @@
                             ];
                         @endphp
                         @foreach($ketentuanFitrah as $k)
-                            <div class="bg-white border-2 border-emerald-100 rounded-xl p-5 text-center">
-                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">{{ $k['label'] }}</p>
-                                <p class="text-xl font-bold text-emerald-700">{{ $k['nilai'] }}</p>
+                            <div class="bg-primary-50 border border-primary-100 rounded-xl p-4 text-center">
+                                <p class="text-xs text-primary-600 uppercase tracking-wider mb-1">{{ $k['label'] }}</p>
+                                <p class="text-lg font-bold text-primary-700">{{ $k['nilai'] }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ $k['sub'] }}</p>
                             </div>
                         @endforeach
                     </div>
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+                    <div class="bg-primary-50 border border-primary-200 rounded-xl p-4 text-sm text-primary-800">
                         Jika jumlah yang dibayarkan melebihi kewajiban, selisihnya otomatis dicatat sebagai
                         <strong>infaq sukarela</strong> oleh sistem.
                     </div>
@@ -127,16 +128,16 @@
 
                 {{-- ===== ZAKAT MAL ===== --}}
                 <section id="zakat-mal" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Zakat Mal</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Zakat Mal</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Zakat harta atas emas, perak, uang, dan aset senilainya. Wajib jika harta telah mencapai nisab
                         dan sudah dimiliki selama satu tahun penuh (haul). Nilai nisab mengikuti harga emas terkini
                         yang diambil otomatis dari database sistem.
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                         @php
                             $ketentuanMal = [
                                 ['label' => 'Nisab',  'nilai' => '85 gram emas', 'sub' => 'mengikuti harga emas terkini'],
@@ -145,16 +146,16 @@
                             ];
                         @endphp
                         @foreach($ketentuanMal as $k)
-                            <div class="bg-white border-2 border-blue-100 rounded-xl p-5 text-center">
-                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">{{ $k['label'] }}</p>
-                                <p class="text-xl font-bold text-blue-700">{{ $k['nilai'] }}</p>
+                            <div class="bg-primary-50 border border-primary-100 rounded-xl p-4 text-center">
+                                <p class="text-xs text-primary-600 uppercase tracking-wider mb-1">{{ $k['label'] }}</p>
+                                <p class="text-lg font-bold text-primary-700">{{ $k['nilai'] }}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ $k['sub'] }}</p>
                             </div>
                         @endforeach
                     </div>
                     <div class="bg-white border border-gray-200 rounded-xl p-4 font-mono text-sm text-gray-700">
-                        Zakat = Total Harta x 2,5%
-                        <span class="text-gray-400 font-sans text-xs ml-3">Contoh: Rp 100.000.000 x 2,5% = Rp 2.500.000</span>
+                        Zakat = Total Harta × 2,5%
+                        <span class="text-gray-400 font-sans text-xs ml-3">Contoh: Rp 100.000.000 × 2,5% = Rp 2.500.000</span>
                     </div>
                 </section>
 
@@ -162,17 +163,17 @@
 
                 {{-- ===== ZAKAT PROFESI ===== --}}
                 <section id="zakat-profesi" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Zakat Profesi</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Zakat Profesi</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Zakat atas penghasilan dari gaji atau pekerjaan. Nisab dihitung per bulan (1/12 dari nilai 85 gram emas).
                         Jika penghasilan bulanan melebihi nisab tersebut, wajib zakat 2,5%.
                     </p>
-                    <div class="bg-white border border-gray-200 rounded-xl p-5">
-                        <h4 class="font-semibold text-gray-800 mb-3">Contoh Perhitungan</h4>
-                        <div class="space-y-2 text-sm">
+                    <div class="bg-white border border-gray-200 rounded-xl p-4">
+                        <h4 class="font-semibold text-gray-800 mb-3 text-sm">Contoh Perhitungan</h4>
+                        <div class="space-y-1.5 text-sm">
                             <div class="flex justify-between py-2 border-b border-gray-100">
                                 <span class="text-gray-600">Gaji per bulan</span>
                                 <span class="font-medium">Rp 10.000.000</span>
@@ -181,9 +182,9 @@
                                 <span class="text-gray-600">Kadar zakat</span>
                                 <span class="font-medium">2,5%</span>
                             </div>
-                            <div class="flex justify-between py-2 bg-emerald-50 rounded-lg px-3 mt-1">
+                            <div class="flex justify-between py-2 bg-primary-50 rounded-lg px-3">
                                 <span class="font-semibold text-gray-800">Zakat per bulan</span>
-                                <span class="font-bold text-emerald-700">Rp 250.000</span>
+                                <span class="font-bold text-primary-700">Rp 250.000</span>
                             </div>
                         </div>
                     </div>
@@ -193,49 +194,43 @@
 
                 {{-- ===== FIDYAH ===== --}}
                 <section id="fidyah" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Fidyah</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Fidyah</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Kewajiban bagi yang tidak mampu berpuasa Ramadhan secara permanen (sakit kronis, lansia).
-                        Sistem menggunakan konstanta <strong>675 gram/hari</strong> sesuai BAZNAS 2024. Tersedia tiga tipe fidyah:
+                        Sistem menggunakan konstanta <strong class="text-primary-700">675 gram/hari</strong> sesuai BAZNAS 2024. Tersedia tiga tipe fidyah:
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                         @php
                             $tipesFidyah = [
                                 [
                                     'tipe'  => 'Bahan Mentah',
-                                    'kode'  => 'bahan_mentah',
                                     'nilai' => '675 gram/hari',
-                                    'desc'  => 'Serahkan bahan makanan pokok secara fisik. Sistem menghitung total berat = 675 gram x jumlah hari.',
+                                    'desc'  => 'Serahkan bahan makanan pokok secara fisik. Total berat dihitung dari 675 gram dikali jumlah hari.',
                                 ],
                                 [
                                     'tipe'  => 'Makanan Matang',
-                                    'kode'  => 'makanan_matang',
                                     'nilai' => '1 porsi/hari',
-                                    'desc'  => 'Isi menu, jumlah box, harga per box, dan cara serah: langsung dibagikan, dijamu, atau via lembaga.',
+                                    'desc'  => 'Isi menu, jumlah porsi, harga per porsi, dan cara serah: langsung dibagikan, dijamu, atau via lembaga.',
                                 ],
                                 [
                                     'tipe'  => 'Uang Tunai',
-                                    'kode'  => 'tunai',
-                                    'nilai' => 'Nominal x hari',
-                                    'desc'  => 'Bayar tunai/transfer/QRIS. Total = harga fidyah per hari x jumlah hari puasa yang ditinggalkan.',
+                                    'nilai' => 'Nominal × hari',
+                                    'desc'  => 'Bayar tunai, transfer, atau QRIS. Total dihitung dari harga fidyah per hari dikali jumlah hari puasa yang ditinggalkan.',
                                 ],
                             ];
                         @endphp
                         @foreach($tipesFidyah as $tipe)
-                            <div class="bg-white border border-gray-200 rounded-xl p-5">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="font-bold text-gray-900 text-sm">{{ $tipe['tipe'] }}</h4>
-                                    <span class="text-xs font-mono bg-gray-100 text-gray-500 px-2 py-0.5 rounded">{{ $tipe['kode'] }}</span>
-                                </div>
-                                <p class="text-base font-bold text-emerald-700 mb-2">{{ $tipe['nilai'] }}</p>
-                                <p class="text-sm text-gray-600 leading-relaxed">{{ $tipe['desc'] }}</p>
+                            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                                <h4 class="font-bold text-gray-900 text-sm mb-1">{{ $tipe['tipe'] }}</h4>
+                                <p class="text-base font-bold text-primary-600 mb-2">{{ $tipe['nilai'] }}</p>
+                                <p class="text-xs text-gray-500 leading-relaxed">{{ $tipe['desc'] }}</p>
                             </div>
                         @endforeach
                     </div>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+                    <div class="bg-primary-50 border border-primary-200 rounded-xl p-4 text-sm text-primary-800">
                         Pilih <strong>Jenis: Fidyah</strong> saat mengisi formulir, kemudian isi jumlah hari puasa
                         yang ditinggalkan dan pilih tipe fidyah yang sesuai.
                     </div>
@@ -245,62 +240,60 @@
 
                 {{-- ===== METODE PENERIMAAN ===== --}}
                 <section id="metode-penerimaan" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Metode Penerimaan</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Metode Penerimaan</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-6">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Tersedia tiga metode penerimaan zakat. Masing-masing memiliki alur status yang berbeda.
                     </p>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         {{-- Datang Langsung --}}
                         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                            <div class="bg-emerald-600 px-4 py-3">
+                            <div class="bg-primary-600 px-4 py-3">
                                 <p class="text-white font-bold text-sm">Datang Langsung</p>
-                                <p class="text-emerald-200 text-xs font-mono mt-0.5">datang_langsung</p>
                             </div>
-                            <div class="p-5">
-                                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-600 leading-relaxed mb-4">
                                     Muzaki datang ke masjid dan menyerahkan zakat langsung kepada amil.
                                     Amil menginput transaksi, kwitansi langsung diterbitkan.
                                 </p>
-                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status Transaksi</p>
-                                <div class="flex items-center gap-1.5 flex-wrap">
-                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">pending</span>
-                                    <span class="text-gray-300 text-xs">&#8594;</span>
-                                    <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">verified</span>
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">Menunggu</span>
+                                    <span class="text-gray-300 text-xs">→</span>
+                                    <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full font-medium">Terverifikasi</span>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-2">Tunai dan beras otomatis verified. Transfer/QRIS perlu konfirmasi amil.</p>
+                                <p class="text-xs text-gray-400 mt-2">Tunai dan beras otomatis terverifikasi. Transfer dan QRIS perlu konfirmasi amil.</p>
                             </div>
                         </div>
 
                         {{-- Dijemput --}}
                         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                            <div class="bg-blue-600 px-4 py-3">
+                            <div class="bg-primary-700 px-4 py-3">
                                 <p class="text-white font-bold text-sm">Dijemput Amil</p>
-                                <p class="text-blue-200 text-xs font-mono mt-0.5">dijemput</p>
                             </div>
-                            <div class="p-5">
-                                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-600 leading-relaxed mb-4">
                                     Muzaki mengajukan penjemputan. Amil datang ke lokasi muzaki untuk mengambil zakat.
                                 </p>
-                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status Penjemputan</p>
-                                <div class="space-y-1">
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status</p>
+                                <div class="space-y-1.5">
                                     @php
                                         $alurJemput = [
-                                            'menunggu'         => 'Request masuk',
-                                            'diterima'         => 'Amil konfirmasi',
-                                            'dalam_perjalanan' => 'Amil berangkat',
-                                            'sampai_lokasi'    => 'Amil tiba',
-                                            'selesai'          => 'Zakat diterima',
+                                            'Menunggu'          => 'Request masuk',
+                                            'Diterima'          => 'Amil konfirmasi',
+                                            'Dalam Perjalanan'  => 'Amil berangkat',
+                                            'Sampai Lokasi'     => 'Amil tiba',
+                                            'Selesai'           => 'Zakat diterima',
                                         ];
                                     @endphp
-                                    @foreach($alurJemput as $kode => $label)
-                                        <div class="flex items-center gap-2 text-xs text-gray-600">
-                                            <span class="font-mono bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">{{ $kode }}</span>
-                                            <span class="text-gray-400">{{ $label }}</span>
+                                    @foreach($alurJemput as $status => $ket)
+                                        <div class="flex items-center gap-2 text-xs">
+                                            <span class="bg-primary-50 text-primary-700 border border-primary-100 px-2 py-0.5 rounded-full whitespace-nowrap">{{ $status }}</span>
+                                            <span class="text-gray-400">{{ $ket }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -309,28 +302,27 @@
 
                         {{-- Daring --}}
                         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                            <div class="bg-violet-600 px-4 py-3">
+                            <div class="bg-primary-600 px-4 py-3">
                                 <p class="text-white font-bold text-sm">Daring (Online)</p>
-                                <p class="text-violet-200 text-xs font-mono mt-0.5">daring</p>
                             </div>
-                            <div class="p-5">
-                                <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                            <div class="p-4">
+                                <p class="text-xs text-gray-600 leading-relaxed mb-4">
                                     Muzaki isi formulir online, transfer atau scan QRIS, lalu upload bukti.
                                     Amil mengkonfirmasi setelah bukti diterima.
                                 </p>
-                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status Konfirmasi</p>
-                                <div class="space-y-1">
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Alur Status</p>
+                                <div class="space-y-1.5">
                                     @php
                                         $alurDaring = [
-                                            'menunggu_konfirmasi' => 'Menunggu cek amil',
-                                            'dikonfirmasi'        => 'Bukti valid, lunas',
-                                            'ditolak'             => 'Bukti tidak valid',
+                                            'Menunggu Konfirmasi' => 'Menunggu cek amil',
+                                            'Dikonfirmasi'        => 'Bukti valid, lunas',
+                                            'Ditolak'             => 'Bukti tidak valid',
                                         ];
                                     @endphp
-                                    @foreach($alurDaring as $kode => $label)
-                                        <div class="flex items-center gap-2 text-xs text-gray-600">
-                                            <span class="font-mono bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded">{{ $kode }}</span>
-                                            <span class="text-gray-400">{{ $label }}</span>
+                                    @foreach($alurDaring as $status => $ket)
+                                        <div class="flex items-center gap-2 text-xs">
+                                            <span class="bg-primary-50 text-primary-700 border border-primary-100 px-2 py-0.5 rounded-full whitespace-nowrap">{{ $status }}</span>
+                                            <span class="text-gray-400">{{ $ket }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -344,107 +336,86 @@
 
                 {{-- ===== METODE PEMBAYARAN ===== --}}
                 <section id="metode-pembayaran" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">Metode Pembayaran</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">Metode Pembayaran</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-6">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Tersedia enam metode pembayaran. Ketersediaannya bergantung pada jenis zakat dan metode penerimaan yang dipilih.
                     </p>
 
-                    <div class="space-y-3 mb-6">
+                    <div class="space-y-2.5 mb-5">
                         @php
                             $metodeBayar = [
                                 [
                                     'nama'     => 'Tunai',
-                                    'kode'     => 'tunai',
-                                    'badge'    => 'bg-emerald-100 text-emerald-700',
-                                    'tag'      => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                    'catatan'  => 'Otomatis verified',
-                                    'desc'     => 'Bayar cash langsung kepada amil. Transaksi langsung otomatis terverifikasi tanpa konfirmasi tambahan.',
-                                    'tersedia' => ['datang_langsung', 'dijemput'],
+                                    'catatan'  => 'Otomatis terverifikasi',
+                                    'desc'     => 'Bayar cash langsung kepada amil. Transaksi otomatis terverifikasi tanpa konfirmasi tambahan.',
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil'],
                                 ],
                                 [
                                     'nama'     => 'Transfer Bank',
-                                    'kode'     => 'transfer',
-                                    'badge'    => 'bg-blue-100 text-blue-700',
-                                    'tag'      => 'bg-blue-50 text-blue-700 border-blue-100',
                                     'catatan'  => 'Perlu konfirmasi amil',
                                     'desc'     => 'Transfer ke rekening masjid, kemudian upload foto bukti transfer. Amil akan mengecek dan mengkonfirmasi.',
-                                    'tersedia' => ['datang_langsung', 'dijemput', 'daring'],
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil', 'Daring'],
                                 ],
                                 [
                                     'nama'     => 'QRIS',
-                                    'kode'     => 'qris',
-                                    'badge'    => 'bg-violet-100 text-violet-700',
-                                    'tag'      => 'bg-violet-50 text-violet-700 border-violet-100',
                                     'catatan'  => 'Perlu konfirmasi amil',
-                                    'desc'     => 'Scan kode QRIS masjid via dompet digital atau mobile banking. Upload screenshot bukti. Amil mengkonfirmasi setelah dicek.',
-                                    'tersedia' => ['datang_langsung', 'dijemput', 'daring'],
+                                    'desc'     => 'Scan kode QRIS masjid via dompet digital atau mobile banking. Upload screenshot bukti, amil mengkonfirmasi.',
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil', 'Daring'],
                                 ],
                                 [
                                     'nama'     => 'Beras',
-                                    'kode'     => 'beras',
-                                    'badge'    => 'bg-amber-100 text-amber-700',
-                                    'tag'      => 'bg-amber-50 text-amber-700 border-amber-100',
                                     'catatan'  => 'Khusus Zakat Fitrah',
-                                    'desc'     => 'Serahkan beras fisik kepada amil. Tidak ada nominal uang, hanya jumlah kilogram yang dicatat. Otomatis verified.',
-                                    'tersedia' => ['datang_langsung', 'dijemput'],
+                                    'desc'     => 'Serahkan beras fisik kepada amil. Hanya jumlah kilogram yang dicatat, otomatis terverifikasi.',
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil'],
                                 ],
                                 [
                                     'nama'     => 'Bahan Mentah',
-                                    'kode'     => 'bahan_mentah',
-                                    'badge'    => 'bg-orange-100 text-orange-700',
-                                    'tag'      => 'bg-orange-50 text-orange-700 border-orange-100',
                                     'catatan'  => 'Khusus Fidyah',
-                                    'desc'     => 'Serahkan bahan makanan pokok secara fisik. Total berat = 675 gram x jumlah hari. Dicatat berat yang diterima amil.',
-                                    'tersedia' => ['datang_langsung', 'dijemput'],
+                                    'desc'     => 'Serahkan bahan makanan pokok secara fisik. Total berat = 675 gram × jumlah hari puasa yang ditinggalkan.',
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil'],
                                 ],
                                 [
                                     'nama'     => 'Makanan Matang',
-                                    'kode'     => 'makanan_matang',
-                                    'badge'    => 'bg-rose-100 text-rose-700',
-                                    'tag'      => 'bg-rose-50 text-rose-700 border-rose-100',
                                     'catatan'  => 'Khusus Fidyah',
-                                    'desc'     => 'Isi detail menu, jumlah porsi, harga per porsi, dan cara penyerahan: langsung dibagikan, dijamu di masjid, atau via lembaga.',
-                                    'tersedia' => ['datang_langsung', 'dijemput'],
+                                    'desc'     => 'Isi detail menu, jumlah porsi, harga per porsi, dan cara penyerahan: langsung dibagikan, dijamu, atau via lembaga.',
+                                    'tersedia' => ['Datang Langsung', 'Dijemput Amil'],
                                 ],
                             ];
                         @endphp
                         @foreach($metodeBayar as $m)
-                            <div class="bg-white border border-gray-200 rounded-xl p-5">
-                                <div class="flex flex-wrap items-center gap-2 mb-3">
-                                    <h4 class="font-bold text-gray-900">{{ $m['nama'] }}</h4>
-                                    <span class="font-mono text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">{{ $m['kode'] }}</span>
-                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $m['badge'] }}">{{ $m['catatan'] }}</span>
+                            <div class="bg-white border border-gray-200 rounded-xl p-4">
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <h4 class="font-bold text-gray-900 text-sm">{{ $m['nama'] }}</h4>
+                                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-700">{{ $m['catatan'] }}</span>
                                 </div>
-                                <p class="text-sm text-gray-600 leading-relaxed mb-3">{{ $m['desc'] }}</p>
-                                <div>
-                                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tersedia untuk:</p>
-                                    <div class="flex flex-wrap gap-1.5">
-                                        @foreach($m['tersedia'] as $t)
-                                            <span class="text-xs border px-2 py-0.5 rounded-full {{ $m['tag'] }}">{{ $t }}</span>
-                                        @endforeach
-                                    </div>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-2.5">{{ $m['desc'] }}</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach($m['tersedia'] as $t)
+                                        <span class="text-xs border border-primary-100 bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">{{ $t }}</span>
+                                    @endforeach
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
-                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-5">
+                    {{-- Status Transaksi --}}
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
                         <h4 class="font-semibold text-gray-800 mb-3 text-sm">Status Transaksi</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             @php
                                 $statusList = [
-                                    ['kode' => 'pending',  'cls' => 'bg-yellow-100 text-yellow-700', 'ket' => 'Transaksi masuk, belum terverifikasi. Berlaku untuk transfer dan QRIS yang menunggu konfirmasi amil.'],
-                                    ['kode' => 'verified', 'cls' => 'bg-green-100 text-green-700',   'ket' => 'Transaksi sah. Tunai otomatis verified. Transfer/QRIS verified setelah dikonfirmasi amil.'],
-                                    ['kode' => 'rejected', 'cls' => 'bg-red-100 text-red-700',       'ket' => 'Ditolak amil. Misalnya bukti transfer tidak valid, nominal tidak sesuai, atau foto tidak terbaca.'],
+                                    ['kode' => 'Menunggu',      'cls' => 'bg-gray-200 text-gray-700',       'ket' => 'Transaksi masuk, belum terverifikasi. Berlaku untuk transfer dan QRIS yang menunggu konfirmasi amil.'],
+                                    ['kode' => 'Terverifikasi', 'cls' => 'bg-primary-100 text-primary-700', 'ket' => 'Transaksi sah. Tunai otomatis terverifikasi. Transfer dan QRIS diverifikasi setelah dikonfirmasi amil.'],
+                                    ['kode' => 'Ditolak',       'cls' => 'bg-gray-800 text-white',          'ket' => 'Ditolak amil. Contohnya bukti transfer tidak valid, nominal tidak sesuai, atau foto tidak terbaca.'],
                                 ];
                             @endphp
                             @foreach($statusList as $s)
-                                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <div class="bg-white border border-gray-200 rounded-lg p-3">
                                     <span class="inline-block text-xs font-bold px-2.5 py-1 rounded-full mb-2 {{ $s['cls'] }}">{{ $s['kode'] }}</span>
-                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $s['ket'] }}</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed">{{ $s['ket'] }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -455,13 +426,13 @@
 
                 {{-- ===== 8 GOLONGAN MUSTAHIK ===== --}}
                 <section id="mustahik" class="scroll-mt-28">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-1 h-8 bg-emerald-500 rounded-full"></div>
-                        <h2 class="text-2xl font-bold text-gray-900">8 Golongan Penerima Zakat</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-1 h-7 bg-primary-600 rounded-full"></div>
+                        <h2 class="text-xl font-bold text-gray-900">8 Golongan Penerima Zakat</h2>
                     </div>
-                    <p class="text-gray-600 leading-relaxed mb-5">
+                    <p class="text-gray-600 leading-relaxed mb-4 text-sm">
                         Allah SWT menetapkan dalam QS. At-Taubah: 60 bahwa zakat hanya boleh disalurkan kepada delapan golongan berikut.
-                        Masjid mendistribusikan zakat Anda sesuai program penyaluran yang aktif.
+                        Masjid mendistribusikan zakat sesuai program penyaluran yang aktif.
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @php
@@ -477,13 +448,13 @@
                             ];
                         @endphp
                         @foreach($mustahik as $item)
-                            <div class="flex gap-4 p-4 bg-white border border-gray-200 rounded-xl">
-                                <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
+                            <div class="flex gap-3 p-4 bg-white border border-gray-200 rounded-xl">
+                                <div class="w-7 h-7 rounded-full bg-primary-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
                                     {{ $item['no'] }}
                                 </div>
                                 <div>
-                                    <p class="font-bold text-gray-900 mb-0.5">{{ $item['nama'] }}</p>
-                                    <p class="text-sm text-gray-600 leading-relaxed">{{ $item['ket'] }}</p>
+                                    <p class="font-bold text-gray-900 text-sm mb-0.5">{{ $item['nama'] }}</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed">{{ $item['ket'] }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -491,18 +462,18 @@
                 </section>
 
                 {{-- CTA --}}
-                <div class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-8 text-center">
-                    <h3 class="text-xl font-bold text-white mb-2">Tunaikan Zakat Sekarang</h3>
-                    <p class="text-emerald-100 text-sm mb-6 max-w-md mx-auto">
+                <div class="bg-primary-600 rounded-2xl p-8 text-center">
+                    <h3 class="text-lg font-bold text-white mb-2">Tunaikan Zakat Sekarang</h3>
+                    <p class="text-primary-100 text-sm mb-5 max-w-md mx-auto">
                         Pilih metode penerimaan yang paling mudah bagi Anda. Zakat langsung tersalurkan kepada yang berhak.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
                         <a href="{{ route('hitung-zakat') }}"
-                           class="inline-block bg-white text-emerald-700 font-bold px-6 py-3 rounded-xl hover:bg-emerald-50 transition-colors text-sm">
+                           class="inline-block bg-white text-primary-700 font-bold px-6 py-3 rounded-xl hover:bg-primary-50 transition-colors text-sm">
                             Hitung Zakat Saya
                         </a>
                         <a href="{{ route('register') }}"
-                           class="inline-block bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm">
+                           class="inline-block bg-primary-500 hover:bg-primary-400 border border-primary-400 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm">
                             Daftar dan Bayar Zakat
                         </a>
                     </div>
