@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kontak;
+use App\Mail\KontakBalasanMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -13,7 +14,6 @@ class KontakSuperadminController extends Controller
     {
         $query = Kontak::latest();
 
-        // Filter status
         if ($request->filled('status')) {
             match ($request->status) {
                 'baru'    => $query->whereNull('dibaca_at'),
@@ -23,7 +23,6 @@ class KontakSuperadminController extends Controller
             };
         }
 
-        // Search
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sub) use ($q) {
@@ -48,7 +47,6 @@ class KontakSuperadminController extends Controller
 
     public function show(Kontak $kontak)
     {
-        // Tandai sudah dibaca
         $kontak->tandaiDibaca();
 
         return view('superadmin.kontak.show', compact('kontak'));
@@ -62,15 +60,9 @@ class KontakSuperadminController extends Controller
             'balasan.required' => 'Isi balasan wajib diisi.',
         ]);
 
-        // Kirim email balasan
         try {
-            Mail::send('emails.kontak-balasan', [
-                'kontak'  => $kontak,
-                'balasan' => $request->balasan,
-            ], function ($mail) use ($kontak) {
-                $mail->to($kontak->email, $kontak->nama)
-                    ->subject('Re: ' . $kontak->subjek . ' - ' . config('app.name'));
-            });
+            Mail::to($kontak->email, $kontak->nama)
+                ->send(new KontakBalasanMail($kontak, $request->balasan));
 
             $kontak->update([
                 'balasan'    => $request->balasan,
@@ -82,6 +74,8 @@ class KontakSuperadminController extends Controller
                 ->with('success', 'Balasan berhasil dikirim ke ' . $kontak->email);
 
         } catch (\Throwable $e) {
+            \Log::error('Gagal kirim email kontak: ' . $e->getMessage());
+
             return back()
                 ->withInput()
                 ->with('error', 'Gagal mengirim email: ' . $e->getMessage());

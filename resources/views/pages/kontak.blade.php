@@ -409,15 +409,16 @@
         </div>
     </section>
 
-    {{-- FIX: Scroll-to-top button dipindah ke KIRI agar tidak menutupi reCAPTCHA badge (pojok kanan) --}}
-    <button id="scroll-to-top"
-        onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-        class="fixed bottom-6 left-6 z-40 w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none"
-        aria-label="Kembali ke atas">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-        </svg>
-    </button>
+    {{-- Sembunyikan tombol scroll-to-top dari layout global agar tidak menutupi reCAPTCHA badge --}}
+    <style>
+        #back-to-top,
+        #scroll-to-top,
+        .back-to-top,
+        [data-scroll-top],
+        a[href="#top"].fixed {
+            display: none !important;
+        }
+    </style>
 
     {{-- reCAPTCHA v3 --}}
     @if ($recaptcha && $recaptcha->isEnabled())
@@ -474,21 +475,6 @@
             pesanEl.addEventListener('input', updatePesan);
             pesanEl.addEventListener('keyup', updatePesan);
             updatePesan(); // inisialisasi (untuk old() value)
-        })();
-
-        // ── Scroll-to-top button ──────────────────────────────────────────
-        (function () {
-            var btn = document.getElementById('scroll-to-top');
-            if (!btn) return;
-            window.addEventListener('scroll', function () {
-                if (window.scrollY > 300) {
-                    btn.classList.remove('opacity-0', 'pointer-events-none');
-                    btn.classList.add('opacity-100');
-                } else {
-                    btn.classList.add('opacity-0', 'pointer-events-none');
-                    btn.classList.remove('opacity-100');
-                }
-            });
         })();
 
         // ── reCAPTCHA v3 submit handler ───────────────────────────────────
