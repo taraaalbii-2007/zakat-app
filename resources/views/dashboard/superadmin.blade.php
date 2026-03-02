@@ -7,21 +7,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-    * {
-        font-family: 'Poppins', sans-serif !important;
-    }
+    * { font-family: 'Poppins', sans-serif !important; }
 
     :root {
-        --c-900: #0f2714;
-        --c-800: #1a3d22;
-        --c-700: #2d6936;
-        --c-600: #3d8b40;
-        --c-400: #7cb342;
-        --c-100: #e6f4ea;
-        --c-50:  #f3faf0;
-        --gold:  #b8860b;
-        --gold-bg: #fdf6e3;
+        /* ── Primary palette (tailwind.config primary) ── */
+        --p-50:  #f0fdf4;
+        --p-100: #dcfce7;
+        --p-200: #bbf7d0;
+        --p-300: #86efac;
+        --p-400: #4ade80;
+        --p-500: #22c55e;
+        --p-600: #17a34a;   /* PRIMARY DEFAULT */
+        --p-700: #15803d;
+        --p-800: #166534;
+        --p-900: #14532d;
+        --p-950: #052e16;
+
+        /* ── Secondary palette (tailwind.config secondary) ── */
+        --s-500: #2d6936;
+        --s-600: #27612e;
+        --s-700: #1e5223;
+
+        /* ── Gold (tetap untuk aksen emas) ── */
+        --gold:        #b8860b;
+        --gold-bg:     #fdf6e3;
         --gold-border: #e8d5a0;
+
+        /* ── Neutral ── */
         --n-900: #111827;
         --n-700: #374151;
         --n-500: #6b7280;
@@ -30,62 +42,82 @@
         --n-100: #f3f4f6;
         --n-50:  #f9fafb;
         --white: #ffffff;
-        --radius: 16px;
+
+        /* ── Tokens ── */
+        --radius:    16px;
         --radius-sm: 10px;
+
+        /* ── Shadows dengan tint primary.600 ── */
         --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-        --shadow-md: 0 4px 16px -2px rgba(26,61,34,0.10), 0 2px 6px -1px rgba(26,61,34,0.06);
-        --shadow-lg: 0 12px 32px -6px rgba(26,61,34,0.18), 0 4px 12px -2px rgba(26,61,34,0.10);
+        --shadow-md: 0 4px 16px -2px rgba(23,163,74,.10), 0 2px 6px -1px rgba(23,163,74,.06);
+        --shadow-lg: 0 12px 32px -6px rgba(23,163,74,.18), 0 4px 12px -2px rgba(23,163,74,.10);
     }
 
     /* ── HERO ── */
     .hero {
-        background: #2d6a2d;
+        /* gradient-nz: primary.600 → secondary.DEFAULT */
+        background: linear-gradient(135deg, #17a34a 0%, #2d6936 100%);
         border-radius: var(--radius);
         padding: 2.25rem 2.5rem;
         position: relative;
         overflow: hidden;
         box-shadow: var(--shadow-lg);
     }
-    .hero::before { display: none; }
+
+    /* Decor rings */
     .hero-decor {
         position: absolute; right: -48px; top: -64px;
         width: 260px; height: 260px;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.08);
         pointer-events: none;
     }
     .hero-decor::after {
         content: '';
         position: absolute; inset: 30px;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,.04);
+        border: 1px solid rgba(255,255,255,.05);
     }
+    /* Subtle radial glow dari primary.400 */
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: -60px; right: 80px;
+        width: 320px; height: 320px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(74,222,128,.18) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
     .hero-pill {
         display: inline-flex;
         align-items: center; gap: 7px;
-        background: rgba(255,255,255,.10);
-        border: 1px solid rgba(255,255,255,.14);
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.16);
         border-radius: 999px;
         padding: 4px 14px 4px 9px;
         font-size: .68rem; font-weight: 600;
-        color: rgba(255,255,255,.80);
+        color: rgba(255,255,255,.85);
         letter-spacing: .07em; text-transform: uppercase;
         margin-bottom: .85rem;
     }
     .hero-dot {
         width: 7px; height: 7px;
-        background: #7cb342; border-radius: 50%;
+        /* primary.400 — lebih cerah di atas hijau gelap */
+        background: #4ade80;
+        border-radius: 50%;
         animation: blink 2s infinite;
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
     .hero-title {
         font-size: 1.85rem; font-weight: 800;
         color: #fff; letter-spacing: -.03em; line-height: 1.15;
         margin-bottom: .3rem;
     }
-    .hero-sub { font-size: .85rem; font-weight: 400; color: rgba(255,255,255,.55); }
+    .hero-sub { font-size: .85rem; font-weight: 400; color: rgba(255,255,255,.60); }
     .hero-time { text-align: right; position: relative; z-index: 1; }
-    .hero-date-lbl { font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.50); margin-bottom: 2px; }
+    .hero-date-lbl { font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.55); margin-bottom: 2px; }
     .hero-clock    { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: .02em; }
 
     /* ── SECTION LABEL ── */
@@ -106,28 +138,35 @@
         position: relative; overflow: hidden;
         transition: transform .22s ease, box-shadow .22s ease;
     }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+    /* Top accent bar: primary.600 → primary.400 */
     .stat-card::after {
         content: '';
         position: absolute; top: 0; left: 0; right: 0; height: 3px;
-        background: linear-gradient(90deg, var(--c-700), var(--c-400));
+        background: linear-gradient(90deg, var(--p-600), var(--p-400));
         opacity: 0; transition: opacity .22s;
     }
     .stat-card:hover::after { opacity: 1; }
+
     .stat-icon {
         width: 52px; height: 52px; flex-shrink: 0;
         border-radius: var(--radius-sm);
         display: flex; align-items: center; justify-content: center;
-        background: linear-gradient(135deg, var(--c-700), var(--c-400));
-        box-shadow: 0 4px 12px -2px rgba(45,105,54,.35);
+        /* gradient-primary dari tailwind config */
+        background: linear-gradient(135deg, var(--p-600) 0%, var(--p-700) 100%);
+        box-shadow: 0 4px 12px -2px rgba(23,163,74,.35);
     }
     .stat-body { flex: 1; min-width: 0; }
     .stat-badge {
         position: absolute; top: .85rem; right: .85rem;
         font-size: .62rem; font-weight: 700;
         letter-spacing: .04em; text-transform: uppercase;
-        color: var(--c-700); background: var(--c-50);
-        border: 1px solid var(--c-100); border-radius: 999px;
+        /* primary.600 text, primary.50 bg, primary.100 border */
+        color: var(--p-600); background: var(--p-50);
+        border: 1px solid var(--p-100); border-radius: 999px;
         padding: 2px 8px;
     }
     .stat-val {
@@ -150,7 +189,9 @@
     .metric-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
     .metric-icon {
         width: 46px; height: 46px; border-radius: var(--radius-sm);
-        background: var(--c-50); border: 1px solid var(--c-100);
+        /* primary.50 bg, primary.100 border */
+        background: var(--p-50);
+        border: 1px solid var(--p-100);
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .metric-val { font-size: 1.3rem; font-weight: 800; color: var(--n-900); letter-spacing: -.03em; line-height: 1; }
@@ -176,17 +217,18 @@
     .panel-tag {
         font-size: .64rem; font-weight: 700;
         letter-spacing: .08em; text-transform: uppercase;
-        color: var(--c-700); background: var(--c-50);
-        border: 1px solid var(--c-100); border-radius: 999px;
+        /* primary.600 text, primary.50 bg, primary.100 border */
+        color: var(--p-600); background: var(--p-50);
+        border: 1px solid var(--p-100); border-radius: 999px;
         padding: 3px 10px;
     }
     .panel-tag-link {
         font-size: .75rem; font-weight: 600;
-        color: var(--c-700);
+        color: var(--p-600);
         text-decoration: none;
         transition: color .15s;
     }
-    .panel-tag-link:hover { color: var(--c-600); text-decoration: underline; }
+    .panel-tag-link:hover { color: var(--p-700); text-decoration: underline; }
     .panel-body { padding: 1.5rem; }
 
     /* ── TABLE ── */
@@ -206,22 +248,26 @@
     }
     .dt tbody tr:last-child td { border-bottom: none; }
     .dt tbody tr { transition: background .15s; }
-    .dt tbody tr:hover { background: var(--n-50); }
+    .dt tbody tr:hover { background: var(--p-50); }  /* hover: primary.50 */
     .dt-name { font-size: .83rem; font-weight: 600; color: var(--n-900); }
     .dt-sub  { font-size: .70rem; font-weight: 500; color: var(--n-400); margin-top: 1px; }
     .dt-loc  { font-size: .80rem; font-weight: 500; color: var(--n-700); }
+
     .role-tag {
         display: inline-flex;
         font-size: .64rem; font-weight: 700;
         letter-spacing: .05em; text-transform: uppercase;
-        color: var(--c-700); background: var(--c-50);
-        border: 1px solid var(--c-100); border-radius: 6px;
+        /* primary.600 text, primary.50 bg, primary.100 border */
+        color: var(--p-600); background: var(--p-50);
+        border: 1px solid var(--p-100); border-radius: 6px;
         padding: 3px 10px;
     }
     .empty-row {
         text-align: center; padding: 2.5rem 0;
         color: var(--n-400); font-size: .82rem; font-weight: 500;
     }
+
+    /* ── PAGINATION ── */
     .pag-wrap {
         display: flex; align-items: center; justify-content: space-between;
         padding: .75rem 1rem;
@@ -239,8 +285,17 @@
         color: var(--n-500);
         cursor: pointer; transition: all .15s;
     }
-    .pag-btn:hover:not(:disabled) { background: var(--c-50); border-color: var(--c-100); color: var(--c-700); }
-    .pag-btn.active { background: var(--c-700); border-color: var(--c-700); color: #fff; }
+    .pag-btn:hover:not(:disabled) {
+        background: var(--p-50);
+        border-color: var(--p-100);
+        color: var(--p-600);
+    }
+    .pag-btn.active {
+        /* primary.600 solid */
+        background: var(--p-600);
+        border-color: var(--p-600);
+        color: #fff;
+    }
     .pag-btn:disabled { opacity: .35; cursor: not-allowed; }
 </style>
 @endpush
@@ -253,6 +308,10 @@
         <div class="hero-decor"></div>
         <div class="flex items-center justify-between relative" style="z-index:1">
             <div>
+                <div class="hero-pill">
+                    <span class="hero-dot"></span>
+                    Superadmin
+                </div>
                 <h1 class="hero-title">Dashboard Superadmin</h1>
                 <p class="hero-sub">Kelola seluruh ekosistem zakat digital dengan efisien</p>
             </div>
@@ -320,7 +379,7 @@
 
         <div class="metric-card">
             <div class="metric-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--c-700)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--p-600)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             </div>
             <div>
                 <p class="metric-val">{{ $stats['total_jenis_zakat'] }}</p>
@@ -330,7 +389,7 @@
 
         <div class="metric-card">
             <div class="metric-icon">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--c-700)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--p-600)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
             <div>
                 <p class="metric-val">{{ $stats['total_kategori_mustahik'] }}</p>
@@ -474,20 +533,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
-    // Global Chart Defaults — Poppins everywhere
+    // Global Chart Defaults
     Chart.defaults.font.family = "'Poppins', sans-serif";
     Chart.defaults.font.size   = 11;
     Chart.defaults.font.weight = '500';
 
-    const C700 = '#2d6a2d';
-    const GRID = '#f3f4f6';
-    const TICK = '#9ca3af';
+    // ── Warna chart disesuaikan primary palette ──
+    const C_PRIMARY   = '#17a34a';   // primary.600
+    const C_P700      = '#15803d';   // primary.700
+    const GRID        = '#f3f4f6';
+    const TICK        = '#9ca3af';
 
     const tooltipCfg = {
         backgroundColor : '#111827',
         titleColor      : '#ffffff',
         bodyColor       : 'rgba(255,255,255,.65)',
-        borderColor     : 'rgba(124,179,66,.25)',
+        // border tint primary.400
+        borderColor     : 'rgba(74,222,128,.25)',
         borderWidth     : 1,
         padding         : 10,
         cornerRadius    : 8,
@@ -501,6 +563,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Bar: Masjid per Provinsi
+    // ── Bar color: opacity stagger menggunakan primary.600 ──
     const masjidData = @json($masjidPerProvinsi);
     if (masjidData.length > 0) {
         new Chart(document.getElementById('chartMasjidProvinsi'), {
@@ -510,7 +573,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Jumlah Masjid',
                     data: masjidData.map(i => i.jumlah),
-                    backgroundColor: masjidData.map((_, idx) => `rgba(45,106,45,${.85 - idx * .12})`),
+                    // Stagger opacity dari primary.600
+                    backgroundColor: masjidData.map((_, idx) => `rgba(23,163,74,${.88 - idx * .12})`),
                     borderRadius: 8,
                     borderSkipped: false,
                     borderWidth: 0,
@@ -525,12 +589,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Line: Trend Registrasi
+    // ── Gradient fill: primary.600 → transparent ──
     const trendData = @json($trendMasjid);
     if (trendData.length > 0) {
         const ctx  = document.getElementById('chartTrendMasjid').getContext('2d');
         const grad = ctx.createLinearGradient(0, 0, 0, 268);
-        grad.addColorStop(0, 'rgba(45,106,45,.15)');
-        grad.addColorStop(1, 'rgba(45,106,45,0)');
+        grad.addColorStop(0, 'rgba(23,163,74,.18)');   // primary.600
+        grad.addColorStop(1, 'rgba(23,163,74,0)');
 
         new Chart(ctx, {
             type: 'line',
@@ -539,10 +604,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Registrasi',
                     data: trendData.map(i => i.jumlah),
-                    borderColor: C700, backgroundColor: grad,
+                    borderColor: C_PRIMARY,
+                    backgroundColor: grad,
                     fill: true, tension: 0.42, borderWidth: 2.5,
                     pointRadius: 5, pointBackgroundColor: '#fff',
-                    pointBorderColor: C700, pointBorderWidth: 2.5,
+                    pointBorderColor: C_PRIMARY, pointBorderWidth: 2.5,
                     pointHoverRadius: 7,
                 }]
             },
@@ -553,7 +619,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    // ── Client-side Pagination ──────────────────────
+
+    // ── Client-side Pagination ──
     function initPagination(tableId, pagInfoId, pagBtnsId, perPage) {
         const tbody = document.querySelector('#' + tableId + ' tbody');
         if (!tbody) return;
@@ -568,24 +635,20 @@ document.addEventListener('DOMContentLoaded', function () {
             rows.forEach((r, i) => {
                 r.style.display = (i >= (page-1)*perPage && i < page*perPage) ? '' : 'none';
             });
-            // Info
             const infoEl = document.getElementById(pagInfoId);
             if (infoEl) {
                 const from = (page-1)*perPage + 1;
                 const to   = Math.min(page*perPage, rows.length);
                 infoEl.textContent = from + '–' + to + ' dari ' + rows.length;
             }
-            // Buttons
             const btnsEl = document.getElementById(pagBtnsId);
             if (!btnsEl) return;
             btnsEl.innerHTML = '';
-            // Prev
             const prev = document.createElement('button');
             prev.className = 'pag-btn'; prev.textContent = '‹';
             prev.disabled = page === 1;
             prev.onclick = () => render(page - 1);
             btnsEl.appendChild(prev);
-            // Pages
             for (let p = 1; p <= totalPages; p++) {
                 const btn = document.createElement('button');
                 btn.className = 'pag-btn' + (p === page ? ' active' : '');
@@ -593,7 +656,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 btn.onclick = () => render(p);
                 btnsEl.appendChild(btn);
             }
-            // Next
             const next = document.createElement('button');
             next.className = 'pag-btn'; next.textContent = '›';
             next.disabled = page === totalPages;

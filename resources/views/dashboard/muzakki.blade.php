@@ -10,13 +10,24 @@
     * { font-family: 'Poppins', sans-serif !important; }
 
     :root {
-        --c-900: #1a3d1a;
-        --c-800: #2d6a2d;
-        --c-700: #388e3c;
-        --c-600: #43a047;
-        --c-400: #66bb6a;
-        --c-100: #e8f5e9;
-        --c-50:  #f1f8f1;
+        /* ── Diselaraskan dengan tailwind.config.js ── */
+        --primary:     #17a34a;
+        --primary-700: #15803d;
+        --primary-800: #166534;
+        --primary-50:  #f0fdf4;
+        --primary-100: #dcfce7;
+        --secondary:   #2d6936;
+        --accent:      #4caf50;
+
+        /* legacy aliases */
+        --c-900: #0f2714;
+        --c-800: #15803d;
+        --c-700: #17a34a;
+        --c-600: #22c55e;
+        --c-400: #4caf50;
+        --c-100: #dcfce7;
+        --c-50:  #f0fdf4;
+
         --n-900: #111827;
         --n-700: #374151;
         --n-500: #6b7280;
@@ -25,21 +36,35 @@
         --n-100: #f3f4f6;
         --n-50:  #f9fafb;
         --white: #ffffff;
+
         --radius:    16px;
         --radius-sm: 10px;
+
+        /* Shadow dengan tint hijau — sesuai tailwind.config 'nz' shadows */
         --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-        --shadow-md: 0 4px 16px -2px rgba(45,106,45,.10), 0 2px 6px -1px rgba(45,106,45,.06);
-        --shadow-lg: 0 12px 32px -6px rgba(45,106,45,.18), 0 4px 12px -2px rgba(45,106,45,.10);
+        --shadow-md: 0 4px 16px -2px rgba(23,163,74,.10), 0 2px 6px -1px rgba(23,163,74,.06);
+        --shadow-lg: 0 12px 32px -6px rgba(23,163,74,.18), 0 4px 12px -2px rgba(23,163,74,.10);
     }
 
     /* ── HERO ── */
     .hero {
-        background: #2d6a2d;
+        /* gradient-nz dari tailwind.config */
+        background: linear-gradient(135deg, #17a34a 0%, #1d7a3e 45%, #2d6936 100%);
         border-radius: var(--radius);
         padding: 2.25rem 2.5rem;
         position: relative;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 20px 48px -8px rgba(23,163,74,.25), 0 8px 20px -4px rgba(23,163,74,.14);
+    }
+
+    /* Radial glow kanan atas */
+    .hero::before {
+        content: '';
+        position: absolute;
+        right: -60px; top: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(74,222,128,.10) 0%, transparent 65%);
+        pointer-events: none;
     }
 
     .hero-decor {
@@ -47,7 +72,7 @@
         right: -48px; top: -64px;
         width: 260px; height: 260px;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.07);
         pointer-events: none;
     }
 
@@ -59,17 +84,27 @@
         border: 1px solid rgba(255,255,255,.04);
     }
 
+    /* Lingkaran dekorasi ke-2 */
+    .hero-decor-2 {
+        position: absolute;
+        right: 60px; top: -20px;
+        width: 160px; height: 160px;
+        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,.04);
+        pointer-events: none;
+    }
+
     .hero-pill {
         display: inline-flex;
         align-items: center;
         gap: 7px;
         background: rgba(255,255,255,.10);
-        border: 1px solid rgba(255,255,255,.14);
+        border: 1px solid rgba(255,255,255,.15);
         border-radius: 999px;
         padding: 4px 14px 4px 9px;
         font-size: .68rem;
         font-weight: 600;
-        color: rgba(255,255,255,.80);
+        color: rgba(255,255,255,.82);
         letter-spacing: .07em;
         text-transform: uppercase;
         margin-bottom: .85rem;
@@ -77,7 +112,7 @@
 
     .hero-dot {
         width: 7px; height: 7px;
-        background: #66bb6a;
+        background: #86efac;
         border-radius: 50%;
         animation: blink 2s infinite;
     }
@@ -104,17 +139,34 @@
 
     .hero-time { text-align: right; position: relative; z-index: 1; }
     .hero-date-lbl { font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.50); margin-bottom: 2px; }
-    .hero-clock { font-size: 1.6rem; font-weight: 700; color: #fff; letter-spacing: .02em; }
+    .hero-clock {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: .04em;
+        font-variant-numeric: tabular-nums;
+    }
 
     /* ── SEC LABEL ── */
     .sec-label {
-        font-size: .67rem;
-        font-weight: 700;
-        letter-spacing: .10em;
+        font-size: .64rem;
+        font-weight: 800;
+        letter-spacing: .12em;
         text-transform: uppercase;
         color: var(--n-400);
         margin-bottom: .75rem;
         padding-left: 2px;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    /* garis setelah label */
+    .sec-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--n-200);
     }
 
     /* ── STAT CARD ── */
@@ -129,12 +181,13 @@
         gap: 1rem;
         position: relative;
         overflow: hidden;
-        transition: transform .22s ease, box-shadow .22s ease;
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s;
     }
 
     .stat-card:hover {
         transform: translateY(-4px);
         box-shadow: var(--shadow-lg);
+        border-color: var(--primary-100);
     }
 
     .stat-card::after {
@@ -142,7 +195,8 @@
         position: absolute;
         top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, var(--c-800), var(--c-400));
+        /* gradient-nz sesuai tailwind.config */
+        background: linear-gradient(90deg, var(--primary), var(--accent));
         opacity: 0;
         transition: opacity .22s;
     }
@@ -156,8 +210,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, var(--c-800), var(--c-400));
-        box-shadow: 0 4px 12px -2px rgba(45,106,45,.35);
+        /* gradient-nz sesuai tailwind.config */
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: 0 6px 16px -3px rgba(23,163,74,.35);
+        transition: box-shadow .22s, transform .22s;
+    }
+
+    .stat-card:hover .stat-icon {
+        box-shadow: 0 8px 20px -3px rgba(23,163,74,.45);
+        transform: scale(1.04);
     }
 
     .stat-body { flex: 1; min-width: 0; }
@@ -174,7 +235,7 @@
     .stat-val.--money { font-size: 1.15rem; }
 
     .stat-lbl {
-        font-size: .75rem;
+        font-size: .73rem;
         font-weight: 600;
         color: var(--n-500);
     }
@@ -182,15 +243,15 @@
     .stat-badge {
         position: absolute;
         top: .85rem; right: .85rem;
-        font-size: .62rem;
+        font-size: .60rem;
         font-weight: 700;
-        letter-spacing: .04em;
+        letter-spacing: .05em;
         text-transform: uppercase;
-        color: var(--c-800);
-        background: var(--c-50);
-        border: 1px solid var(--c-100);
+        color: var(--primary-700);
+        background: var(--primary-50);
+        border: 1px solid var(--primary-100);
         border-radius: 999px;
-        padding: 2px 8px;
+        padding: 2px 9px;
     }
 
     .stat-badge.--warn { color: #92400e; background: #fef3c7; border-color: #fde68a; }
@@ -203,7 +264,8 @@
         background: var(--white);
         border-radius: var(--radius);
         border: 1px solid var(--n-200);
-        box-shadow: var(--shadow-sm);
+        /* card shadow dari tailwind.config */
+        box-shadow: 0 4px 14px 0 rgba(23,163,74,.08);
         overflow: hidden;
     }
 
@@ -219,13 +281,13 @@
     .panel-title { font-size: .875rem; font-weight: 700; color: var(--n-900); letter-spacing: -.01em; }
 
     .panel-tag {
-        font-size: .64rem;
+        font-size: .62rem;
         font-weight: 700;
         letter-spacing: .08em;
         text-transform: uppercase;
-        color: var(--c-800);
-        background: var(--c-50);
-        border: 1px solid var(--c-100);
+        color: var(--primary-700);
+        background: var(--primary-50);
+        border: 1px solid var(--primary-100);
         border-radius: 999px;
         padding: 3px 10px;
     }
@@ -246,7 +308,7 @@
 
     .badge-status.verified   { color: #166534; background: #dcfce7; border: 1px solid #bbf7d0; }
     .badge-status.pending    { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
-    .badge-status.menunggu   { color: #1a3d1a; background: #e8f5e9; border: 1px solid #c8e6c9; }
+    .badge-status.menunggu   { color: var(--primary-800); background: var(--primary-50); border: 1px solid var(--primary-100); }
     .badge-status.ditolak    { color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; }
 
     /* ── RIWAYAT TABLE ── */
@@ -255,7 +317,7 @@
     .riwayat-table th {
         padding: .55rem .9rem;
         text-align: left;
-        font-size: .64rem;
+        font-size: .62rem;
         font-weight: 700;
         letter-spacing: .09em;
         text-transform: uppercase;
@@ -268,16 +330,16 @@
     }
     .riwayat-table tbody tr:last-child td { border-bottom: none; }
     .riwayat-table tbody tr { transition: background .15s; }
-    .riwayat-table tbody tr:hover { background: var(--n-50); }
+    .riwayat-table tbody tr:hover { background: var(--primary-50); }
 
     .trx-no      { font-size: .78rem; font-weight: 600; color: var(--n-900); }
     .trx-sub     { font-size: .70rem; font-weight: 500; color: var(--n-400); margin-top: 1px; }
-    .trx-nominal { font-size: .83rem; font-weight: 700; color: var(--c-800); }
+    .trx-nominal { font-size: .83rem; font-weight: 700; color: var(--primary-700); }
 
     /* ── INFO MASJID ── */
     .masjid-card {
-        background: linear-gradient(135deg, var(--c-50) 0%, #fff 100%);
-        border: 1px solid var(--c-100);
+        background: linear-gradient(135deg, var(--primary-50) 0%, #fff 100%);
+        border: 1px solid var(--primary-100);
         border-radius: var(--radius-sm);
         padding: 1rem 1.25rem;
         display: flex;
@@ -288,7 +350,8 @@
     .masjid-icon {
         width: 44px; height: 44px;
         border-radius: var(--radius-sm);
-        background: linear-gradient(135deg, var(--c-800), var(--c-400));
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: 0 4px 12px -2px rgba(23,163,74,.30);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -300,14 +363,14 @@
 
     /* ── NISAB BLOCK ── */
     .nisab-block {
-        background: var(--c-50);
-        border: 1px solid var(--c-100);
+        background: var(--primary-50);
+        border: 1px solid var(--primary-100);
         border-radius: var(--radius-sm);
         padding: 1rem 1.25rem;
     }
 
     .nisab-label { font-size: .72rem; font-weight: 500; color: var(--n-500); margin-bottom: 4px; }
-    .nisab-val   { font-size: 1.25rem; font-weight: 800; color: var(--c-800); letter-spacing: -.03em; line-height: 1; }
+    .nisab-val   { font-size: 1.25rem; font-weight: 800; color: var(--primary-700); letter-spacing: -.03em; line-height: 1; }
     .nisab-sub   { font-size: .70rem; font-weight: 500; color: var(--n-400); margin-top: 5px; }
 
     /* ── CTA BUTTON ── */
@@ -315,7 +378,7 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background: linear-gradient(135deg, var(--c-800), var(--c-400));
+        background: linear-gradient(135deg, var(--primary), var(--accent));
         color: #fff;
         font-size: .8rem;
         font-weight: 600;
@@ -325,12 +388,13 @@
         border: none;
         cursor: pointer;
         transition: all .2s;
-        box-shadow: 0 4px 12px rgba(45,106,45,.3);
+        /* nz-shadow dari tailwind.config */
+        box-shadow: 0 4px 6px -1px rgba(23,163,74,.25), 0 2px 4px -1px rgba(23,163,74,.15);
     }
 
     .btn-cta:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(45,106,45,.4);
+        box-shadow: 0 10px 15px -3px rgba(23,163,74,.30), 0 4px 6px -2px rgba(23,163,74,.15);
     }
 
     /* ── EMPTY STATE ── */
@@ -367,20 +431,27 @@
 
     .qa-item:hover {
         transform: translateY(-3px);
-        border-color: var(--c-400);
+        border-color: var(--primary-100);
         box-shadow: var(--shadow-md);
-        background: var(--c-50);
+        background: var(--primary-50);
     }
 
     .qa-icon {
         width: 40px; height: 40px;
         margin: 0 auto 0.5rem;
-        background: linear-gradient(135deg, var(--c-800), var(--c-400));
+        /* gradient-nz dari tailwind.config */
+        background: linear-gradient(135deg, var(--primary-700), var(--accent));
         border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 10px -2px rgba(45,106,45,.30);
+        box-shadow: 0 4px 10px -2px rgba(23,163,74,.30);
+        transition: box-shadow .2s, transform .2s;
+    }
+
+    .qa-item:hover .qa-icon {
+        box-shadow: 0 6px 16px -2px rgba(23,163,74,.42);
+        transform: scale(1.06);
     }
 
     .qa-label {
@@ -406,12 +477,12 @@
 
     .pending-alert svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; }
 
-    /* ── METRIC CARD ── */
+    /* ── METRIC ICON ── */
     .metric-icon {
         width: 46px; height: 46px;
         border-radius: var(--radius-sm);
-        background: var(--c-50);
-        border: 1px solid var(--c-100);
+        background: var(--primary-50);
+        border: 1px solid var(--primary-100);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -426,6 +497,7 @@
     {{-- ── HERO ── --}}
     <div class="hero">
         <div class="hero-decor"></div>
+        <div class="hero-decor-2"></div>
         <div class="flex items-center justify-between relative" style="z-index:1">
             <div>
                 <div class="hero-pill">
@@ -657,7 +729,7 @@
             <div class="panel-head">
                 <p class="panel-title">5 Transaksi Terakhir</p>
                 <a href=""
-                   style="font-size:.75rem; font-weight:600; color:var(--c-800); text-decoration:none;">
+                   style="font-size:.75rem; font-weight:600; color:var(--primary); text-decoration:none;">
                     Lihat Semua →
                 </a>
             </div>
@@ -761,8 +833,8 @@ document.addEventListener('DOMContentLoaded', function () {
     Chart.defaults.font.size   = 11;
     Chart.defaults.font.weight = '500';
 
-    const C800  = '#2d6a2d';
-    const C400  = '#66bb6a';
+    const C800  = '#17a34a';
+    const C400  = '#4caf50';
     const GRID  = '#f3f4f6';
     const TICK  = '#9ca3af';
 
@@ -770,7 +842,7 @@ document.addEventListener('DOMContentLoaded', function () {
         backgroundColor: '#111827',
         titleColor:  '#ffffff',
         bodyColor:   'rgba(255,255,255,.65)',
-        borderColor: 'rgba(102,187,106,.25)',
+        borderColor: 'rgba(23,163,74,.25)',
         borderWidth: 1,
         padding: 10,
         cornerRadius: 8,
@@ -787,8 +859,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const ctx = document.getElementById('chartTrend').getContext('2d');
 
         const grad = ctx.createLinearGradient(0, 0, 0, 280);
-        grad.addColorStop(0, 'rgba(45,106,45,.18)');
-        grad.addColorStop(1, 'rgba(45,106,45,0)');
+        grad.addColorStop(0, 'rgba(23,163,74,.18)');
+        grad.addColorStop(1, 'rgba(23,163,74,0)');
 
         new Chart(ctx, {
             type: 'bar',
@@ -798,7 +870,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     label: 'Zakat Dibayar',
                     data: trendData.map(i => i.jumlah),
                     backgroundColor: trendData.map(i =>
-                        i.jumlah > 0 ? 'rgba(45,106,45,.85)' : 'rgba(45,106,45,.12)'
+                        i.jumlah > 0 ? 'rgba(23,163,74,.85)' : 'rgba(23,163,74,.12)'
                     ),
                     borderColor: C800,
                     borderWidth: 1.5,

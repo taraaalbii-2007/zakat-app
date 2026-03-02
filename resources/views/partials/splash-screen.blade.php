@@ -11,19 +11,25 @@
 <style>
     /* ============================================
        SPLASH SCREEN - ZAKAT DIGITAL
-       Tema: Hijau #2d6936 & Emas — Elegan & Islami
+       Tema: Hijau #17a34a (primary) & Emas — Elegan & Islami
+       Warna disesuaikan dengan tailwind.config.js
     ============================================ */
 
     :root {
         --sp-gold:        #F0C060;
         --sp-gold-light:  #F5D080;
         --sp-gold-pale:   #FBE9B0;
-        --sp-green:       #2d6936;
-        --sp-green-dark:  #1e4a24;
-        --sp-green-deep:  #163619;
-        --sp-green-mid:   #2d6936;
-        --sp-green-light: #3d8f4a;
-        --sp-green-pale:  #78cc8a;
+
+        /* === UPDATED: Sesuai tailwind.config primary & secondary === */
+        --sp-green:       #17a34a;   /* primary.DEFAULT / primary.600 */
+        --sp-green-dark:  #15803d;   /* primary.700 */
+        --sp-green-deep:  #166534;   /* primary.800 */
+        --sp-green-mid:   #22c55e;   /* primary.500 */
+        --sp-green-light: #4ade80;   /* primary.400 */
+        --sp-green-pale:  #86efac;   /* primary.300 */
+        --sp-green-sec:   #2d6936;   /* secondary.DEFAULT */
+        /* ========================================================== */
+
         --sp-text:        #ffffff;
         --sp-text-soft:   rgba(255,255,255,0.75);
     }
@@ -32,7 +38,8 @@
     #splash-zakat {
         position: fixed;
         inset: 0;
-        background: linear-gradient(150deg, #163619 0%, #2d6936 55%, #1e4a24 100%);
+        /* UPDATED: gradient dari primary.800 → primary.DEFAULT → primary.700 */
+        background: linear-gradient(150deg, #166534 0%, #17a34a 55%, #15803d 100%);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -63,8 +70,8 @@
         border-radius: 50%;
         background: radial-gradient(
             circle,
-            rgba(240, 192, 96, 0.20) 0%,
-            rgba(120, 204, 138, 0.12) 45%,
+            rgba(240, 192, 96, 0.20) 0%,       /* gold */
+            rgba(134, 239, 172, 0.14) 45%,      /* UPDATED: primary.300 */
             transparent 70%
         );
         animation: sp-glow-breath 3s ease-in-out infinite;
@@ -79,17 +86,18 @@
     .sp-geo-ring {
         position: absolute;
         border-radius: 50%;
-        border: 1px solid rgba(26, 107, 60, 0.10);
+        border: 1px solid rgba(23, 163, 74, 0.10); /* UPDATED: primary */
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%) scale(0.2);
         opacity: 0;
         animation: sp-ring-expand 3s ease-out forwards;
     }
-    .sp-geo-ring:nth-child(1) { width: 260px; height: 260px; animation-delay: 0.00s; border-color: rgba(240,192,96,0.25); }
-    .sp-geo-ring:nth-child(2) { width: 360px; height: 360px; animation-delay: 0.18s; border-color: rgba(120,204,138,0.18); }
-    .sp-geo-ring:nth-child(3) { width: 460px; height: 460px; animation-delay: 0.36s; border-color: rgba(240,192,96,0.15); }
-    .sp-geo-ring:nth-child(4) { width: 560px; height: 560px; animation-delay: 0.54s; border-color: rgba(120,204,138,0.10); }
+    /* UPDATED: border-color menggunakan primary palette */
+    .sp-geo-ring:nth-child(1) { width: 260px; height: 260px; animation-delay: 0.00s; border-color: rgba(240,192,96,0.28); }
+    .sp-geo-ring:nth-child(2) { width: 360px; height: 360px; animation-delay: 0.18s; border-color: rgba(134,239,172,0.20); } /* primary.300 */
+    .sp-geo-ring:nth-child(3) { width: 460px; height: 460px; animation-delay: 0.36s; border-color: rgba(240,192,96,0.16); }
+    .sp-geo-ring:nth-child(4) { width: 560px; height: 560px; animation-delay: 0.54s; border-color: rgba(74,222,128,0.12); }  /* primary.400 */
     .sp-geo-ring:nth-child(5) { width: 660px; height: 660px; animation-delay: 0.72s; border-color: rgba(240,192,96,0.08); }
     @keyframes sp-ring-expand {
         0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.2); }
@@ -105,14 +113,15 @@
         animation: sp-particle-rise 3.5s ease-out forwards;
         pointer-events: none;
     }
+    /* UPDATED: warna partikel menggunakan primary palette */
     .sp-particle:nth-child(1)  { width: 3px; height: 3px; background: var(--sp-gold);        left: 18%; bottom: 28%; animation-delay: 0.20s; }
-    .sp-particle:nth-child(2)  { width: 2px; height: 2px; background: var(--sp-green-light);  left: 32%; bottom: 22%; animation-delay: 0.45s; }
+    .sp-particle:nth-child(2)  { width: 2px; height: 2px; background: var(--sp-green-mid);    left: 32%; bottom: 22%; animation-delay: 0.45s; }
     .sp-particle:nth-child(3)  { width: 4px; height: 4px; background: var(--sp-green-pale);   left: 50%; bottom: 18%; animation-delay: 0.30s; }
     .sp-particle:nth-child(4)  { width: 2px; height: 2px; background: var(--sp-gold);         left: 66%; bottom: 32%; animation-delay: 0.65s; }
     .sp-particle:nth-child(5)  { width: 3px; height: 3px; background: var(--sp-green-light);  left: 80%; bottom: 25%; animation-delay: 0.40s; }
     .sp-particle:nth-child(6)  { width: 2px; height: 2px; background: var(--sp-green-pale);   left: 13%; bottom: 42%; animation-delay: 0.90s; }
     .sp-particle:nth-child(7)  { width: 4px; height: 4px; background: var(--sp-gold);         left: 86%; bottom: 38%; animation-delay: 0.55s; }
-    .sp-particle:nth-child(8)  { width: 2px; height: 2px; background: var(--sp-green-light);  left: 40%; bottom: 48%; animation-delay: 1.10s; }
+    .sp-particle:nth-child(8)  { width: 2px; height: 2px; background: var(--sp-green-mid);    left: 40%; bottom: 48%; animation-delay: 1.10s; }
     .sp-particle:nth-child(9)  { width: 3px; height: 3px; background: var(--sp-green-pale);   left: 72%; bottom: 20%; animation-delay: 0.75s; }
     .sp-particle:nth-child(10) { width: 2px; height: 2px; background: var(--sp-gold);         left: 26%; bottom: 52%; animation-delay: 1.30s; }
     .sp-particle:nth-child(11) { width: 3px; height: 3px; background: var(--sp-green-light);  left: 58%; bottom: 45%; animation-delay: 1.00s; }
@@ -170,13 +179,14 @@
     .sp-orbit-a::before { top: -4px;  left: calc(50% - 4px); }
     .sp-orbit-a::after  { bottom: -4px; left: calc(50% - 4px); }
 
-    /* Orbit tengah — hijau, berlawanan */
+    /* Orbit tengah — hijau primary, berlawanan */
     .sp-orbit-b {
         position: absolute;
         width: 148px;
         height: 148px;
         border-radius: 50%;
-        border: 1px solid rgba(120, 204, 138, 0.35);
+        /* UPDATED: primary.300 */
+        border: 1px solid rgba(134, 239, 172, 0.38);
         animation: sp-ccw 10s linear infinite;
     }
     .sp-orbit-b::before,
@@ -186,8 +196,9 @@
         width: 5px;
         height: 5px;
         border-radius: 50%;
+        /* UPDATED: primary.300 */
         background: var(--sp-green-pale);
-        box-shadow: 0 0 8px 2px rgba(120, 204, 138, 0.9);
+        box-shadow: 0 0 8px 2px rgba(134, 239, 172, 0.9);
     }
     .sp-orbit-b::before { top: -2.5px; left: calc(50% - 2.5px); }
     .sp-orbit-b::after  { bottom: -2.5px; left: calc(50% - 2.5px); }
@@ -199,13 +210,14 @@
         height: 128px;
         border-radius: 50%;
         padding: 3px;
+        /* UPDATED: menggunakan primary.300, primary.400, primary.500 */
         background: conic-gradient(
             from 0deg,
             var(--sp-gold),
             var(--sp-gold-light),
-            var(--sp-green-pale),
-            var(--sp-green-light),
-            var(--sp-gold),
+            var(--sp-green-pale),    /* primary.300 */
+            var(--sp-green-light),   /* primary.400 */
+            var(--sp-green-mid),     /* primary.500 */
             var(--sp-gold-light),
             var(--sp-gold)
         );
@@ -216,7 +228,8 @@
         content: '';
         position: absolute;
         inset: 3px;
-        background: linear-gradient(150deg, #163619 0%, #2d6936 55%, #1e4a24 100%);
+        /* UPDATED: gradient sesuai warna background primary.800 → primary.DEFAULT → primary.700 */
+        background: linear-gradient(150deg, #166534 0%, #17a34a 55%, #15803d 100%);
         border-radius: 50%;
     }
 
@@ -229,8 +242,9 @@
         opacity: 0;
         animation: sp-pulse-out 2.4s ease-out infinite;
     }
+    /* UPDATED: warna pulse menggunakan gold & primary palette */
     .sp-pulse:nth-child(1) { background: radial-gradient(circle, rgba(240,192,96,0.40)   0%, transparent 70%); animation-delay: 0.0s; }
-    .sp-pulse:nth-child(2) { background: radial-gradient(circle, rgba(120,204,138,0.30)  0%, transparent 70%); animation-delay: 0.8s; }
+    .sp-pulse:nth-child(2) { background: radial-gradient(circle, rgba(74,222,128,0.30)   0%, transparent 70%); animation-delay: 0.8s; }  /* primary.400 */
     .sp-pulse:nth-child(3) { background: radial-gradient(circle, rgba(240,192,96,0.25)   0%, transparent 70%); animation-delay: 1.6s; }
     @keyframes sp-pulse-out {
         0%   { transform: scale(0.8); opacity: 0.9; }
@@ -246,7 +260,8 @@
         height: 110px;
         border-radius: 50%;
         object-fit: cover;
-        background: #2d6936;
+        /* UPDATED: primary.DEFAULT */
+        background: #17a34a;
         opacity: 0;
         transform: scale(0.25) rotate(-120deg);
         filter: blur(10px);
@@ -273,7 +288,8 @@
             rgba(200, 151, 58, 0.55) 15%,
             rgba(255, 255, 255, 0.85) 30%,
             transparent 50%,
-            rgba(200, 151, 58, 0.30) 75%,
+            /* UPDATED: tambah sentuhan primary.400 */
+            rgba(74, 222, 128, 0.30) 75%,
             transparent 100%
         );
         mix-blend-mode: overlay;
@@ -302,11 +318,13 @@
     }
     .sp-spark:nth-child(1) { animation-delay: 0.55s; --sdx:  0px;   --sdy: -26px; }
     .sp-spark:nth-child(2) { animation-delay: 0.62s; --sdx:  18px;  --sdy: -18px; }
-    .sp-spark:nth-child(3) { animation-delay: 0.69s; --sdx:  26px;  --sdy:   0px; background: var(--sp-green-pale); box-shadow: 0 0 6px 2px rgba(76,175,114,0.7); }
+    /* UPDATED: spark hijau menggunakan primary.400 */
+    .sp-spark:nth-child(3) { animation-delay: 0.69s; --sdx:  26px;  --sdy:   0px; background: var(--sp-green-light); box-shadow: 0 0 6px 2px rgba(74,222,128,0.7); }
     .sp-spark:nth-child(4) { animation-delay: 0.76s; --sdx:  18px;  --sdy:  18px; }
     .sp-spark:nth-child(5) { animation-delay: 0.83s; --sdx:  0px;   --sdy:  26px; }
     .sp-spark:nth-child(6) { animation-delay: 0.90s; --sdx: -18px;  --sdy:  18px; }
-    .sp-spark:nth-child(7) { animation-delay: 0.97s; --sdx: -26px;  --sdy:   0px; background: var(--sp-green-pale); box-shadow: 0 0 6px 2px rgba(76,175,114,0.7); }
+    /* UPDATED: spark hijau menggunakan primary.300 */
+    .sp-spark:nth-child(7) { animation-delay: 0.97s; --sdx: -26px;  --sdy:   0px; background: var(--sp-green-pale); box-shadow: 0 0 6px 2px rgba(134,239,172,0.7); }
     .sp-spark:nth-child(8) { animation-delay: 1.04s; --sdx: -18px;  --sdy: -18px; }
     @keyframes sp-spark-fly {
         0%   { opacity: 0; transform: translate(0, 0) scale(0); }
@@ -391,6 +409,7 @@
     .sp-progress-fill {
         height: 100%;
         width: 0%;
+        /* UPDATED: gradient dari primary.300 ke gold */
         background: linear-gradient(90deg, var(--sp-green-pale), var(--sp-gold));
         border-radius: 2px;
         box-shadow: 0 0 10px rgba(240,192,96,0.60);

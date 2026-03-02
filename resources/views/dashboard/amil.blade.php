@@ -12,39 +12,55 @@
         }
 
         :root {
+            /* ── Diselaraskan dengan tailwind.config.js ── */
+            --primary:     #17a34a;
+            --primary-700: #15803d;
+            --primary-800: #166534;
+            --primary-50:  #f0fdf4;
+            --primary-100: #dcfce7;
+            --secondary:   #2d6936;
+            --accent:      #4caf50;
+
+            /* legacy aliases (agar tidak break) */
             --c-900: #0f2714;
             --c-800: #1a3d22;
-            --c-700: #2d6936;
-            --c-600: #3d8b40;
-            --c-400: #7cb342;
-            --c-100: #e6f4ea;
-            --c-50: #f3faf0;
-            --gold: #b8860b;
-            --gold-bg: #fdf6e3;
+            --c-700: #15803d;
+            --c-600: #17a34a;
+            --c-400: #4caf50;
+            --c-100: #dcfce7;
+            --c-50:  #f0fdf4;
+
+            --gold:        #b8860b;
+            --gold-bg:     #fdf6e3;
             --gold-border: #e8d5a0;
+
             --n-900: #111827;
             --n-700: #374151;
             --n-500: #6b7280;
             --n-400: #9ca3af;
             --n-200: #e5e7eb;
             --n-100: #f3f4f6;
-            --n-50: #f9fafb;
+            --n-50:  #f9fafb;
             --white: #ffffff;
-            --radius: 16px;
+
+            --radius:    16px;
             --radius-sm: 10px;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 16px -2px rgba(26, 61, 34, 0.10), 0 2px 6px -1px rgba(26, 61, 34, 0.06);
-            --shadow-lg: 0 12px 32px -6px rgba(26, 61, 34, 0.18), 0 4px 12px -2px rgba(26, 61, 34, 0.10);
+
+            /* Shadow dengan tint hijau — sesuai tailwind.config 'nz' shadows */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+            --shadow-md: 0 4px 16px -2px rgba(23,163,74,.10), 0 2px 6px -1px rgba(23,163,74,.06);
+            --shadow-lg: 0 12px 32px -6px rgba(23,163,74,.18), 0 4px 12px -2px rgba(23,163,74,.10);
         }
 
         /* ── HERO ── */
         .hero {
-            background: #2d6a2d;
+            /* gradient-nz dari tailwind.config */
+            background: linear-gradient(135deg, #17a34a 0%, #1d7a3e 45%, #2d6936 100%);
             border-radius: var(--radius);
             padding: 2.25rem 2.5rem;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 48px -8px rgba(23,163,74,.25), 0 8px 20px -4px rgba(23,163,74,.14);
         }
 
         .hero-decor {
@@ -54,7 +70,7 @@
             width: 260px;
             height: 260px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255,255,255,.07);
             pointer-events: none;
         }
 
@@ -63,20 +79,42 @@
             position: absolute;
             inset: 30px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, .04);
+            border: 1px solid rgba(255,255,255,.04);
+        }
+
+        /* Tambahan: lingkaran dekorasi ke-2 */
+        .hero-decor-2 {
+            position: absolute;
+            right: 60px;
+            top: -20px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,.04);
+            pointer-events: none;
+        }
+
+        /* Glow radial di kanan */
+        .hero::before {
+            content: '';
+            position: absolute;
+            right: -60px; top: -60px;
+            width: 320px; height: 320px;
+            background: radial-gradient(circle, rgba(74,222,128,.10) 0%, transparent 65%);
+            pointer-events: none;
         }
 
         .hero-pill {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(255, 255, 255, .10);
-            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(255,255,255,.10);
+            border: 1px solid rgba(255,255,255,.15);
             border-radius: 999px;
             padding: 4px 14px 4px 9px;
             font-size: .68rem;
             font-weight: 600;
-            color: rgba(255, 255, 255, .80);
+            color: rgba(255,255,255,.82);
             letter-spacing: .07em;
             text-transform: uppercase;
             margin-bottom: .85rem;
@@ -85,7 +123,7 @@
         .hero-dot {
             width: 7px;
             height: 7px;
-            background: #7cb342;
+            background: #86efac;
             border-radius: 50%;
             animation: blink 2s infinite;
         }
@@ -107,7 +145,7 @@
         .hero-sub {
             font-size: .85rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, .55);
+            color: rgba(255,255,255,.55);
         }
 
         .hero-time {
@@ -119,7 +157,7 @@
         .hero-date-lbl {
             font-size: .72rem;
             font-weight: 500;
-            color: rgba(255, 255, 255, .50);
+            color: rgba(255,255,255,.50);
             margin-bottom: 2px;
         }
 
@@ -127,18 +165,30 @@
             font-size: 1.6rem;
             font-weight: 700;
             color: #fff;
-            letter-spacing: .02em;
+            letter-spacing: .04em;
+            font-variant-numeric: tabular-nums;
         }
 
         /* ── SECTION LABEL ── */
         .sec-label {
-            font-size: .67rem;
-            font-weight: 700;
-            letter-spacing: .10em;
+            font-size: .64rem;
+            font-weight: 800;
+            letter-spacing: .12em;
             text-transform: uppercase;
             color: var(--n-400);
             margin-bottom: .75rem;
             padding-left: 2px;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* garis setelah label */
+        .sec-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--n-200);
         }
 
         /* ── STAT CARD ── */
@@ -153,22 +203,22 @@
             gap: 1rem;
             position: relative;
             overflow: hidden;
-            transition: transform .22s ease, box-shadow .22s ease;
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
             box-shadow: var(--shadow-lg);
+            border-color: var(--primary-100);
         }
 
+        /* top accent bar on hover */
         .stat-card::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--c-700), var(--c-400));
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             opacity: 0;
             transition: opacity .22s;
         }
@@ -185,8 +235,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--c-700), var(--c-400));
-            box-shadow: 0 4px 12px -2px rgba(45, 105, 54, .35);
+            /* gradient-nz sesuai tailwind.config */
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 6px 16px -3px rgba(23,163,74,.35);
+            transition: box-shadow .22s, transform .22s;
+        }
+
+        .stat-card:hover .stat-icon {
+            box-shadow: 0 8px 20px -3px rgba(23,163,74,.45);
+            transform: scale(1.04);
         }
 
         .stat-body {
@@ -198,15 +255,15 @@
             position: absolute;
             top: .85rem;
             right: .85rem;
-            font-size: .62rem;
+            font-size: .60rem;
             font-weight: 700;
-            letter-spacing: .04em;
+            letter-spacing: .05em;
             text-transform: uppercase;
-            color: var(--c-700);
-            background: var(--c-50);
-            border: 1px solid var(--c-100);
+            color: var(--primary-700);
+            background: var(--primary-50);
+            border: 1px solid var(--primary-100);
             border-radius: 999px;
-            padding: 2px 8px;
+            padding: 2px 9px;
         }
 
         .stat-val {
@@ -223,7 +280,7 @@
         }
 
         .stat-lbl {
-            font-size: .75rem;
+            font-size: .73rem;
             font-weight: 600;
             color: var(--n-500);
         }
@@ -231,7 +288,7 @@
         /* ── prevent horizontal scroll ── */
         .space-y-6 { max-width: 100%; overflow-x: hidden; }
 
-        /* ── STATS SDM GRID — auto-fit, no overflow ── */
+        /* ── STATS SDM GRID ── */
         .stats-sdm-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -248,25 +305,31 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            transition: transform .22s, box-shadow .22s;
+            transition: transform .22s, box-shadow .22s, border-color .22s;
             min-width: 0;
         }
 
         .metric-card:hover {
             transform: translateY(-3px);
             box-shadow: var(--shadow-lg);
+            border-color: var(--primary-100);
         }
 
         .metric-icon {
             width: 46px;
             height: 46px;
             border-radius: var(--radius-sm);
-            background: var(--c-50);
-            border: 1px solid var(--c-100);
+            background: var(--primary-50);
+            border: 1px solid var(--primary-100);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            transition: background .22s;
+        }
+
+        .metric-card:hover .metric-icon {
+            background: var(--primary-100);
         }
 
         .metric-val {
@@ -289,7 +352,8 @@
             background: var(--white);
             border-radius: var(--radius);
             border: 1px solid var(--n-200);
-            box-shadow: var(--shadow-sm);
+            /* card shadow dari tailwind.config */
+            box-shadow: 0 4px 14px 0 rgba(23,163,74,.08);
             overflow: hidden;
         }
 
@@ -310,13 +374,13 @@
         }
 
         .panel-tag {
-            font-size: .64rem;
+            font-size: .62rem;
             font-weight: 700;
             letter-spacing: .08em;
             text-transform: uppercase;
-            color: var(--c-700);
-            background: var(--c-50);
-            border: 1px solid var(--c-100);
+            color: var(--primary-700);
+            background: var(--primary-50);
+            border: 1px solid var(--primary-100);
             border-radius: 999px;
             padding: 3px 10px;
         }
@@ -345,21 +409,28 @@
 
         .qa-item:hover {
             transform: translateY(-3px);
-            border-color: var(--c-400);
+            border-color: var(--primary-100);
             box-shadow: var(--shadow-md);
-            background: var(--c-50);
+            background: var(--primary-50);
         }
 
         .qa-icon {
             width: 40px;
             height: 40px;
             margin: 0 auto 0.5rem;
-            background: linear-gradient(135deg, var(--c-700), var(--c-400));
+            /* gradient-nz dari tailwind.config */
+            background: linear-gradient(135deg, var(--primary-700), var(--accent));
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px -2px rgba(45, 105, 54, .30);
+            box-shadow: 0 4px 10px -2px rgba(23,163,74,.30);
+            transition: box-shadow .2s, transform .2s;
+        }
+
+        .qa-item:hover .qa-icon {
+            box-shadow: 0 6px 16px -2px rgba(23,163,74,.42);
+            transform: scale(1.06);
         }
 
         .qa-label {
@@ -378,6 +449,7 @@
         {{-- Hero --}}
         <div class="hero">
             <div class="hero-decor"></div>
+            <div class="hero-decor-2"></div>
             <div class="flex items-center justify-between relative" style="z-index:1">
                 <div>
                     <div class="hero-pill">
@@ -450,15 +522,15 @@
                 <div class="metric-card">
                     <div class="metric-icon">
                         @if($stat['icon'] === 'users')
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--c-700)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                         </svg>
                         @elseif($stat['icon'] === 'user-group')
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--c-700)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                         </svg>
                         @else
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--c-700)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                         @endif
@@ -609,8 +681,8 @@
             Chart.defaults.font.size = 11;
             Chart.defaults.font.weight = '500';
 
-            const C700 = '#2d6a2d';
-            const C400 = '#7cb342';
+            const C700 = '#17a34a';
+            const C400 = '#4caf50';
             const GRID = '#f3f4f6';
             const TICK = '#9ca3af';
 
@@ -618,7 +690,7 @@
                 backgroundColor: '#111827',
                 titleColor: '#ffffff',
                 bodyColor: 'rgba(255,255,255,.65)',
-                borderColor: 'rgba(124,179,66,.25)',
+                borderColor: 'rgba(23,163,74,.25)',
                 borderWidth: 1,
                 padding: 10,
                 cornerRadius: 8,
@@ -636,12 +708,12 @@
                 const ctx = document.getElementById('chartTrend').getContext('2d');
 
                 const gradIn = ctx.createLinearGradient(0, 0, 0, 280);
-                gradIn.addColorStop(0, 'rgba(45,106,45,.18)');
-                gradIn.addColorStop(1, 'rgba(45,106,45,0)');
+                gradIn.addColorStop(0, 'rgba(23,163,74,.18)');
+                gradIn.addColorStop(1, 'rgba(23,163,74,0)');
 
                 const gradOut = ctx.createLinearGradient(0, 0, 0, 280);
-                gradOut.addColorStop(0, 'rgba(124,179,66,.15)');
-                gradOut.addColorStop(1, 'rgba(124,179,66,0)');
+                gradOut.addColorStop(0, 'rgba(76,175,80,.15)');
+                gradOut.addColorStop(1, 'rgba(76,175,80,0)');
 
                 new Chart(ctx, {
                     type: 'line',
