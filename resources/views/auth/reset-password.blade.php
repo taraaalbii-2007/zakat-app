@@ -129,8 +129,8 @@
         flex-shrink: 0;
     }
     .rp-email-icon svg { width: 16px; height: 16px; color: #16a34a; }
-    .rp-email-label { font-size: .7rem; color: #9ca3af; margin-bottom: .1rem; }
-    .rp-email-value {
+    .rp-email-label  { font-size: .7rem; color: #9ca3af; margin-bottom: .1rem; }
+    .rp-email-value  {
         font-size: .82rem; font-weight: 700; color: #111827;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
@@ -158,11 +158,12 @@
     }
     .pw-strength-label {
         font-size: .7rem; font-weight: 600;
-        color: #9ca3af; white-space: nowrap; min-width: 60px; text-align: right;
+        color: #9ca3af; white-space: nowrap; min-width: 72px; text-align: right;
     }
 
     .pw-checklist {
         list-style: none; padding: 0; margin: .35rem 0 0;
+        display: grid; grid-template-columns: 1fr 1fr; gap: .1rem 0;
     }
     .pw-checklist li {
         display: flex; align-items: center; gap: .35rem;
@@ -197,7 +198,7 @@
     .flash-box.error { background: #fff1f2; border-color: #fecdd3; color: #e11d48; }
 
     /* ══════════════════════════════════
-       BUTTON HIJAU — identik login
+       BUTTON HIJAU
     ══════════════════════════════════ */
     .btn-masuk {
         display: flex; align-items: center; justify-content: center; gap: .5rem;
@@ -219,7 +220,10 @@
         box-shadow: 0 8px 24px rgba(22,163,74,.42);
     }
     .btn-masuk:active  { transform: translateY(0); }
-    .btn-masuk:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-masuk:disabled {
+        opacity: .5; cursor: not-allowed; transform: none;
+        box-shadow: 0 4px 14px rgba(22,163,74,.15);
+    }
 
     .btn-spinner {
         width: 17px; height: 17px;
@@ -269,14 +273,14 @@
 
 {{-- ─── FLASH ERRORS ─── --}}
 @if($errors->any() || session('error'))
-    <div class="flash-box error">
+    <div class="flash-box error" role="alert">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <div>
             @if(session('error'))
-                <span>{{ session('error') }}</span>
+                {{ session('error') }}
             @else
                 @foreach($errors->all() as $error)
                     <div>{{ $error }}</div>
@@ -286,30 +290,9 @@
     </div>
 @endif
 
-{{-- ─── EMAIL TARGET CARD ─── --}}
-<div class="rp-email-card">
-    <div class="rp-email-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                d="M5 13l4 4L19 7"/>
-        </svg>
-    </div>
-    <div style="min-width:0;">
-        <div class="rp-email-label">Reset password untuk</div>
-        <div class="rp-email-value">{{ $maskedEmail ?? $email }}</div>
-        <div class="rp-email-note">
-            <svg fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd"
-                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                    clip-rule="evenodd"/>
-            </svg>
-            Email disembunyikan sebagian untuk keamanan
-        </div>
-    </div>
-</div>
 
 {{-- ─── FORM ─── --}}
-<form method="POST" action="{{ route('password.update', $uuid) }}" id="resetForm">
+<form method="POST" action="{{ route('password.update', $uuid) }}" id="resetForm" novalidate>
     @csrf
     <input type="hidden" name="token" value="{{ $token }}">
     <input type="hidden" name="email" value="{{ $email }}">
@@ -317,11 +300,11 @@
         <input type="hidden" name="recaptcha_token" id="recaptcha_token">
     @endif
 
-    {{-- Password Baru --}}
+    {{-- ── Password Baru ── --}}
     <div class="lg-group">
         <label for="password" class="lg-label">Password Baru</label>
         <div class="lg-wrap {{ $errors->has('password') ? 'err' : '' }}">
-            <span class="lg-icon">
+            <span class="lg-icon" aria-hidden="true">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -332,8 +315,9 @@
                 placeholder="Masukkan password baru"
                 autocomplete="new-password"
                 autofocus
-                required>
-            <button type="button" class="pw-btn" aria-label="Toggle password"
+                required
+                aria-describedby="pwStrengthDesc">
+            <button type="button" class="pw-btn" aria-label="Tampilkan/sembunyikan password"
                 onclick="togglePw('password', 'pw-eye-1')">
                 <svg id="pw-eye-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -341,9 +325,10 @@
                 </svg>
             </button>
         </div>
+
         @error('password')
-            <div class="lg-err">
-                <svg fill="currentColor" viewBox="0 0 20 20">
+            <div class="lg-err" role="alert">
+                <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fill-rule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd"/>
@@ -352,11 +337,48 @@
             </div>
         @enderror
 
-    {{-- Konfirmasi Password --}}
+        {{-- Strength Bar --}}
+        <div class="pw-strength-row" id="pwStrengthDesc" aria-live="polite">
+            <div class="pw-strength-track">
+                <div class="pw-strength-fill" id="pwStrengthFill"></div>
+            </div>
+            <span class="pw-strength-label" id="pwStrengthLabel">—</span>
+        </div>
+
+        {{-- Checklist --}}
+        <ul class="pw-checklist" aria-label="Syarat password">
+            <li id="chk-length">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                Min. 8 karakter
+            </li>
+            <li id="chk-upper">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                Huruf besar (A–Z)
+            </li>
+            <li id="chk-lower">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                Huruf kecil (a–z)
+            </li>
+            <li id="chk-number">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+                Angka (0–9)
+            </li>
+        </ul>
+    </div>{{-- /lg-group password --}}
+
+    {{-- ── Konfirmasi Password ── --}}
     <div class="lg-group">
         <label for="password_confirmation" class="lg-label">Konfirmasi Password Baru</label>
         <div class="lg-wrap {{ $errors->has('password_confirmation') ? 'err' : '' }}">
-            <span class="lg-icon">
+            <span class="lg-icon" aria-hidden="true">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -366,8 +388,9 @@
                 class="lg-input has-toggle {{ $errors->has('password_confirmation') ? 'err' : '' }}"
                 placeholder="Ulangi password baru"
                 autocomplete="new-password"
-                required>
-            <button type="button" class="pw-btn" aria-label="Toggle konfirmasi password"
+                required
+                aria-describedby="pwMatchHint">
+            <button type="button" class="pw-btn" aria-label="Tampilkan/sembunyikan konfirmasi password"
                 onclick="togglePw('password_confirmation', 'pw-eye-2')">
                 <svg id="pw-eye-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -375,9 +398,10 @@
                 </svg>
             </button>
         </div>
+
         @error('password_confirmation')
-            <div class="lg-err">
-                <svg fill="currentColor" viewBox="0 0 20 20">
+            <div class="lg-err" role="alert">
+                <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fill-rule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                         clip-rule="evenodd"/>
@@ -387,33 +411,34 @@
         @enderror
 
         {{-- Match hint --}}
-        <div class="lg-hint" id="pwMatchHint" style="display:none">
-            <svg fill="currentColor" viewBox="0 0 20 20">
+        <div class="lg-hint" id="pwMatchHint" style="display:none" aria-live="polite">
+            <svg fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path fill-rule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                     clip-rule="evenodd"/>
             </svg>
             <span id="pwMatchText">Password cocok</span>
         </div>
-    </div>
+    </div>{{-- /lg-group konfirmasi --}}
 
-    {{-- Submit --}}
+    {{-- ── Submit ── --}}
     <button type="button" class="btn-masuk" id="submitBtn"
-            onclick="handleSubmit()" disabled>
-        <div class="btn-spinner"></div>
+            onclick="handleSubmit()" disabled aria-disabled="true">
+        <div class="btn-spinner" aria-hidden="true"></div>
         <span class="btn-label">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             Reset Password
         </span>
     </button>
+
 </form>
 
 {{-- ─── BUTTON KEMBALI KE LOGIN ─── --}}
 <a href="{{ route('login') }}" class="btn-outline">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round"
             d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
     </svg>
@@ -427,23 +452,67 @@
 @endsection
 
 @push('scripts')
+
+{{-- ═══════════════════════════════════════════════════════
+     reCAPTCHA — dimuat SETELAH splash screen selesai
+     ═══════════════════════════════════════════════════════ --}}
 @if($recaptchaSiteKey ?? false)
-<script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>
+<script>
+(function () {
+    var SITE_KEY = '{{ $recaptchaSiteKey }}';
+
+    function loadRecaptcha() {
+        if (window.__recaptchaLoaded) return;
+        window.__recaptchaLoaded = true;
+        var s   = document.createElement('script');
+        s.src   = 'https://www.google.com/recaptcha/api.js?render=' + SITE_KEY;
+        s.async = true;
+        s.defer = true;
+        document.head.appendChild(s);
+    }
+
+    var splashEl = document.getElementById('splash-zakat');
+    if (!splashEl || splashEl.classList.contains('sp-hidden')) {
+        loadRecaptcha();
+        return;
+    }
+
+    window.__onSplashHidden = window.__onSplashHidden || [];
+    window.__onSplashHidden.push(loadRecaptcha);
+    document.addEventListener('splashHidden', loadRecaptcha, { once: true });
+})();
+</script>
 @endif
 
 <script>
-/* ── Toggle Password Visibility — identik login ── */
+/* ════════════════════════════════════════════════════════
+   TOGGLE PASSWORD VISIBILITY
+════════════════════════════════════════════════════════ */
 function togglePw(inputId, iconId) {
-    const input = document.getElementById(inputId);
-    const icon  = document.getElementById(iconId);
+    const input    = document.getElementById(inputId);
+    const icon     = document.getElementById(iconId);
     const isHidden = input.type === 'password';
     input.type = isHidden ? 'text' : 'password';
     icon.innerHTML = isHidden
-        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>'
-        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7
+                  -1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`
+        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7
+                  a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243
+                  M9.878 9.878l4.242 4.242M9.878 9.878L6.59 6.59
+                  m7.532 7.532l3.29 3.29M3 3l3.59 3.59
+                  m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7
+                  a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`;
 }
 
+/* ════════════════════════════════════════════════════════
+   MAIN LOGIC
+════════════════════════════════════════════════════════ */
 (function () {
+    // ── DOM refs ──────────────────────────────────────────
     const pwInput   = document.getElementById('password');
     const confInput = document.getElementById('password_confirmation');
     const submitBtn = document.getElementById('submitBtn');
@@ -453,7 +522,9 @@ function togglePw(inputId, iconId) {
     const matchText = document.getElementById('pwMatchText');
     const resetForm = document.getElementById('resetForm');
 
-    /* ── Password strength ── */
+    if (!pwInput || !confInput || !submitBtn || !resetForm) return;
+
+    // ── Strength levels ───────────────────────────────────
     const LEVELS = [
         { max: 20,  color: '#f43f5e', text: 'Sangat Lemah' },
         { max: 40,  color: '#f97316', text: 'Lemah'        },
@@ -464,29 +535,30 @@ function togglePw(inputId, iconId) {
 
     function calcStrength(pw) {
         let score = 0;
-        if (pw.length >= 8)  score += 25;
-        if (pw.length >= 12) score += 10;
-        if (/[A-Z]/.test(pw)) score += 20;
-        if (/[a-z]/.test(pw)) score += 15;
-        if (/\d/.test(pw))    score += 20;
-        if (/[^A-Za-z0-9]/.test(pw)) score += 10;
+        if (pw.length >= 8)              score += 25;
+        if (pw.length >= 12)             score += 10;
+        if (/[A-Z]/.test(pw))            score += 20;
+        if (/[a-z]/.test(pw))            score += 15;
+        if (/\d/.test(pw))               score += 20;
+        if (/[^A-Za-z0-9]/.test(pw))     score += 10;
         return Math.min(score, 100);
     }
 
     function updateStrength(pw) {
         const score = calcStrength(pw);
         const lvl   = LEVELS.find(l => score < l.max);
-        fill.style.width      = score + '%';
-        fill.style.background = lvl.color;
-        label.textContent     = pw.length === 0 ? '—' : lvl.text;
-        label.style.color     = pw.length === 0 ? '#9ca3af' : lvl.color;
-
-        /* checklists */
+        if (fill) {
+            fill.style.width      = score + '%';
+            fill.style.background = lvl.color;
+        }
+        if (label) {
+            label.textContent  = pw.length === 0 ? '—' : lvl.text;
+            label.style.color  = pw.length === 0 ? '#9ca3af' : lvl.color;
+        }
         setChk('chk-length', pw.length >= 8);
         setChk('chk-upper',  /[A-Z]/.test(pw));
         setChk('chk-lower',  /[a-z]/.test(pw));
         setChk('chk-number', /\d/.test(pw));
-
         return score;
     }
 
@@ -496,7 +568,7 @@ function togglePw(inputId, iconId) {
         el.classList.toggle('ok', ok);
     }
 
-    /* ── Password match ── */
+    // ── Match hint ────────────────────────────────────────
     function updateMatch() {
         const pw   = pwInput.value;
         const conf = confInput.value;
@@ -507,18 +579,25 @@ function togglePw(inputId, iconId) {
         }
         const ok = pw === conf;
         matchHint.style.display = 'flex';
-        matchHint.className = 'lg-hint ' + (ok ? 'success' : 'error');
+        matchHint.className     = 'lg-hint ' + (ok ? 'success' : 'error');
         matchHint.querySelector('svg').innerHTML = ok
-            ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" fill="currentColor"/>'
-            : '<path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" fill="currentColor"/>';
+            ? `<path fill-rule="evenodd" fill="currentColor"
+                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0
+                      011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                   clip-rule="evenodd"/>`
+            : `<path fill-rule="evenodd" fill="currentColor"
+                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414
+                      1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293
+                      4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                   clip-rule="evenodd"/>`;
         matchText.textContent = ok ? 'Password cocok' : 'Password tidak cocok';
         confInput.setCustomValidity(ok ? '' : 'Password tidak cocok');
     }
 
-    /* ── Validate — enable/disable submit ── */
+    // ── Validate — enable/disable submit ─────────────────
     function validate() {
-        const pw   = pwInput.value;
-        const conf = confInput.value;
+        const pw    = pwInput.value;
+        const conf  = confInput.value;
         const score = calcStrength(pw);
         const valid = pw.length >= 8
             && /[A-Z]/.test(pw)
@@ -527,9 +606,10 @@ function togglePw(inputId, iconId) {
             && pw === conf
             && score >= 40;
         submitBtn.disabled = !valid;
+        submitBtn.setAttribute('aria-disabled', String(!valid));
     }
 
-    /* ── Event listeners ── */
+    // ── Event listeners ───────────────────────────────────
     pwInput.addEventListener('input', function () {
         updateStrength(this.value);
         updateMatch();
@@ -540,34 +620,51 @@ function togglePw(inputId, iconId) {
         validate();
     });
 
-    /* ── Enter key ── */
+    // Enter key
     [pwInput, confInput].forEach(el => {
-        el.addEventListener('keypress', function (e) {
+        el.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') { e.preventDefault(); handleSubmit(); }
         });
     });
 
-    /* ── Submit handler ── */
+    // ── Submit handler ────────────────────────────────────
     window.handleSubmit = async function () {
         if (submitBtn.disabled) return;
         submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-disabled', 'true');
         submitBtn.classList.add('loading');
 
         try {
             @if($recaptchaSiteKey ?? false)
+            // Tunggu grecaptcha siap (bisa baru di-load setelah splash)
+            await new Promise(function (resolve, reject) {
+                let attempts = 0;
+                const check = setInterval(function () {
+                    if (typeof grecaptcha !== 'undefined' && grecaptcha.execute) {
+                        clearInterval(check); resolve();
+                    }
+                    if (++attempts > 50) {
+                        clearInterval(check);
+                        reject(new Error('reCAPTCHA tidak siap.'));
+                    }
+                }, 100);
+            });
             const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'reset_password' });
             document.getElementById('recaptcha_token').value = token;
             @endif
 
             resetForm.submit();
-        } catch {
+
+        } catch (err) {
+            console.error('[ResetPassword]', err);
             submitBtn.classList.remove('loading');
             submitBtn.disabled = false;
+            submitBtn.setAttribute('aria-disabled', 'false');
             alert('Terjadi kesalahan. Silakan coba lagi.');
         }
     };
 
-    /* ── Init ── */
+    // ── Init ──────────────────────────────────────────────
     updateStrength('');
     validate();
 })();
