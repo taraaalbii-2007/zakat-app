@@ -9,36 +9,24 @@
 @endphp
 
 <style>
-    /* ============================================
-       SPLASH SCREEN - ZAKAT DIGITAL
-       Tema: Hijau #17a34a (primary) & Emas — Elegan & Islami
-       Warna disesuaikan dengan tailwind.config.js
-    ============================================ */
-
     :root {
         --sp-gold:        #F0C060;
         --sp-gold-light:  #F5D080;
         --sp-gold-pale:   #FBE9B0;
-
-        /* === UPDATED: Sesuai tailwind.config primary & secondary === */
-        --sp-green:       #17a34a;   /* primary.DEFAULT / primary.600 */
-        --sp-green-dark:  #15803d;   /* primary.700 */
-        --sp-green-deep:  #166534;   /* primary.800 */
-        --sp-green-mid:   #22c55e;   /* primary.500 */
-        --sp-green-light: #4ade80;   /* primary.400 */
-        --sp-green-pale:  #86efac;   /* primary.300 */
-        --sp-green-sec:   #2d6936;   /* secondary.DEFAULT */
-        /* ========================================================== */
-
+        --sp-green:       #17a34a;
+        --sp-green-dark:  #15803d;
+        --sp-green-deep:  #166534;
+        --sp-green-mid:   #22c55e;
+        --sp-green-light: #4ade80;
+        --sp-green-pale:  #86efac;
+        --sp-green-sec:   #2d6936;
         --sp-text:        #ffffff;
         --sp-text-soft:   rgba(255,255,255,0.75);
     }
 
-    /* ---- Base ---- */
     #splash-zakat {
         position: fixed;
         inset: 0;
-        /* UPDATED: gradient dari primary.800 → primary.DEFAULT → primary.700 */
         background: linear-gradient(150deg, #166534 0%, #17a34a 55%, #15803d 100%);
         display: flex;
         flex-direction: column;
@@ -59,19 +47,16 @@
         display: none !important;
     }
 
-    /* ---- Background glow tengah ---- */
     .sp-bg-glow {
         position: absolute;
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        width: 520px;
-        height: 520px;
+        width: 520px; height: 520px;
         border-radius: 50%;
         background: radial-gradient(
             circle,
-            rgba(240, 192, 96, 0.20) 0%,       /* gold */
-            rgba(134, 239, 172, 0.14) 45%,      /* UPDATED: primary.300 */
+            rgba(240, 192, 96, 0.20) 0%,
+            rgba(134, 239, 172, 0.14) 45%,
             transparent 70%
         );
         animation: sp-glow-breath 3s ease-in-out infinite;
@@ -82,30 +67,25 @@
         50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.10); }
     }
 
-    /* ---- Cincin geometris mengembang ---- */
     .sp-geo-ring {
         position: absolute;
         border-radius: 50%;
-        border: 1px solid rgba(23, 163, 74, 0.10); /* UPDATED: primary */
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%) scale(0.2);
         opacity: 0;
         animation: sp-ring-expand 3s ease-out forwards;
     }
-    /* UPDATED: border-color menggunakan primary palette */
-    .sp-geo-ring:nth-child(1) { width: 260px; height: 260px; animation-delay: 0.00s; border-color: rgba(240,192,96,0.28); }
-    .sp-geo-ring:nth-child(2) { width: 360px; height: 360px; animation-delay: 0.18s; border-color: rgba(134,239,172,0.20); } /* primary.300 */
-    .sp-geo-ring:nth-child(3) { width: 460px; height: 460px; animation-delay: 0.36s; border-color: rgba(240,192,96,0.16); }
-    .sp-geo-ring:nth-child(4) { width: 560px; height: 560px; animation-delay: 0.54s; border-color: rgba(74,222,128,0.12); }  /* primary.400 */
-    .sp-geo-ring:nth-child(5) { width: 660px; height: 660px; animation-delay: 0.72s; border-color: rgba(240,192,96,0.08); }
+    .sp-geo-ring:nth-child(1) { width: 260px; height: 260px; animation-delay: 0.00s; border: 1px solid rgba(240,192,96,0.28); }
+    .sp-geo-ring:nth-child(2) { width: 360px; height: 360px; animation-delay: 0.18s; border: 1px solid rgba(134,239,172,0.20); }
+    .sp-geo-ring:nth-child(3) { width: 460px; height: 460px; animation-delay: 0.36s; border: 1px solid rgba(240,192,96,0.16); }
+    .sp-geo-ring:nth-child(4) { width: 560px; height: 560px; animation-delay: 0.54s; border: 1px solid rgba(74,222,128,0.12); }
+    .sp-geo-ring:nth-child(5) { width: 660px; height: 660px; animation-delay: 0.72s; border: 1px solid rgba(240,192,96,0.08); }
     @keyframes sp-ring-expand {
         0%   { opacity: 0;   transform: translate(-50%, -50%) scale(0.2); }
         30%  { opacity: 1; }
         100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
     }
 
-    /* ---- Partikel naik ---- */
     .sp-particle {
         position: absolute;
         border-radius: 50%;
@@ -113,7 +93,6 @@
         animation: sp-particle-rise 3.5s ease-out forwards;
         pointer-events: none;
     }
-    /* UPDATED: warna partikel menggunakan primary palette */
     .sp-particle:nth-child(1)  { width: 3px; height: 3px; background: var(--sp-gold);        left: 18%; bottom: 28%; animation-delay: 0.20s; }
     .sp-particle:nth-child(2)  { width: 2px; height: 2px; background: var(--sp-green-mid);    left: 32%; bottom: 22%; animation-delay: 0.45s; }
     .sp-particle:nth-child(3)  { width: 4px; height: 4px; background: var(--sp-green-pale);   left: 50%; bottom: 18%; animation-delay: 0.30s; }
@@ -133,7 +112,6 @@
         100% { opacity: 0; transform: translateY(-95px) scale(0.2); }
     }
 
-    /* ---- Logo stage ---- */
     .sp-logo-wrap {
         position: relative;
         z-index: 20;
@@ -145,8 +123,7 @@
 
     .sp-logo-stage {
         position: relative;
-        width: 130px;
-        height: 130px;
+        width: 130px; height: 130px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -157,67 +134,54 @@
         50%       { transform: translateY(-9px); }
     }
 
-    /* Orbit luar — emas, searah jarum jam */
     .sp-orbit-a {
         position: absolute;
-        width: 164px;
-        height: 164px;
+        width: 164px; height: 164px;
         border-radius: 50%;
         border: 1.5px dashed rgba(200, 151, 58, 0.30);
         animation: sp-cw 14s linear infinite;
     }
-    .sp-orbit-a::before,
-    .sp-orbit-a::after {
+    .sp-orbit-a::before, .sp-orbit-a::after {
         content: '';
         position: absolute;
-        width: 8px;
-        height: 8px;
+        width: 8px; height: 8px;
         border-radius: 50%;
         background: var(--sp-gold);
         box-shadow: 0 0 12px 3px rgba(200, 151, 58, 0.8);
     }
-    .sp-orbit-a::before { top: -4px;  left: calc(50% - 4px); }
+    .sp-orbit-a::before { top: -4px;    left: calc(50% - 4px); }
     .sp-orbit-a::after  { bottom: -4px; left: calc(50% - 4px); }
 
-    /* Orbit tengah — hijau primary, berlawanan */
     .sp-orbit-b {
         position: absolute;
-        width: 148px;
-        height: 148px;
+        width: 148px; height: 148px;
         border-radius: 50%;
-        /* UPDATED: primary.300 */
         border: 1px solid rgba(134, 239, 172, 0.38);
         animation: sp-ccw 10s linear infinite;
     }
-    .sp-orbit-b::before,
-    .sp-orbit-b::after {
+    .sp-orbit-b::before, .sp-orbit-b::after {
         content: '';
         position: absolute;
-        width: 5px;
-        height: 5px;
+        width: 5px; height: 5px;
         border-radius: 50%;
-        /* UPDATED: primary.300 */
         background: var(--sp-green-pale);
         box-shadow: 0 0 8px 2px rgba(134, 239, 172, 0.9);
     }
-    .sp-orbit-b::before { top: -2.5px; left: calc(50% - 2.5px); }
+    .sp-orbit-b::before { top: -2.5px;    left: calc(50% - 2.5px); }
     .sp-orbit-b::after  { bottom: -2.5px; left: calc(50% - 2.5px); }
 
-    /* Frame conic-gradient berputar */
     .sp-ring-grad {
         position: absolute;
-        width: 128px;
-        height: 128px;
+        width: 128px; height: 128px;
         border-radius: 50%;
         padding: 3px;
-        /* UPDATED: menggunakan primary.300, primary.400, primary.500 */
         background: conic-gradient(
             from 0deg,
             var(--sp-gold),
             var(--sp-gold-light),
-            var(--sp-green-pale),    /* primary.300 */
-            var(--sp-green-light),   /* primary.400 */
-            var(--sp-green-mid),     /* primary.500 */
+            var(--sp-green-pale),
+            var(--sp-green-light),
+            var(--sp-green-mid),
             var(--sp-gold-light),
             var(--sp-gold)
         );
@@ -228,39 +192,32 @@
         content: '';
         position: absolute;
         inset: 3px;
-        /* UPDATED: gradient sesuai warna background primary.800 → primary.DEFAULT → primary.700 */
         background: linear-gradient(150deg, #166534 0%, #17a34a 55%, #15803d 100%);
         border-radius: 50%;
     }
 
-    /* Denyut di belakang logo */
     .sp-pulse {
         position: absolute;
-        width: 120px;
-        height: 120px;
+        width: 120px; height: 120px;
         border-radius: 50%;
         opacity: 0;
         animation: sp-pulse-out 2.4s ease-out infinite;
     }
-    /* UPDATED: warna pulse menggunakan gold & primary palette */
-    .sp-pulse:nth-child(1) { background: radial-gradient(circle, rgba(240,192,96,0.40)   0%, transparent 70%); animation-delay: 0.0s; }
-    .sp-pulse:nth-child(2) { background: radial-gradient(circle, rgba(74,222,128,0.30)   0%, transparent 70%); animation-delay: 0.8s; }  /* primary.400 */
-    .sp-pulse:nth-child(3) { background: radial-gradient(circle, rgba(240,192,96,0.25)   0%, transparent 70%); animation-delay: 1.6s; }
+    .sp-pulse:nth-child(1) { background: radial-gradient(circle, rgba(240,192,96,0.40)  0%, transparent 70%); animation-delay: 0.0s; }
+    .sp-pulse:nth-child(2) { background: radial-gradient(circle, rgba(74,222,128,0.30)  0%, transparent 70%); animation-delay: 0.8s; }
+    .sp-pulse:nth-child(3) { background: radial-gradient(circle, rgba(240,192,96,0.25)  0%, transparent 70%); animation-delay: 1.6s; }
     @keyframes sp-pulse-out {
         0%   { transform: scale(0.8); opacity: 0.9; }
         70%  { transform: scale(1.7); opacity: 0; }
         100% { transform: scale(1.7); opacity: 0; }
     }
 
-    /* Logo gambar bulat */
     .sp-logo-img {
         position: relative;
         z-index: 10;
-        width: 110px;
-        height: 110px;
+        width: 110px; height: 110px;
         border-radius: 50%;
         object-fit: cover;
-        /* UPDATED: primary.DEFAULT */
         background: #17a34a;
         opacity: 0;
         transform: scale(0.25) rotate(-120deg);
@@ -270,17 +227,15 @@
     }
     @keyframes sp-logo-appear {
         0%   { opacity: 0; transform: scale(0.25) rotate(-120deg); filter: blur(10px); }
-        55%  { opacity: 1; transform: scale(1.1)  rotate(6deg);   filter: blur(0); }
+        55%  { opacity: 1; transform: scale(1.1)  rotate(6deg);    filter: blur(0); }
         78%  { transform: scale(0.96) rotate(-3deg); }
-        100% { opacity: 1; transform: scale(1)    rotate(0deg);   filter: drop-shadow(0 8px 24px rgba(200,151,58,0.35)); }
+        100% { opacity: 1; transform: scale(1)    rotate(0deg);    filter: drop-shadow(0 8px 24px rgba(200,151,58,0.35)); }
     }
 
-    /* ---- Efek melebur (sweep cahaya) ---- */
     .sp-melt {
         position: absolute;
         z-index: 11;
-        width: 110px;
-        height: 110px;
+        width: 110px; height: 110px;
         border-radius: 50%;
         background: conic-gradient(
             from 0deg,
@@ -288,7 +243,6 @@
             rgba(200, 151, 58, 0.55) 15%,
             rgba(255, 255, 255, 0.85) 30%,
             transparent 50%,
-            /* UPDATED: tambah sentuhan primary.400 */
             rgba(74, 222, 128, 0.30) 75%,
             transparent 100%
         );
@@ -304,28 +258,24 @@
         100% { transform: rotate(360deg); opacity: 0; }
     }
 
-    /* ---- Percikan saat muncul ---- */
     .sp-spark {
         position: absolute;
         z-index: 12;
-        width: 5px;
-        height: 5px;
+        width: 5px; height: 5px;
         border-radius: 50%;
         background: var(--sp-gold);
         box-shadow: 0 0 6px 2px rgba(200,151,58,0.7);
         opacity: 0;
         animation: sp-spark-fly 0.9s ease-out forwards;
     }
-    .sp-spark:nth-child(1) { animation-delay: 0.55s; --sdx:  0px;   --sdy: -26px; }
-    .sp-spark:nth-child(2) { animation-delay: 0.62s; --sdx:  18px;  --sdy: -18px; }
-    /* UPDATED: spark hijau menggunakan primary.400 */
-    .sp-spark:nth-child(3) { animation-delay: 0.69s; --sdx:  26px;  --sdy:   0px; background: var(--sp-green-light); box-shadow: 0 0 6px 2px rgba(74,222,128,0.7); }
-    .sp-spark:nth-child(4) { animation-delay: 0.76s; --sdx:  18px;  --sdy:  18px; }
-    .sp-spark:nth-child(5) { animation-delay: 0.83s; --sdx:  0px;   --sdy:  26px; }
-    .sp-spark:nth-child(6) { animation-delay: 0.90s; --sdx: -18px;  --sdy:  18px; }
-    /* UPDATED: spark hijau menggunakan primary.300 */
-    .sp-spark:nth-child(7) { animation-delay: 0.97s; --sdx: -26px;  --sdy:   0px; background: var(--sp-green-pale); box-shadow: 0 0 6px 2px rgba(134,239,172,0.7); }
-    .sp-spark:nth-child(8) { animation-delay: 1.04s; --sdx: -18px;  --sdy: -18px; }
+    .sp-spark:nth-child(1) { animation-delay: 0.55s; --sdx:  0px;  --sdy: -26px; }
+    .sp-spark:nth-child(2) { animation-delay: 0.62s; --sdx:  18px; --sdy: -18px; }
+    .sp-spark:nth-child(3) { animation-delay: 0.69s; --sdx:  26px; --sdy:   0px; background: var(--sp-green-light); box-shadow: 0 0 6px 2px rgba(74,222,128,0.7); }
+    .sp-spark:nth-child(4) { animation-delay: 0.76s; --sdx:  18px; --sdy:  18px; }
+    .sp-spark:nth-child(5) { animation-delay: 0.83s; --sdx:  0px;  --sdy:  26px; }
+    .sp-spark:nth-child(6) { animation-delay: 0.90s; --sdx: -18px; --sdy:  18px; }
+    .sp-spark:nth-child(7) { animation-delay: 0.97s; --sdx: -26px; --sdy:   0px; background: var(--sp-green-pale);  box-shadow: 0 0 6px 2px rgba(134,239,172,0.7); }
+    .sp-spark:nth-child(8) { animation-delay: 1.04s; --sdx: -18px; --sdy: -18px; }
     @keyframes sp-spark-fly {
         0%   { opacity: 0; transform: translate(0, 0) scale(0); }
         25%  { opacity: 1; transform: translate(calc(var(--sdx) * 0.5), calc(var(--sdy) * 0.5)) scale(1.3); }
@@ -333,11 +283,9 @@
         100% { opacity: 0; transform: translate(calc(var(--sdx) * 2), calc(var(--sdy) * 2)) scale(0.3); }
     }
 
-    /* Shared spin */
     @keyframes sp-cw  { to { transform: rotate(360deg); } }
     @keyframes sp-ccw { to { transform: rotate(-360deg); } }
 
-    /* ---- Teks & dekorasi ---- */
     .sp-text-wrap {
         text-align: center;
         opacity: 0;
@@ -365,16 +313,14 @@
         animation: sp-text-rise 0.8s ease 1.45s forwards;
     }
     .sp-divider-line {
-        width: 44px;
-        height: 1px;
+        width: 44px; height: 1px;
         background: linear-gradient(90deg, transparent, var(--sp-gold));
     }
     .sp-divider-line:last-child {
         background: linear-gradient(90deg, var(--sp-gold), transparent);
     }
     .sp-divider-gem {
-        width: 7px;
-        height: 7px;
+        width: 7px; height: 7px;
         background: var(--sp-gold);
         transform: rotate(45deg);
         box-shadow: 0 0 10px 2px rgba(200,151,58,0.55);
@@ -388,7 +334,6 @@
         opacity: 0.85;
     }
 
-    /* ---- Progress bar ---- */
     .sp-progress {
         position: absolute;
         bottom: 2.6rem;
@@ -400,16 +345,13 @@
         animation: sp-text-rise 0.5s ease 1.5s forwards;
     }
     .sp-progress-track {
-        width: 100%;
-        height: 2px;
+        width: 100%; height: 2px;
         background: rgba(255,255,255,0.15);
         border-radius: 2px;
         overflow: hidden;
     }
     .sp-progress-fill {
-        height: 100%;
-        width: 0%;
-        /* UPDATED: gradient dari primary.300 ke gold */
+        height: 100%; width: 0%;
         background: linear-gradient(90deg, var(--sp-green-pale), var(--sp-gold));
         border-radius: 2px;
         box-shadow: 0 0 10px rgba(240,192,96,0.60);
@@ -429,7 +371,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* ---- Responsive ---- */
     @media (max-width: 640px) {
         .sp-logo-stage { width: 108px; height: 108px; }
         .sp-orbit-a    { width: 140px; height: 140px; }
@@ -443,7 +384,6 @@
 
 <div id="splash-zakat" role="status" aria-label="Memuat aplikasi">
 
-    {{-- Latar dekoratif --}}
     <div class="sp-bg-glow"></div>
 
     <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
@@ -469,24 +409,14 @@
         <div class="sp-particle"></div>
     </div>
 
-    {{-- Logo utama --}}
     <div class="sp-logo-wrap">
-
         <div class="sp-logo-stage">
-
-            {{-- Denyut --}}
             <div class="sp-pulse"></div>
             <div class="sp-pulse"></div>
             <div class="sp-pulse"></div>
-
-            {{-- Orbit --}}
             <div class="sp-orbit-a"></div>
             <div class="sp-orbit-b"></div>
-
-            {{-- Frame berputar --}}
             <div class="sp-ring-grad"></div>
-
-            {{-- Gambar logo bulat --}}
             <img
                 id="sp-logo-img"
                 src="{{ $config->logo_aplikasi ? asset('storage/' . $config->logo_aplikasi) : asset('assets/images/default-logo.png') }}"
@@ -494,11 +424,7 @@
                 class="sp-logo-img"
                 onerror="this.src='{{ asset('assets/images/default-logo.png') }}'"
             >
-
-            {{-- Efek melebur --}}
             <div class="sp-melt"></div>
-
-            {{-- Percikan --}}
             <div class="sp-spark"></div>
             <div class="sp-spark"></div>
             <div class="sp-spark"></div>
@@ -509,7 +435,6 @@
             <div class="sp-spark"></div>
         </div>
 
-        {{-- Nama & tagline --}}
         <div class="sp-text-wrap">
             <div class="sp-app-name">{{ $config->nama_aplikasi ?? 'Zakat Digital' }}</div>
             <div class="sp-divider">
@@ -528,10 +453,10 @@
     var splash = document.getElementById('splash-zakat');
     if (!splash) return;
 
-    var hidden  = false;
-    var MIN_MS  = 2400;   // tampil minimal 2.4 detik agar animasi mulus
-    var MAX_MS  = 4500;   // failsafe 4.5 detik
-    var t0      = Date.now();
+    var hidden = false;
+    var MIN_MS = 2400;
+    var MAX_MS = 4500;
+    var t0     = Date.now();
 
     function hideSplash() {
         if (hidden) return;
@@ -539,6 +464,7 @@
 
         splash.classList.add('sp-hiding');
 
+        // Setelah transisi fade-out selesai (750ms + sedikit buffer)
         setTimeout(function () {
             splash.classList.add('sp-hidden');
 
@@ -550,6 +476,20 @@
                 main.style.transition = 'opacity 0.6s ease';
                 main.style.opacity    = '1';
             }
+
+            // ── Beritahu seluruh halaman bahwa splash sudah selesai ──────────
+            // 1. Custom event — untuk listener addEventListener
+            document.dispatchEvent(new CustomEvent('splashHidden'));
+
+            // 2. Callback queue — untuk kode yang mendaftar via __onSplashHidden
+            if (Array.isArray(window.__onSplashHidden)) {
+                window.__onSplashHidden.forEach(function (fn) {
+                    try { fn(); } catch (e) { console.error('[Splash]', e); }
+                });
+                window.__onSplashHidden = [];
+            }
+            // ─────────────────────────────────────────────────────────────────
+
         }, 800);
     }
 
@@ -559,14 +499,13 @@
         setTimeout(hideSplash, remaining);
     }
 
-    // Tunggu halaman selesai load
     if (document.readyState === 'complete') {
         scheduleHide();
     } else {
         window.addEventListener('load', scheduleHide);
     }
 
-    // Failsafe
+    // Failsafe — pastikan splash selalu hilang
     setTimeout(hideSplash, MAX_MS);
 })();
 </script>

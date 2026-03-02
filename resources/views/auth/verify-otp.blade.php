@@ -1,650 +1,678 @@
 @extends('layouts.auth')
 
 @section('title', 'Verifikasi OTP')
-
-@section('card-title', 'Masukkan Kode OTP')
-
-@section('card-subtitle', 'Kami telah mengirim kode 6 digit ke email Anda')
+@section('auth-title', 'Verifikasi Email Anda')
+@section('auth-subtitle', 'Kami telah mengirim kode 6 digit ke email Anda')
 
 @push('styles')
-@if ($recaptchaSiteKey)
 <style>
-    .g-recaptcha-badge {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        z-index: 9999 !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
-        border-radius: 4px !important;
+    /* ══════════════════════════════════
+       HIDE UNWANTED ELEMENTS
+    ══════════════════════════════════ */
+    .right-brand,
+    .right-eyebrow { display: none !important; }
+
+    .auth-right {
+        padding: 2rem 2.5rem !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
     }
+
+    .right-heading { margin-bottom: 1.5rem !important; }
+    .right-heading h1 {
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        color: #111827 !important;
+        letter-spacing: -.03em !important;
+        margin-bottom: .3rem !important;
+        line-height: 1.2 !important;
+    }
+    .right-heading p { font-size: .8rem !important; color: #9ca3af !important; }
+    .right-footer { margin-top: 1rem !important; font-size: .78rem !important; }
+
+    /* ══════════════════════════════════
+       OTP HEADER
+    ══════════════════════════════════ */
+    .otp-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .otp-icon-wrap {
+        width: 56px; height: 56px;
+        background: #f0fdf4;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: .75rem;
+    }
+    .otp-icon-wrap svg { width: 26px; height: 26px; color: #16a34a; }
+    .otp-email-label {
+        font-size: .78rem;
+        color: #9ca3af;
+    }
+    .otp-email-label span {
+        font-weight: 700;
+        color: #374151;
+    }
+
+    /* ══════════════════════════════════
+       FORM GROUP (sama dengan login)
+    ══════════════════════════════════ */
+    .lg-group { margin-bottom: 1rem; }
+
+    .lg-label {
+        display: block;
+        font-size: .78rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: .5rem;
+        text-align: center;
+    }
+
+    .lg-err {
+        display: flex; align-items: center; justify-content: center; gap: .3rem;
+        font-size: .71rem; color: #f43f5e; margin-top: .4rem;
+    }
+    .lg-err svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ══════════════════════════════════
+       OTP INPUTS
+    ══════════════════════════════════ */
+    .otp-inputs-row {
+        display: flex;
+        justify-content: center;
+        gap: .5rem;
+    }
+    .otp-input {
+        width: 46px;
+        height: 52px;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #111827;
+        background: #ffffff;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s, background .2s;
+        -webkit-appearance: none;
+        appearance: none;
+        box-sizing: border-box;
+        caret-color: #16a34a;
+    }
+    .otp-input::placeholder { color: #e5e7eb; }
+    .otp-input:hover  { border-color: #d1d5db; }
+    .otp-input:focus  {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+        background: #fff;
+    }
+    .otp-input.filled {
+        background: #f0fdf4;
+        border-color: #86efac;
+    }
+    .otp-input.err {
+        border-color: #f43f5e !important;
+    }
+    .otp-input.err:focus {
+        box-shadow: 0 0 0 3px rgba(244,63,94,.1);
+    }
+
+    /* ══════════════════════════════════
+       PROGRESS BAR
+    ══════════════════════════════════ */
+    .otp-progress-wrap {
+        height: 5px;
+        background: #f3f4f6;
+        border-radius: 9999px;
+        overflow: hidden;
+        margin-top: .75rem;
+    }
+    .otp-progress-bar {
+        height: 100%;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+        transition: width 1s linear, background .5s;
+    }
+
+    /* ══════════════════════════════════
+       BUTTON AKSI (sama dengan btn-masuk)
+    ══════════════════════════════════ */
+    .btn-masuk {
+        display: flex; align-items: center; justify-content: center; gap: .5rem;
+        width: 100%; height: 48px; padding: 0 1.25rem;
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: .88rem; font-weight: 700;
+        border: none; border-radius: 10px; cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 4px 14px rgba(22,163,74,.35);
+        transition: transform .18s, box-shadow .18s, opacity .2s;
+        -webkit-appearance: none;
+        margin-top: 1rem;
+    }
+    .btn-masuk svg { width: 18px; height: 18px; flex-shrink: 0; display: block; }
+    .btn-masuk:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(22,163,74,.42);
+    }
+    .btn-masuk:active { transform: translateY(0); }
+    .btn-masuk:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-spinner {
+        width: 17px; height: 17px;
+        border: 2.5px solid rgba(255,255,255,.35);
+        border-top-color: #fff; border-radius: 50%;
+        animation: spin .6s linear infinite;
+        flex-shrink: 0; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-masuk.loading .btn-spinner { display: block; }
+    .btn-masuk.loading .btn-label   { display: none; }
+    .btn-label { display: flex; align-items: center; gap: .5rem; line-height: 1; }
+
+    /* ══════════════════════════════════
+       EXPIRED / COOLDOWN BOX
+    ══════════════════════════════════ */
+    .otp-expired-box {
+        display: none;
+        background: #fff1f2;
+        border: 1.5px solid #fecdd3;
+        border-radius: 10px;
+        padding: .9rem 1rem;
+        margin-top: 1rem;
+    }
+    .otp-expired-box.show { display: block; }
+    .otp-expired-header {
+        display: flex; align-items: center; gap: .4rem;
+        margin-bottom: .5rem;
+    }
+    .otp-expired-header svg { width: 15px; height: 15px; color: #f43f5e; flex-shrink: 0; }
+    .otp-expired-header span {
+        font-size: .78rem; font-weight: 700; color: #e11d48;
+    }
+    .otp-expired-sub {
+        font-size: .73rem; color: #f43f5e; margin-bottom: .6rem;
+    }
+    .otp-cooldown-row {
+        display: flex; align-items: center; justify-content: center; gap: .5rem;
+    }
+    .otp-cooldown-box {
+        background: #fff; border: 1.5px solid #fecdd3;
+        border-radius: 8px; padding: .3rem .75rem;
+        text-align: center; min-width: 54px;
+    }
+    .otp-cooldown-box span {
+        display: block; font-size: 1.1rem; font-weight: 800; color: #e11d48; line-height: 1.2;
+    }
+    .otp-cooldown-box p {
+        font-size: .65rem; color: #f43f5e; margin: 0;
+    }
+    .otp-cooldown-sep {
+        font-size: 1.1rem; font-weight: 800; color: #fca5a5;
+    }
+
+    /* ══════════════════════════════════
+       FLASH MESSAGES (sama strukturnya)
+    ══════════════════════════════════ */
+    .flash-box {
+        display: flex; align-items: flex-start; gap: .5rem;
+        border-radius: 10px; padding: .75rem 1rem;
+        font-size: .78rem; margin-top: .75rem;
+        border-width: 1.5px; border-style: solid;
+    }
+    .flash-box svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+    .flash-box.success { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+    .flash-box.error   { background: #fff1f2; border-color: #fecdd3; color: #e11d48; }
+
+    /* ══════════════════════════════════
+       DIVIDER (sama dengan login)
+    ══════════════════════════════════ */
+    .or-row {
+        display: flex; align-items: center; gap: .75rem;
+        margin: .9rem 0 0;
+    }
+    .or-line { flex: 1; height: 1px; background: #f3f4f6; }
+    .or-row span {
+        font-size: .72rem; font-weight: 600; color: #9ca3af;
+        white-space: nowrap; letter-spacing: .02em;
+    }
+
+    /* ══════════════════════════════════
+       NOTIFICATION TOAST
+    ══════════════════════════════════ */
+    @keyframes slide-down {
+        from { transform: translateY(-100%); opacity: 0; }
+        to   { transform: translateY(0);     opacity: 1; }
+    }
+    @keyframes slide-up {
+        from { transform: translateY(0);     opacity: 1; }
+        to   { transform: translateY(-100%); opacity: 0; }
+    }
+    .toast-success { background: #16a34a; }
+    .toast-error   { background: #f43f5e; }
+    .toast-anim-in  { animation: slide-down .3s ease-out; }
+    .toast-anim-out { animation: slide-up  .3s ease-in;  }
 </style>
-@endif
 @endpush
 
-@section('content')
-<div class="mb-6 text-center">
-    <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-full mb-4">
-        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+@section('auth-content')
+
+{{-- Header icon + email --}}
+<div class="otp-header">
+    <div class="otp-icon-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
     </div>
-    <p class="text-sm text-neutral-600">
-        Kode dikirim ke: <span class="font-semibold text-neutral-800">{{ $maskedEmail ?? $email }}</span>
+    <p class="otp-email-label">
+        Kode dikirim ke: <span>{{ $maskedEmail ?? $email }}</span>
     </p>
 </div>
 
-<!-- Form untuk verifikasi OTP -->
-<form method="POST" action="{{ route('verify-otp.submit') }}" class="space-y-6" id="otpForm">
+{{-- OTP Form --}}
+<form method="POST" action="{{ route('verify-otp.submit') }}" id="otpForm" novalidate>
     @csrf
-    
-    @if ($recaptchaSiteKey)
+
+    @if($recaptchaSiteKey)
         <input type="hidden" name="recaptcha_token" id="recaptcha_token">
     @endif
-    
-    <input type="hidden" name="email" value="{{ $email }}">
-    
-    <!-- OTP Input Fields -->
-    <div class="space-y-2">
-        <label class="block text-sm font-semibold text-neutral-700 text-center">
-            Kode OTP
-        </label>
-        <div class="flex justify-center gap-3">
-            @for ($i = 1; $i <= 6; $i++)
-            <input 
-                type="text" 
-                maxlength="1" 
-                class="otp-input w-12 h-14 text-center text-2xl font-bold bg-neutral-50 border-2 border-neutral-200 rounded-xl text-neutral-800 focus:outline-none focus:border-primary focus:bg-white transition-all duration-200 @error('otp') border-danger @enderror"
-                data-index="{{ $i - 1 }}"
-                inputmode="numeric"
-                pattern="[0-9]"
-                autocomplete="off"
-            >
+
+    <input type="hidden" name="email"  value="{{ $email }}">
+    <input type="hidden" name="otp"    id="otpValue">
+
+    {{-- OTP Inputs --}}
+    <div class="lg-group">
+        <label class="lg-label">Masukkan Kode OTP</label>
+
+        <div class="otp-inputs-row">
+            @for ($i = 0; $i < 6; $i++)
+                <input
+                    type="text"
+                    maxlength="1"
+                    inputmode="numeric"
+                    pattern="[0-9]"
+                    autocomplete="off"
+                    data-index="{{ $i }}"
+                    class="otp-input {{ $errors->has('otp') ? 'err' : '' }}"
+                    placeholder="·"
+                >
             @endfor
         </div>
-        <input type="hidden" name="otp" id="otpValue">
-        
-        @error('otp')
-            <p class="text-danger text-xs mt-2 text-center flex items-center justify-center">
-                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                {{ $message }}
-            </p>
-        @enderror
-    </div>
-    
-    <!-- Single Multi-function Button -->
-    <div class="space-y-4">
-        <!-- Button Multifungsi (Verifikasi/Kirim Ulang) -->
-        <button 
-            type="button" 
-            id="actionButton"
-            class="w-full bg-gradient-primary text-white font-semibold py-3.5 px-6 rounded-xl shadow-nz-lg hover:shadow-nz-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-nz-lg"
-            onclick="handleAction()"
-            disabled
-        >
-            <span class="flex items-center justify-center gap-2">
-                <!-- Loading Spinner -->
-                <svg class="w-5 h-5 animate-spin hidden" id="loadingSpinner" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                
-                <!-- Action Icon -->
-                <svg class="w-5 h-5" id="actionIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                
-                <!-- Button Text -->
-                <span id="actionText">
-                    Verifikasi OTP (<span id="timerDisplay">15:00</span>)
-                </span>
-            </span>
-        </button>
-        
-        <!-- Progress Bar -->
-        <div class="h-1.5 bg-neutral-200 rounded-full overflow-hidden">
-            <div id="progressBar" class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-1000" style="width: 100%"></div>
+
+        {{-- Progress Bar --}}
+        <div class="otp-progress-wrap">
+            <div class="otp-progress-bar" id="progressBar" style="width:100%"></div>
         </div>
+
     </div>
 
-    <!-- Expired Message (hidden by default) -->
-    <div id="expiredMessage" class="hidden bg-red-50 border border-red-200 rounded-xl p-4">
-        <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    {{-- Action Button --}}
+    <button type="button" id="actionButton" class="btn-masuk" onclick="handleAction()" disabled>
+        <div class="btn-spinner"></div>
+        <span class="btn-label">
+            <svg id="actionIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            <div class="text-left">
-                <p class="text-sm text-red-600 font-medium">Kode OTP telah expired!</p>
-                <p class="text-sm text-red-500 mt-1">Kirim ulang OTP akan tersedia dalam:</p>
-                
-                <!-- Resend Countdown Timer -->
-                <div class="flex items-center justify-center gap-3 mt-3">
-                    <div class="bg-red-50 border border-red-100 rounded-lg px-4 py-2 min-w-[70px]">
-                        <span id="resendMinutes" class="text-xl font-bold text-red-600">01</span>
-                        <p class="text-xs text-red-500">Menit</p>
-                    </div>
-                    <span class="text-xl font-bold text-red-400">:</span>
-                    <div class="bg-red-50 border border-red-100 rounded-lg px-4 py-2 min-w-[70px]">
-                        <span id="resendSeconds" class="text-xl font-bold text-red-600">00</span>
-                        <p class="text-xs text-red-500">Detik</p>
-                    </div>
-                </div>
+            <span id="actionText">
+                Verifikasi OTP (<span id="timerDisplay">15:00</span>)
+            </span>
+        </span>
+    </button>
+
+    {{-- Expired / Cooldown Box --}}
+    <div class="otp-expired-box" id="expiredBox">
+        <div class="otp-expired-header">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Kode OTP telah expired!</span>
+        </div>
+        <p class="otp-expired-sub">Kirim ulang OTP tersedia dalam:</p>
+        <div class="otp-cooldown-row">
+            <div class="otp-cooldown-box">
+                <span id="resendMinutes">01</span>
+                <p>Menit</p>
+            </div>
+            <span class="otp-cooldown-sep">:</span>
+            <div class="otp-cooldown-box">
+                <span id="resendSeconds">00</span>
+                <p>Detik</p>
             </div>
         </div>
     </div>
 
-    <!-- Success Message -->
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-            <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                <p class="text-sm text-green-600">{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
-
-    <!-- Error Message -->
-    @if(session('error') || $errors->any())
-        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-            <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <p class="text-sm text-red-600">{{ session('error') ?? $errors->first() }}</p>
-            </div>
-        </div>
-    @endif
 </form>
 
-<!-- Form tersembunyi untuk resend OTP -->
-<form method="POST" action="{{ route('resend-otp') }}" id="resendForm" class="hidden">
+{{-- Divider --}}
+<div class="or-row">
+    <div class="or-line"></div>
+    <span>salah email?</span>
+    <div class="or-line"></div>
+</div>
+
+{{-- Resend hidden form --}}
+<form method="POST" action="{{ route('resend-otp') }}" id="resendForm" style="display:none">
     @csrf
-    
-    @if ($recaptchaSiteKey)
+    @if($recaptchaSiteKey)
         <input type="hidden" name="recaptcha_token" id="resend_recaptcha_token">
     @endif
-    
     <input type="hidden" name="email" value="{{ $email }}">
 </form>
+
 @endsection
 
-@section('footer-links')
-<p class="text-white text-sm">
-    Salah email? 
-    <a href="{{ route('register') }}" class="font-semibold text-primary-100 hover:text-white transition-colors underline underline-offset-2">
-        Daftar ulang
-    </a>
-</p>
+@section('auth-footer')
+    Salah email? <a href="{{ route('register') }}">Daftar ulang</a>
 @endsection
 
 @push('scripts')
-<!-- reCAPTCHA v3 Script -->
-@if ($recaptchaSiteKey)
+@if($recaptchaSiteKey)
 <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>
 @endif
 
 <script>
-(function() {
-    const TIMER_KEY = 'otp_timer_{{ $email }}';
-    const TOTAL_SECONDS = 15 * 60; // 15 menit untuk timer utama
-    const RESEND_COOLDOWN = 1 * 60; // 1 menit untuk cooldown kirim ulang
-    
-    // Elements
-    const otpInputs = document.querySelectorAll('.otp-input');
-    const otpValue = document.getElementById('otpValue');
-    const otpForm = document.getElementById('otpForm');
-    const resendForm = document.getElementById('resendForm');
-    
-    const actionButton = document.getElementById('actionButton');
-    const actionText = document.getElementById('actionText');
-    const actionIcon = document.getElementById('actionIcon');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const progressBar = document.getElementById('progressBar');
-    
-    const expiredMessage = document.getElementById('expiredMessage');
-    const resendMinutesEl = document.getElementById('resendMinutes');
-    const resendSecondsEl = document.getElementById('resendSeconds');
-    
-    // Timer state
-    let mainTimerEndTime = localStorage.getItem(TIMER_KEY);
-    let resendTimerEndTime = localStorage.getItem(TIMER_KEY + '_resend');
-    let isMainTimerActive = true;
-    let buttonMode = 'verify'; // 'verify' atau 'resend'
-    
+(function () {
+    /* ── Konstanta ── */
+    const TIMER_KEY     = 'otp_timer_{{ $email }}';
+    const TOTAL_SEC     = 15 * 60;
+    const RESEND_CD     = 1  * 60;
+
+    /* ── Elemen ── */
+    const otpInputs     = document.querySelectorAll('.otp-input');
+    const otpValue      = document.getElementById('otpValue');
+    const otpForm       = document.getElementById('otpForm');
+    const resendForm    = document.getElementById('resendForm');
+    const actionButton  = document.getElementById('actionButton');
+    const actionText    = document.getElementById('actionText');
+    const actionIcon    = document.getElementById('actionIcon');
+    const loadingSpinner= document.querySelector('.btn-spinner');
+    const progressBar   = document.getElementById('progressBar');
+    const expiredBox    = document.getElementById('expiredBox');
+    const resendMinEl   = document.getElementById('resendMinutes');
+    const resendSecEl   = document.getElementById('resendSeconds');
+
+    /* ── State ── */
+    let mainEnd   = localStorage.getItem(TIMER_KEY);
+    let resendEnd = localStorage.getItem(TIMER_KEY + '_resend');
+    let mode      = 'verify'; // 'verify' | 'resend' | 'cooldown'
+
     @if(session('success'))
-        // Reset semua timer jika baru saja berhasil kirim ulang
-        mainTimerEndTime = null;
-        resendTimerEndTime = null;
+        mainEnd = null; resendEnd = null;
         localStorage.removeItem(TIMER_KEY);
         localStorage.removeItem(TIMER_KEY + '_resend');
     @endif
-    
-    // Setup main timer (OTP verification)
-    if (!mainTimerEndTime) {
-        mainTimerEndTime = Date.now() + (TOTAL_SECONDS * 1000);
-        localStorage.setItem(TIMER_KEY, mainTimerEndTime);
+
+    /* ── Init main timer ── */
+    if (!mainEnd) {
+        mainEnd = Date.now() + TOTAL_SEC * 1000;
+        localStorage.setItem(TIMER_KEY, mainEnd);
     } else {
-        mainTimerEndTime = parseInt(mainTimerEndTime);
+        mainEnd = parseInt(mainEnd);
     }
-    
-    // Setup resend cooldown timer jika ada
-    if (resendTimerEndTime) {
-        resendTimerEndTime = parseInt(resendTimerEndTime);
-        isMainTimerActive = false;
-        
-        // Cek apakah cooldown sudah selesai
-        if (Date.now() >= resendTimerEndTime) {
-            // Cooldown selesai, set mode resend
-            buttonMode = 'resend';
-            setButtonMode('resend');
+
+    /* ── Init mode ── */
+    if (resendEnd) {
+        resendEnd = parseInt(resendEnd);
+        if (Date.now() >= resendEnd) {
             localStorage.removeItem(TIMER_KEY + '_resend');
+            setMode('resend');
         } else {
-            // Masih dalam cooldown
-            buttonMode = 'cooldown';
-            actionButton.disabled = true;
-            actionButton.classList.add('hidden');
-            expiredMessage.classList.remove('hidden');
+            setMode('cooldown');
         }
-    } else if (Date.now() >= mainTimerEndTime) {
-        // Main timer sudah expired tanpa cooldown aktif
-        isMainTimerActive = false;
-        buttonMode = 'resend';
-        setButtonMode('resend');
+    } else if (Date.now() >= mainEnd) {
+        setMode('resend');
     } else {
-        // Timer masih berjalan, mode verify
-        buttonMode = 'verify';
-        setButtonMode('verify');
+        setMode('verify');
     }
-    
-    function setButtonMode(mode) {
-        if (mode === 'verify') {
+
+    /* ── Set mode UI ── */
+    function setMode(m) {
+        mode = m;
+        if (m === 'verify') {
             actionButton.disabled = false;
-            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            actionButton.style.display = '';
+            expiredBox.classList.remove('show');
+            setActionIcon('check');
             actionText.innerHTML = 'Verifikasi OTP (<span id="timerDisplay">15:00</span>)';
-            progressBar.parentElement.classList.remove('hidden');
-            expiredMessage.classList.add('hidden');
-        } else if (mode === 'resend') {
+            progressBar.parentElement.style.display = '';
+            updateMainTimer();
+        } else if (m === 'resend') {
             actionButton.disabled = false;
-            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
+            actionButton.style.display = '';
+            expiredBox.classList.remove('show');
+            setActionIcon('refresh');
             actionText.textContent = 'Kirim Ulang Kode OTP';
             progressBar.style.width = '0%';
-            progressBar.parentElement.classList.add('hidden');
-            expiredMessage.classList.add('hidden');
+            progressBar.parentElement.style.display = 'none';
+        } else if (m === 'cooldown') {
+            actionButton.style.display = 'none';
+            expiredBox.classList.add('show');
+            progressBar.parentElement.style.display = 'none';
+            updateResendTimer();
         }
     }
-    
+
+    function setActionIcon(type) {
+        if (type === 'check') {
+            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+        } else {
+            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
+        }
+    }
+
+    /* ── Timer utama ── */
     function updateMainTimer() {
-        const now = Date.now();
-        const remaining = Math.max(0, mainTimerEndTime - now);
-        const remainingSeconds = Math.floor(remaining / 1000);
-        
-        if (remainingSeconds <= 0) {
-            // Main timer expired
-            isMainTimerActive = false;
-            buttonMode = 'resend';
-            setButtonMode('resend');
+        const remaining = Math.max(0, Math.floor((mainEnd - Date.now()) / 1000));
+
+        if (remaining <= 0) {
             localStorage.removeItem(TIMER_KEY);
+            setMode('resend');
             return;
         }
-        
-        const mins = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-        
-        // Update timer display in button
-        const timerEl = document.getElementById('timerDisplay');
-        if (timerEl) {
-            timerEl.textContent = mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
-        }
-        
-        // Update progress bar
-        const progress = (remainingSeconds / TOTAL_SECONDS) * 100;
-        progressBar.style.width = progress + '%';
-        
-        // Update warna progress bar
-        if (remainingSeconds <= 60) {
-            progressBar.className = 'h-full bg-gradient-to-r from-red-500 to-red-400 rounded-full transition-all duration-1000';
-        } else if (remainingSeconds <= 300) {
-            progressBar.className = 'h-full bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full transition-all duration-1000';
+
+        const m = Math.floor(remaining / 60);
+        const s = remaining % 60;
+        const el = document.getElementById('timerDisplay');
+        if (el) el.textContent = pad(m) + ':' + pad(s);
+
+        const pct = (remaining / TOTAL_SEC) * 100;
+        progressBar.style.width = pct + '%';
+
+        if (remaining <= 60) {
+            progressBar.style.background = 'linear-gradient(90deg,#f43f5e,#e11d48)';
+        } else if (remaining <= 300) {
+            progressBar.style.background = 'linear-gradient(90deg,#f59e0b,#d97706)';
         } else {
-            progressBar.className = 'h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-1000';
+            progressBar.style.background = 'linear-gradient(90deg,#22c55e,#16a34a)';
         }
-        
+
         setTimeout(updateMainTimer, 1000);
     }
-    
+
+    /* ── Timer cooldown resend ── */
     function updateResendTimer() {
-        const now = Date.now();
-        const remaining = Math.max(0, resendTimerEndTime - now);
-        const remainingSeconds = Math.floor(remaining / 1000);
-        
-        if (remainingSeconds <= 0) {
-            // Cooldown selesai
-            expiredMessage.classList.add('hidden');
-            actionButton.classList.remove('hidden');
-            buttonMode = 'resend';
-            setButtonMode('resend');
+        const remaining = Math.max(0, Math.floor((resendEnd - Date.now()) / 1000));
+
+        if (remaining <= 0) {
             localStorage.removeItem(TIMER_KEY + '_resend');
+            setMode('resend');
             return;
         }
-        
-        const mins = Math.floor(remainingSeconds / 60);
-        const secs = remainingSeconds % 60;
-        
-        resendMinutesEl.textContent = mins.toString().padStart(2, '0');
-        resendSecondsEl.textContent = secs.toString().padStart(2, '0');
-        
+
+        resendMinEl.textContent = pad(Math.floor(remaining / 60));
+        resendSecEl.textContent = pad(remaining % 60);
         setTimeout(updateResendTimer, 1000);
     }
-    
-    // Start appropriate timer
-    if (isMainTimerActive) {
-        updateMainTimer();
-    } else if (resendTimerEndTime) {
-        updateResendTimer();
-    }
-    
-    // Initialize OTP input handling
-    function initializeOTPInputs() {
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                const value = e.target.value;
-                
-                if (!/^\d$/.test(value)) {
-                    e.target.value = '';
-                    return;
-                }
-                
-                if (value && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-                
-                updateOTPValue();
-                
-                // Auto verifikasi jika semua field terisi DAN dalam mode verify
-                checkAndAutoVerify();
-            });
-            
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    otpInputs[index - 1].focus();
-                    otpInputs[index - 1].value = '';
-                    updateOTPValue();
-                }
-                
-                if (e.key === 'ArrowRight' && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-                
-                if (e.key === 'ArrowLeft' && index > 0) {
-                    otpInputs[index - 1].focus();
+
+    function pad(n) { return n.toString().padStart(2, '0'); }
+
+    /* ══════════════════════════════════
+       OTP INPUT HANDLING
+    ══════════════════════════════════ */
+    function initOTPInputs() {
+        otpInputs.forEach((input, i) => {
+            input.addEventListener('input', e => {
+                if (!/^\d$/.test(e.target.value)) { e.target.value = ''; return; }
+                e.target.classList.add('filled');
+                if (i < otpInputs.length - 1) otpInputs[i + 1].focus();
+                syncOTP();
+                if (getOTP().length === 6 && mode === 'verify') {
+                    setTimeout(handleAction, 300);
                 }
             });
-            
-            input.addEventListener('paste', (e) => {
+
+            input.addEventListener('keydown', e => {
+                if (e.key === 'Backspace') {
+                    if (!e.target.value && i > 0) {
+                        otpInputs[i - 1].value = '';
+                        otpInputs[i - 1].classList.remove('filled');
+                        otpInputs[i - 1].focus();
+                    } else {
+                        e.target.classList.remove('filled');
+                    }
+                    syncOTP();
+                }
+                if (e.key === 'ArrowRight' && i < otpInputs.length - 1) otpInputs[i + 1].focus();
+                if (e.key === 'ArrowLeft'  && i > 0)                    otpInputs[i - 1].focus();
+            });
+
+            input.addEventListener('paste', e => {
                 e.preventDefault();
-                const pastedData = e.clipboardData.getData('text');
-                const digits = pastedData.replace(/\D/g, '').slice(0, 6);
-                
-                digits.split('').forEach((digit, i) => {
-                    if (otpInputs[i]) {
-                        otpInputs[i].value = digit;
+                const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+                digits.split('').forEach((d, idx) => {
+                    if (otpInputs[idx]) {
+                        otpInputs[idx].value = d;
+                        otpInputs[idx].classList.add('filled');
                     }
                 });
-                
-                updateOTPValue();
-                
-                const lastIndex = Math.min(digits.length - 1, otpInputs.length - 1);
-                otpInputs[lastIndex].focus();
-                
-                // Auto verifikasi jika paste lengkap DAN mode verify
-                if (digits.length === 6 && buttonMode === 'verify') {
-                    setTimeout(() => {
-                        checkAndAutoVerify();
-                    }, 100);
-                }
+                syncOTP();
+                otpInputs[Math.min(digits.length - 1, 5)].focus();
+                if (digits.length === 6 && mode === 'verify') setTimeout(handleAction, 300);
             });
         });
     }
-    
-    // Fungsi untuk cek dan auto verifikasi
-    function checkAndAutoVerify() {
-        const otp = updateOTPValue();
-        
-        // Cek jika OTP sudah lengkap (6 digit) DAN dalam mode verify
-        if (otp.length === 6 && buttonMode === 'verify') {
-            // Delay kecil untuk memberi feedback visual
-            setTimeout(() => {
-                handleAction();
-            }, 300); // 300ms delay untuk UX yang lebih baik
-        }
-    }
-    
-    function updateOTPValue() {
-        const otp = Array.from(otpInputs).map(input => input.value).join('');
-        otpValue.value = otp;
-        return otp;
-    }
-    
-    // Handle button action
-    window.handleAction = async function() {
+
+    function getOTP()  { return Array.from(otpInputs).map(i => i.value).join(''); }
+    function syncOTP() { otpValue.value = getOTP(); return otpValue.value; }
+
+    /* ══════════════════════════════════
+       HANDLE ACTION BUTTON
+    ══════════════════════════════════ */
+    window.handleAction = async function () {
         if (actionButton.disabled) return;
-        
-        if (buttonMode === 'verify') {
-            await handleVerifyOTP();
-        } else if (buttonMode === 'resend') {
-            await handleResendOTP();
-        }
+        if (mode === 'verify') await doVerify();
+        else if (mode === 'resend') await doResend();
     };
-    
-    // Handle OTP verification
-    async function handleVerifyOTP() {
-        const otp = updateOTPValue();
+
+    async function doVerify() {
+        const otp = syncOTP();
         if (otp.length !== 6) {
-            showNotification('error', 'Harap masukkan 6 digit kode OTP');
-            // Focus ke input pertama yang kosong
-            for (let i = 0; i < otpInputs.length; i++) {
-                if (!otpInputs[i].value) {
-                    otpInputs[i].focus();
-                    break;
-                }
-            }
+            toast('error', 'Harap masukkan 6 digit kode OTP');
+            for (const inp of otpInputs) { if (!inp.value) { inp.focus(); break; } }
             return;
         }
-        
-        // Show loading
-        actionButton.disabled = true;
-        loadingSpinner.classList.remove('hidden');
-        actionIcon.classList.add('hidden');
-        actionText.textContent = 'Memverifikasi...';
-        
+
+        setLoading(true, 'Memverifikasi...');
+
         try {
-            @if ($recaptchaSiteKey)
-            const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { 
-                action: 'verify_otp' 
-            });
+            @if($recaptchaSiteKey)
+            const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'verify_otp' });
             document.getElementById('recaptcha_token').value = token;
             @endif
-            
             otpForm.submit();
-        } catch (error) {
-            console.error('reCAPTCHA error:', error);
-            
-            actionButton.disabled = false;
-            loadingSpinner.classList.add('hidden');
-            actionIcon.classList.remove('hidden');
-            setButtonMode('verify');
-            
-            showNotification('error', 'Terjadi kesalahan saat verifikasi reCAPTCHA. Silakan coba lagi.');
+        } catch {
+            setLoading(false);
+            toast('error', 'Gagal verifikasi reCAPTCHA. Silakan coba lagi.');
         }
     }
-    
-    // Handle resend OTP
-    async function handleResendOTP() {
-        // Show loading
-        actionButton.disabled = true;
-        loadingSpinner.classList.remove('hidden');
-        actionIcon.classList.add('hidden');
-        actionText.textContent = 'Mengirim ulang...';
-        
+
+    async function doResend() {
+        setLoading(true, 'Mengirim ulang...');
+
         try {
-            @if ($recaptchaSiteKey)
-            const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { 
-                action: 'resend_otp' 
-            });
+            @if($recaptchaSiteKey)
+            const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'resend_otp' });
             document.getElementById('resend_recaptcha_token').value = token;
             @endif
-            
-            const formData = new FormData(resendForm);
-            const response = await fetch("{{ route('resend-otp') }}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
+
+            const fd = new FormData(resendForm);
+            const res = await fetch("{{ route('resend-otp') }}", {
+                method: 'POST', body: fd,
+                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' }
             });
-            
-            const data = await response.json();
-            
+            const data = await res.json();
+
             if (data.success) {
-                // Setup cooldown timer
-                resendTimerEndTime = Date.now() + (RESEND_COOLDOWN * 1000);
-                localStorage.setItem(TIMER_KEY + '_resend', resendTimerEndTime);
-                
-                // Update UI
-                actionButton.classList.add('hidden');
-                loadingSpinner.classList.add('hidden');
-                actionIcon.classList.remove('hidden');
-                expiredMessage.classList.remove('hidden');
-                
-                // Reset main timer untuk OTP baru
-                mainTimerEndTime = Date.now() + (TOTAL_SECONDS * 1000);
-                localStorage.setItem(TIMER_KEY, mainTimerEndTime);
-                isMainTimerActive = false;
-                buttonMode = 'cooldown';
-                
-                // Reset OTP inputs
-                otpInputs.forEach(input => {
-                    input.value = '';
-                    input.classList.remove('border-danger');
-                });
+                resendEnd = Date.now() + RESEND_CD * 1000;
+                localStorage.setItem(TIMER_KEY + '_resend', resendEnd);
+                mainEnd = Date.now() + TOTAL_SEC * 1000;
+                localStorage.setItem(TIMER_KEY, mainEnd);
+
+                otpInputs.forEach(inp => { inp.value = ''; inp.classList.remove('filled', 'err'); });
+                syncOTP();
                 otpInputs[0].focus();
-                updateOTPValue();
-                
-                // Start cooldown timer
-                updateResendTimer();
-                
-                showNotification('success', data.message || 'OTP baru telah dikirim ke email Anda!');
+
+                setLoading(false);
+                setMode('cooldown');
+                toast('success', data.message || 'OTP baru telah dikirim ke email Anda!');
             } else {
-                // Show error
-                showNotification('error', data.message || 'Gagal mengirim ulang OTP');
-                
-                actionButton.disabled = false;
-                loadingSpinner.classList.add('hidden');
-                actionIcon.classList.remove('hidden');
-                setButtonMode('resend');
+                setLoading(false);
+                setMode('resend');
+                toast('error', data.message || 'Gagal mengirim ulang OTP');
             }
-        } catch (error) {
-            console.error('Resend OTP error:', error);
-            showNotification('error', 'Terjadi kesalahan. Silakan coba lagi.');
-            
-            actionButton.disabled = false;
-            loadingSpinner.classList.add('hidden');
-            actionIcon.classList.remove('hidden');
-            setButtonMode('resend');
+        } catch {
+            setLoading(false);
+            setMode('resend');
+            toast('error', 'Terjadi kesalahan. Silakan coba lagi.');
         }
     }
-    
-    // Helper function untuk show notification
-    function showNotification(type, message) {
-        // Cek jika sudah ada notification yang sama
-        const existingNotification = document.querySelector('.notification-' + type);
-        if (existingNotification) {
-            existingNotification.remove();
-        }
-        
-        const notification = document.createElement('div');
-        notification.className = `notification-${type} fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg animate-slide-down ${
-            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-        }`;
-        
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    ${type === 'success' 
-                        ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>'
-                        : '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>'
-                    }
-                </svg>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
+
+    /* ── Loading state ── */
+    function setLoading(on, text) {
+        actionButton.disabled = on;
+        loadingSpinner.style.display = on ? 'block' : 'none';
+        actionIcon.style.display     = on ? 'none'  : '';
+        if (on) actionText.textContent = text;
+        else setMode(mode); // restore text
+    }
+
+    /* ── Toast notification ── */
+    function toast(type, msg) {
+        document.querySelectorAll('.otp-toast').forEach(el => el.remove());
+        const el = document.createElement('div');
+        el.className = `otp-toast toast-${type} toast-anim-in`;
+        el.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:.75rem 1rem;border-radius:10px;color:#fff;display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:600;font-family:Inter,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:300px;';
+        el.innerHTML = `
+            <svg style="width:16px;height:16px;flex-shrink:0" fill="currentColor" viewBox="0 0 20 20">
+                ${type === 'success'
+                    ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>'
+                    : '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>'
+                }
+            </svg>
+            <span>${msg}</span>`;
+        document.body.appendChild(el);
         setTimeout(() => {
-            notification.classList.add('animate-slide-up');
-            setTimeout(() => notification.remove(), 300);
+            el.classList.replace('toast-anim-in', 'toast-anim-out');
+            setTimeout(() => el.remove(), 300);
         }, 5000);
     }
-    
-    // Initialize when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeOTPInputs();
+
+    /* ── Init ── */
+    document.addEventListener('DOMContentLoaded', () => {
+        initOTPInputs();
         otpInputs[0].focus();
-        
-        @error('otp')
-            otpInputs.forEach(input => {
-                input.classList.add('border-danger');
-            });
-        @enderror
+        @error('otp') otpInputs.forEach(i => i.classList.add('err')); @enderror
     });
+
 })();
 </script>
-
-<style>
-@keyframes slide-down {
-    from {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-@keyframes slide-up {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-}
-
-.animate-slide-down {
-    animation: slide-down 0.3s ease-out;
-}
-
-.animate-slide-up {
-    animation: slide-up 0.3s ease-in;
-}
-
-/* Tambahan style untuk OTP input yang sedang aktif */
-.otp-input:focus {
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-}
-
-.otp-input.filled {
-    background-color: #f8fafc;
-    border-color: #94a3b8;
-}
-</style>
 @endpush
