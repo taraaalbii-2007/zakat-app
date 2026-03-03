@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin_masjid\ProfilAdminMasjidController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\Superadmin\KontakSuperadminController;
+use App\Http\Controllers\Muzakki\ProfilMuzakkiController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -785,6 +786,21 @@ Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(fu
 
         Route::get('/{uuid}', [\App\Http\Controllers\Muzakki\TransaksiZakatController::class, 'show'])
             ->name('show');
+    });
+
+    Route::prefix('muzakki-profil')->name('muzakki.profil.')->group(function () {
+        // Show & Edit Profil
+        Route::get('/',              [ProfilMuzakkiController::class, 'show'])->name('show');
+        Route::get('/edit',          [ProfilMuzakkiController::class, 'edit'])->name('edit');
+        Route::put('/update',        [ProfilMuzakkiController::class, 'update'])->name('update');
+
+        // Ubah Password (halaman tersendiri)
+        Route::get('/ubah-password', [ProfilMuzakkiController::class, 'editPassword'])->name('password.edit');
+        Route::put('/ubah-password', [ProfilMuzakkiController::class, 'updatePassword'])->name('password.update');
+
+        // Ubah Email (halaman tersendiri)
+        Route::get('/ubah-email',    [ProfilMuzakkiController::class, 'editEmail'])->name('email.edit');
+        Route::put('/ubah-email',    [ProfilMuzakkiController::class, 'updateEmail'])->name('email.update');
     });
 });
 
