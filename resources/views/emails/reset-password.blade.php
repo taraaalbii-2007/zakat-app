@@ -10,7 +10,7 @@
     <p>Halo {{ $nama }},</p>
     <p>Kami menerima permintaan untuk reset password akun Anda.</p>
     <p>Klik tombol di bawah untuk membuat password baru:</p>
-    <a href="{{ $resetUrl }}" style="background: #2d6936; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">
+    <a href="{{ $resetUrl }}" style="background: #17a34a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">
         Reset Password
     </a>
     <p>Link ini akan kedaluwarsa dalam {{ $expiresInMinutes }} menit.</p>
