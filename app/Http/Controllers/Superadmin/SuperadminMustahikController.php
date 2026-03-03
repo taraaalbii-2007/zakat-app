@@ -16,7 +16,10 @@ class SuperadminMustahikController extends Controller
         ->get();
 
         $totalMustahik = $masjids->sum(fn($m) => $m->mustahiks->count());
+        $breadcrumbs = [
+            'Kelola Mustahik' => null,
+        ];
 
-        return view('superadmin.mustahik.index', compact('masjids', 'totalMustahik'));
+        return view('superadmin.mustahik.index', compact('masjids', 'totalMustahik', 'breadcrumbs'));
     }
 }

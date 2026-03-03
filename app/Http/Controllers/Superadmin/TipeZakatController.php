@@ -57,7 +57,12 @@ class TipeZakatController extends Controller
         // Data untuk filter
         $jenisZakatList = JenisZakat::orderBy('nama')->get(['id', 'nama']);
 
-        return view('superadmin.tipe-zakat.index', compact('tipeZakat', 'jenisZakatList'));
+        $breadcrumbs = [
+            'Tipe Zakat' => null,
+        ];
+
+
+        return view('superadmin.tipe-zakat.index', compact('tipeZakat', 'jenisZakatList', 'breadcrumbs'));
     }
 
     /**

@@ -20,7 +20,11 @@ class SuperadminTransaksiPenyaluranController extends Controller
         $totalDisalurkan = $masjids->sum(fn($m) => $m->transaksiPenyaluran->where('status', 'disalurkan')->count());
         $totalNominal    = $masjids->sum(fn($m) => $m->transaksiPenyaluran->sum('jumlah'));
 
+        $breadcrumbs = [
+            'Kelola Penyaluran' => null,
+        ];
+
         return view('superadmin.transaksi-penyaluran.index',
-            compact('masjids', 'totalTransaksi', 'totalDraft', 'totalDisalurkan', 'totalNominal'));
+            compact('masjids', 'totalTransaksi', 'totalDraft', 'totalDisalurkan', 'totalNominal', 'breadcrumbs'));
     }
 }

@@ -60,11 +60,16 @@ class LogAktivitasController extends Controller
             ->orderBy('peran')
             ->pluck('peran');
 
+       $breadcrumbs = [
+            'Riwayat Aktivitas' => null,
+        ]; 
+            
         return view('superadmin.log-aktivitas.index', compact(
             'logs',
             'aktivitasList',
             'modulList',
-            'peranList'
+            'peranList',
+            'breadcrumbs'
         ));
     }
 

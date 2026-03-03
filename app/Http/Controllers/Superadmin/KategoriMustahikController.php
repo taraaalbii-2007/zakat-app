@@ -34,7 +34,12 @@ class KategoriMustahikController extends Controller
 
         $kategoriMustahik = $query->paginate(10);
 
-        return view('superadmin.kategori-mustahik.index', compact('kategoriMustahik'));
+        $breadcrumbs = [
+            'Kategori Mustahik' => null,
+        ];
+
+
+        return view('superadmin.kategori-mustahik.index', compact('kategoriMustahik', 'breadcrumbs'));
     }
 
     /**

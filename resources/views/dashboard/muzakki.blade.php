@@ -2,6 +2,13 @@
 
 @section('title', 'Dashboard Muzakki')
 
+@php
+    $breadcrumbs = [];  
+@endphp
+
+@section('page-title', 'Dashboard')
+@section('page-description', 'Selamat datang kembali! Pantau aktivitas zakat Anda di sini.')
+
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">

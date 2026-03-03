@@ -31,7 +31,11 @@ class BulletinController extends Controller
         $bulletins    = $query->paginate(10);
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
 
-        return view('superadmin.bulletin.index', compact('bulletins', 'kategoriList'));
+        $breadcrumbs = [
+            'Kelola Bulletin' => null,
+        ];
+
+        return view('superadmin.bulletin.index', compact('bulletins', 'kategoriList', 'breadcrumbs'));
     }
 
     // ============================================

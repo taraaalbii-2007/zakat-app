@@ -20,7 +20,11 @@ class SuperadminTransaksiPenerimaanController extends Controller
         $totalPending   = $masjids->sum(fn($m) => $m->transaksiPenerimaan->where('status', 'pending')->count());
         $totalNominal   = $masjids->sum(fn($m) => $m->transaksiPenerimaan->sum('jumlah'));
 
+        $breadcrumbs = [
+            'Kelola Transaksi' => null,
+        ];
+
         return view('superadmin.transaksi-penerimaan.index',
-            compact('masjids', 'totalTransaksi', 'totalVerified', 'totalPending', 'totalNominal'));
+            compact('masjids', 'totalTransaksi', 'totalVerified', 'totalPending', 'totalNominal', 'breadcrumbs'));
     }
 }

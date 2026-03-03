@@ -20,7 +20,12 @@ class KonfigurasiGlobalController extends Controller
         $google = GoogleConfig::first();
         $mail = MailConfig::first();
 
-        return view('superadmin.konfigurasi-global.show', compact('config', 'recaptcha', 'google', 'mail'));
+        $breadcrumbs = [
+            'Kelola Sistem Aplikasi' => null,
+        ];
+
+
+        return view('superadmin.konfigurasi-global.show', compact('config', 'recaptcha', 'google', 'mail', 'breadcrumbs'));
     }
 
     public function edit()

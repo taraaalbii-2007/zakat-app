@@ -46,7 +46,11 @@ class PenggunaController extends Controller
         $pengguna   = $query->paginate(10);
         $masjidList = Masjid::orderBy('nama')->get(['id', 'nama']);
 
-        return view('superadmin.pengguna.index', compact('pengguna', 'masjidList'));
+        $breadcrumbs = [
+            'Data Pengguna' => null,
+        ];
+
+        return view('superadmin.pengguna.index', compact('pengguna', 'masjidList', 'breadcrumbs'));
     }
 
     // ── Create ────────────────────────────────────────────────────────────────

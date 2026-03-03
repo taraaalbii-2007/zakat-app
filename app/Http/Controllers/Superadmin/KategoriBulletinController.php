@@ -19,9 +19,13 @@ class KategoriBulletinController extends Controller
             $query->search($request->q);
         }
 
-        $kategoriList = $query->orderBy('nama_kategori')->paginate(15)->withQueryString();
+        $kategoriList = $query->orderBy('nama_kategori')->paginate(10);
 
-        return view('superadmin.kategori_bulletin.index', compact('kategoriList'));
+        $breadcrumbs = [
+            'Kategori Bulletin' => null,
+        ];
+
+        return view('superadmin.kategori_bulletin.index', compact('kategoriList', 'breadcrumbs'));
     }
 
     // ============================================

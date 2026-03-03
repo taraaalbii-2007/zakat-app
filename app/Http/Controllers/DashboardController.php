@@ -53,8 +53,9 @@ class DashboardController extends Controller
     protected function superadminDashboard()
     {
         $user        = Auth::user();
-        $breadcrumbs = [['name' => 'Dashboard Superadmin', 'url' => null]];
-
+        $breadcrumbs = [
+            'Dashboard Superadmin' => null,
+        ];
         $stats = [
             'total_masjid'            => Masjid::count(),
             'masjid_aktif'            => Masjid::where('is_active', true)->count(),
@@ -195,6 +196,10 @@ class DashboardController extends Controller
             ]);
         }
 
+        $breadcrumbs = [
+            'Dashboard Admin Masjid' => null,
+        ];
+
         // ── Approval Penyaluran (draft menunggu persetujuan) ─────────────────
         $penyaluranPendingApproval = TransaksiPenyaluran::where('masjid_id', $masjidId)
             ->where('status', 'draft')
@@ -229,7 +234,8 @@ class DashboardController extends Controller
             'logAktivitas',
             'penyaluranPendingApproval',
             'totalPendingApproval',
-            'totalNominalPending'
+            'totalNominalPending',
+            'breadcrumbs'
         ));
     }
 
@@ -252,8 +258,9 @@ class DashboardController extends Controller
 
         $masjid      = $amil->masjid;
         $masjidId    = $masjid->id;
-        $breadcrumbs = [['name' => 'Dashboard Amil', 'url' => null]];
-
+        $breadcrumbs = [
+            'Dashboard Amil' => null,
+        ];
         $periodeAwal  = now()->startOfMonth();
         $periodeAkhir = now()->endOfMonth();
 
@@ -358,8 +365,9 @@ class DashboardController extends Controller
 
         $masjid      = $muzakki->masjid;
         $masjidId    = $masjid?->id;
-        $breadcrumbs = [['name' => 'Dashboard Muzakki', 'url' => null]];
-
+        $breadcrumbs = [
+            'Dashboard Muzakki' => null,
+        ];
         // ── Statistik transaksi muzakki ──────────────────────────────────────
         $totalZakatDibayar = TransaksiPenerimaan::where('muzakki_id', $muzakki->id)
             ->where('status', 'verified')

@@ -39,7 +39,11 @@ class MasjidController extends Controller
         $masjids = $query->latest()->paginate(10);
         $provinces = Province::orderBy('name')->get();
 
-        return view('masjid.index', compact('masjids', 'provinces'));
+        $breadcrumbs = [
+            'Kelola Masjid' => null,
+        ];
+
+        return view('masjid.index', compact('masjids', 'provinces', 'breadcrumbs'));
     }
 
     public function create()

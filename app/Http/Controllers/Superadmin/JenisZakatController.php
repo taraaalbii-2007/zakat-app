@@ -16,19 +16,23 @@ class JenisZakatController extends Controller
     public function index(Request $request)
     {
         $query = JenisZakat::query();
-        
+
         // Filters
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where('nama', 'like', "%{$search}%");
         }
-        
+
         // Sorting - Data terbaru paling atas
         $query->orderBy('created_at', 'desc');
-        
+
         $jenisZakat = $query->paginate(10);
-        
-        return view('superadmin.jenis-zakat.index', compact('jenisZakat'));
+
+        $breadcrumbs = [
+            'Jenis Zakat' => null,
+        ];
+
+        return view('superadmin.jenis-zakat.index', compact('jenisZakat', 'breadcrumbs'));
     }
 
     /**
@@ -36,7 +40,12 @@ class JenisZakatController extends Controller
      */
     public function create()
     {
-        return view('superadmin.jenis-zakat.create');
+        $breadcrumbs = [
+            'Jenis Zakat' => route('jenis-zakat.index'),
+            'Tambah Jenis Zakat' => null,
+        ];
+
+        return view('superadmin.jenis-zakat.create', compact('breadcrumbs'));
     }
 
     /**
@@ -59,10 +68,9 @@ class JenisZakatController extends Controller
             JenisZakat::create([
                 'nama' => $request->nama
             ]);
-            
+
             return redirect()->route('jenis-zakat.index')
                 ->with('success', 'Jenis zakat berhasil ditambahkan!');
-                
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -76,8 +84,13 @@ class JenisZakatController extends Controller
     public function edit($uuid)
     {
         $jenisZakat = JenisZakat::where('uuid', $uuid)->firstOrFail();
-        
-        return view('superadmin.jenis-zakat.edit', compact('jenisZakat'));
+
+        $breadcrumbs = [
+            'Jenis Zakat' => route('jenis-zakat.index'),
+            'Edit Jenis Zakat' => null,
+        ];
+
+        return view('superadmin.jenis-zakat.edit', compact('jenisZakat', 'breadcrumbs'));
     }
 
     /**
@@ -86,7 +99,7 @@ class JenisZakatController extends Controller
     public function update(Request $request, $uuid)
     {
         $jenisZakat = JenisZakat::where('uuid', $uuid)->firstOrFail();
-        
+
         $validator = Validator::make($request->all(), [
             'nama' => [
                 'required',
@@ -107,10 +120,9 @@ class JenisZakatController extends Controller
             $jenisZakat->update([
                 'nama' => $request->nama
             ]);
-            
+
             return redirect()->route('jenis-zakat.index')
                 ->with('success', 'Jenis zakat berhasil diperbarui!');
-                
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -124,13 +136,12 @@ class JenisZakatController extends Controller
     public function destroy($uuid)
     {
         $jenisZakat = JenisZakat::where('uuid', $uuid)->firstOrFail();
-        
+
         try {
             $jenisZakat->delete();
-            
+
             return redirect()->route('jenis-zakat.index')
                 ->with('success', 'Jenis zakat berhasil dihapus!');
-                
         } catch (\Exception $e) {
             return redirect()->route('jenis-zakat.index')
                 ->with('error', 'Gagal menghapus jenis zakat. Error: ' . $e->getMessage());

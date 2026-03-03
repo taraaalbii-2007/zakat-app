@@ -48,12 +48,16 @@ class HargaEmasPerakController extends Controller
         
         $query->orderBy($sortBy, $sortOrder);
 
-        $hargaEmasPerak = $query->paginate(10)->withQueryString();
+        $hargaEmasPerak = $query->paginate(10);
+
+        $breadcrumbs = [
+            'Harga Emas & Perak' => null,
+        ];
 
         // Get unique sumber for filter
         $sumberList = HargaEmasPerak::distinct('sumber')->pluck('sumber')->filter()->values();
 
-        return view('superadmin.harga-emas-perak.index', compact('hargaEmasPerak', 'sumberList'));
+        return view('superadmin.harga-emas-perak.index', compact('hargaEmasPerak', 'sumberList', 'allowedSortColumns', 'breadcrumbs'));
     }
 
     public function create()

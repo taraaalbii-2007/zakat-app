@@ -18,6 +18,11 @@ class SuperadminAmilController extends Controller
 
         $totalAmil = $masjids->sum(fn($m) => $m->amils->count());
 
-        return view('superadmin.amil.index', compact('masjids', 'totalAmil'));
+        $breadcrumbs = [
+            'Kelola Amil' => null,
+        ];
+
+
+        return view('superadmin.amil.index', compact('masjids', 'totalAmil','breadcrumbs'));
     }
 }

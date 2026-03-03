@@ -194,6 +194,10 @@ class LaporanKonsolidasiController extends Controller
         $allMasjids    = Masjid::orderBy('nama')->get(['id', 'nama']);
         $availableYears = $this->getAvailableYears();
 
+        $breadcrumbs = [
+            'Laporan Keuangan' => null,
+        ];
+
         return view('superadmin.laporan-konsolidasi.index', compact(
             'laporanPerMasjid',
             'grandTotal',
@@ -202,7 +206,8 @@ class LaporanKonsolidasiController extends Controller
             'tahun',
             'bulan',
             'search',
-            'masjidId'
+            'masjidId',
+            'breadcrumbs'
         ));
     }
 
