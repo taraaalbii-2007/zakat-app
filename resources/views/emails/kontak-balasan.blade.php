@@ -4,93 +4,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balasan Pesan - {{ config('app.name') }}</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; color: #1f2937; }
-        .wrapper { max-width: 600px; margin: 0 auto; padding: 24px 16px; }
-        .card { background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 32px 32px 28px; text-align: center; }
-        .header-icon { width: 56px; height: 56px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-        .header h1 { color: #fff; font-size: 22px; font-weight: 700; }
-        .header p { color: rgba(255,255,255,0.85); font-size: 14px; margin-top: 4px; }
-        .body { padding: 28px 32px; }
-        .greeting { font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 8px; }
-        .info-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin: 20px 0; }
-        .info-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px; }
-        .info-value { font-size: 14px; color: #374151; font-weight: 500; }
-        .pesan-original { background: #f3f4f6; border-left: 4px solid #d1d5db; border-radius: 0 8px 8px 0; padding: 14px 16px; margin: 20px 0; }
-        .pesan-original-label { font-size: 11px; color: #9ca3af; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
-        .pesan-original-text { font-size: 13px; color: #4b5563; line-height: 1.6; }
-        .balasan-box { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px; margin: 20px 0; }
-        .balasan-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #065f46; margin-bottom: 10px; }
-        .balasan-text { font-size: 14px; color: #064e3b; line-height: 1.7; white-space: pre-wrap; }
-        .footer-note { font-size: 13px; color: #6b7280; line-height: 1.6; }
-        .divider { border: none; border-top: 1px solid #e5e7eb; margin: 24px 0; }
-        .footer { padding: 20px 32px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center; }
-        .footer p { font-size: 12px; color: #9ca3af; line-height: 1.6; }
-    </style>
+    <title>Balasan Pesan - Niat Zakat</title>
 </head>
-<body>
-    <div class="wrapper">
-        <div class="card">
-            {{-- Header --}}
-            <div class="header">
-                <div>
-                    <div class="header-icon" style="display:inline-block; line-height:56px;">
-                        <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                </div>
-                <h1>Balasan Pesan Anda</h1>
-                <p>{{ config('app.name') }}</p>
-            </div>
 
-            {{-- Body --}}
-            <div class="body">
-                <p class="greeting">Halo, {{ $kontak->nama }}!</p>
-                <p style="font-size:14px; color:#4b5563; margin-top:8px; line-height:1.6;">
-                    Terima kasih telah menghubungi kami. Kami telah membaca pesan Anda dan berikut adalah balasan dari tim kami:
-                </p>
+<body style="margin:0; padding:0; background-color:#f4f5f7; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
-                {{-- Subjek --}}
-                <div class="info-box">
-                    <p class="info-label">Subjek</p>
-                    <p class="info-value">{{ $kontak->subjek }}</p>
-                </div>
+    @php
+        $config = \App\Models\KonfigurasiAplikasi::first();
 
-                {{-- Pesan Original --}}
-                <div class="pesan-original">
-                    <p class="pesan-original-label">Pesan Anda</p>
-                    <p class="pesan-original-text">{{ $kontak->pesan }}</p>
-                </div>
+        $logoBase64 = null;
+        $logoPath = base_path('public/images/logo.png');
+        if (file_exists($logoPath)) {
+            $logoMime = mime_content_type($logoPath);
+            $logoBase64 = 'data:' . $logoMime . ';base64,' . base64_encode(file_get_contents($logoPath));
+        }
+    @endphp
 
-                {{-- Balasan --}}
-                <div class="balasan-box">
-                    <p class="balasan-label">✉️ Balasan dari Tim Kami</p>
-                    <p class="balasan-text">{{ $balasan }}</p>
-                </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f5f7; padding:40px 16px;">
+        <tr>
+            <td align="center">
 
-                <hr class="divider">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.08);">
 
-                <p class="footer-note">
-                    Jika Anda memiliki pertanyaan lanjutan, silakan kunjungi halaman kontak kami atau balas email ini.
-                    Kami senang dapat membantu Anda.
-                </p>
-            </div>
+                    <!-- ===== HEADER ===== -->
+                    <tr>
+                        <td style="background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); padding:40px 40px 36px; text-align:center;">
 
-            {{-- Footer --}}
-            <div class="footer">
-                <p>
-                    Email ini dikirim secara otomatis oleh sistem <strong>{{ config('app.name') }}</strong>.<br>
-                    Dikirim pada {{ now()->translatedFormat('d F Y, H:i') }} WIB.
-                </p>
-                <p style="margin-top:8px;">
-                    &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-                </p>
-            </div>
-        </div>
-    </div>
+                            @if($logoBase64)
+                            <div style="margin-bottom:20px;">
+                                <img src="{{ $logoBase64 }}"
+                                     alt="Logo {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}"
+                                     width="72" height="72"
+                                     style="width:72px; height:72px; border-radius:50%; object-fit:cover; background-color:#ffffff; display:inline-block;">
+                            </div>
+                            @endif
+
+                            <h1 style="margin:0 0 8px; color:#ffffff; font-size:24px; font-weight:700;">
+                                Balasan Pesan Anda
+                            </h1>
+                            <p style="margin:0; color:rgba(255,255,255,0.85); font-size:14px; line-height:1.6;">
+                                <strong style="color:#ffffff;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ===== CONTENT ===== -->
+                    <tr>
+                        <td style="padding:40px 48px;">
+
+                            <!-- Greeting -->
+                            <p style="margin:0 0 6px; color:#1a1a1a; font-size:16px; font-weight:600;">
+                                Halo, {{ $kontak->nama }}!
+                            </p>
+                            <p style="margin:0 0 32px; color:#6b7280; font-size:14px; line-height:1.7;">
+                                Terima kasih telah menghubungi kami. Kami telah membaca pesan Anda dan berikut adalah balasan dari tim <strong style="color:#2d6936;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>:
+                            </p>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== DETAIL PESAN ===== -->
+                            <p style="margin:0 0 16px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
+                                Detail Pesan
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+
+                                <!-- Nama -->
+                                <tr>
+                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama</td>
+                                    <td style="padding:7px 4px; width:10px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $kontak->nama }}</td>
+                                </tr>
+
+                                <!-- Subjek -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Subjek</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $kontak->subjek }}</td>
+                                </tr>
+
+                                <!-- Dikirim pada -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Dikirim Pada</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ now()->translatedFormat('d F Y, H:i') }} WIB</td>
+                                </tr>
+
+                            </table>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== PESAN ANDA ===== -->
+                            <p style="margin:0 0 12px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
+                                Pesan Anda
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                                <tr>
+                                    <td style="background-color:#f8faf8; border-left:4px solid #d1d5db; border-radius:0 6px 6px 0; padding:14px 18px; color:#4b5563; font-size:13px; line-height:1.7;">
+                                        {{ $kontak->pesan }}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== BALASAN TIM ===== -->
+                            <p style="margin:0 0 12px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
+                                Balasan dari Tim Kami
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                                <tr>
+                                    <td style="background-color:#f0faf2; border-left:4px solid #2d6936; border-radius:0 6px 6px 0; padding:14px 18px; color:#1a3d22; font-size:14px; line-height:1.7; white-space:pre-wrap;">{{ $balasan }}</td>
+                                </tr>
+                            </table>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- Penutup -->
+                            <p style="margin:0; color:#6b7280; font-size:13px; line-height:1.7;">
+                                Jika Anda memiliki pertanyaan lanjutan, silakan kunjungi halaman kontak kami. Kami senang dapat membantu Anda.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- ===== FOOTER ===== -->
+                    <tr>
+                        <td style="background-color:#f8faf8; padding:24px 48px; text-align:center; border-top:1px solid #f0f0f0;">
+                            <p style="margin:0 0 4px; color:#2d6936; font-size:15px; font-weight:700;">
+                                {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}
+                            </p>
+                            <p style="margin:0 0 2px; color:#9ca3af; font-size:11px;">
+                                &copy; {{ date('Y') }} {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}. All Rights Reserved.
+                            </p>
+                            <p style="margin:0; color:#c0c0c0; font-size:11px;">
+                                Email ini dikirim secara otomatis. Mohon tidak membalas email ini.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>
