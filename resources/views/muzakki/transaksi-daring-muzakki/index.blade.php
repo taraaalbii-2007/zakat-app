@@ -2,7 +2,7 @@
 
 @extends('layouts.app')
 
-@section('title', 'Riwayat Transaksi Zakat Saya')
+@section('title', 'Kelola Transaksi Zakat Saya')
 
 @section('content')
     <div class="space-y-4 sm:space-y-6">

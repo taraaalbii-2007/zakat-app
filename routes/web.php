@@ -802,6 +802,12 @@ Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(fu
         Route::get('/ubah-email',    [ProfilMuzakkiController::class, 'editEmail'])->name('email.edit');
         Route::put('/ubah-email',    [ProfilMuzakkiController::class, 'updateEmail'])->name('email.update');
     });
+
+    Route::prefix('riwayat-transaksi-muzakki')->name('riwayat-transaksi-muzakki.')->group(function () {
+        // INDEX ONLY — hanya untuk melihat riwayat, tidak ada create/edit/show
+        Route::get('/', [\App\Http\Controllers\Muzakki\RiwayatTransaksiController::class, 'index'])
+            ->name('index');
+    });
 });
 
 Route::middleware(['auth', 'active.user'])->group(function () {
