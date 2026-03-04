@@ -52,10 +52,10 @@
                     <span class="nav-underline absolute bottom-0 left-4 right-4 h-0.5 bg-primary-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                 </a>
 
-                {{-- Hitung Zakat --}}
+                {{-- Hitung Zakat — font-medium (selaras dengan menu lain) --}}
                 <a href="{{ route('hitung-zakat') }}"
                    data-nav="hitung-zakat"
-                   class="nav-link relative px-4 py-2 text-sm font-semibold text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
+                   class="nav-link relative px-4 py-2 text-sm font-medium text-neutral-700 hover:text-primary-500 transition-all duration-200 group">
                     Hitung Zakat
                     <span class="nav-underline absolute bottom-0 left-4 right-4 h-0.5 bg-primary-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"></span>
                 </a>
@@ -80,7 +80,7 @@
                                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                                 Panduan Zakat
                             </a>
-                            <a href="artikel"
+                            <a href="{{ route('artikel.index') }}"
                                data-nav="artikel"
                                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                                 Artikel Terkini / Buletin
@@ -101,14 +101,26 @@
 
             {{-- Desktop CTA --}}
             <div class="hidden lg:flex items-center gap-3">
-                <a href="{{ route('login') }}"
-                   class="px-5 py-2.5 text-sm font-semibold text-primary-500 border border-primary-500 rounded-xl hover:bg-primary-50 transition-all duration-200">
-                    Masuk
-                </a>
-                <a href="{{ route('register') }}"
-                   class="px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200">
-                    Daftar Gratis
-                </a>
+                @auth
+                    {{-- Sudah login: tampilkan tombol Dashboard --}}
+                    <a href="{{ route('dashboard') }}"
+                       class="px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                @else
+                    {{-- Belum login: tampilkan Masuk & Daftar Gratis --}}
+                    <a href="{{ route('login') }}"
+                       class="px-5 py-2.5 text-sm font-semibold text-primary-500 border border-primary-500 rounded-xl hover:bg-primary-50 transition-all duration-200">
+                        Masuk
+                    </a>
+                    <a href="{{ route('register') }}"
+                       class="px-5 py-2.5 text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200">
+                        Daftar Gratis
+                    </a>
+                @endauth
             </div>
 
             {{-- Mobile Menu Button --}}
@@ -132,7 +144,7 @@
 
             <a href="{{ route('hitung-zakat') }}"
                data-nav="hitung-zakat"
-               class="nav-link px-4 py-2.5 rounded-lg text-sm font-semibold text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
+               class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                 Hitung Zakat
             </a>
 
@@ -152,7 +164,7 @@
                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                         Panduan Zakat
                     </a>
-                    <a href=""
+                    <a href="{{ route('artikel.index') }}"
                        data-nav="artikel"
                        class="nav-link px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                         Artikel Terkini / Buletin
@@ -160,15 +172,26 @@
                 </div>
             </div>
 
-            <a href="#kontak"
+            <a href="/kontak"
                data-nav="kontak"
                class="nav-link px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-primary-500 hover:bg-primary-50 transition-all duration-200">
                 Kontak
             </a>
 
+            {{-- Mobile CTA --}}
             <div class="flex flex-col gap-2 pt-3 border-t border-neutral-100 mt-2">
-                <a href="{{ route('login') }}" class="px-4 py-2.5 text-center text-sm font-semibold text-primary-500 border border-primary-500 rounded-xl hover:bg-primary-50 transition-all duration-200">Masuk</a>
-                <a href="{{ route('register') }}" class="px-4 py-2.5 text-center text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200">Daftar Gratis</a>
+                @auth
+                    <a href="{{ route('dashboard') }}"
+                       class="px-4 py-2.5 text-center text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="px-4 py-2.5 text-center text-sm font-semibold text-primary-500 border border-primary-500 rounded-xl hover:bg-primary-50 transition-all duration-200">Masuk</a>
+                    <a href="{{ route('register') }}" class="px-4 py-2.5 text-center text-sm font-semibold text-white bg-primary-500 rounded-xl hover:bg-primary-600 shadow-nz transition-all duration-200">Daftar Gratis</a>
+                @endauth
             </div>
         </div>
     </div>
