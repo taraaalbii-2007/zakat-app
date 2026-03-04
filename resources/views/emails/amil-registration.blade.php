@@ -4,454 +4,245 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi Amil Berhasil - Niat Zakat</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
-            color: #1a1a1a;
-            line-height: 1.5;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .email-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .email-card {
-            background-color: #ffffff;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 50px rgba(45, 105, 54, 0.12);
-            margin-bottom: 30px;
-        }
-
-        .email-header {
-            padding: 48px 40px 32px;
-            text-align: center;
-            position: relative;
-            background: linear-gradient(135deg, #2d6936 0%, #7cb342 100%);
-            color: white;
-        }
-
-        .header-decoration {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #2d6936, #7cb342, #4caf50);
-        }
-
-        .logo-container {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-            padding: 10px;
-        }
-
-        .logo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-        }
-
-        .email-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .email-subtitle {
-            font-size: 16px;
-            opacity: 0.95;
-            max-width: 400px;
-            margin: 0 auto;
-            font-weight: 400;
-        }
-
-        .email-content {
-            padding: 40px;
-        }
-
-        .greeting-section {
-            margin-bottom: 32px;
-            text-align: center;
-        }
-
-        .greeting {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-
-        .instruction {
-            font-size: 15px;
-            color: #666;
-            line-height: 1.6;
-            margin-top: 12px;
-        }
-
-        .success-section {
-            background: linear-gradient(135deg, #f1f8e9 0%, #ffffff 100%);
-            border-radius: 20px;
-            padding: 40px 32px;
-            margin: 32px 0;
-            border: 3px solid #7cb342;
-            text-align: center;
-            box-shadow: 0 8px 24px rgba(45, 105, 54, 0.08);
-        }
-
-        .success-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            color: #2d6936;
-        }
-
-        .success-title {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2d6936;
-            margin-bottom: 12px;
-        }
-
-        .success-message {
-            font-size: 16px;
-            color: #4a4a4a;
-            line-height: 1.6;
-        }
-
-        .section-label {
-            font-size: 14px;
-            color: #2d6936;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .data-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 12px;
-            padding: 24px 28px;
-            border-left: 5px solid #2d6936;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 12px rgba(45, 105, 54, 0.08);
-        }
-
-        .data-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(45, 105, 54, 0.1);
-        }
-
-        .data-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .data-label {
-            flex: 0 0 140px;
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .data-value {
-            flex: 1;
-            font-size: 15px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .highlight-value {
-            background: linear-gradient(135deg, #e8f5e9, #ffffff);
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 2px solid #c5e1a5;
-            font-family: 'Courier New', monospace;
-            font-weight: 700;
-            color: #2d6936;
-            display: inline-block;
-        }
-
-        .role-badge {
-            background: linear-gradient(135deg, #2d6936, #7cb342);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .mosque-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 12px;
-            padding: 24px 28px;
-            border-left: 5px solid #4caf50;
-            box-shadow: 0 4px 12px rgba(45, 105, 54, 0.08);
-        }
-
-        .mosque-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #2d6936;
-            margin-bottom: 8px;
-        }
-
-        .security-warning {
-            background: linear-gradient(135deg, #fff3e0, #ffecb3);
-            border-radius: 12px;
-            padding: 24px 28px;
-            border-left: 5px solid #ff9800;
-            margin: 24px 0;
-            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.1);
-        }
-
-        .warning-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #e65100;
-            margin-bottom: 12px;
-        }
-
-        .warning-text {
-            font-size: 13px;
-            color: #e65100;
-            line-height: 1.6;
-        }
-
-        .button-section {
-            text-align: center;
-            margin: 40px 0 20px;
-        }
-
-        .login-button {
-            background: linear-gradient(135deg, #2d6936, #7cb342);
-            color: white;
-            border: none;
-            padding: 16px 48px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            box-shadow: 0 6px 20px rgba(45, 105, 54, 0.25);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .login-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(45, 105, 54, 0.35);
-        }
-
-        .email-footer {
-            text-align: center;
-            padding: 40px 0 20px;
-        }
-
-        .footer-logo-text {
-            color: #2d6936;
-            font-weight: 700;
-            font-size: 22px;
-            margin-bottom: 12px;
-        }
-
-        .copyright {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 6px;
-        }
-
-        .auto-email {
-            font-size: 12px;
-            color: #aaa;
-        }
-
-        @media (max-width: 640px) {
-            .email-header {
-                padding: 36px 24px 24px;
-            }
-            .email-content {
-                padding: 28px 24px;
-            }
-            .data-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-        }
-    </style>
 </head>
-<body>
-    <div class="email-wrapper">
-        <div class="email-card">
-            <div class="email-header">
-                <div class="header-decoration"></div>
-                
-                @php
-                    $config = \App\Models\KonfigurasiAplikasi::first();
-                @endphp
-                
-                @if($config && $config->logo_aplikasi)
-                <div class="logo-container">
-                    <img src="{{ asset('storage/' . $config->logo_aplikasi) }}" alt="Logo">
-                </div>
-                @endif
 
-                <h1>Selamat Datang, Amil!</h1>
-                <p class="email-subtitle">Anda telah didaftarkan sebagai Amil di {{ $amil->masjid->nama ?? 'Masjid' }}</p>
-            </div>
+<body style="margin:0; padding:0; background-color:#f4f5f7; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
-            <div class="email-content">
-                <div class="greeting-section">
-                    <p class="greeting">Assalamu'alaikum, {{ $amil->nama_lengkap }}!</p>
-                    <p class="instruction">Akun Anda sebagai Amil telah berhasil dibuat. Berikut adalah informasi akun Anda:</p>
-                </div>
+    @php
+        $config = \App\Models\KonfigurasiAplikasi::first();
 
-                <div class="success-section">
-                    <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10" opacity="0.2"/>
-                        <path d="M7 13l3 3 7-7" stroke-width="3" stroke-linecap="round"/>
-                    </svg>
-                    
-                    <div class="success-title">Registrasi Berhasil!</div>
-                    <div class="success-message">
-                        Anda sekarang adalah bagian dari tim amil {{ $amil->masjid->nama ?? 'masjid' }}
-                    </div>
-                </div>
+        $logoBase64 = null;
+        $logoPath = base_path('public/images/logo.png');
+        if (file_exists($logoPath)) {
+            $logoMime = mime_content_type($logoPath);
+            $logoBase64 = 'data:' . $logoMime . ';base64,' . base64_encode(file_get_contents($logoPath));
+        }
+    @endphp
 
-                <div class="section-label">
-                    📋 Informasi Akun
-                </div>
-                
-                <div class="data-card">
-                    <div class="data-row">
-                        <div class="data-label">Nama Lengkap</div>
-                        <div class="data-value">{{ $amil->nama_lengkap }}</div>
-                    </div>
-                    
-                    <div class="data-row">
-                        <div class="data-label">Kode Amil</div>
-                        <div class="data-value">
-                            <span class="highlight-value">{{ $amil->kode_amil }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="data-row">
-                        <div class="data-label">Email</div>
-                        <div class="data-value">{{ $amil->email }}</div>
-                    </div>
-                    
-                    <div class="data-row">
-                        <div class="data-label">Username</div>
-                        <div class="data-value">
-                            <span class="highlight-value">{{ $username }}</span>
-                        </div>
-                    </div>
-                    
-                    @if($password)
-                    <div class="data-row">
-                        <div class="data-label">Password</div>
-                        <div class="data-value">
-                            <span class="highlight-value">{{ $password }}</span>
-                        </div>
-                    </div>
-                    @endif
-                    
-                    <div class="data-row">
-                        <div class="data-label">Peran</div>
-                        <div class="data-value">
-                            <span class="role-badge">Amil</span>
-                        </div>
-                    </div>
-                    
-                    <div class="data-row">
-                        <div class="data-label">Status</div>
-                        <div class="data-value">{{ ucfirst($amil->status) }}</div>
-                    </div>
-                </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f5f7; padding:40px 16px;">
+        <tr>
+            <td align="center">
 
-                <div class="section-label">
-                    🕌 Informasi Masjid
-                </div>
-                
-                <div class="mosque-card">
-                    <div class="mosque-name">{{ $amil->masjid->nama ?? 'Masjid' }}</div>
-                    <div class="data-row">
-                        <div class="data-label">Kode Masjid</div>
-                        <div class="data-value">{{ $amil->masjid->kode_masjid ?? '-' }}</div>
-                    </div>
-                    <div class="data-row">
-                        <div class="data-label">Alamat</div>
-                        <div class="data-value">{{ $amil->masjid->alamat ?? '-' }}</div>
-                    </div>
-                    @if($amil->wilayah_tugas)
-                    <div class="data-row">
-                        <div class="data-label">Wilayah Tugas</div>
-                        <div class="data-value">{{ $amil->wilayah_tugas }}</div>
-                    </div>
-                    @endif
-                </div>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.08);">
 
-                @if($password)
-                <div class="security-warning">
-                    <div class="warning-title">⚠️ Perhatian Keamanan</div>
-                    <div class="warning-text">
-                        Email ini berisi password akun Anda. Segera ubah password setelah login pertama kali dan jangan bagikan email ini kepada siapapun.
-                    </div>
-                </div>
-                @endif
+                    <!-- ===== HEADER ===== -->
+                    <tr>
+                        <td style="background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); padding:40px 40px 36px; text-align:center;">
 
-                <div class="button-section">
-                    <a href="{{ url('/login') }}" class="login-button">
-                        Login Sekarang
-                    </a>
-                    <p style="margin-top: 12px; font-size: 13px; color: #666;">
-                        Klik tombol di atas untuk login ke sistem
-                    </p>
-                </div>
-            </div>
-        </div>
+                            @if($logoBase64)
+                            <div style="margin-bottom:20px;">
+                                <img src="{{ $logoBase64 }}"
+                                     alt="Logo {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}"
+                                     width="72" height="72"
+                                     style="width:72px; height:72px; border-radius:50%; object-fit:cover; background-color:#ffffff; display:inline-block;">
+                            </div>
+                            @endif
 
-        <div class="email-footer">
-            <div class="footer-logo-text">{{ $config->nama_aplikasi ?? 'Niat Zakat' }}</div>
-            <p class="copyright">© {{ date('Y') }} {{ $config->nama_aplikasi ?? 'Niat Zakat' }}. Hak Cipta Dilindungi.</p>
-            <p class="auto-email">
-                Email ini dikirim secara otomatis oleh sistem.<br>
-                Jangan balas email ini.
-            </p>
-        </div>
-    </div>
+                            <h1 style="margin:0 0 8px; color:#ffffff; font-size:24px; font-weight:700;">
+                                Selamat Datang, Amil!
+                            </h1>
+                            <p style="margin:0; color:rgba(255,255,255,0.85); font-size:14px; line-height:1.6;">
+                                Anda telah didaftarkan sebagai Amil di <strong style="color:#ffffff;">{{ $amil->masjid->nama ?? 'Masjid' }}</strong>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ===== CONTENT ===== -->
+                    <tr>
+                        <td style="padding:40px 48px;">
+
+                            <!-- Greeting -->
+                            <p style="margin:0 0 6px; color:#1a1a1a; font-size:16px; font-weight:600;">
+                                Assalamu'alaikum, {{ $amil->nama_lengkap }}!
+                            </p>
+                            <p style="margin:0 0 32px; color:#6b7280; font-size:14px; line-height:1.7;">
+                                Akun Anda sebagai <strong style="color:#2d6936;">Amil</strong> di <strong style="color:#2d6936;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong> telah berhasil dibuat. Berikut adalah informasi akun Anda:
+                            </p>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== INFORMASI AKUN ===== -->
+                            <p style="margin:0 0 16px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
+                                Informasi Akun
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+
+                                <!-- Nama Lengkap -->
+                                <tr>
+                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Lengkap</td>
+                                    <td style="padding:7px 4px; width:10px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->nama_lengkap }}</td>
+                                </tr>
+
+                                <!-- Kode Amil -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Amil</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->kode_amil }}</td>
+                                </tr>
+
+                                <!-- Email -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Email</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->email }}</td>
+                                </tr>
+
+                                <!-- Username -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Username</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $username }}</td>
+                                </tr>
+
+                                <!-- Password -->
+                                @if($password)
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Password</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $password }}</td>
+                                </tr>
+                                @endif
+
+                                <!-- Peran -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Peran</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">Amil</td>
+                                </tr>
+
+                                <!-- Status -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Status</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ ucfirst($amil->status) }}</td>
+                                </tr>
+
+                            </table>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== INFORMASI MASJID ===== -->
+                            <p style="margin:0 0 16px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
+                                Informasi Masjid
+                            </p>
+
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+
+                                <!-- Nama Masjid -->
+                                <tr>
+                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Masjid</td>
+                                    <td style="padding:7px 4px; width:10px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->nama ?? '-' }}</td>
+                                </tr>
+
+                                <!-- Kode Masjid -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Masjid</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->kode_masjid ?? '-' }}</td>
+                                </tr>
+
+                                <!-- Alamat -->
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Alamat</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->alamat ?? '-' }}</td>
+                                </tr>
+
+                                <!-- Wilayah Tugas (jika ada) -->
+                                @if($amil->wilayah_tugas)
+                                <tr>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Wilayah Tugas</td>
+                                    <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->wilayah_tugas }}</td>
+                                </tr>
+                                @endif
+
+                            </table>
+
+                            <!-- DIVIDER -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td height="1" style="background-color:#f0f0f0;"></td>
+                                </tr>
+                            </table>
+
+                            <!-- ===== SECURITY WARNING (jika ada password) ===== -->
+                            @if($password)
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px; background-color:#fff8f0; border-left:4px solid #ff9800; border-radius:6px;">
+                                <tr>
+                                    <td style="padding:16px 20px;">
+                                        <p style="margin:0 0 8px; color:#e65100; font-size:13px; font-weight:700;">⚠️ Perhatian Keamanan</p>
+                                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                            <tr>
+                                                <td style="padding:3px 0; color:#92400e; font-size:13px; line-height:1.6;">
+                                                    - <strong style="color:#78350f;">Segera ubah password</strong> setelah login pertama kali.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:3px 0; color:#92400e; font-size:13px; line-height:1.6;">
+                                                    - <strong style="color:#78350f;">Jangan bagikan</strong> email ini kepada siapapun.
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding:3px 0; color:#92400e; font-size:13px; line-height:1.6;">
+                                                    - Jika Anda tidak merasa mendaftar akun ini, segera hubungi administrator.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            @endif
+
+                            <!-- ===== TOMBOL LOGIN ===== -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:0;">
+                                <tr>
+                                    <td style="text-align:center; padding:8px 0;">
+                                        <a href="{{ url('/login') }}"
+                                           style="display:inline-block; background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); color:#ffffff; font-size:15px; font-weight:700; text-decoration:none; padding:14px 40px; border-radius:50px; letter-spacing:0.5px;">
+                                            Login Sekarang &rarr;
+                                        </a>
+                                        <p style="margin:10px 0 0; color:#9ca3af; font-size:12px;">Klik tombol di atas untuk login ke sistem</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- ===== FOOTER ===== -->
+                    <tr>
+                        <td style="background-color:#f8faf8; padding:24px 48px; text-align:center; border-top:1px solid #f0f0f0;">
+                            <p style="margin:0 0 4px; color:#2d6936; font-size:15px; font-weight:700;">
+                                {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}
+                            </p>
+                            <p style="margin:0 0 2px; color:#9ca3af; font-size:11px;">
+                                &copy; {{ date('Y') }} {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}. All Rights Reserved.
+                            </p>
+                            <p style="margin:0; color:#c0c0c0; font-size:11px;">
+                                Email ini dikirim secara otomatis. Mohon tidak membalas email ini.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 </html>

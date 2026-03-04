@@ -45,7 +45,7 @@
         }
 
         /* ════════════════════════════════════════════
-           BACKGROUND — Hijau #17a34a + Animasi Modern
+           BACKGROUND
         ════════════════════════════════════════════ */
         .auth-bg {
             position: fixed;
@@ -55,7 +55,6 @@
             overflow: hidden;
         }
 
-        /* Mesh gradient animasi */
         .auth-bg::before {
             content: '';
             position: absolute;
@@ -72,7 +71,6 @@
             100% { opacity: .95; transform: scale(.98)  rotate(-1deg); }
         }
 
-        /* Orb 1 — kiri atas, besar, bergerak */
         .bg-orb-1 {
             position: absolute;
             width: 560px; height: 560px;
@@ -88,7 +86,6 @@
             66%      { transform: translate(-30px, 90px) scale(.92); }
         }
 
-        /* Orb 2 — kanan bawah */
         .bg-orb-2 {
             position: absolute;
             width: 640px; height: 640px;
@@ -104,7 +101,6 @@
             70%      { transform: translate(40px, -20px) scale(.90); }
         }
 
-        /* Orb 3 — tengah, kecil, cepat */
         .bg-orb-3 {
             position: absolute;
             width: 300px; height: 300px;
@@ -119,7 +115,6 @@
             50%      { transform: translate(-70px, 80px) scale(1.25); opacity: 1; }
         }
 
-        /* Orb 4 — atas kanan, aksen terang */
         .bg-orb-4 {
             position: absolute;
             width: 280px; height: 280px;
@@ -134,7 +129,6 @@
             50%      { transform: translateY(80px) scale(1.15); }
         }
 
-        /* Dot grid pattern */
         .bg-dots {
             position: absolute;
             inset: 0;
@@ -144,10 +138,8 @@
             mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 100%);
         }
 
-        /* bg-lines removed — caused visual noise */
         .bg-lines { display: none; }
 
-        /* Ornamen geometris kanan atas — berputar sangat lambat */
         .bg-geo-tr {
             position: absolute;
             top: -100px; right: -100px;
@@ -156,7 +148,6 @@
             animation: geoSpin 90s linear infinite;
             pointer-events: none;
         }
-        /* Ornamen kiri bawah */
         .bg-geo-bl {
             position: absolute;
             bottom: -110px; left: -110px;
@@ -170,7 +161,6 @@
             to   { transform: rotate(360deg); }
         }
 
-        /* Partikel mengambang */
         .bg-particle {
             position: absolute;
             border-radius: 50%;
@@ -218,11 +208,6 @@
                 0 0 0 1px rgba(255,255,255,.14);
             animation: cardReveal .65s cubic-bezier(.16,1,.3,1) both;
             isolation: isolate;
-        }
-        /* reCAPTCHA badge — pastikan selalu bisa diklik */
-        .grecaptcha-badge {
-            z-index: 99999 !important;
-            pointer-events: all !important;
         }
 
         @keyframes cardReveal {
@@ -275,7 +260,6 @@
             padding: 1.75rem 2rem;
         }
 
-        /* ── Wrapper tengah panel kiri ── */
         .left-center {
             display: flex;
             flex-direction: column;
@@ -283,8 +267,10 @@
             width: 100%;
         }
 
-        /* ── Logo kiri — BULAT BESAR ── */
         .left-logo {
+            position: absolute;
+            top: 1.75rem;
+            left: 2rem;
             display: flex;
             align-items: center;
             gap: .9rem;
@@ -296,7 +282,6 @@
             height: 68px;
             border-radius: 50%;
             overflow: hidden;
-            /* bg putih agar mix-blend-mode multiply hapus bg putih logo */
             background: white;
             border: 3px solid rgba(255,255,255,.55);
             display: flex;
@@ -317,7 +302,6 @@
             object-fit: cover;
             object-position: center;
             padding: 0;
-            /* multiply: bg putih logo lenyap, hanya icon hijau yang tampil */
             mix-blend-mode: multiply;
         }
         .left-logo-icon svg {
@@ -340,7 +324,6 @@
             margin-top: .22rem;
         }
 
-        /* ── Teks bawah ── */
         .left-bottom {
             animation: fadeUp .6s cubic-bezier(.16,1,.3,1) .2s both;
         }
@@ -368,12 +351,6 @@
             line-height: 1.6;
             max-width: none;
         }
-
-        .left-logo {
-    position: absolute;
-    top: 1.75rem;
-    left: 2rem;
-}
 
         @keyframes fadeDown {
             from { opacity: 0; transform: translateY(-12px); }
@@ -419,7 +396,6 @@
             pointer-events: none;
         }
 
-        /* ── Logo kanan — juga bulat ── */
         .right-logo-row {
             display: flex;
             align-items: center;
@@ -463,7 +439,6 @@
             margin-top: .18rem;
         }
 
-        /* ── Heading ── */
         .right-heading {
             margin-bottom: 1.1rem;
             animation: fadeUp .45s ease .14s both;
@@ -482,7 +457,6 @@
             line-height: 1.5;
         }
 
-        /* ── Form compact ── */
         .form-group {
             margin-bottom: .75rem;
             animation: fadeUp .4s ease var(--anim-delay, .2s) both;
@@ -614,6 +588,46 @@
         .auth-right-slot { position: relative; z-index: 1; }
 
         /* ══════════════════════════════════════
+           RECAPTCHA BADGE
+           - Mulai tersembunyi (opacity:0, pointer-events:none)
+           - Muncul setelah splash selesai via JS (class grecaptcha-ready di <html>)
+           - Expand saat diklik terasa smooth & polished
+        ══════════════════════════════════════ */
+        .grecaptcha-badge {
+            z-index: 99999 !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+            transform: translateX(10px) !important;
+            visibility: visible !important;
+            border-radius: 12px 0 0 12px !important;
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.18),
+                0 1px 6px  rgba(0, 0, 0, 0.10) !important;
+            /* ── Override transisi bawaan Google (right 0.3s ease)
+               dengan kurva yang jauh lebih smooth ── */
+            transition:
+                right   0.52s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.52s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s ease !important;
+        }
+
+        /* Muncul setelah splash selesai */
+        .grecaptcha-ready .grecaptcha-badge {
+            opacity: 1 !important;
+            pointer-events: all !important;
+            transform: translateX(0px) !important;
+        }
+
+        /* Hover — sedikit angkat + shadow lebih dalam */
+        .grecaptcha-ready .grecaptcha-badge:hover {
+            box-shadow:
+                0 8px 28px rgba(0, 0, 0, 0.22),
+                0 2px 10px rgba(0, 0, 0, 0.12) !important;
+            transform: translateX(-2px) !important;
+        }
+
+        /* ══════════════════════════════════════
            TOAST
         ══════════════════════════════════════ */
         .toast-container {
@@ -663,12 +677,6 @@
             .toast-container { right:.75rem; left:.75rem; top:.75rem; }
             .toast { min-width:auto; width:100%; }
         }
-
-        .left-logo {
-    position: absolute;
-    top: 1.75rem;
-    left: 2rem;
-}
     </style>
 
     @stack('styles')
@@ -687,7 +695,6 @@
     <div class="bg-dots"></div>
     <div class="bg-lines"></div>
 
-    {{-- Ornamen geometris berputar --}}
     <svg class="bg-geo-tr" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="210" cy="210" r="200" stroke="white" stroke-width="1.4"/>
         <circle cx="210" cy="210" r="168" stroke="white" stroke-width="1.0"/>
@@ -715,7 +722,6 @@
         <polygon points="190,362 22,102 358,102" stroke="white" stroke-width=".5" fill="none" opacity=".25"/>
     </svg>
 
-    {{-- Partikel mengambang — dibuat via JS --}}
     <div id="particles"></div>
 </div>
 
@@ -741,46 +747,41 @@
             <div class="auth-left-overlay"></div>
 
             <div class="auth-left-inner">
-
-                {{-- Konten tengah --}}
                 <div class="left-center">
 
-                {{-- Logo atas — BULAT & BESAR --}}
-                <div class="left-logo">
-                    <div class="left-logo-icon">
-                        @if($config->logo_aplikasi)
-                            <img src="{{ asset('storage/' . $config->logo_aplikasi) }}" alt="{{ $config->nama_aplikasi }}"/>
-                        @else
-                            <svg viewBox="0 0 24 24">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
-                            </svg>
-                        @endif
+                    <div class="left-logo">
+                        <div class="left-logo-icon">
+                            @if($config->logo_aplikasi)
+                                <img src="{{ asset('storage/' . $config->logo_aplikasi) }}" alt="{{ $config->nama_aplikasi }}"/>
+                            @else
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
+                                </svg>
+                            @endif
+                        </div>
+                        <div class="left-logo-text">
+                            {{ $config->nama_aplikasi }}
+                            @if($config->tagline)
+                                <small>{{ $config->tagline }}</small>
+                            @endif
+                        </div>
                     </div>
-                    <div class="left-logo-text">
-                        {{ $config->nama_aplikasi }}
-                        @if($config->tagline)
-                            <small>{{ $config->tagline }}</small>
-                        @endif
+
+                    <div class="left-bottom">
+                        <div class="left-accent-line"></div>
+                        <h2 class="left-headline">
+                            Bayar Zakat,<br>
+                            <span>Raih Berkah</span><br>
+                            Tanpa Batas
+                        </h2>
+                        <p class="left-desc">
+                            {{ $config->deskripsi_aplikasi ?? 'Platform digital untuk kemudahan pembayaran zakat, infaq, dan sedekah — aman, transparan, dan amanah.' }}
+                        </p>
                     </div>
-                </div>
 
-                {{-- Teks bawah — TANPA stats --}}
-                <div class="left-bottom">
-                    <div class="left-accent-line"></div>
-                    <h2 class="left-headline">
-                        Bayar Zakat,<br>
-                        <span>Raih Berkah</span><br>
-                        Tanpa Batas
-                    </h2>
-                    <p class="left-desc">
-                        {{ $config->deskripsi_aplikasi ?? 'Platform digital untuk kemudahan pembayaran zakat, infaq, dan sedekah — aman, transparan, dan amanah.' }}
-                    </p>
                 </div>
-
-                </div>{{-- /left-center --}}
             </div>
         </div>
-
 
         {{-- ══════════════════════
              PANEL KANAN
@@ -831,6 +832,34 @@
             `;
             container.appendChild(p);
         }
+    })();
+
+    /* ════════════════════════════════════════════════════════
+       RECAPTCHA — Muncul setelah splash screen selesai
+       Memanfaatkan dua mekanisme notifikasi dari splash-screen:
+         1. CustomEvent 'splashHidden'  → via addEventListener
+         2. window.__onSplashHidden[]   → callback queue
+    ════════════════════════════════════════════════════════ */
+    (function () {
+        /**
+         * Aktifkan reCAPTCHA badge dengan menambahkan class
+         * 'grecaptcha-ready' ke <html>. CSS akan mengambil alih
+         * untuk fade-in yang smooth (opacity + translateX).
+         */
+        function showRecaptchaBadge() {
+            document.documentElement.classList.add('grecaptcha-ready');
+        }
+
+        // Metode 1: CustomEvent dari splash-screen
+        document.addEventListener('splashHidden', showRecaptchaBadge, { once: true });
+
+        // Metode 2: Callback queue (fallback & sinkronisasi)
+        window.__onSplashHidden = window.__onSplashHidden || [];
+        window.__onSplashHidden.push(showRecaptchaBadge);
+
+        // Metode 3: Failsafe — jika splash tidak ada/sudah lewat,
+        // aktifkan badge setelah MAX_MS splash (4500ms) + buffer
+        setTimeout(showRecaptchaBadge, 5500);
     })();
 
     /* ── Toast ── */
