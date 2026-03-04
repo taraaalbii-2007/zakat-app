@@ -44,14 +44,27 @@ class LandingController extends Controller
         ));
     }
 
-    public function hitungZakat()
+   public function hitungZakat()
     {
-        $hargaTerbaru     = HargaEmasPerak::where('is_active', true)->orderBy('tanggal', 'desc')->first();
-        $hargaEmasPerGram = $hargaTerbaru ? (int) $hargaTerbaru->harga_emas_per_gram : 1900000;
-        $nisabMaal        = $hargaEmasPerGram * 85;
-        $nisabBulanan     = (int) round($nisabMaal / 12);
+        $hargaTerbaru = HargaEmasPerak::where('is_active', true)
+            ->orderBy('tanggal', 'desc')
+            ->first();
 
-        return view('pages.hitung-zakat', compact('hargaTerbaru', 'hargaEmasPerGram', 'nisabMaal', 'nisabBulanan'));
+        // Kolom DB: harga_emas_pergram (BUKAN harga_emas_per_gram)
+        // Fallback 1.900.000 jika belum ada data di tabel
+        $hargaEmasPerGram = ($hargaTerbaru && $hargaTerbaru->harga_emas_pergram > 0)
+            ? (int) $hargaTerbaru->harga_emas_pergram
+            : 1900000;
+
+        $nisabMaal    = $hargaEmasPerGram * 85;
+        $nisabBulanan = (int) round($nisabMaal / 12);
+
+        return view('pages.hitung-zakat', compact(
+            'hargaTerbaru',
+            'hargaEmasPerGram',
+            'nisabMaal',
+            'nisabBulanan'
+        ));
     }
 
     public function panduanZakat()

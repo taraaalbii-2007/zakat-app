@@ -15,12 +15,13 @@
                         : \Carbon\Carbon::parse($bulletin->created_at)->isoFormat('DD MMM YYYY');
     $views         = $bulletin->view_count ?? 0;
     $url           = route('artikel.show', $bulletin->slug);
+    $caption       = $bulletin->image_caption ?? null;
 @endphp
 
 <article class="bul-card">
 
     {{-- ── THUMBNAIL ─────────────────────────────── --}}
-    <a href="{{ $url }}" class="bul-card__thumb-link" tabindex="-1" aria-hidden="true">
+    <a href="{{ $url }}" class="bul-card__thumb-link">
         @if($thumbnailUrl)
             <img
                 src="{{ $thumbnailUrl }}"
@@ -29,7 +30,6 @@
                 loading="lazy"
             >
         @else
-            {{-- Placeholder jika tidak ada thumbnail --}}
             <div class="bul-card__thumb-placeholder">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <rect width="48" height="48" rx="10" fill="#dcfce7"/>
@@ -39,30 +39,42 @@
                 <span>Tidak ada gambar</span>
             </div>
         @endif
+
+        {{-- Caption sumber foto --}}
+        @if($caption)
+            <div class="bul-card__caption">{{ $caption }}</div>
+        @endif
     </a>
 
     {{-- ── BODY ─────────────────────────────────── --}}
     <div class="bul-card__body">
 
-        {{-- Kategori --}}
-        @if($kategoriNama)
-            <span class="bul-card__kategori">{{ $kategoriNama }}</span>
-        @endif
+        {{-- Kategori + Meta dalam satu baris --}}
+        <div class="bul-card__top-row">
+            @if($kategoriNama)
+                <span class="bul-card__kategori">{{ $kategoriNama }}</span>
+            @endif
 
-        {{-- Meta: tanggal & views --}}
-        <div class="bul-card__meta">
-            <span class="bul-card__meta-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                {{ $tanggal }}
-            </span>
-            <span class="bul-card__meta-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-                {{ $views }}
-            </span>
+            <div class="bul-card__meta">
+                <span class="bul-card__meta-item">
+                    {{-- Ikon kalender --}}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    {{ $tanggal }}
+                </span>
+                <span class="bul-card__meta-item">
+                    {{-- Ikon views --}}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    {{ number_format($views) }}
+                </span>
+            </div>
         </div>
 
         {{-- Judul --}}
@@ -77,11 +89,13 @@
 
         {{-- ── FOOTER ─────────────────────────────── --}}
         <div class="bul-card__footer">
+
             {{-- Author --}}
             <div class="bul-card__author">
                 <span class="bul-card__author-avatar" aria-hidden="true">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
                     </svg>
                 </span>
                 <span class="bul-card__author-nama">{{ $authorNama }}</span>
@@ -90,11 +104,12 @@
             {{-- Tombol baca --}}
             <a href="{{ $url }}" class="bul-card__baca" aria-label="Baca selengkapnya: {{ $bulletin->judul }}">
                 Baca selengkapnya
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
                 </svg>
             </a>
-        </div>
 
+        </div>
     </div>
 </article>

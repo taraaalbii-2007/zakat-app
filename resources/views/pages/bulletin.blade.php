@@ -38,11 +38,11 @@
     .bul-search-row {
         display: flex;
         justify-content: center;
-        padding: 0 5rem;
+        padding: 0 1rem;
         margin-bottom: 0.6rem;
     }
-    @media (max-width: 1024px) { .bul-search-row { padding: 0 2.5rem; } }
-    @media (max-width: 640px)  { .bul-search-row { padding: 0 1rem; } }
+    @media (min-width: 640px)  { .bul-search-row { padding: 0 2.5rem; } }
+    @media (min-width: 1024px) { .bul-search-row { padding: 0 5rem; } }
 
     .bul-search-wrap {
         position: relative;
@@ -86,9 +86,9 @@
 
     /* ── FILTER PILLS ROW (baris bawah) ─────────── */
     .bul-filter-inner {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 5rem;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 1rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -96,8 +96,8 @@
         flex-wrap: wrap;
         min-height: 36px;
     }
-    @media (max-width: 1024px) { .bul-filter-inner { padding: 0 2.5rem; } }
-    @media (max-width: 640px)  { .bul-filter-inner { padding: 0 1rem; } }
+    @media (min-width: 640px)  { .bul-filter-inner { padding: 0 2.5rem; } }
+    @media (min-width: 1024px) { .bul-filter-inner { padding: 0 5rem; } }
 
     .bul-filter__btn {
         display: inline-flex;
@@ -123,21 +123,21 @@
 
     /* ── SECTION UTAMA ──────────────────────────── */
     .bul-section {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1.5rem 5rem 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1.5rem 1rem 0;
     }
-    @media (max-width: 1024px) { .bul-section { padding: 1.25rem 2.5rem 0; } }
-    @media (max-width: 640px)  { .bul-section { padding: 1rem 1rem 0; } }
+    @media (min-width: 640px)  { .bul-section { padding: 1.25rem 2.5rem 0; } }
+    @media (min-width: 1024px) { .bul-section { padding: 1.5rem 5rem 0; } }
 
     /* ── GRID 3 KOLOM ───────────────────────────── */
     .bul-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
         gap: 1.75rem;
     }
-    @media (max-width: 1024px) { .bul-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 640px)  { .bul-grid { grid-template-columns: 1fr; } }
+    @media (min-width: 640px)  { .bul-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .bul-grid { grid-template-columns: repeat(3, 1fr); } }
 
     /* ── CARD ───────────────────────────────────── */
     .bul-card {
@@ -149,6 +149,7 @@
         flex-direction: column;
         transition: transform .22s, box-shadow .22s, border-color .22s;
         box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        height: 100%;
     }
     .bul-card:hover {
         transform: translateY(-4px);
@@ -172,6 +173,35 @@
         transition: transform .35s ease;
     }
     .bul-card:hover .bul-card__thumb { transform: scale(1.04); }
+    /* Caption sumber foto - muncul saat hover */
+    .bul-card__thumb-link {
+        position: relative;
+    }
+    .bul-card__caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.38) 70%, transparent 100%);
+        color: #ffffff;
+        font-size: 0.72rem;
+        font-style: italic;
+        font-weight: 400;
+        padding: 1.5rem 0.85rem 0.55rem;
+        display: flex;
+        align-items: flex-end;
+        gap: 0.3rem;
+        line-height: 1.45;
+        letter-spacing: 0.01em;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity .25s ease, transform .25s ease;
+    }
+    .bul-card:hover .bul-card__caption {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     .bul-card__thumb-placeholder {
         width: 100%;
         height: 100%;
@@ -187,47 +217,68 @@
 
     /* Body */
     .bul-card__body {
-        padding: 1.25rem 1.25rem 1.1rem;
+        padding: 1.1rem 1.25rem 1.1rem;
         display: flex;
         flex-direction: column;
         flex: 1;
+        gap: 0.55rem;
+    }
+
+    /* Top row: kategori + meta sejajar */
+    .bul-card__top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 0.5rem;
+        flex-wrap: wrap;
     }
 
     /* Kategori badge */
     .bul-card__kategori {
-        display: inline-block;
-        font-size: 0.72rem;
-        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.65rem;
+        border-radius: 99px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        font-size: 0.70rem;
+        font-weight: 700;
         color: #15803d;
         text-transform: uppercase;
         letter-spacing: 0.07em;
         line-height: 1;
+        white-space: nowrap;
     }
 
     /* Meta */
     .bul-card__meta {
         display: flex;
         align-items: center;
-        gap: 0.85rem;
+        gap: 0.75rem;
+        flex-shrink: 0;
     }
     .bul-card__meta-item {
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
-        font-size: 0.78rem;
-        color: #6b7280;
+        gap: 0.28rem;
+        font-size: 0.75rem;
+        color: #9ca3af;
         font-weight: 400;
     }
 
     /* Judul */
     .bul-card__judul {
-        font-size: 1rem;
+        font-size: 0.975rem;
         font-weight: 700;
         color: #111827;
-        line-height: 1.45;
+        line-height: 1.5;
         margin: 0;
         flex: 0 0 auto;
+        /* Clamp 2 baris agar tinggi card seragam */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
     .bul-card__judul a {
         color: inherit;
@@ -238,11 +289,15 @@
 
     /* Excerpt */
     .bul-card__excerpt {
-        font-size: 0.85rem;
-        color: #6b7280;
-        line-height: 1.7;
+        font-size: 0.78rem;
+        color: #9ca3af;
+        line-height: 1.65;
         margin: 0;
         flex: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     /* Footer */
@@ -261,25 +316,26 @@
         display: flex;
         align-items: center;
         gap: 0.4rem;
+        min-width: 0;
     }
     .bul-card__author-avatar {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 28px; height: 28px;
+        width: 26px; height: 26px;
         border-radius: 50%;
         background: #dcfce7;
         color: #16a34a;
         flex-shrink: 0;
     }
     .bul-card__author-nama {
-        font-size: 0.80rem;
+        font-size: 0.78rem;
         font-weight: 500;
-        color: #374151;
+        color: #6b7280;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 110px;
+        max-width: 120px;
     }
 
     /* Tombol baca */
@@ -287,11 +343,12 @@
         display: inline-flex;
         align-items: center;
         gap: 0.3rem;
-        font-size: 0.80rem;
+        font-size: 0.78rem;
         font-weight: 600;
         color: #16a34a;
         text-decoration: none;
         white-space: nowrap;
+        flex-shrink: 0;
         transition: gap .18s, color .18s;
     }
     .bul-card__baca:hover {
@@ -311,14 +368,16 @@
 
     /* ── PAGINATION ─────────────────────────────── */
     .bul-pagination {
-        max-width: 1200px;
-        margin: 3rem auto 0;
-        padding: 0 5rem;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 3rem 0 0;
+        padding: 0 1rem;
         display: flex;
         justify-content: center;
     }
-    @media (max-width: 1024px) { .bul-pagination { padding: 0 2.5rem; } }
-    @media (max-width: 640px)  { .bul-pagination { padding: 0 1rem; } }
+    @media (min-width: 640px)  { .bul-pagination { padding: 0 2.5rem; } }
+    @media (min-width: 1024px) { .bul-pagination { padding: 0 5rem; } }
+
     .bul-pagination .pagination { gap: 0.35rem; }
     .bul-pagination .page-link {
         border-radius: 8px !important;
