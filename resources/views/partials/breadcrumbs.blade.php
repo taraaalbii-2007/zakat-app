@@ -5,71 +5,43 @@
 
 @if(count($breadcrumbs) > 0)
 <nav class="mb-6" aria-label="Breadcrumb">
-    <div class="w-full flex items-center gap-2 px-4 py-2.5
-                bg-white border border-neutral-200/70
-                rounded-xl shadow-sm
-                ring-1 ring-inset ring-white/80">
+    <div class="w-full flex items-center gap-1.5 px-5 py-3.5
+                bg-white border border-neutral-200
+                rounded-xl shadow-sm">
 
-        {{-- Home --}}
+        {{-- Home Icon --}}
         <a href="{{ url('/') }}"
-           class="group flex items-center gap-2 shrink-0
-                  text-xs font-medium text-neutral-400
-                  hover:text-green-600 transition-all duration-200">
-            <span class="flex items-center justify-center w-6 h-6 rounded-lg
-                         bg-neutral-100 text-neutral-400
-                         group-hover:bg-green-50 group-hover:text-green-600
-                         transition-all duration-200 shadow-inner">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
-            </span>
-            <span class="hidden sm:inline tracking-wide">Beranda</span>
+           class="flex items-center shrink-0
+                  text-neutral-500 hover:text-neutral-800
+                  transition-colors duration-150">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
         </a>
 
         @foreach($breadcrumbs as $label => $url)
 
             {{-- Separator --}}
-            <svg class="w-3 h-3 shrink-0 text-neutral-300" fill="none" stroke="currentColor"
-                 stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-            </svg>
+            <span class="text-neutral-400 text-lg leading-none select-none">›</span>
 
             @if($url && !$loop->last)
                 <a href="{{ $url }}"
-                   class="text-xs font-medium text-neutral-400 hover:text-green-600
-                          transition-colors duration-200 whitespace-nowrap tracking-wide">
+                   class="text-sm font-medium text-neutral-400 hover:text-neutral-700
+                          transition-colors duration-150 whitespace-nowrap">
                     {{ $label }}
                 </a>
             @else
-                {{-- Active page — inline, same flow --}}
-                <span class="flex items-center gap-2 whitespace-nowrap">
-                    <span class="relative flex h-2 w-2 shrink-0">
-                        <span class="animate-ping absolute inline-flex h-full w-full
-                                     rounded-full bg-green-400 opacity-60"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    <span class="text-xs font-bold text-neutral-800 tracking-wide">
-                        {{ $label }}
-                    </span>
+                <span class="text-sm font-medium text-neutral-700 whitespace-nowrap">
+                    {{ $label }}
                 </span>
             @endif
 
         @endforeach
 
         @hasSection('breadcrumb-current')
-            <svg class="w-3 h-3 shrink-0 text-neutral-300" fill="none" stroke="currentColor"
-                 stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-            </svg>
-            <span class="flex items-center gap-2 whitespace-nowrap">
-                <span class="relative flex h-2 w-2 shrink-0">
-                    <span class="animate-ping absolute inline-flex h-full w-full
-                                 rounded-full bg-green-400 opacity-60"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                </span>
-                <span class="text-xs font-bold text-neutral-800 tracking-wide">
-                    @yield('breadcrumb-current')
-                </span>
+            <span class="text-neutral-400 text-lg leading-none select-none">›</span>
+            <span class="text-sm font-medium text-neutral-700 whitespace-nowrap">
+                @yield('breadcrumb-current')
             </span>
         @endif
 
