@@ -418,6 +418,7 @@
 
 
 {{-- ============================================================
+<<<<<<< HEAD
      SECTION 4 — TESTIMONI (DYNAMIC dari DB, approved oleh superadmin)
      Letakkan di: resources/views/partials/landing/content.blade.php
      Gantikan section id="testimoni" yang lama sepenuhnya
@@ -531,6 +532,8 @@
 
 
 {{-- ============================================================
+=======
+>>>>>>> cadfa6fe37346c96afe8e335c45cb6467459b48a
      GLOBAL SCROLL OBSERVER
      ============================================================ --}}
 <script>

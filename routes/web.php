@@ -145,6 +145,7 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         Route::delete('/hapus-favicon', [KonfigurasiGlobalController::class, 'hapusFavicon'])->name('hapus-favicon');
     });
 
+
     // Kelola Masjid
     Route::resource('masjid', MasjidController::class)->parameters([
         'masjid' => 'masjid:uuid'
