@@ -10,11 +10,12 @@ use App\Models\Bulletin;
 use App\Models\KategoriBulletin;
 use App\Models\ProgramZakat;
 use App\Models\TransaksiPenyaluran;
+use App\Models\Testimoni;
 use Illuminate\Support\Facades\DB;
 
 class LandingController extends Controller
 {
-    public function index()
+  public function index()
     {
         $hargaTerbaru = HargaEmasPerak::where('is_active', true)
             ->orderBy('tanggal', 'desc')
@@ -34,13 +35,20 @@ class LandingController extends Controller
 
         $totalProgram = ProgramZakat::count();
 
+        // ── TAMBAHAN: Testimoni yang sudah diapprove superadmin ──
+        $testimonis = Testimoni::where('is_approved', true)
+            ->orderBy('approved_at', 'desc')
+            ->limit(6) // maksimal 6 tampil di landing
+            ->get();
+
         return view('layouts.guest', compact(
             'hargaTerbaru',
             'jenisZakat',
             'totalMuzaki',
             'totalMustahik',
             'totalDana',
-            'totalProgram'
+            'totalProgram',
+            'testimonis', // ← tambahkan ini
         ));
     }
 

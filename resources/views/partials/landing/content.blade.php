@@ -418,8 +418,9 @@
 
 
 {{-- ============================================================
-     SECTION 4 — TESTIMONI
-     Background character: SVG wave shapes (top & bottom) + horizontal line grid
+     SECTION 4 — TESTIMONI (DYNAMIC dari DB, approved oleh superadmin)
+     Letakkan di: resources/views/partials/landing/content.blade.php
+     Gantikan section id="testimoni" yang lama sepenuhnya
      ============================================================ --}}
 <section id="testimoni" class="relative py-20 bg-white overflow-hidden">
     <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
@@ -436,11 +437,9 @@
         <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 180" preserveAspectRatio="none" style="height:180px;opacity:0.055;">
             <path fill="#2d6936" d="M0,96L60,90.7C120,85,240,75,360,80C480,85,600,107,720,106.7C840,107,960,85,1080,69.3C1200,53,1320,43,1380,37.3L1440,32L1440,180L0,180Z"/>
         </svg>
-        {{-- Wave top (flipped) --}}
         <svg class="absolute top-0 right-0 w-full" viewBox="0 0 1440 140" preserveAspectRatio="none" style="height:140px;opacity:0.04;transform:scaleX(-1) scaleY(-1);">
             <path fill="#2d6936" d="M0,96L60,90.7C120,85,240,75,360,80C480,85,600,107,720,106.7C840,107,960,85,1080,69.3C1200,53,1320,43,1380,37.3L1440,32L1440,140L0,140Z"/>
         </svg>
-        {{-- Center clarity --}}
         <div class="absolute inset-0" style="background:radial-gradient(ellipse 80% 70% at 50% 45%, rgba(255,255,255,0.85) 0%, transparent 100%);"></div>
     </div>
 
@@ -451,61 +450,82 @@
             <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Cerita inspiratif dari para muzaki yang telah mempercayakan zakatnya melalui platform kami</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div class="nz-reveal" style="transition-delay:0.05s">
-                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
-                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
-                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-                    </div>
-                    <div class="mb-6">
-                        <div class="flex items-center space-x-1 mb-4">
-                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
+        @if(isset($testimonis) && $testimonis->isNotEmpty())
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                @foreach($testimonis as $i => $t)
+                    <div class="nz-reveal" style="transition-delay: {{ $i * 0.1 }}s">
+                        <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
+                            <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
+                                <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                                </svg>
+                            </div>
+                            <div class="mb-6">
+                                {{-- Rating bintang --}}
+                                <div class="flex items-center space-x-1 mb-4">
+                                    @for($s = 1; $s <= 5; $s++)
+                                        <svg class="w-5 h-5 {{ $s <= $t->rating ? 'text-yellow-400' : 'text-gray-200' }} fill-current" viewBox="0 0 20 20">
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                        </svg>
+                                    @endfor
+                                </div>
+                                <p class="text-neutral-700 leading-relaxed italic">"{{ $t->isi_testimoni }}"</p>
+                            </div>
+                            <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
+                                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-primary-600 font-bold text-lg">{{ $t->inisial }}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-neutral-900">{{ $t->nama_pengirim }}</h4>
+                                    @if($t->pekerjaan)
+                                        <p class="text-sm text-neutral-500">{{ $t->pekerjaan }}</p>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-neutral-700 leading-relaxed italic">"Platform yang sangat memudahkan! Saya bisa tracking zakat saya kemana disalurkan. Transparan dan terpercaya."</p>
                     </div>
-                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
-                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">AH</span></div>
-                        <div><h4 class="font-semibold text-neutral-900">Ahmad Hidayat</h4><p class="text-sm text-neutral-500">Pengusaha</p></div>
-                    </div>
-                </div>
+                @endforeach
             </div>
-
-            <div class="nz-reveal" style="transition-delay:0.15s">
-                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
-                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
-                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-                    </div>
-                    <div class="mb-6">
-                        <div class="flex items-center space-x-1 mb-4">
-                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
+        @else
+            {{-- Fallback: tampilkan 3 testimoni placeholder jika belum ada data --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                @foreach([
+                    ['nama' => 'Ahmad Hidayat', 'pekerjaan' => 'Pengusaha', 'isi' => 'Platform yang sangat memudahkan! Saya bisa tracking zakat saya kemana disalurkan. Transparan dan terpercaya.', 'rating' => 5],
+                    ['nama' => 'Siti Fatimah', 'pekerjaan' => 'Profesional', 'isi' => 'Kalkulator zakatnya sangat membantu. Tidak perlu bingung lagi menghitung nisab dan kadar zakat. Recommended!', 'rating' => 5],
+                    ['nama' => 'Muhammad Rizki', 'pekerjaan' => 'Karyawan Swasta', 'isi' => 'Laporan penyalurannya detail banget. Saya jadi tau persis kemana zakat saya. Alhamdulillah merasa lebih tenang.', 'rating' => 5],
+                ] as $idx => $item)
+                    <div class="nz-reveal" style="transition-delay: {{ $idx * 0.1 }}s">
+                        <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
+                            <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
+                                <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                                </svg>
+                            </div>
+                            <div class="mb-6">
+                                <div class="flex items-center space-x-1 mb-4">
+                                    @for($s = 1; $s <= 5; $s++)
+                                        <svg class="w-5 h-5 {{ $s <= $item['rating'] ? 'text-yellow-400' : 'text-gray-200' }} fill-current" viewBox="0 0 20 20">
+                                            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                        </svg>
+                                    @endfor
+                                </div>
+                                <p class="text-neutral-700 leading-relaxed italic">"{{ $item['isi'] }}"</p>
+                            </div>
+                            <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
+                                @php $inisial = strtoupper(substr($item['nama'], 0, 1) . (strpos($item['nama'], ' ') !== false ? substr($item['nama'], strpos($item['nama'], ' ') + 1, 1) : '')); @endphp
+                                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <span class="text-primary-600 font-bold text-lg">{{ $inisial }}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-neutral-900">{{ $item['nama'] }}</h4>
+                                    <p class="text-sm text-neutral-500">{{ $item['pekerjaan'] }}</p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-neutral-700 leading-relaxed italic">"Kalkulator zakatnya sangat membantu. Tidak perlu bingung lagi menghitung nisab dan kadar zakat. Recommended!"</p>
                     </div>
-                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
-                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">SF</span></div>
-                        <div><h4 class="font-semibold text-neutral-900">Siti Fatimah</h4><p class="text-sm text-neutral-500">Profesional</p></div>
-                    </div>
-                </div>
+                @endforeach
             </div>
-
-            <div class="nz-reveal" style="transition-delay:0.25s">
-                <div class="relative bg-white rounded-2xl p-8 shadow-card hover:shadow-card-hover transition-all duration-300 h-full border border-neutral-100">
-                    <div class="absolute top-6 right-6 w-12 h-12 bg-primary-50 rounded-full flex items-center justify-center opacity-50">
-                        <svg class="w-6 h-6 text-primary-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-                    </div>
-                    <div class="mb-6">
-                        <div class="flex items-center space-x-1 mb-4">
-                            @for($i = 0; $i < 5; $i++)<svg class="w-5 h-5 text-yellow-400 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>@endfor
-                        </div>
-                        <p class="text-neutral-700 leading-relaxed italic">"Laporan penyalurannya detail banget. Saya jadi tau persis kemana zakat saya. Alhamdulillah merasa lebih tenang."</p>
-                    </div>
-                    <div class="flex items-center space-x-4 pt-4 border-t border-neutral-100">
-                        <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center"><span class="text-primary-600 font-bold text-lg">MR</span></div>
-                        <div><h4 class="font-semibold text-neutral-900">Muhammad Rizki</h4><p class="text-sm text-neutral-500">Karyawan Swasta</p></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endif
     </div>
 </section>
 

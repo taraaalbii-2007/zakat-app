@@ -143,6 +143,8 @@
 <body>
     @include('partials.splash-screen')
 
+    @include('partials.popup-testimoni')
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
     

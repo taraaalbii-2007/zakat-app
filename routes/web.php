@@ -269,6 +269,14 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         Route::delete('/{kontak}',                   [KontakSuperadminController::class, 'destroy'])->name('destroy');
         Route::patch('/{kontak}/tandai-belum-dibaca', [KontakSuperadminController::class, 'tandaiBelumDibaca'])->name('tandai-belum-dibaca');
     });
+
+    Route::prefix('superadmin-testimoni')->name('superadmin.testimoni.')->group(function () {
+        Route::get('/',                          [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'index'])->name('index');
+        Route::get('/{testimoni}',               [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'show'])->name('show');
+        Route::post('/{testimoni}/approve',      [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'approve'])->name('approve');
+        Route::post('/{testimoni}/reject',       [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'reject'])->name('reject');
+        Route::delete('/{testimoni}',            [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // ============================================
@@ -808,10 +816,20 @@ Route::middleware(['auth', 'active.user', 'muzakki', 'masjid.access'])->group(fu
         Route::get('/', [\App\Http\Controllers\Muzakki\RiwayatTransaksiController::class, 'index'])
             ->name('index');
     });
+
+    Route::prefix('testimoni-saya')->name('muzakki.testimoni.')->group(function () {
+        Route::get('/',     [\App\Http\Controllers\Muzakki\TestimoniMuzakkiController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Muzakki\TestimoniMuzakkiController::class, 'create'])->name('create');
+        Route::post('/',    [\App\Http\Controllers\Muzakki\TestimoniMuzakkiController::class, 'store'])->name('store');
+        // check-popup DIPINDAH ke blok di bawah
+    });
 });
 
 Route::middleware(['auth', 'active.user'])->group(function () {
     // Mark notifikasi sebagai sudah dibaca (update session)
     Route::post('/notif/mark-read', [\App\Http\Controllers\NotifController::class, 'markRead'])
         ->name('notif.mark-read');
+    Route::get('/testimoni-saya/check-popup',
+        [\App\Http\Controllers\Muzakki\TestimoniMuzakkiController::class, 'checkPopup']
+    )->name('muzakki.testimoni.check-popup');
 });
