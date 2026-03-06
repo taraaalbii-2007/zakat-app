@@ -69,7 +69,6 @@ class TransaksiZakatController extends Controller
             'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna',
         ])->where('muzakki_id', $this->muzakki->id);
 
-        // Pencarian
         if ($request->filled('q')) {
             $q = $request->q;
             $query->where(function ($sub) use ($q) {
@@ -78,27 +77,16 @@ class TransaksiZakatController extends Controller
             });
         }
 
-        // Filter
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('jenis_zakat_id')) {
-            $query->where('jenis_zakat_id', $request->jenis_zakat_id);
-        }
-        if ($request->filled('metode_penerimaan')) {
-            $query->where('metode_penerimaan', $request->metode_penerimaan);
-        }
+        if ($request->filled('status'))             $query->where('status', $request->status);
+        if ($request->filled('jenis_zakat_id'))     $query->where('jenis_zakat_id', $request->jenis_zakat_id);
+        if ($request->filled('metode_penerimaan'))  $query->where('metode_penerimaan', $request->metode_penerimaan);
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tanggal_transaksi', [
-                $request->start_date,
-                $request->end_date,
-            ]);
+            $query->whereBetween('tanggal_transaksi', [$request->start_date, $request->end_date]);
         }
 
         $transaksis     = $query->orderBy('created_at', 'desc')->paginate(15);
         $jenisZakatList = JenisZakat::orderBy('nama')->get();
 
-        // Stats — satu query aggregate
         $statsRaw = TransaksiPenerimaan::where('muzakki_id', $this->muzakki->id)
             ->selectRaw("
                 COUNT(*) AS total,
@@ -129,10 +117,6 @@ class TransaksiZakatController extends Controller
     // ================================================================
     public function create()
     {
-        $rekeningList = RekeningMasjid::where('masjid_id', $this->masjid->id)
-            ->where('is_active', true)
-            ->get();
-
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
         $programZakatList = ProgramZakat::where('masjid_id', $this->masjid->id)
             ->where('status', 'aktif')
@@ -143,10 +127,9 @@ class TransaksiZakatController extends Controller
             ->with('pengguna')
             ->get();
         $rekeningMasjidList = RekeningMasjid::where('masjid_id', $this->masjid->id)
-        ->where('is_active', true)
-        ->get();
+            ->where('is_active', true)
+            ->get();
 
-        // Tipe zakat dikelompokkan per jenis untuk kebutuhan JS di view
         $tipeZakatList = [];
         foreach ($jenisZakatList as $jenis) {
             $tipeZakatList[$jenis->id] = TipeZakat::where('jenis_zakat_id', $jenis->id)
@@ -161,9 +144,6 @@ class TransaksiZakatController extends Controller
                 ->toArray();
         }
 
-        // PERUBAHAN: Data muzakki - semua field diambil
-        // NAMA dan EMAIL akan ditampilkan READONLY
-        // TELEPON, NIK, ALAMAT bisa diedit
         $muzakkiData = [
             'nama'    => $this->muzakki->nama ?? $this->user->username ?? 'Muzakki',
             'email'   => $this->muzakki->email ?? $this->user->email,
@@ -179,8 +159,8 @@ class TransaksiZakatController extends Controller
         ];
 
         $konfigurasiQris = \App\Models\KonfigurasiQris::where('masjid_id', $this->masjid->id)
-    ->where('is_active', true)
-    ->first();
+            ->where('is_active', true)
+            ->first();
 
         return view('muzakki.transaksi-daring-muzakki.create', compact(
             'jenisZakatList',
@@ -210,11 +190,25 @@ class TransaksiZakatController extends Controller
 
         $validator = Validator::make(
             $request->all(),
-            $this->getValidationRules($isDaring, $isDijemput)
+            $this->getValidationRules($isDaring, $isDijemput),
+            $this->getValidationMessages()
         );
 
         if ($validator->fails()) {
             return redirect()->back()->withInput()->withErrors($validator->errors());
+        }
+
+        // Validasi tambahan: jumlah_dibayar tidak boleh kurang dari jumlah zakat (hanya daring)
+        if ($isDaring) {
+            $jumlahZakat   = $this->hitungJumlahZakat($request);
+            $jumlahDibayar = (float) $request->jumlah_dibayar;
+
+            if ($jumlahZakat > 0 && $jumlahDibayar < $jumlahZakat) {
+                return redirect()->back()->withInput()->withErrors([
+                    'jumlah_dibayar' => 'Jumlah dibayar (Rp ' . number_format($jumlahDibayar, 0, ',', '.') .
+                                        ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').',
+                ]);
+            }
         }
 
         try {
@@ -228,9 +222,6 @@ class TransaksiZakatController extends Controller
             $transaksi->tanggal_transaksi = $request->tanggal_transaksi ?? now()->format('Y-m-d');
             $transaksi->waktu_transaksi   = now();
 
-            // PERUBAHAN: Snapshot data muzakki - SEMUA field disimpan
-            // NAMA dan EMAIL dari form (readonly)
-            // TELEPON, NIK, ALAMAT dari input user (bisa diedit)
             $transaksi->muzakki_nama    = $request->muzakki_nama;
             $transaksi->muzakki_email   = $request->muzakki_email;
             $transaksi->muzakki_telepon = $request->muzakki_telepon;
@@ -253,18 +244,21 @@ class TransaksiZakatController extends Controller
             DB::commit();
 
             Log::info('Muzakki transaksi saved', [
-                'no_transaksi' => $transaksi->no_transaksi,
-                'muzakki_id'   => $this->muzakki->id,
-                'metode'       => $metode,
+                'no_transaksi'  => $transaksi->no_transaksi,
+                'muzakki_id'    => $this->muzakki->id,
+                'metode'        => $metode,
+                'jumlah'        => $transaksi->jumlah,
+                'jumlah_dibayar'=> $transaksi->jumlah_dibayar,
+                'jumlah_infaq'  => $transaksi->jumlah_infaq,
             ]);
+
+            $infaqNote = $transaksi->jumlah_infaq > 0
+                ? ' (Termasuk infaq Rp ' . number_format($transaksi->jumlah_infaq, 0, ',', '.') . ')'
+                : '';
 
             $message = $isDijemput
                 ? 'Request penjemputan berhasil dikirim. Amil akan menghubungi Anda segera.'
-                : 'Transaksi zakat berhasil dikirim: ' . $transaksi->no_transaksi .
-                  ($transaksi->jumlah_infaq > 0
-                      ? ' (Termasuk infaq Rp ' . number_format($transaksi->jumlah_infaq, 0, ',', '.') . ')'
-                      : '') .
-                  '. Menunggu konfirmasi dari amil.';
+                : 'Transaksi zakat berhasil dikirim: ' . $transaksi->no_transaksi . $infaqNote . '. Menunggu konfirmasi dari amil.';
 
             return redirect()->route('transaksi-daring-muzakki.index')->with('success', $message);
 
@@ -308,9 +302,9 @@ class TransaksiZakatController extends Controller
             'tanggal_transaksi' => 'nullable|date',
             'muzakki_nama'      => 'required|string|max:255',
             'muzakki_email'     => 'nullable|email|max:255',
-            'muzakki_telepon'   => 'required|string|max:20',  // WAJIB diisi karena bisa diedit
-            'muzakki_nik'       => 'nullable|string|max:16',  // Opsional
-            'muzakki_alamat'    => 'required|string|max:500', // WAJIB diisi karena bisa diedit
+            'muzakki_telepon'   => 'required|string|max:20',
+            'muzakki_nik'       => 'nullable|string|max:16',
+            'muzakki_alamat'    => 'required|string|max:500',
             'metode_penerimaan' => 'required|in:daring,dijemput',
             'keterangan'        => 'nullable|string|max:1000',
         ];
@@ -322,24 +316,74 @@ class TransaksiZakatController extends Controller
         }
 
         if ($isDaring) {
-            $rules['jenis_zakat_id']     = 'required|exists:jenis_zakat,id';
-            $rules['tipe_zakat_id']      = 'required|exists:tipe_zakat,uuid';
-            $rules['program_zakat_id']   = 'nullable|exists:program_zakat,id';
-            $rules['jumlah_jiwa']        = 'nullable|integer|min:1|max:100';
-            $rules['nominal_per_jiwa']   = 'nullable|numeric|min:0';
-            $rules['nilai_harta']        = 'nullable|numeric|min:0';
-            $rules['nisab_saat_ini']     = 'nullable|numeric|min:0';
-            $rules['sudah_haul']         = 'nullable|boolean';
+            $rules['jenis_zakat_id']   = 'required|exists:jenis_zakat,id';
+            $rules['tipe_zakat_id']    = 'required|exists:tipe_zakat,uuid';
+            $rules['program_zakat_id'] = 'nullable|exists:program_zakat,id';
+            $rules['jumlah_jiwa']      = 'nullable|integer|min:1|max:100';
+            $rules['nominal_per_jiwa'] = 'nullable|numeric|min:0';
+            $rules['nilai_harta']      = 'nullable|numeric|min:0';
+            $rules['nisab_saat_ini']   = 'nullable|numeric|min:0';
+            $rules['sudah_haul']       = 'nullable|boolean';
             $rules['tanggal_mulai_haul'] = 'nullable|date';
-            $rules['jumlah_dibayar']     = 'nullable|numeric|min:0';
-            $rules['metode_pembayaran']  = 'required|in:transfer,qris';
-            $rules['bukti_transfer']     = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
-            $rules['bukti_qris']         = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
-            $rules['nama_jiwa']          = 'nullable|array|max:100';
-            $rules['nama_jiwa.*']        = 'nullable|string|max:255';
+
+            // PERUBAHAN: jumlah_dibayar sekarang WAJIB diisi
+            $rules['jumlah_dibayar']   = 'required|numeric|min:1';
+
+            $rules['metode_pembayaran'] = 'required|in:transfer,qris';
+
+            // PERUBAHAN: bukti WAJIB sesuai metode yang dipilih
+            // Validasi kondisional: required_if tidak cukup karena salah satu dari dua field
+            // Ditangani di isiMetodePembayaranDaring() dengan pengecekan manual
+            $rules['bukti_transfer'] = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+            $rules['bukti_qris']     = 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048';
+
+            $rules['nama_jiwa']   = 'nullable|array|max:100';
+            $rules['nama_jiwa.*'] = 'nullable|string|max:255';
         }
 
         return $rules;
+    }
+
+    /**
+     * Pesan validasi custom yang lebih informatif.
+     */
+    private function getValidationMessages(): array
+    {
+        return [
+            'muzakki_telepon.required' => 'Nomor telepon wajib diisi.',
+            'muzakki_alamat.required'  => 'Alamat lengkap wajib diisi.',
+            'jenis_zakat_id.required'  => 'Jenis zakat wajib dipilih.',
+            'tipe_zakat_id.required'   => 'Tipe zakat wajib dipilih.',
+            'jumlah_dibayar.required'  => 'Jumlah dibayar wajib diisi.',
+            'jumlah_dibayar.min'       => 'Jumlah dibayar harus lebih dari 0.',
+            'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'latitude.required'        => 'Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".',
+            'longitude.required'       => 'Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".',
+        ];
+    }
+
+    /**
+     * Hitung jumlah zakat dari request (untuk validasi pre-save).
+     */
+    private function hitungJumlahZakat(Request $request): float
+    {
+        $jenisZakat = JenisZakat::find($request->jenis_zakat_id);
+        if (!$jenisZakat) return 0;
+
+        $isFitrah = stripos($jenisZakat->nama, 'fitrah') !== false;
+        $isMal    = stripos($jenisZakat->nama, 'mal') !== false;
+
+        if ($isFitrah && $request->filled('jumlah_jiwa') && $request->filled('nominal_per_jiwa')) {
+            return (int) $request->jumlah_jiwa * (float) $request->nominal_per_jiwa;
+        }
+
+        if ($isMal && $request->filled('nilai_harta')) {
+            $tipeZakat  = TipeZakat::where('uuid', $request->tipe_zakat_id)->first();
+            $persentase = $tipeZakat ? (float) ($tipeZakat->persentase_zakat ?? 2.5) : 2.5;
+            return (float) $request->nilai_harta * ($persentase / 100);
+        }
+
+        return 0;
     }
 
     /**
@@ -360,7 +404,6 @@ class TransaksiZakatController extends Controller
 
     /**
      * Isi detail zakat untuk metode daring.
-     * Mendukung: zakat fitrah (tunai saja), zakat mal, dan jenis lainnya.
      */
     private function isiDetailZakatDaring(TransaksiPenerimaan $transaksi, Request $request): void
     {
@@ -375,11 +418,9 @@ class TransaksiZakatController extends Controller
         $isMal    = stripos($jenisZakat->nama, 'mal') !== false;
         $isBeras  = stripos($tipeZakat->nama, 'beras') !== false;
 
-        // Fitrah beras tidak bisa via daring
         if ($isFitrah && $isBeras) {
             throw new \Exception(
-                'Pembayaran beras tidak tersedia untuk metode daring. ' .
-                'Silakan gunakan metode dijemput.'
+                'Pembayaran beras tidak tersedia untuk metode daring. Silakan gunakan metode dijemput.'
             );
         }
 
@@ -407,7 +448,7 @@ class TransaksiZakatController extends Controller
             $transaksi->tanggal_mulai_haul = $request->tanggal_mulai_haul ?: null;
 
         } else {
-            // Jenis zakat lain — jumlah diisi manual oleh muzakki
+            // Jenis lain — gunakan jumlah_dibayar sebagai acuan
             $jumlah = (float) $request->jumlah_dibayar;
         }
 
@@ -422,18 +463,40 @@ class TransaksiZakatController extends Controller
     }
 
     /**
-     * Isi metode pembayaran dan kalkulasi infaq untuk metode daring.
-     * Jika jumlah_dibayar melebihi jumlah zakat, selisihnya dicatat sebagai infaq.
+     * Isi metode pembayaran, bukti (WAJIB), dan kalkulasi infaq.
+     *
+     * PERUBAHAN:
+     * - jumlah_dibayar sekarang wajib diisi dari form
+     * - bukti bayar (transfer atau qris) wajib ada
+     * - infaq = jumlah_dibayar - jumlah_zakat (jika lebih)
+     * - jika kurang dari zakat → throw exception (sudah dicek di store() juga)
      */
     private function isiMetodePembayaranDaring(TransaksiPenerimaan $transaksi, Request $request): void
     {
-        $transaksi->metode_pembayaran = $request->metode_pembayaran; // transfer | qris
+        $metodePembayaran = $request->metode_pembayaran; // transfer | qris
+        $transaksi->metode_pembayaran = $metodePembayaran;
 
+        // ── Validasi bukti wajib ──
+        if ($metodePembayaran === 'transfer' && !$request->hasFile('bukti_transfer')) {
+            throw new \Exception('Bukti transfer wajib diupload untuk metode Transfer Bank.');
+        }
+        if ($metodePembayaran === 'qris' && !$request->hasFile('bukti_qris')) {
+            throw new \Exception('Bukti pembayaran QRIS wajib diupload untuk metode QRIS.');
+        }
+
+        // ── Jumlah zakat & dibayar ──
         $jumlahZakat   = (float) $transaksi->jumlah;
-        $jumlahDibayar = $request->filled('jumlah_dibayar') && (float) $request->jumlah_dibayar > 0
-            ? (float) $request->jumlah_dibayar
-            : $jumlahZakat;
+        $jumlahDibayar = (float) $request->jumlah_dibayar;
 
+        // Guard: tidak boleh bayar kurang dari zakat (double-check setelah validasi awal)
+        if ($jumlahDibayar < $jumlahZakat) {
+            throw new \Exception(
+                'Jumlah dibayar (Rp ' . number_format($jumlahDibayar, 0, ',', '.') .
+                ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').'
+            );
+        }
+
+        // ── Hitung infaq dari kelebihan bayar ──
         $infaq = max(0.0, $jumlahDibayar - $jumlahZakat);
 
         $transaksi->jumlah_dibayar    = (int) round($jumlahDibayar);
@@ -442,23 +505,22 @@ class TransaksiZakatController extends Controller
         $transaksi->status            = 'pending';
         $transaksi->konfirmasi_status = 'menunggu_konfirmasi';
 
-        // Handle bukti transfer
+        // ── Simpan bukti ──
         if ($request->hasFile('bukti_transfer')) {
             $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
             $transaksi->bukti_transfer = $path;
         }
 
-        // Handle bukti QRIS
         if ($request->hasFile('bukti_qris')) {
             $path = $request->file('bukti_qris')->store('bukti-qris', 'public');
-            $transaksi->bukti_transfer = $path; // Simpan di kolom yang sama atau buat kolom khusus
+            // Simpan ke kolom yang sama (bukti_transfer) atau buat kolom bukti_qris tersendiri
+            $transaksi->bukti_transfer = $path;
         }
     }
 
     /**
      * Simpan daftar nama jiwa ke kolom nama_jiwa_json.
      * Hanya berlaku untuk zakat fitrah.
-     * Kolom tersedia setelah migration dijalankan.
      */
     private function simpanNamaJiwa(TransaksiPenerimaan $transaksi, Request $request): void
     {
@@ -474,9 +536,7 @@ class TransaksiZakatController extends Controller
             )
         );
 
-        if (empty($namaJiwaBersih)) {
-            return;
-        }
+        if (empty($namaJiwaBersih)) return;
 
         $transaksi->nama_jiwa_json = $namaJiwaBersih;
 
