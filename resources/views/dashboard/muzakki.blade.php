@@ -540,7 +540,6 @@
 
     {{-- ── STATS ── --}}
     <div>
-        <p class="sec-label">Ringkasan Zakat Anda</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
             <div class="stat-card">
@@ -600,62 +599,6 @@
                 @endif
             </div>
 
-        </div>
-    </div>
-
-    {{-- ── QUICK ACTIONS ── --}}
-    <div>
-        <p class="sec-label">Aksi Cepat</p>
-        <div class="panel">
-            <div class="panel-head">
-                <p class="panel-title">Aksi Cepat</p>
-                <span class="panel-tag">Menu</span>
-            </div>
-            <div class="panel-body">
-                <div class="qa-grid">
-
-                    <a href="" class="qa-item">
-                        <div class="qa-icon">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
-                        </div>
-                        <span class="qa-label">Bayar Zakat</span>
-                    </a>
-
-                    <a href="" class="qa-item">
-                        <div class="qa-icon">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </div>
-                        <span class="qa-label">Minta Jemput</span>
-                    </a>
-
-                    <a href="" class="qa-item">
-                        <div class="qa-icon">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <span class="qa-label">Riwayat Transaksi</span>
-                    </a>
-
-                    <a href="" class="qa-item">
-                        <div class="qa-icon">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </div>
-                        <span class="qa-label">Profil Saya</span>
-                    </a>
-
-                </div>
-            </div>
         </div>
     </div>
 
@@ -731,7 +674,6 @@
 
     {{-- ── RIWAYAT TRANSAKSI TERBARU ── --}}
     <div>
-        <p class="sec-label">Transaksi Terbaru</p>
         <div class="panel">
             <div class="panel-head">
                 <p class="panel-title">5 Transaksi Terakhir</p>

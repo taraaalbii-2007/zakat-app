@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="space-y-6">
+<<<<<<< HEAD
         {{-- Flash messages --}}
         @if(session('success'))
             <div class="flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700">
@@ -53,6 +54,8 @@
                 </ol>
             </nav>
         </div>
+=======
+>>>>>>> fbe539583e465ed1aa224adbc6c98c98a016f691
 
         <!-- Main Container -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
