@@ -218,7 +218,7 @@
     }
 
     /* ══════════════════════════════════
-       FLASH MESSAGES (sama strukturnya)
+       FLASH MESSAGES
     ══════════════════════════════════ */
     .flash-box {
         display: flex; align-items: flex-start; gap: .5rem;
@@ -244,24 +244,90 @@
     }
 
     /* ══════════════════════════════════
-       NOTIFICATION TOAST
+       TOAST — sama persis dengan app.blade.php
     ══════════════════════════════════ */
-    @keyframes slide-down {
-        from { transform: translateY(-100%); opacity: 0; }
-        to   { transform: translateY(0);     opacity: 1; }
+    .otp-toast-container {
+        position: fixed;
+        top: 1.25rem;
+        right: 1.25rem;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        pointer-events: none;
     }
-    @keyframes slide-up {
-        from { transform: translateY(0);     opacity: 1; }
-        to   { transform: translateY(-100%); opacity: 0; }
+
+    .otp-toast {
+        pointer-events: auto;
+        min-width: 260px;
+        max-width: 340px;
+        padding: 0.75rem 0.875rem;
+        background: #fff;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 16px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.06);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.625rem;
+        border: 1px solid #f3f4f6;
+        animation: otpSlideInRight 0.25s ease-out;
     }
-    .toast-success { background: #16a34a; }
-    .toast-error   { background: #f43f5e; }
-    .toast-anim-in  { animation: slide-down .3s ease-out; }
-    .toast-anim-out { animation: slide-up  .3s ease-in;  }
+
+    .otp-toast.otp-toast-exit {
+        animation: otpSlideOutRight 0.25s ease-in forwards;
+    }
+
+    @keyframes otpSlideInRight {
+        from { transform: translateX(360px); opacity: 0; }
+        to   { transform: translateX(0);     opacity: 1; }
+    }
+    @keyframes otpSlideOutRight {
+        from { transform: translateX(0);     opacity: 1; }
+        to   { transform: translateX(360px); opacity: 0; }
+    }
+
+    .otp-toast-icon {
+        flex-shrink: 0;
+        width: 1.125rem;
+        height: 1.125rem;
+        margin-top: 0.05rem;
+    }
+
+    .otp-toast-body {
+        flex: 1;
+        font-size: 0.8125rem;
+        line-height: 1.45;
+        color: #374151;
+    }
+
+    .otp-toast-close {
+        flex-shrink: 0;
+        width: 1rem;
+        height: 1rem;
+        cursor: pointer;
+        opacity: 0.4;
+        transition: opacity 0.15s;
+        color: #6b7280;
+    }
+    .otp-toast-close:hover { opacity: 0.8; }
+
+    /* Border kiri berwarna — sama seperti app.blade.php */
+    .otp-toast.toast-success { border-left: 3px solid #10b981; }
+    .otp-toast.toast-error   { border-left: 3px solid #ef4444; }
+
+    .otp-toast.toast-success .otp-toast-icon { color: #10b981; }
+    .otp-toast.toast-error   .otp-toast-icon { color: #ef4444; }
+
+    @media (max-width: 768px) {
+        .otp-toast-container { right: 0.75rem; left: 0.75rem; top: 0.75rem; }
+        .otp-toast { min-width: auto; width: 100%; }
+    }
 </style>
 @endpush
 
 @section('auth-content')
+
+{{-- Toast Container --}}
+<div class="otp-toast-container" id="otpToastContainer"></div>
 
 {{-- Header icon + email --}}
 <div class="otp-header">
@@ -399,6 +465,7 @@
     const expiredBox    = document.getElementById('expiredBox');
     const resendMinEl   = document.getElementById('resendMinutes');
     const resendSecEl   = document.getElementById('resendSeconds');
+    const toastContainer= document.getElementById('otpToastContainer');
 
     /* ── State ── */
     let mainEnd   = localStorage.getItem(TIMER_KEY);
@@ -642,28 +709,33 @@
         loadingSpinner.style.display = on ? 'block' : 'none';
         actionIcon.style.display     = on ? 'none'  : '';
         if (on) actionText.textContent = text;
-        else setMode(mode); // restore text
+        else setMode(mode);
     }
 
-    /* ── Toast notification ── */
+    /* ── Toast — sama persis dengan app.blade.php ── */
     function toast(type, msg) {
-        document.querySelectorAll('.otp-toast').forEach(el => el.remove());
         const el = document.createElement('div');
-        el.className = `otp-toast toast-${type} toast-anim-in`;
-        el.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;padding:.75rem 1rem;border-radius:10px;color:#fff;display:flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:600;font-family:Inter,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:300px;';
+        el.className = `otp-toast toast-${type}`;
+
+        const icons = {
+            success: `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`,
+            error:   `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>`,
+        };
+
         el.innerHTML = `
-            <svg style="width:16px;height:16px;flex-shrink:0" fill="currentColor" viewBox="0 0 20 20">
-                ${type === 'success'
-                    ? '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>'
-                    : '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>'
-                }
+            ${icons[type] || icons.error}
+            <div class="otp-toast-body">${msg}</div>
+            <svg class="otp-toast-close" fill="currentColor" viewBox="0 0 20 20" onclick="this.parentElement.remove()">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
-            <span>${msg}</span>`;
-        document.body.appendChild(el);
+        `;
+
+        toastContainer.appendChild(el);
+
         setTimeout(() => {
-            el.classList.replace('toast-anim-in', 'toast-anim-out');
-            setTimeout(() => el.remove(), 300);
-        }, 5000);
+            el.classList.add('otp-toast-exit');
+            setTimeout(() => { if (el.parentElement) el.remove(); }, 250);
+        }, 3500);
     }
 
     /* ── Init ── */
