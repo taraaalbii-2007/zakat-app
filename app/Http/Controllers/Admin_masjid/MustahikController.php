@@ -8,7 +8,6 @@ use App\Models\Mustahik;
 use App\Models\Masjid;
 use App\Models\KategoriMustahik;
 use App\Models\Amil;
-use App\Models\TransaksiPenerimaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -17,7 +16,10 @@ use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
+use App\Models\TransaksiPenerimaan;
+use App\Models\TransaksiPenyaluran;
+use App\Models\KunjunganMustahik;
 
 class MustahikController extends Controller
 {
@@ -185,29 +187,46 @@ class MustahikController extends Controller
         return redirect()->route('mustahik.index')->with('success', $message);
     }
 
-    public function show(Mustahik $mustahik)
-    {
-        // Check authorization - Amil & Admin both can view
-        if (auth()->user()->peran !== 'superadmin' && $mustahik->masjid_id !== auth()->user()->masjid_id) {
-            abort(403, 'Anda tidak memiliki akses ke data ini.');
-        }
+public function show(Mustahik $mustahik)
+{
+    // Load relasi yang dibutuhkan
+    $mustahik->load(['kategoriMustahik', 'verifiedBy']);
 
-        $mustahik->load(['masjid', 'kategoriMustahik', 'verifiedBy', 'creator']);
+    $user = auth()->user();
 
-        $userRole = auth()->user()->peran;
-        $permissions = [
-            'canEdit' => $mustahik->canBeEditedBy(auth()->id(), $userRole),
-            'canDelete' => $mustahik->canBeDeletedBy(auth()->id(), $userRole),
-            'canVerify' => $mustahik->canBeVerifiedBy($userRole),
-            'canReject' => $mustahik->canBeRejectedBy($userRole),
-            'canToggleActive' => $mustahik->canBeToggledActiveBy($userRole),
-            'canDistribute' => in_array($userRole, ['admin_masjid', 'amil']), // Tambah ini
-            'canScheduleVisit' => in_array($userRole, ['admin_masjid', 'amil']), // Tambah ini
-            'userRole' => $userRole,
-        ];
+    // ── Permissions ───────────────────────────────────────────────────────
+    // SALIN blok $permissions dari show() lama jika berbeda.
+    // Ini contoh yang sesuai dengan role sistem Anda:
+    $permissions = [
+        'canEdit'          => in_array($user->peran, ['admin_masjid', 'amil']),
+        'canDelete'        => $user->peran === 'admin_masjid',
+        'canVerify'        => $user->peran === 'admin_masjid',
+        'canDistribute'    => in_array($user->peran, ['admin_masjid', 'amil']),
+        'canScheduleVisit' => in_array($user->peran, ['admin_masjid', 'amil']),
+    ];
 
-        return view('admin-masjid.mustahik.show', compact('mustahik', 'permissions'));
-    }
+    // ── Riwayat Penyaluran ────────────────────────────────────────────────
+    // Gunakan where() langsung — JANGAN pakai scope byMasjid() karena
+    // scope itu membaca Auth user, bukan parameter yang kita berikan.
+    $riwayatPenyaluran = TransaksiPenyaluran::with(['jenisZakat', 'programZakat'])
+        ->where('mustahik_id', $mustahik->id)
+        ->where('masjid_id', $mustahik->masjid_id)
+        ->orderByDesc('tanggal_penyaluran')
+        ->get();
+
+    // ── Riwayat Kunjungan ─────────────────────────────────────────────────
+    $riwayatKunjungan = KunjunganMustahik::with(['amil.pengguna'])
+        ->where('mustahik_id', $mustahik->id)
+        ->orderByDesc('tanggal_kunjungan')
+        ->get();
+
+    return view('admin-masjid.mustahik.show', compact(
+        'mustahik',
+        'permissions',
+        'riwayatPenyaluran',
+        'riwayatKunjungan',
+    ));
+}
 
     public function edit(Mustahik $mustahik)
     {

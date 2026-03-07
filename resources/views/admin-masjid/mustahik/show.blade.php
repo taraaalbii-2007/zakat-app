@@ -45,18 +45,24 @@
                 {{-- Tabs --}}
                 <div class="mt-6">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
+                        <nav class="-mb-px flex space-x-2 sm:space-x-6 overflow-x-auto scrollbar-hide" aria-label="Tabs">
                             <button type="button" onclick="switchTab('info')" id="tab-info"
                                 class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-primary text-primary font-medium text-sm focus:outline-none">
                                 Informasi Pribadi
                             </button>
-                            <button type="button" onclick="switchTab('penerimaan')" id="tab-penerimaan"
+                            <button type="button" onclick="switchTab('penyaluran')" id="tab-penyaluran"
                                 class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm focus:outline-none">
-                                Riwayat Penerimaan
+                                Riwayat Penyaluran
+                                @if($riwayatPenyaluran->count() > 0)
+                                    <span class="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600 text-white text-xs">{{ $riwayatPenyaluran->count() }}</span>
+                                @endif
                             </button>
                             <button type="button" onclick="switchTab('kunjungan')" id="tab-kunjungan"
                                 class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm focus:outline-none">
                                 Riwayat Kunjungan
+                                @if($riwayatKunjungan->count() > 0)
+                                    <span class="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs">{{ $riwayatKunjungan->count() }}</span>
+                                @endif
                             </button>
                         </nav>
                     </div>
@@ -310,7 +316,6 @@
                         <div class="mt-6 pt-6 border-t border-gray-200">
                             <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Dokumen Pendukung</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {{-- Foto KTP --}}
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-2">Foto KTP</label>
                                     @if($mustahik->foto_ktp)
@@ -323,8 +328,6 @@
                                         </div>
                                     @endif
                                 </div>
-
-                                {{-- Foto KK --}}
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-2">Foto KK</label>
                                     @if($mustahik->foto_kk)
@@ -337,8 +340,6 @@
                                         </div>
                                     @endif
                                 </div>
-
-                                {{-- Foto Rumah --}}
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-2">Foto Rumah</label>
                                     @if($mustahik->foto_rumah)
@@ -353,7 +354,6 @@
                                 </div>
                             </div>
 
-                            {{-- Dokumen Lainnya --}}
                             @if($mustahik->dokumen_lainnya && count($mustahik->dokumen_lainnya) > 0)
                                 <div class="mt-4">
                                     <label class="block text-xs font-medium text-gray-700 mb-2">Dokumen Lainnya</label>
@@ -417,107 +417,349 @@
                         </div>
                     </div>
 
-                    {{-- Tab Content: Riwayat Penerimaan --}}
-                    <div id="content-penerimaan" class="tab-content hidden mt-6">
-                        <div class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada riwayat penerimaan</h3>
-                            <p class="mt-1 text-sm text-gray-500">Data penyaluran ke mustahik ini akan muncul di sini</p>
-                            @if($permissions['canDistribute'])
-                                <div class="mt-6">
-                                    <button type="button" onclick="alert('Fitur penyaluran akan segera hadir')"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-600 transition-colors">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                        </svg>
-                                        Salurkan Zakat
-                                    </button>
+                    {{-- Tab Content: Riwayat Penyaluran --}}
+                    <div id="content-penyaluran" class="tab-content hidden mt-6">
+                        @if($riwayatPenyaluran->count() > 0)
+                            {{-- Ringkasan Penyaluran --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                                <div class="bg-green-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-green-600 font-medium">Total Penyaluran</p>
+                                    <p class="text-lg font-bold text-green-700">{{ $riwayatPenyaluran->count() }}</p>
                                 </div>
-                            @endif
-                        </div>
+                                <div class="bg-blue-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-blue-600 font-medium">Total Disalurkan</p>
+                                    <p class="text-sm font-bold text-blue-700">
+                                        Rp {{ number_format($riwayatPenyaluran->whereIn('status', ['disetujui','disalurkan'])->sum('jumlah'), 0, ',', '.') }}
+                                    </p>
+                                </div>
+                                <div class="bg-teal-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-teal-600 font-medium">Disalurkan</p>
+                                    <p class="text-lg font-bold text-teal-700">{{ $riwayatPenyaluran->where('status', 'disalurkan')->count() }}</p>
+                                </div>
+                                <div class="bg-yellow-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-yellow-600 font-medium">Draft/Disetujui</p>
+                                    <p class="text-lg font-bold text-yellow-700">{{ $riwayatPenyaluran->whereIn('status', ['draft','disetujui'])->count() }}</p>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No. Transaksi</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Jenis Zakat</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Program</th>
+                                            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Metode</th>
+                                            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Jumlah</th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($riwayatPenyaluran as $penyaluran)
+                                            <tr class="hover:bg-gray-50 transition-colors">
+                                                <td class="px-4 py-3">
+                                                    <span class="text-xs font-mono text-gray-700">{{ $penyaluran->no_transaksi }}</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">
+                                                    {{ $penyaluran->tanggal_penyaluran->format('d M Y') }}
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-700">
+                                                    {{ $penyaluran->jenisZakat->nama ?? '-' }}
+                                                </td>
+                                                <td class="px-4 py-3 text-xs text-gray-600">
+                                                    {{ $penyaluran->programZakat->nama_program ?? '-' }}
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    @php
+                                                        $metodeClass = match($penyaluran->metode_penyaluran) {
+                                                            'tunai'    => 'bg-green-100 text-green-700',
+                                                            'transfer' => 'bg-blue-100 text-blue-700',
+                                                            'barang'   => 'bg-orange-100 text-orange-700',
+                                                            default    => 'bg-gray-100 text-gray-700',
+                                                        };
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $metodeClass }}">
+                                                        {{ ucfirst($penyaluran->metode_penyaluran) }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-right text-xs font-medium text-gray-900 whitespace-nowrap">
+                                                    @if($penyaluran->metode_penyaluran === 'barang')
+                                                        @if($penyaluran->detail_barang)
+                                                            <span class="text-gray-600">{{ Str::limit($penyaluran->detail_barang, 20) }}</span>
+                                                        @endif
+                                                        @if($penyaluran->nilai_barang)
+                                                            <span class="block text-gray-500">Rp {{ number_format($penyaluran->nilai_barang, 0, ',', '.') }}</span>
+                                                        @endif
+                                                    @else
+                                                        Rp {{ number_format($penyaluran->jumlah, 0, ',', '.') }}
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    @php
+                                                        $statusPenyaluranClass = match($penyaluran->status) {
+                                                            'disalurkan' => 'bg-green-100 text-green-700',
+                                                            'disetujui'  => 'bg-blue-100 text-blue-700',
+                                                            'draft'      => 'bg-yellow-100 text-yellow-700',
+                                                            'dibatalkan' => 'bg-red-100 text-red-700',
+                                                            default      => 'bg-gray-100 text-gray-700',
+                                                        };
+                                                        $statusPenyaluranLabel = match($penyaluran->status) {
+                                                            'disalurkan' => 'Disalurkan',
+                                                            'disetujui'  => 'Disetujui',
+                                                            'draft'      => 'Draft',
+                                                            'dibatalkan' => 'Dibatalkan',
+                                                            default      => $penyaluran->status,
+                                                        };
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $statusPenyaluranClass }}">
+                                                        {{ $statusPenyaluranLabel }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <a href="{{ route('transaksi-penyaluran.show', $penyaluran->uuid) }}" target="_blank"
+                                                        class="inline-flex items-center px-2 py-1 text-xs text-green-700 hover:text-green-800 font-medium hover:underline">
+                                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                        </svg>
+                                                        Detail
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-12">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada riwayat penyaluran</h3>
+                                <p class="mt-1 text-sm text-gray-500">Data penyaluran ke mustahik ini akan muncul di sini.</p>
+                                @if($permissions['canDistribute'])
+                                    <div class="mt-6">
+                                        <a href="{{ route('transaksi-penyaluran.create') }}?mustahik_id={{ $mustahik->id }}"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            Salurkan Zakat
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Tab Content: Riwayat Kunjungan --}}
                     <div id="content-kunjungan" class="tab-content hidden mt-6">
-                        <div class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada riwayat kunjungan</h3>
-                            <p class="mt-1 text-sm text-gray-500">Data kunjungan amil ke mustahik ini akan muncul di sini</p>
-                            @if($permissions['canScheduleVisit'])
-                                <div class="mt-6">
-                                    <button type="button" onclick="alert('Fitur jadwal kunjungan akan segera hadir')"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-600 transition-colors">
-                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                        </svg>
-                                        Jadwalkan Kunjungan
-                                    </button>
+                        @if($riwayatKunjungan->count() > 0)
+                            {{-- Ringkasan Kunjungan --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+                                <div class="bg-blue-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-blue-600 font-medium">Total Kunjungan</p>
+                                    <p class="text-lg font-bold text-blue-700">{{ $riwayatKunjungan->count() }}</p>
                                 </div>
-                            @endif
-                        </div>
+                                <div class="bg-green-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-green-600 font-medium">Selesai</p>
+                                    <p class="text-lg font-bold text-green-700">{{ $riwayatKunjungan->where('status', 'selesai')->count() }}</p>
+                                </div>
+                                <div class="bg-yellow-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-yellow-600 font-medium">Direncanakan</p>
+                                    <p class="text-lg font-bold text-yellow-700">{{ $riwayatKunjungan->where('status', 'direncanakan')->count() }}</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3">
+                                @foreach($riwayatKunjungan as $kunjungan)
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-wrap items-center gap-2 mb-1">
+                                                    {{-- Badge tujuan --}}
+                                                    @php
+                                                        $tujuanClass = match($kunjungan->tujuan) {
+                                                            'verifikasi' => 'bg-purple-100 text-purple-700',
+                                                            'penyaluran' => 'bg-green-100 text-green-700',
+                                                            'monitoring' => 'bg-blue-100 text-blue-700',
+                                                            default      => 'bg-gray-100 text-gray-700',
+                                                        };
+                                                        $tujuanLabel = match($kunjungan->tujuan) {
+                                                            'verifikasi' => 'Verifikasi',
+                                                            'penyaluran' => 'Penyaluran',
+                                                            'monitoring' => 'Monitoring',
+                                                            'lainnya'    => 'Lainnya',
+                                                            default      => ucfirst($kunjungan->tujuan),
+                                                        };
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $tujuanClass }}">
+                                                        {{ $tujuanLabel }}
+                                                    </span>
+                                                    {{-- Badge status --}}
+                                                    @php
+                                                        $statusKunjunganClass = match($kunjungan->status) {
+                                                            'selesai'      => 'bg-green-100 text-green-700',
+                                                            'direncanakan' => 'bg-yellow-100 text-yellow-700',
+                                                            'dibatalkan'   => 'bg-red-100 text-red-700',
+                                                            default        => 'bg-gray-100 text-gray-700',
+                                                        };
+                                                        $statusKunjunganLabel = match($kunjungan->status) {
+                                                            'selesai'      => 'Selesai',
+                                                            'direncanakan' => 'Direncanakan',
+                                                            'dibatalkan'   => 'Dibatalkan',
+                                                            default        => $kunjungan->status,
+                                                        };
+                                                    @endphp
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $statusKunjunganClass }}">
+                                                        {{ $statusKunjunganLabel }}
+                                                    </span>
+                                                </div>
+
+                                                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
+                                                    <span class="flex items-center gap-1">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                        </svg>
+                                                        {{ $kunjungan->tanggal_kunjungan->format('d M Y') }}
+                                                        @if($kunjungan->waktu_mulai)
+                                                            {{ substr($kunjungan->waktu_mulai, 0, 5) }}
+                                                            @if($kunjungan->waktu_selesai)
+                                                                – {{ substr($kunjungan->waktu_selesai, 0, 5) }}
+                                                            @endif
+                                                        @endif
+                                                    </span>
+                                                    @if($kunjungan->amil)
+                                                        <span class="flex items-center gap-1">
+                                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                            </svg>
+                                                            {{ $kunjungan->amil->pengguna->name ?? $kunjungan->amil->nama_lengkap ?? 'Amil' }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+
+                                                @if($kunjungan->catatan)
+                                                    <p class="mt-2 text-xs text-gray-600 line-clamp-2">
+                                                        <span class="font-medium text-gray-700">Catatan: </span>{{ $kunjungan->catatan }}
+                                                    </p>
+                                                @endif
+
+                                                @if($kunjungan->hasil_kunjungan)
+                                                    <p class="mt-1 text-xs text-gray-600 line-clamp-2">
+                                                        <span class="font-medium text-gray-700">Hasil: </span>{{ $kunjungan->hasil_kunjungan }}
+                                                    </p>
+                                                @endif
+                                            </div>
+
+                                            <a href="{{ route('amil.kunjungan.show', $kunjungan->uuid) }}" target="_blank"
+                                                class="flex-shrink-0 inline-flex items-center px-2 py-1 text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                                Detail
+                                            </a>
+                                        </div>
+
+                                        {{-- Foto dokumentasi thumbnail --}}
+                                        @if($kunjungan->foto_dokumentasi && count($kunjungan->foto_dokumentasi) > 0)
+                                            <div class="mt-3 flex gap-2 overflow-x-auto pb-1">
+                                                @foreach(array_slice($kunjungan->foto_dokumentasi, 0, 4) as $foto)
+                                                    <a href="{{ Storage::url($foto) }}" target="_blank" class="flex-shrink-0">
+                                                        <img src="{{ Storage::url($foto) }}" alt="Foto kunjungan"
+                                                            class="w-16 h-16 object-cover rounded-lg border border-gray-200 hover:opacity-90 transition-opacity">
+                                                    </a>
+                                                @endforeach
+                                                @if(count($kunjungan->foto_dokumentasi) > 4)
+                                                    <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center">
+                                                        <span class="text-xs text-gray-500 font-medium">+{{ count($kunjungan->foto_dokumentasi) - 4 }}</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-12">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada riwayat kunjungan</h3>
+                                <p class="mt-1 text-sm text-gray-500">Data kunjungan amil ke mustahik ini akan muncul di sini.</p>
+                                @if($permissions['canScheduleVisit'])
+                                    <div class="mt-6">
+                                        <a href="{{ route('amil.kunjungan.create') }}?mustahik_id={{ $mustahik->id }}"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-600 transition-colors">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                            Jadwalkan Kunjungan
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-
-<div class="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-200">
-    <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
-        <a href="{{ route('mustahik.index') }}"
-            class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            Kembali
-        </a>
-        <div class="flex items-center gap-2">
-            {{-- TAMBAHAN: Tombol Verifikasi untuk Admin --}}
-            @if($permissions['canVerify'] && $mustahik->status_verifikasi === 'pending')
-                <button type="button" onclick="verifyMustahik('{{ $mustahik->uuid }}')"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Verifikasi
-                </button>
-                <button type="button" onclick="showRejectModal()"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Tolak
-                </button>
-            @endif
-            
-            @if($permissions['canEdit'])
-                <a href="{{ route('mustahik.edit', $mustahik->uuid) }}"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                    Edit Data
-                </a>
-            @endif
-            
-            @if($permissions['canDelete'])
-                <button type="button" onclick="confirmDelete()"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    Hapus
-                </button>
-            @endif
-        </div>
-    </div>
-</div>
+            <div class="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-200">
+                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <a href="{{ route('mustahik.index') }}"
+                        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Kembali
+                    </a>
+                    <div class="flex items-center gap-2">
+                        @if($permissions['canVerify'] && $mustahik->status_verifikasi === 'pending')
+                            <button type="button" onclick="verifyMustahik('{{ $mustahik->uuid }}')"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Verifikasi
+                            </button>
+                            <button type="button" onclick="showRejectModal()"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Tolak
+                            </button>
+                        @endif
+                        
+                        @if($permissions['canEdit'])
+                            <a href="{{ route('mustahik.edit', $mustahik->uuid) }}"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                Edit Data
+                            </a>
+                        @endif
+                        
+                        @if($permissions['canDelete'])
+                            <button type="button" onclick="confirmDelete()"
+                                class="inline-flex items-center justify-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Hapus
+                            </button>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -526,8 +768,7 @@
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
             <div class="flex justify-center mb-3 sm:mb-4">
-                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
+                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -540,14 +781,14 @@
             <p class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-center gap-2 sm:gap-3">
                 <button type="button" onclick="closeDeleteModal()"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition-colors">
                     Batal
                 </button>
                 <form action="{{ route('mustahik.destroy', $mustahik->uuid) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none transition-colors">
                         Hapus
                     </button>
                 </form>
@@ -559,21 +800,14 @@
 @push('scripts')
     <script>
         function switchTab(tabName) {
-            // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.add('hidden');
             });
-            
-            // Remove active state from all tabs
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('border-primary', 'text-primary');
                 button.classList.add('border-transparent', 'text-gray-500');
             });
-            
-            // Show selected tab content
             document.getElementById('content-' + tabName).classList.remove('hidden');
-            
-            // Add active state to selected tab
             const activeTab = document.getElementById('tab-' + tabName);
             activeTab.classList.add('border-primary', 'text-primary');
             activeTab.classList.remove('border-transparent', 'text-gray-500');

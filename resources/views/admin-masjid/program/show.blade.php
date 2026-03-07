@@ -329,7 +329,7 @@
                                                     {!! $trx->status_badge !!}
                                                 </td>
                                                 <td class="px-4 py-3 text-center">
-                                                    <a href="{{ route('transaksi-penerimaan.show', $trx->uuid) }}"
+                                                    <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
                                                         class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium text-primary hover:text-primary-700 hover:bg-primary/5 rounded-lg transition-colors"
                                                         target="_blank">
                                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -380,7 +380,7 @@
                                                 {!! $trx->status_badge !!}
                                                 {!! $trx->metode_pembayaran_badge !!}
                                             </div>
-                                            <a href="{{ route('transaksi-penerimaan.show', $trx->uuid) }}"
+                                            <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
                                                 class="text-xs text-primary hover:underline" target="_blank">Detail →</a>
                                         </div>
                                     </div>
@@ -399,7 +399,7 @@
                                 </p>
                                 @if ($program->status === 'aktif')
                                     <div class="mt-5">
-                                        <a href="{{ route('transaksi-penerimaan.create') }}"
+                                        <a href="{{ route('pemantauan-transaksi.create') }}"
                                             class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
