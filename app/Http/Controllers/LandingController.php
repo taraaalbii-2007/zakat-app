@@ -25,7 +25,7 @@ class LandingController extends Controller
 
         $totalMuzaki = DB::table('transaksi_penerimaan')
             ->whereNotNull('muzakki_nama')
-            ->selectRaw('COUNT(DISTINCT CONCAT(muzakki_nama, "-", masjid_id)) as cnt')
+            ->selectRaw('COUNT(DISTINCT CONCAT(muzakki_nama, "-", lembaga_id)) as cnt')
             ->value('cnt') ?? 0;
 
         $totalMustahik = Mustahik::count();
