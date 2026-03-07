@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Muzakki extends Model
 {
@@ -81,7 +82,7 @@ class Muzakki extends Model
      */
     public function getFotoUrlAttribute(): string
     {
-        if ($this->foto && \Storage::disk('public')->exists($this->foto)) {
+        if ($this->foto && Storage::disk('public')->exists($this->foto)) {
             return asset('storage/' . $this->foto);
         }
 

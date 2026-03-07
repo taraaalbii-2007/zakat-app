@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 
 class BulletinController extends Controller
 {
@@ -84,10 +85,10 @@ class BulletinController extends Controller
                 ->withErrors(['kategori_bulletin_id' => 'Pilih atau buat kategori terlebih dahulu.']);
         }
 
-        // Upload thumbnail
+        // Upload & compress thumbnail
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
-            $thumbnailPath = $request->file('thumbnail')->store('bulletins/thumbnails', 'public');
+            $thumbnailPath = $this->uploadAndCompress($request->file('thumbnail'));
         }
 
         Bulletin::create([
@@ -164,13 +165,13 @@ class BulletinController extends Controller
                 ->withErrors(['kategori_bulletin_id' => 'Pilih atau buat kategori terlebih dahulu.']);
         }
 
-        // Upload thumbnail baru (hapus yang lama)
+        // Upload & compress thumbnail baru, hapus yang lama
         $thumbnailPath = $bulletin->thumbnail;
         if ($request->hasFile('thumbnail')) {
             if ($thumbnailPath) {
                 Storage::disk('public')->delete($thumbnailPath);
             }
-            $thumbnailPath = $request->file('thumbnail')->store('bulletins/thumbnails', 'public');
+            $thumbnailPath = $this->uploadAndCompress($request->file('thumbnail'));
         }
 
         // Regenerate slug hanya jika judul berubah
@@ -200,7 +201,6 @@ class BulletinController extends Controller
     // ============================================
     public function destroy(Bulletin $bulletin)
     {
-        // Hapus thumbnail dari storage
         if ($bulletin->thumbnail) {
             Storage::disk('public')->delete($bulletin->thumbnail);
         }
@@ -239,5 +239,33 @@ class BulletinController extends Controller
             ->get(['id', 'nama_kategori']);
 
         return response()->json($list);
+    }
+
+    // ============================================
+    // PRIVATE - UPLOAD & COMPRESS THUMBNAIL
+    // ============================================
+    /**
+     * Compress, resize, dan simpan gambar thumbnail sebagai WebP.
+     *
+     * @param  \Illuminate\Http\UploadedFile  $file
+     * @return string  Path relatif dari storage/public
+     */
+    private function uploadAndCompress($file): string
+    {
+        $directory = 'bulletins/thumbnails';
+        $filename  = 'thumb_' . Str::uuid() . '.webp';
+        $savePath  = storage_path('app/public/' . $directory . '/' . $filename);
+
+        // Pastikan direktori tersedia
+        if (!file_exists(dirname($savePath))) {
+            mkdir(dirname($savePath), 0755, true);
+        }
+
+        Image::read($file)
+            ->scaleDown(width: 1280, height: 1280) // Tidak memperbesar gambar kecil
+            ->toWebp(quality: 80)                  // Konversi ke WebP kualitas 80%
+            ->save($savePath);
+
+        return $directory . '/' . $filename;
     }
 }
