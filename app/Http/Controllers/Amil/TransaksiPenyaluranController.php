@@ -106,10 +106,10 @@ class TransaksiPenyaluranController extends Controller
      */
     public function create()
     {
-        $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
+        $user   = Auth::user();
+        $masjid = $user->amil->masjid ?? $user->masjid;
 
-        $mustahikList        = Mustahik::where('masjid_id', $masjid->id)
+        $mustahikList = Mustahik::where('masjid_id', $masjid->id)
             ->where('status_verifikasi', 'verified')
             ->where('is_active', true)
             ->with('kategoriMustahik')
@@ -123,8 +123,48 @@ class TransaksiPenyaluranController extends Controller
             ->get();
         $amilList = Amil::where('masjid_id', $masjid->id)->get();
 
-        $tanggalHariIni      = today()->format('Y-m-d');
-        $noTransaksiPreview  = TransaksiPenyaluran::generateNoTransaksi();
+        $tanggalHariIni     = today()->format('Y-m-d');
+        $noTransaksiPreview = TransaksiPenyaluran::generateNoTransaksi();
+
+        // ── INFO KEUANGAN ──────────────────────────────────────────────────────
+        // Total penerimaan zakat (semua waktu, status disetujui/selesai)
+        // CATATAN: Sesuaikan nama model & kolom dengan struktur DB Anda
+        // Contoh menggunakan model TransaksiPenerimaan:
+        $totalPenerimaan = DB::table('transaksi_penerimaan')
+            ->where('masjid_id', $masjid->id)
+            ->whereIn('status', ['disetujui', 'selesai', 'confirmed', 'verified'])
+            ->sum('jumlah') ?? 0;
+
+        // Total penerimaan bulan ini
+        $totalPenerimaanBulanIni = DB::table('transaksi_penerimaan')
+            ->where('masjid_id', $masjid->id)
+            ->whereIn('status', ['disetujui', 'selesai', 'confirmed', 'verified'])
+            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->sum('jumlah') ?? 0;
+
+        // Total yang sudah disalurkan
+        $totalDisalurkan = TransaksiPenyaluran::byMasjid($masjid->id)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->sum('jumlah') ?? 0;
+
+        // Saldo = total penerimaan - total penyaluran
+        $saldoKas = $totalPenerimaan - $totalDisalurkan;
+
+        // ── INFO STOK BARANG ───────────────────────────────────────────────────
+        // Ambil semua detail_barang dari transaksi sebelumnya untuk referensi
+        $riwayatBarang = TransaksiPenyaluran::byMasjid($masjid->id)
+            ->where('metode_penyaluran', 'barang')
+            ->whereIn('status', ['draft', 'disetujui', 'disalurkan'])
+            ->whereNotNull('detail_barang')
+            ->orderByDesc('tanggal_penyaluran')
+            ->limit(50)
+            ->pluck('detail_barang')
+            ->toArray();
+
+        // Parse & hitung kemunculan barang dari riwayat detail_barang
+        // Mencari kata kunci umum: beras, minyak, gula, tepung, dll
+        $ringkasanBarang = $this->parseRingkasanBarang($riwayatBarang);
 
         return view('amil.transaksi-penyaluran.create', compact(
             'masjid',
@@ -135,16 +175,86 @@ class TransaksiPenyaluranController extends Controller
             'amilList',
             'tanggalHariIni',
             'noTransaksiPreview',
+            'totalPenerimaan',
+            'totalPenerimaanBulanIni',
+            'totalDisalurkan',
+            'saldoKas',
+            'ringkasanBarang',
         ));
     }
 
+// ============================================================
+// TAMBAHKAN method helper berikut di dalam class controller:
+// ============================================================
+
     /**
-     * Simpan transaksi penyaluran (status: draft)
+     * Parse detail_barang dari riwayat transaksi untuk menghitung ringkasan stok/distribusi
+     * Mendukung format: "beras 5kg", "gula 1kg", "minyak 2L", dll
      */
+    private function parseRingkasanBarang(array $riwayatBarang): array
+    {
+        // Kata kunci barang yang dicari (bisa ditambah sesuai kebutuhan)
+        $keywords = [
+            'beras'   => ['beras'],
+            'gula'    => ['gula'],
+            'minyak'  => ['minyak'],
+            'tepung'  => ['tepung'],
+            'kecap'   => ['kecap'],
+            'sembako' => ['sembako', 'paket sembako'],
+            'sardin'  => ['sardin', 'ikan'],
+            'susu'    => ['susu'],
+            'mi'      => [' mi ', 'mie', 'indomie'],
+        ];
+
+        $hasil = [];
+
+        foreach ($riwayatBarang as $detail) {
+            if (!$detail) continue;
+
+            $detailLower = strtolower($detail);
+
+            foreach ($keywords as $namaBarang => $variations) {
+                foreach ($variations as $kata) {
+                    if (str_contains($detailLower, $kata)) {
+                        // Coba ekstrak angka + satuan setelah kata kunci
+                        // Pattern: "beras 5kg" atau "beras 5 kg" atau "5kg beras"
+                        $pattern = '/(?:' . preg_quote($kata, '/') . '\s*(\d+(?:[.,]\d+)?)\s*(kg|gr|g|liter|l|ml|pcs|botol|bungkus|buah|unit)?)|(?:(\d+(?:[.,]\d+)?)\s*(kg|gr|g|liter|l|ml|pcs|botol|bungkus|buah|unit)?\s*' . preg_quote($kata, '/') . ')/i';
+                        preg_match_all($pattern, $detailLower, $matches);
+
+                        $qty   = 0;
+                        $satuan = 'pcs';
+                        if (!empty($matches[1][0])) {
+                            $qty    = (float) str_replace(',', '.', $matches[1][0]);
+                            $satuan = $matches[2][0] ?: 'pcs';
+                        } elseif (!empty($matches[3][0])) {
+                            $qty    = (float) str_replace(',', '.', $matches[3][0]);
+                            $satuan = $matches[4][0] ?: 'pcs';
+                        } else {
+                            $qty = 1; // minimal 1 jika disebutkan tapi tidak ada angka
+                        }
+
+                        if (!isset($hasil[$namaBarang])) {
+                            $hasil[$namaBarang] = ['total' => 0, 'satuan' => $satuan, 'count' => 0];
+                        }
+                        $hasil[$namaBarang]['total']  += $qty;
+                        $hasil[$namaBarang]['satuan']  = $satuan ?: $hasil[$namaBarang]['satuan'];
+                        $hasil[$namaBarang]['count']++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Urutkan dari yang paling banyak muncul
+        uasort($hasil, fn($a, $b) => $b['count'] <=> $a['count']);
+
+        return $hasil;
+    }
+
     public function store(Request $request)
     {
-        $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
+        $user   = Auth::user();
+        $masjid = $user->amil->masjid ?? $user->masjid;
 
         $request->validate([
             'mustahik_id'          => 'required|exists:mustahik,id',
@@ -162,6 +272,8 @@ class TransaksiPenyaluranController extends Controller
             'foto_bukti'           => 'nullable|image|max:2048',
             'keterangan'           => 'nullable|string|max:1000',
             'foto_dokumentasi.*'   => 'nullable|image|max:2048',
+            // tanda_tangan_base64: opsional, string base64 PNG dari canvas draw
+            'tanda_tangan_base64'  => 'nullable|string',
         ], [
             'mustahik_id.required'          => 'Mustahik harus dipilih.',
             'kategori_mustahik_id.required' => 'Kategori mustahik harus dipilih.',
@@ -175,20 +287,31 @@ class TransaksiPenyaluranController extends Controller
 
         DB::beginTransaction();
         try {
-            // Upload foto bukti
+            // ── Upload foto bukti ─────────────────────────────────────────────
             $fotoBuktiPath = null;
             if ($request->hasFile('foto_bukti')) {
                 $fotoBuktiPath = $request->file('foto_bukti')
                     ->store("penyaluran/{$masjid->id}/bukti", 'public');
             }
 
-            // Upload tanda tangan
+            // ── Tanda Tangan: prioritaskan base64 (canvas draw), fallback ke file upload ──
             $pathTandaTangan = null;
-            if ($request->hasFile('tanda_tangan')) {
+
+            $base64Input = $request->input('tanda_tangan_base64');
+
+            if ($base64Input && str_starts_with($base64Input, 'data:image')) {
+                // Simpan dari base64 canvas
+                $pathTandaTangan = $this->saveTandaTanganBase64(
+                    $base64Input,
+                    $masjid->id
+                );
+            } elseif ($request->hasFile('tanda_tangan')) {
+                // Simpan dari file upload
                 $pathTandaTangan = $request->file('tanda_tangan')
                     ->store("penyaluran/{$masjid->id}/tanda_tangan", 'public');
             }
 
+            // ── Buat transaksi ────────────────────────────────────────────────
             $transaksi = TransaksiPenyaluran::create([
                 'masjid_id'            => $masjid->id,
                 'mustahik_id'          => $request->mustahik_id,
@@ -209,7 +332,7 @@ class TransaksiPenyaluranController extends Controller
                 'status'               => 'draft',
             ]);
 
-            // Upload foto dokumentasi (multiple)
+            // ── Upload foto dokumentasi (multiple) ────────────────────────────
             if ($request->hasFile('foto_dokumentasi')) {
                 foreach ($request->file('foto_dokumentasi') as $index => $foto) {
                     $path = $foto->store("penyaluran/{$masjid->id}/dokumentasi", 'public');
@@ -231,6 +354,140 @@ class TransaksiPenyaluranController extends Controller
             DB::rollBack();
             return back()->withInput()->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
+    }
+
+    // ============================================================
+    // PATCH: Ganti method update() — tambahkan handling base64 juga
+    // ============================================================
+
+    public function update(Request $request, TransaksiPenyaluran $transaksiPenyaluran)
+    {
+        $user   = Auth::user();
+        $masjid = $user->amil->masjid ?? $user->masjid;
+
+        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->status !== 'draft', 403);
+
+        $request->validate([
+            'mustahik_id'          => 'required|exists:mustahik,id',
+            'kategori_mustahik_id' => 'required|exists:kategori_mustahik,id',
+            'tanggal_penyaluran'   => 'required|date',
+            'waktu_penyaluran'     => 'nullable|date_format:H:i',
+            'periode'              => ['nullable', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
+            'jenis_zakat_id'       => 'nullable|exists:jenis_zakat,id',
+            'program_zakat_id'     => 'nullable|exists:program_zakat,id',
+            'amil_id'              => 'nullable|exists:amil,id',
+            'jumlah'               => 'required|numeric|min:0',
+            'metode_penyaluran'    => 'required|in:tunai,transfer,barang',
+            'detail_barang'        => 'required_if:metode_penyaluran,barang|nullable|string',
+            'nilai_barang'         => 'required_if:metode_penyaluran,barang|nullable|numeric|min:0',
+            'foto_bukti'           => 'nullable|image|max:2048',
+            'keterangan'           => 'nullable|string|max:1000',
+            'tanda_tangan_base64'  => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $data = $request->only([
+                'mustahik_id',
+                'kategori_mustahik_id',
+                'tanggal_penyaluran',
+                'waktu_penyaluran',
+                'periode',
+                'jenis_zakat_id',
+                'program_zakat_id',
+                'amil_id',
+                'metode_penyaluran',
+                'detail_barang',
+                'nilai_barang',
+                'keterangan',
+            ]);
+
+            $data['jumlah'] = $request->metode_penyaluran === 'barang' ? 0 : $request->jumlah;
+
+            // ── Update foto bukti ─────────────────────────────────────────────
+            if ($request->hasFile('foto_bukti')) {
+                if ($transaksiPenyaluran->foto_bukti) {
+                    Storage::disk('public')->delete($transaksiPenyaluran->foto_bukti);
+                }
+                $data['foto_bukti'] = $request->file('foto_bukti')
+                    ->store("penyaluran/{$masjid->id}/bukti", 'public');
+            }
+
+            // ── Update tanda tangan: base64 canvas atau file upload ───────────
+            $base64Input = $request->input('tanda_tangan_base64');
+
+            if ($base64Input && str_starts_with($base64Input, 'data:image')) {
+                // Hapus file lama jika ada
+                if ($transaksiPenyaluran->path_tanda_tangan) {
+                    Storage::disk('public')->delete($transaksiPenyaluran->path_tanda_tangan);
+                }
+                $data['path_tanda_tangan'] = $this->saveTandaTanganBase64(
+                    $base64Input,
+                    $masjid->id
+                );
+            } elseif ($request->hasFile('tanda_tangan')) {
+                if ($transaksiPenyaluran->path_tanda_tangan) {
+                    Storage::disk('public')->delete($transaksiPenyaluran->path_tanda_tangan);
+                }
+                $data['path_tanda_tangan'] = $request->file('tanda_tangan')
+                    ->store("penyaluran/{$masjid->id}/tanda_tangan", 'public');
+            }
+
+            $transaksiPenyaluran->update($data);
+
+            // ── Tambah foto dokumentasi baru ──────────────────────────────────
+            if ($request->hasFile('foto_dokumentasi')) {
+                $lastUrutan = $transaksiPenyaluran->dokumentasi()->max('urutan') ?? -1;
+                foreach ($request->file('foto_dokumentasi') as $index => $foto) {
+                    $path = $foto->store("penyaluran/{$masjid->id}/dokumentasi", 'public');
+                    DokumentasiPenyaluran::create([
+                        'transaksi_penyaluran_id' => $transaksiPenyaluran->id,
+                        'path_foto'               => $path,
+                        'keterangan_foto'         => $request->keterangan_foto[$index] ?? null,
+                        'urutan'                  => $lastUrutan + $index + 1,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('transaksi-penyaluran.show', $transaksiPenyaluran->uuid)
+                ->with('success', 'Transaksi penyaluran berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['error' => 'Gagal memperbarui: ' . $e->getMessage()]);
+        }
+    }
+
+// ============================================================
+// PATCH: Tambahkan private helper method ini ke dalam class
+// ============================================================
+
+    /**
+     * Simpan tanda tangan dari base64 PNG (hasil canvas draw) ke storage.
+     * Return: path relatif (untuk disimpan ke DB), e.g.
+     *         "penyaluran/5/tanda_tangan/tt_1234567890.png"
+     */
+    private function saveTandaTanganBase64(string $base64Data, int $masjidId): string
+    {
+        // Strip header data:image/png;base64,
+        $base64Clean = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
+        $decoded     = base64_decode($base64Clean);
+
+        if ($decoded === false || strlen($decoded) < 100) {
+            throw new \RuntimeException('Data tanda tangan tidak valid.');
+        }
+
+        $folder   = "penyaluran/{$masjidId}/tanda_tangan";
+        $filename = 'tt_' . time() . '_' . uniqid() . '.png';
+        $path     = $folder . '/' . $filename;
+
+        // Simpan ke storage/app/public/...
+        Storage::disk('public')->put($path, $decoded);
+
+        return $path;
     }
 
     public function show(TransaksiPenyaluran $transaksiPenyaluran)
@@ -292,97 +549,6 @@ class TransaksiPenyaluranController extends Controller
             'programZakatList',
             'amilList'
         ));
-    }
-    /**
-     * Update transaksi (hanya draft)
-     */
-    public function update(Request $request, TransaksiPenyaluran $transaksiPenyaluran)
-    {
-        $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
-
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
-        abort_if($transaksiPenyaluran->status !== 'draft', 403);
-
-        $request->validate([
-            'mustahik_id'          => 'required|exists:mustahik,id',
-            'kategori_mustahik_id' => 'required|exists:kategori_mustahik,id',
-            'tanggal_penyaluran'   => 'required|date',
-            'waktu_penyaluran'     => 'nullable|date_format:H:i',
-            'periode'              => ['nullable', 'regex:/^\d{4}-(0[1-9]|1[0-2])$/'],
-            'jenis_zakat_id'       => 'nullable|exists:jenis_zakat,id',
-            'program_zakat_id'     => 'nullable|exists:program_zakat,id',
-            'amil_id'              => 'nullable|exists:amil,id',
-            'jumlah'               => 'required|numeric|min:0',
-            'metode_penyaluran'    => 'required|in:tunai,transfer,barang',
-            'detail_barang'        => 'required_if:metode_penyaluran,barang|nullable|string',
-            'nilai_barang'         => 'required_if:metode_penyaluran,barang|nullable|numeric|min:0',
-            'foto_bukti'           => 'nullable|image|max:2048',
-            'keterangan'           => 'nullable|string|max:1000',
-        ]);
-
-        DB::beginTransaction();
-        try {
-            $data = $request->only([
-                'mustahik_id',
-                'kategori_mustahik_id',
-                'tanggal_penyaluran',
-                'waktu_penyaluran',
-                'periode',
-                'jenis_zakat_id',
-                'program_zakat_id',
-                'amil_id',
-                'metode_penyaluran',
-                'detail_barang',
-                'nilai_barang',
-                'keterangan',
-            ]);
-
-            $data['jumlah'] = $request->metode_penyaluran === 'barang' ? 0 : $request->jumlah;
-
-            // Upload foto bukti baru (jika ada)
-            if ($request->hasFile('foto_bukti')) {
-                if ($transaksiPenyaluran->foto_bukti) {
-                    Storage::disk('public')->delete($transaksiPenyaluran->foto_bukti);
-                }
-                $data['foto_bukti'] = $request->file('foto_bukti')
-                    ->store("penyaluran/{$masjid->id}/bukti", 'public');
-            }
-
-            // Upload tanda tangan baru (jika ada)
-            if ($request->hasFile('tanda_tangan')) {
-                if ($transaksiPenyaluran->path_tanda_tangan) {
-                    Storage::disk('public')->delete($transaksiPenyaluran->path_tanda_tangan);
-                }
-                $data['path_tanda_tangan'] = $request->file('tanda_tangan')
-                    ->store("penyaluran/{$masjid->id}/tanda_tangan", 'public');
-            }
-
-            $transaksiPenyaluran->update($data);
-
-            // Tambah foto dokumentasi baru
-            if ($request->hasFile('foto_dokumentasi')) {
-                $lastUrutan = $transaksiPenyaluran->dokumentasi()->max('urutan') ?? -1;
-                foreach ($request->file('foto_dokumentasi') as $index => $foto) {
-                    $path = $foto->store("penyaluran/{$masjid->id}/dokumentasi", 'public');
-                    DokumentasiPenyaluran::create([
-                        'transaksi_penyaluran_id' => $transaksiPenyaluran->id,
-                        'path_foto'               => $path,
-                        'keterangan_foto'         => $request->keterangan_foto[$index] ?? null,
-                        'urutan'                  => $lastUrutan + $index + 1,
-                    ]);
-                }
-            }
-
-            DB::commit();
-
-            return redirect()
-                ->route('transaksi-penyaluran.show', $transaksiPenyaluran->uuid)
-                ->with('success', 'Transaksi penyaluran berhasil diperbarui.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withInput()->withErrors(['error' => 'Gagal memperbarui: ' . $e->getMessage()]);
-        }
     }
 
     /**

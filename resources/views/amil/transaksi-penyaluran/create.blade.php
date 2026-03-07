@@ -29,10 +29,58 @@
             </div>
         </div>
 
+        {{-- ═══════════════════════════════════════════════
+             INFO KEUANGAN — Saldo & Penerimaan
+             ═══════════════════════════════════════════════ --}}
+        <div class="px-4 sm:px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100">
+            <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                Ringkasan Kas Zakat
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {{-- Saldo Kas --}}
+                <div class="bg-white rounded-xl px-4 py-3 border border-emerald-200 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Saldo Kas</p>
+                    <p class="text-base sm:text-lg font-bold {{ $saldoKas >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
+                        Rp {{ number_format($saldoKas, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-0.5">Total penerimaan − penyaluran</p>
+                </div>
+
+                {{-- Total Penerimaan --}}
+                <div class="bg-white rounded-xl px-4 py-3 border border-blue-200 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Total Penerimaan</p>
+                    <p class="text-base sm:text-lg font-bold text-blue-700">
+                        Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-0.5">Semua waktu</p>
+                </div>
+
+                {{-- Penerimaan Bulan Ini --}}
+                <div class="bg-white rounded-xl px-4 py-3 border border-indigo-200 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Penerimaan Bulan Ini</p>
+                    <p class="text-base sm:text-lg font-bold text-indigo-700">
+                        Rp {{ number_format($totalPenerimaanBulanIni, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ now()->translatedFormat('F Y') }}</p>
+                </div>
+
+                {{-- Total Disalurkan --}}
+                <div class="bg-white rounded-xl px-4 py-3 border border-orange-200 shadow-sm">
+                    <p class="text-xs text-gray-500 mb-1">Total Disalurkan</p>
+                    <p class="text-base sm:text-lg font-bold text-orange-700">
+                        Rp {{ number_format($totalDisalurkan, 0, ',', '.') }}
+                    </p>
+                    <p class="text-xs text-gray-400 mt-0.5">Disetujui & disalurkan</p>
+                </div>
+            </div>
+        </div>
+
         <form id="formPenyaluran" action="{{ route('transaksi-penyaluran.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
             @csrf
             <input type="hidden" name="no_transaksi" value="{{ $noTransaksiPreview }}">
-            {{-- Hidden input untuk tanda tangan hasil remove background (base64 PNG) --}}
             <input type="hidden" name="tanda_tangan_base64" id="tanda_tangan_base64">
 
             {{-- Error Summary --}}
@@ -64,7 +112,6 @@
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        {{-- Mustahik --}}
                         <div class="sm:col-span-2">
                             <label for="mustahik_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Mustahik (Penerima Zakat) <span class="text-red-500">*</span>
@@ -95,7 +142,6 @@
                             @endif
                         </div>
 
-                        {{-- Kategori Mustahik (snapshot) --}}
                         <div>
                             <label for="kategori_mustahik_id" class="block text-sm font-medium text-gray-700 mb-2">
                                 Kategori Mustahik <span class="text-red-500">*</span>
@@ -115,7 +161,6 @@
                             @enderror
                         </div>
 
-                        {{-- Info mustahik (auto-fill dari pilihan) --}}
                         <div id="mustahikInfoBox" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-3">
                             <p class="text-xs font-semibold text-blue-800 mb-1">Info Mustahik</p>
                             <div class="text-xs text-blue-700 space-y-0.5">
@@ -136,8 +181,6 @@
                     </h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-
-                        {{-- Tanggal Penyaluran --}}
                         <div>
                             <label for="tanggal_penyaluran" class="block text-sm font-medium text-gray-700 mb-2">
                                 Tanggal Penyaluran <span class="text-red-500">*</span>
@@ -150,7 +193,6 @@
                             @enderror
                         </div>
 
-                        {{-- Waktu Penyaluran --}}
                         <div>
                             <label for="waktu_penyaluran" class="block text-sm font-medium text-gray-700 mb-2">Waktu Penyaluran</label>
                             <input type="time" name="waktu_penyaluran" id="waktu_penyaluran"
@@ -158,7 +200,6 @@
                                 class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all">
                         </div>
 
-                        {{-- Periode (format YYYY-MM) --}}
                         <div>
                             <label for="periode" class="block text-sm font-medium text-gray-700 mb-2">
                                 Periode
@@ -172,7 +213,6 @@
                             @enderror
                         </div>
 
-                        {{-- Jenis Zakat --}}
                         <div>
                             <label for="jenis_zakat_id" class="block text-sm font-medium text-gray-700 mb-2">Jenis Zakat</label>
                             <select name="jenis_zakat_id" id="jenis_zakat_id"
@@ -186,7 +226,6 @@
                             </select>
                         </div>
 
-                        {{-- Program Zakat --}}
                         <div>
                             <label for="program_zakat_id" class="block text-sm font-medium text-gray-700 mb-2">Program Zakat</label>
                             <select name="program_zakat_id" id="program_zakat_id"
@@ -200,7 +239,6 @@
                             </select>
                         </div>
 
-                        {{-- Amil --}}
                         <div>
                             <label for="amil_id" class="block text-sm font-medium text-gray-700 mb-2">Amil yang Menyalurkan</label>
                             <select name="amil_id" id="amil_id"
@@ -243,6 +281,10 @@
                                     </div>
                                     <span class="text-sm font-medium text-gray-900">Tunai</span>
                                     <span class="text-xs text-gray-500 mt-1 text-center">Serahkan langsung</span>
+                                    {{-- Mini info saldo untuk tunai --}}
+                                    <span class="mt-2 text-xs font-semibold {{ $saldoKas >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
+                                        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
+                                    </span>
                                 </label>
 
                                 {{-- Transfer --}}
@@ -255,6 +297,9 @@
                                     </div>
                                     <span class="text-sm font-medium text-gray-900">Transfer Bank</span>
                                     <span class="text-xs text-gray-500 mt-1 text-center">Transfer ke rekening mustahik</span>
+                                    <span class="mt-2 text-xs font-semibold {{ $saldoKas >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
+                                        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
+                                    </span>
                                 </label>
 
                                 {{-- Barang --}}
@@ -267,6 +312,11 @@
                                     </div>
                                     <span class="text-sm font-medium text-gray-900">Barang</span>
                                     <span class="text-xs text-gray-500 mt-1 text-center">Penyaluran in-kind</span>
+                                    @if(count($ringkasanBarang) > 0)
+                                        <span class="mt-2 text-xs font-semibold text-orange-600">
+                                            {{ count($ringkasanBarang) }} jenis barang tercatat
+                                        </span>
+                                    @endif
                                 </label>
                             </div>
                             @error('metode_penyaluran')
@@ -274,18 +324,52 @@
                             @enderror
                         </div>
 
+                        {{-- INFO BARANG — tampil saat metode barang dipilih --}}
+                        @if(count($ringkasanBarang) > 0)
+                        <div id="infoBarangSection" class="{{ old('metode_penyaluran') === 'barang' ? '' : 'hidden' }}">
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                                <p class="text-xs font-semibold text-orange-800 mb-3 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                    </svg>
+                                    Riwayat Distribusi Barang (dari transaksi sebelumnya)
+                                </p>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    @foreach($ringkasanBarang as $namaBarang => $info)
+                                    <div class="bg-white rounded-lg px-3 py-2 border border-orange-100">
+                                        <p class="text-xs text-gray-500 capitalize">{{ $namaBarang }}</p>
+                                        <p class="text-sm font-bold text-orange-700">
+                                            {{ number_format($info['total'], 1) }}
+                                            <span class="font-normal text-xs">{{ $info['satuan'] ?: 'pcs' }}</span>
+                                        </p>
+                                        <p class="text-xs text-gray-400">{{ $info['count'] }}× transaksi</p>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <p class="text-xs text-orange-600 mt-2 italic">* Data akumulasi dari semua transaksi barang yang telah dicatat.</p>
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Nominal (tunai / transfer) --}}
                         <div id="nominalSection">
-                            <label for="jumlah" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="jumlah_display" class="block text-sm font-medium text-gray-700 mb-2">
                                 Jumlah Penyaluran (Rp) <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">Rp</span>
-                                <input type="number" name="jumlah" id="jumlah"
-                                    value="{{ old('jumlah', 0) }}"
-                                    min="0" step="1000"
-                                    class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('jumlah') border-red-500 @enderror">
+                                {{-- Input tampilan (dengan titik ribuan) --}}
+                                <input type="text" id="jumlah_display"
+                                    value="{{ old('jumlah') ? number_format(old('jumlah'), 0, ',', '.') : '' }}"
+                                    placeholder="0"
+                                    inputmode="numeric"
+                                    class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('jumlah') border-red-500 @enderror"
+                                    oninput="formatRupiah(this, 'jumlah')">
+                                {{-- Input hidden (nilai mentah dikirim ke server) --}}
+                                <input type="hidden" name="jumlah" id="jumlah" value="{{ old('jumlah', 0) }}">
                             </div>
+                            {{-- Preview terbilang --}}
+                            <p id="jumlahTerbilang" class="mt-1 text-xs text-primary font-medium hidden"></p>
                             <p class="mt-1 text-xs text-gray-500">Jumlah PENUH yang diterima mustahik, tanpa potongan apapun.</p>
                             @error('jumlah')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -314,16 +398,20 @@
                                 @enderror
                             </div>
                             <div>
-                                <label for="nilai_barang" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="nilai_barang_display" class="block text-sm font-medium text-gray-700 mb-2">
                                     Nilai Estimasi Barang (Rp) <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                                    <input type="number" name="nilai_barang" id="nilai_barang"
-                                        value="{{ old('nilai_barang') }}"
-                                        min="0" step="1000"
-                                        class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('nilai_barang') border-red-500 @enderror">
+                                    <input type="text" id="nilai_barang_display"
+                                        value="{{ old('nilai_barang') ? number_format(old('nilai_barang'), 0, ',', '.') : '' }}"
+                                        placeholder="0"
+                                        inputmode="numeric"
+                                        class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('nilai_barang') border-red-500 @enderror"
+                                        oninput="formatRupiah(this, 'nilai_barang')">
+                                    <input type="hidden" name="nilai_barang" id="nilai_barang" value="{{ old('nilai_barang') }}">
                                 </div>
+                                <p id="nilaBarangTerbilang" class="mt-1 text-xs text-primary font-medium hidden"></p>
                                 @error('nilai_barang')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -368,36 +456,96 @@
                             </div>
                         </div>
 
-                        {{-- ── Tanda Tangan Digital dengan Auto Remove Background ── --}}
+                        {{-- Tanda Tangan Digital — Canvas Draw + Upload --}}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Tanda Tangan Digital Mustahik
                             </label>
-                            <div class="space-y-3">
 
-                                {{-- Preview area dengan checkerboard (transparan indicator) --}}
+                            {{-- Tab switcher --}}
+                            <div class="flex rounded-xl border border-gray-200 overflow-hidden mb-3 bg-gray-50">
+                                <button type="button" id="tabDraw"
+                                    onclick="switchTTTab('draw')"
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all bg-primary text-white">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                    </svg>
+                                    Tanda Tangan Langsung
+                                </button>
+                                <button type="button" id="tabUpload"
+                                    onclick="switchTTTab('upload')"
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all text-gray-500 hover:text-gray-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12"/>
+                                    </svg>
+                                    Upload Gambar
+                                </button>
+                            </div>
+
+                            {{-- ── TAB: DRAW ── --}}
+                            <div id="panelDraw" class="space-y-2">
+                                {{-- Canvas area --}}
+                                <div class="relative rounded-xl border-2 border-gray-300 bg-white overflow-hidden" style="touch-action: none;">
+                                    {{-- Hint text di dalam canvas --}}
+                                    <p id="canvasHint" class="absolute inset-0 flex items-center justify-center text-xs text-gray-300 pointer-events-none select-none font-medium">
+                                        ✍️ Tanda tangan di sini
+                                    </p>
+                                    <canvas id="ttCanvas"
+                                        class="block w-full cursor-crosshair"
+                                        style="height: 160px; touch-action: none;">
+                                    </canvas>
+                                </div>
+
+                                {{-- Badge status draw --}}
+                                <div id="ttDrawBadge" class="hidden">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Tanda tangan tersimpan
+                                    </span>
+                                </div>
+
+                                {{-- Tombol aksi draw --}}
+                                <div class="flex gap-2">
+                                    <button type="button" onclick="clearCanvas()"
+                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-600 bg-white hover:bg-gray-50 transition-colors">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                    <button type="button" onclick="saveCanvas()"
+                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:opacity-90 transition-colors">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Simpan Tanda Tangan
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-400">Gunakan mouse atau jari untuk membuat tanda tangan.</p>
+                            </div>
+
+                            {{-- ── TAB: UPLOAD ── --}}
+                            <div id="panelUpload" class="hidden space-y-3">
                                 <div id="tandaTanganPreview"
-                                    class="h-32 w-full rounded-xl flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative"
-                                    style="background-image: linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%); background-size: 12px 12px; background-position: 0 0, 0 6px, 6px -6px, -6px 0px; background-color: #f9fafb;">
+                                    class="h-36 w-full rounded-xl flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative bg-gray-50">
                                     <div id="ttPlaceholder" class="text-center">
                                         <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
-                                        <p class="mt-1 text-xs text-gray-500">Tanda tangan mustahik</p>
+                                        <p class="mt-1 text-xs text-gray-500">Belum ada gambar dipilih</p>
                                     </div>
-                                    {{-- Hasil remove background ditampilkan di sini --}}
                                     <img id="ttProcessedImg" class="hidden absolute inset-0 w-full h-full object-contain p-2" alt="Tanda Tangan">
-                                    {{-- Loading spinner --}}
                                     <div id="ttLoading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/80 rounded-xl">
                                         <svg class="animate-spin w-6 h-6 text-primary mb-1" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                         </svg>
-                                        <p class="text-xs text-gray-500">Menghapus background...</p>
+                                        <p class="text-xs text-gray-500">Memproses gambar...</p>
                                     </div>
                                 </div>
 
-                                {{-- Badge status --}}
                                 <div id="ttStatusBadge" class="hidden">
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,7 +555,6 @@
                                     </span>
                                 </div>
 
-                                {{-- Slider threshold --}}
                                 <div id="ttThresholdSection" class="hidden">
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="text-xs text-gray-600 font-medium">Sensitivitas hapus background</label>
@@ -423,7 +570,7 @@
                                 </div>
 
                                 <input type="file" name="tanda_tangan" id="tanda_tangan_input"
-                                    accept="image/jpeg,image/png,image/jpg,image/svg+xml"
+                                    accept="image/jpeg,image/png,image/jpg"
                                     class="hidden"
                                     onchange="handleTandaTanganUpload(this)">
 
@@ -432,18 +579,20 @@
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
                                         </svg>
-                                        Upload Tanda Tangan
+                                        Pilih Gambar
                                     </label>
-                                    <button type="button" id="ttResetBtn" onclick="resetTandaTangan()"
+                                    <button type="button" id="ttResetBtn" onclick="resetUploadTT()"
                                         class="hidden px-3 py-2 border border-red-200 text-xs font-medium rounded-lg text-red-600 bg-white hover:bg-red-50 transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
                                     </button>
                                 </div>
-
-                                <p class="text-xs text-gray-500">PNG/JPG. Maks 2MB. Background putih akan dihapus otomatis.</p>
+                                <p class="text-xs text-gray-500">PNG/JPG. Maks 2MB. Background putih dihapus otomatis.</p>
                             </div>
+
+                            {{-- Hidden input — nilai base64 final (dari draw ATAU upload) --}}
+                            {{-- (sudah ada di atas form: tanda_tangan_base64) --}}
                         </div>
 
                         {{-- Foto Dokumentasi (multiple) --}}
@@ -510,111 +659,266 @@
 @push('scripts')
 <script>
 // ════════════════════════════════════════════════════════
-// TANDA TANGAN — AUTO REMOVE BACKGROUND
+// FORMAT RUPIAH — Titik ribuan otomatis
 // ════════════════════════════════════════════════════════
 
-let _ttOriginalFile   = null;   // File object asli
-let _ttCurrentThresh  = 220;    // Threshold saat ini
-let _ttOriginalImage  = null;   // HTMLImageElement dari file
-
 /**
- * Dipanggil saat user memilih file tanda tangan
+ * Format input menjadi angka dengan titik ribuan.
+ * @param {HTMLInputElement} displayInput - input tampilan (text)
+ * @param {string} hiddenId              - id dari hidden input yang menyimpan nilai mentah
  */
-function handleTandaTanganUpload(input) {
-    if (!input.files?.[0]) return;
+function formatRupiah(displayInput, hiddenId) {
+    // Ambil hanya digit
+    let raw = displayInput.value.replace(/\D/g, '');
 
-    const file = input.files[0];
-    if (file.size > 2 * 1024 * 1024) {
-        alert('Ukuran file maksimal 2MB');
-        input.value = '';
-        return;
+    // Batasi panjang agar tidak overflow bigint
+    if (raw.length > 15) raw = raw.slice(0, 15);
+
+    const numeric = parseInt(raw, 10) || 0;
+
+    // Tampilkan dengan titik ribuan
+    displayInput.value = numeric > 0
+        ? numeric.toLocaleString('id-ID')
+        : '';
+
+    // Simpan nilai mentah ke hidden input
+    document.getElementById(hiddenId).value = numeric || 0;
+
+    // Tampilkan preview terbilang
+    const terbilangId = hiddenId === 'jumlah' ? 'jumlahTerbilang' : 'nilaBarangTerbilang';
+    const terbilangEl = document.getElementById(terbilangId);
+    if (terbilangEl) {
+        if (numeric > 0) {
+            terbilangEl.textContent = '= Rp ' + numeric.toLocaleString('id-ID');
+            terbilangEl.classList.remove('hidden');
+        } else {
+            terbilangEl.classList.add('hidden');
+        }
+    }
+}
+
+// Inisialisasi nilai lama (jika ada old value dari Laravel) + canvas
+document.addEventListener('DOMContentLoaded', function () {
+    // Format rupiah old values
+    const jumlahHidden  = document.getElementById('jumlah');
+    const jumlahDisplay = document.getElementById('jumlah_display');
+    if (jumlahHidden && jumlahDisplay && parseInt(jumlahHidden.value) > 0) {
+        jumlahDisplay.value = parseInt(jumlahHidden.value).toLocaleString('id-ID');
     }
 
+    const nilaiHidden  = document.getElementById('nilai_barang');
+    const nilaiDisplay = document.getElementById('nilai_barang_display');
+    if (nilaiHidden && nilaiDisplay && parseInt(nilaiHidden.value) > 0) {
+        nilaiDisplay.value = parseInt(nilaiHidden.value).toLocaleString('id-ID');
+    }
+
+    if (document.getElementById('mustahik_id').value) onMustahikChange();
+
+    // Init canvas tanda tangan
+    initCanvas();
+});
+
+// ════════════════════════════════════════════════════════
+// TANDA TANGAN — TAB SWITCH (Draw / Upload)
+// ════════════════════════════════════════════════════════
+
+function switchTTTab(tab) {
+    const isDraw = tab === 'draw';
+    document.getElementById('panelDraw').classList.toggle('hidden', !isDraw);
+    document.getElementById('panelUpload').classList.toggle('hidden', isDraw);
+
+    const tabDraw   = document.getElementById('tabDraw');
+    const tabUpload = document.getElementById('tabUpload');
+
+    tabDraw.className   = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
+        + (isDraw  ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700');
+    tabUpload.className = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
+        + (!isDraw ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700');
+
+    // Jika pindah ke draw, bersihkan nilai upload dan sebaliknya
+    if (isDraw) {
+        resetUploadTT();
+    } else {
+        clearCanvas();
+    }
+}
+
+// ════════════════════════════════════════════════════════
+// CANVAS DRAW — Tanda tangan langsung
+// ════════════════════════════════════════════════════════
+
+let _canvas, _ctx, _drawing = false, _hasStrokes = false;
+let _lastX = 0, _lastY = 0;
+
+function initCanvas() {
+    _canvas = document.getElementById('ttCanvas');
+    if (!_canvas) return;
+
+    // Set canvas ukuran pixel sesuai tampilan CSS agar tidak blur
+    function resizeCanvas() {
+        const rect = _canvas.getBoundingClientRect();
+        const dpr  = window.devicePixelRatio || 1;
+        _canvas.width  = rect.width  * dpr;
+        _canvas.height = rect.height * dpr;
+        _ctx = _canvas.getContext('2d');
+        _ctx.scale(dpr, dpr);
+        _ctx.strokeStyle = '#1a1a2e';
+        _ctx.lineWidth   = 2.5;
+        _ctx.lineCap     = 'round';
+        _ctx.lineJoin    = 'round';
+    }
+    resizeCanvas();
+
+    // ── Mouse events ──
+    _canvas.addEventListener('mousedown', (e) => {
+        _drawing = true;
+        const pos = getPos(e);
+        _lastX = pos.x; _lastY = pos.y;
+        _ctx.beginPath();
+        _ctx.moveTo(_lastX, _lastY);
+        document.getElementById('canvasHint').style.opacity = '0';
+    });
+
+    _canvas.addEventListener('mousemove', (e) => {
+        if (!_drawing) return;
+        const pos = getPos(e);
+        _ctx.lineTo(pos.x, pos.y);
+        _ctx.stroke();
+        _ctx.beginPath();
+        _ctx.moveTo(pos.x, pos.y);
+        _lastX = pos.x; _lastY = pos.y;
+        _hasStrokes = true;
+    });
+
+    _canvas.addEventListener('mouseup',   () => { _drawing = false; _ctx.beginPath(); });
+    _canvas.addEventListener('mouseleave',() => { _drawing = false; _ctx.beginPath(); });
+
+    // ── Touch events (mobile/tablet) ──
+    _canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        _drawing = true;
+        const pos = getPos(e.touches[0]);
+        _lastX = pos.x; _lastY = pos.y;
+        _ctx.beginPath();
+        _ctx.moveTo(_lastX, _lastY);
+        document.getElementById('canvasHint').style.opacity = '0';
+    }, { passive: false });
+
+    _canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!_drawing) return;
+        const pos = getPos(e.touches[0]);
+        _ctx.lineTo(pos.x, pos.y);
+        _ctx.stroke();
+        _ctx.beginPath();
+        _ctx.moveTo(pos.x, pos.y);
+        _lastX = pos.x; _lastY = pos.y;
+        _hasStrokes = true;
+    }, { passive: false });
+
+    _canvas.addEventListener('touchend', () => { _drawing = false; _ctx.beginPath(); });
+}
+
+function getPos(e) {
+    const rect = _canvas.getBoundingClientRect();
+    return {
+        x: (e.clientX ?? e.pageX) - rect.left,
+        y: (e.clientY ?? e.pageY) - rect.top,
+    };
+}
+
+function clearCanvas() {
+    if (!_canvas || !_ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    _ctx.clearRect(0, 0, _canvas.width / dpr, _canvas.height / dpr);
+    _hasStrokes = false;
+    document.getElementById('tanda_tangan_base64').value = '';
+    document.getElementById('canvasHint').style.opacity  = '1';
+    document.getElementById('ttDrawBadge').classList.add('hidden');
+}
+
+function saveCanvas() {
+    if (!_canvas) return;
+    if (!_hasStrokes) { alert('Silakan buat tanda tangan terlebih dahulu.'); return; }
+
+    // Buat canvas putih untuk export (agar tidak transparan)
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width  = _canvas.width;
+    exportCanvas.height = _canvas.height;
+    const ectx = exportCanvas.getContext('2d');
+    ectx.fillStyle = '#ffffff';
+    ectx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    ectx.drawImage(_canvas, 0, 0);
+
+    const base64 = exportCanvas.toDataURL('image/png');
+    document.getElementById('tanda_tangan_base64').value = base64;
+    document.getElementById('ttDrawBadge').classList.remove('hidden');
+
+    // Flash border canvas jadi hijau sebentar
+    _canvas.style.borderColor = '#10b981';
+    setTimeout(() => { _canvas.style.borderColor = ''; }, 1200);
+}
+
+// ════════════════════════════════════════════════════════
+// UPLOAD — Tanda tangan dari file + remove background
+// ════════════════════════════════════════════════════════
+
+let _ttOriginalFile   = null;
+let _ttCurrentThresh  = 220;
+let _ttOriginalImage  = null;
+
+function handleTandaTanganUpload(input) {
+    if (!input.files?.[0]) return;
+    const file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) { alert('Ukuran file maksimal 2MB'); input.value = ''; return; }
     _ttOriginalFile = file;
-
-    // Tampilkan loading
     showTTLoading(true);
-
     const reader = new FileReader();
     reader.onload = function (e) {
         const img = new Image();
-        img.onload = function () {
-            _ttOriginalImage = img;
-            processRemoveBackground(_ttCurrentThresh);
-        };
+        img.onload = function () { _ttOriginalImage = img; processRemoveBackground(_ttCurrentThresh); };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
 }
 
-/**
- * Core: hapus background menggunakan Canvas API
- * Algoritma: setiap piksel yang brightness-nya >= threshold → alpha = 0 (transparan)
- * Tambahan: feathering di tepi untuk hasil lebih halus
- */
 function processRemoveBackground(threshold) {
     if (!_ttOriginalImage) return;
-
     showTTLoading(true);
-
-    // Gunakan setTimeout agar UI sempat update (loading spinner muncul)
     setTimeout(function () {
         try {
-            const canvas  = document.createElement('canvas');
-            const ctx     = canvas.getContext('2d');
-
+            const canvas = document.createElement('canvas');
+            const ctx    = canvas.getContext('2d');
             canvas.width  = _ttOriginalImage.naturalWidth  || _ttOriginalImage.width;
             canvas.height = _ttOriginalImage.naturalHeight || _ttOriginalImage.height;
-
             ctx.drawImage(_ttOriginalImage, 0, 0);
-
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data      = imageData.data;
-
+            const data = imageData.data;
             for (let i = 0; i < data.length; i += 4) {
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-
-                // Brightness perceptual (luminance)
-                const brightness = 0.299 * r + 0.587 * g + 0.114 * b;
-
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const brightness = 0.299*r + 0.587*g + 0.114*b;
                 if (brightness >= threshold) {
-                    // Piksel terang → transparan
-                    // Feathering: semakin dekat ke threshold, semakin transparan tapi tidak langsung 0
                     const feather = Math.min(255, Math.round(((brightness - threshold) / (255 - threshold)) * 255));
-                    data[i + 3]   = Math.max(0, data[i + 3] - feather);
+                    data[i+3] = Math.max(0, data[i+3] - feather);
                 } else {
-                    // Piksel gelap (tinta) → pertahankan, tapi tingkatkan kontras sedikit
-                    // Gelapkan piksel yang agak abu supaya tinta lebih jelas
                     const darken = Math.max(0, 1 - (brightness / threshold) * 0.3);
-                    data[i]     = Math.round(r * (1 - darken));
-                    data[i + 1] = Math.round(g * (1 - darken));
-                    data[i + 2] = Math.round(b * (1 - darken));
+                    data[i]   = Math.round(r * (1 - darken));
+                    data[i+1] = Math.round(g * (1 - darken));
+                    data[i+2] = Math.round(b * (1 - darken));
                 }
             }
-
             ctx.putImageData(imageData, 0, 0);
-
-            // Konversi ke PNG base64 (transparan hanya bisa PNG)
             const resultBase64 = canvas.toDataURL('image/png');
-
-            // Simpan ke hidden input (akan dikirim ke server)
             document.getElementById('tanda_tangan_base64').value = resultBase64;
-
-            // Tampilkan preview
             const previewImg = document.getElementById('ttProcessedImg');
-            previewImg.src   = resultBase64;
+            previewImg.src = resultBase64;
             previewImg.classList.remove('hidden');
-
             document.getElementById('ttPlaceholder').classList.add('hidden');
             document.getElementById('ttStatusBadge').classList.remove('hidden');
             document.getElementById('ttThresholdSection').classList.remove('hidden');
             document.getElementById('ttResetBtn').classList.remove('hidden');
-
         } catch (err) {
             console.error('Remove background error:', err);
-            // Fallback: pakai gambar original
             const reader2 = new FileReader();
             reader2.onload = e2 => {
                 document.getElementById('ttProcessedImg').src = e2.target.result;
@@ -628,38 +932,36 @@ function processRemoveBackground(threshold) {
     }, 50);
 }
 
-/**
- * Dipanggil saat slider threshold digeser
- */
 function onThresholdChange(val) {
     _ttCurrentThresh = parseInt(val);
     document.getElementById('ttThresholdValue').textContent = val;
     processRemoveBackground(_ttCurrentThresh);
 }
 
-/**
- * Reset tanda tangan
- */
-function resetTandaTangan() {
-    _ttOriginalFile  = null;
-    _ttOriginalImage = null;
-    _ttCurrentThresh = 220;
-
-    document.getElementById('tanda_tangan_input').value   = '';
+function resetUploadTT() {
+    _ttOriginalFile = null; _ttOriginalImage = null; _ttCurrentThresh = 220;
+    const inp = document.getElementById('tanda_tangan_input');
+    if (inp) inp.value = '';
     document.getElementById('tanda_tangan_base64').value  = '';
-    document.getElementById('ttProcessedImg').src         = '';
-    document.getElementById('ttProcessedImg').classList.add('hidden');
-    document.getElementById('ttPlaceholder').classList.remove('hidden');
-    document.getElementById('ttStatusBadge').classList.add('hidden');
-    document.getElementById('ttThresholdSection').classList.add('hidden');
-    document.getElementById('ttResetBtn').classList.add('hidden');
-    document.getElementById('ttThreshold').value          = 220;
-    document.getElementById('ttThresholdValue').textContent = '220';
+    const pImg = document.getElementById('ttProcessedImg');
+    if (pImg) { pImg.src = ''; pImg.classList.add('hidden'); }
+    const ph = document.getElementById('ttPlaceholder');
+    if (ph) ph.classList.remove('hidden');
+    const badge = document.getElementById('ttStatusBadge');
+    if (badge) badge.classList.add('hidden');
+    const thresh = document.getElementById('ttThresholdSection');
+    if (thresh) thresh.classList.add('hidden');
+    const rst = document.getElementById('ttResetBtn');
+    if (rst) rst.classList.add('hidden');
+    const thInp = document.getElementById('ttThreshold');
+    if (thInp) thInp.value = 220;
+    const thVal = document.getElementById('ttThresholdValue');
+    if (thVal) thVal.textContent = '220';
 }
 
 function showTTLoading(show) {
     const el = document.getElementById('ttLoading');
-    show ? el.classList.remove('hidden') : el.classList.add('hidden');
+    if (el) show ? el.classList.remove('hidden') : el.classList.add('hidden');
 }
 
 // ════════════════════════════════════════════════════════
@@ -678,7 +980,17 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         const isBarang = this.value === 'barang';
         document.getElementById('barangSection').classList.toggle('hidden', !isBarang);
         document.getElementById('nominalSection').classList.toggle('hidden', isBarang);
-        if (isBarang) document.getElementById('jumlah').value = 0;
+
+        // Tampilkan/sembunyikan info barang
+        const infoBarang = document.getElementById('infoBarangSection');
+        if (infoBarang) infoBarang.classList.toggle('hidden', !isBarang);
+
+        if (isBarang) {
+            document.getElementById('jumlah').value         = 0;
+            document.getElementById('jumlah_display').value = '';
+            const tb = document.getElementById('jumlahTerbilang');
+            if (tb) tb.classList.add('hidden');
+        }
     });
 });
 
@@ -689,6 +1001,8 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         const isBarang = checked.value === 'barang';
         document.getElementById('barangSection').classList.toggle('hidden', !isBarang);
         document.getElementById('nominalSection').classList.toggle('hidden', isBarang);
+        const infoBarang = document.getElementById('infoBarangSection');
+        if (infoBarang) infoBarang.classList.toggle('hidden', !isBarang);
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
             const c = card.querySelector('input').checked;
             card.classList.toggle('border-primary',  c);
@@ -709,12 +1023,10 @@ function onMustahikChange() {
     const telepon = opt.dataset.telepon;
     const alamat  = opt.dataset.alamat;
     const info    = document.getElementById('mustahikInfoBox');
-
     if (katId) {
         const katSelect = document.getElementById('kategori_mustahik_id');
         Array.from(katSelect.options).forEach(o => o.selected = (o.value == katId));
     }
-
     if (telepon || alamat) {
         info.classList.remove('hidden');
         document.getElementById('mustahikInfoTelepon').textContent = telepon ? 'Telepon: ' + telepon : '';
@@ -725,18 +1037,14 @@ function onMustahikChange() {
 }
 
 // ════════════════════════════════════════════════════════
-// PREVIEW FOTO BIASA
+// PREVIEW FOTO
 // ════════════════════════════════════════════════════════
 function previewFoto(input, previewId) {
     const el = document.getElementById(previewId);
     if (!input.files?.[0]) return;
-    if (input.files[0].size > 2 * 1024 * 1024) {
-        alert('Ukuran file maksimal 2MB'); input.value = ''; return;
-    }
+    if (input.files[0].size > 2 * 1024 * 1024) { alert('Ukuran file maksimal 2MB'); input.value = ''; return; }
     const reader = new FileReader();
-    reader.onload = e => {
-        el.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain rounded-xl" alt="Preview">`;
-    };
+    reader.onload = e => { el.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain rounded-xl" alt="Preview">`; };
     reader.readAsDataURL(input.files[0]);
 }
 
@@ -744,7 +1052,6 @@ function previewMultipleFoto(input) {
     const container = document.getElementById('fotoDokPreviewContainer');
     container.innerHTML = '';
     if (!input.files?.length) { container.classList.add('hidden'); return; }
-
     container.classList.remove('hidden');
     Array.from(input.files).forEach(file => {
         if (file.size > 2 * 1024 * 1024) return;
@@ -781,20 +1088,12 @@ document.getElementById('formPenyaluran').addEventListener('submit', function (e
         if (nilai <= 0) { e.preventDefault(); alert('Nilai estimasi barang harus diisi.'); return; }
     }
 
-    // Jika ada tanda tangan base64, nonaktifkan file input supaya tidak double-submit
     const base64Val = document.getElementById('tanda_tangan_base64').value;
-    if (base64Val) {
-        document.getElementById('tanda_tangan_input').disabled = true;
-    }
+    if (base64Val) document.getElementById('tanda_tangan_input').disabled = true;
 
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     btn.innerHTML = '<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Menyimpan...';
-});
-
-// Init mustahik info jika ada old value
-document.addEventListener('DOMContentLoaded', function () {
-    if (document.getElementById('mustahik_id').value) onMustahikChange();
 });
 </script>
 @endpush
