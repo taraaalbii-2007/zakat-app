@@ -285,9 +285,9 @@
         <span class="role-label">Daftar sebagai</span>
         <div class="role-grid">
 
-            {{-- Admin Masjid --}}
+            {{-- Admin Lembaga --}}
             <label class="role-card">
-                <input type="radio" name="role" value="admin_masjid" checked>
+                <input type="radio" name="role" value="admin_lembaga" checked>
                 <div class="role-inner">
                     <div class="role-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -296,8 +296,8 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="role-title">Admin Masjid</div>
-                        <div class="role-desc">Kelola zakat masjid</div>
+                        <div class="role-title">Admin Lembaga</div>
+                        <div class="role-desc">Kelola zakat lembaga</div>
                     </div>
                 </div>
             </label>

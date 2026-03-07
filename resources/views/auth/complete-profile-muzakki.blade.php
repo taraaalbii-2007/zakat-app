@@ -303,7 +303,7 @@
     /* ══════════════════════════════════
        LEMBAGA ZAKAT INFO CARD
     ══════════════════════════════════ */
-    .cp-masjid-info {
+    .cp-lembaga-info {
         display: none;
         align-items: center;
         gap: .4rem;
@@ -316,8 +316,8 @@
         color: #15803d;
         font-weight: 500;
     }
-    .cp-masjid-info.show { display: flex; }
-    .cp-masjid-info svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .cp-lembaga-info.show { display: flex; }
+    .cp-lembaga-info svg { width: 13px; height: 13px; flex-shrink: 0; }
 
     /* ══════════════════════════════════
        ALERT BOX
@@ -725,7 +725,7 @@
     </div>
 
     <div class="lg-group">
-        <label for="masjid_id" class="lg-label">Tempat Lembaga Zakat <span class="req">*</span></label>
+        <label for="lembaga_id" class="lg-label">Tempat Lembaga Zakat <span class="req">*</span></label>
         <div class="lg-wrap">
             <span class="lg-icon">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -733,21 +733,21 @@
                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
             </span>
-            <select name="masjid_id" id="masjid_id"
-                    class="lg-input {{ $errors->has('masjid_id') ? 'err' : '' }}"
+            <select name="lembaga_id" id="lembaga_id"
+                    class="lg-input {{ $errors->has('lembaga_id') ? 'err' : '' }}"
                     required>
                 <option value="">— Pilih Lembaga Zakat —</option>
-                @foreach($masjidList as $masjid)
-                    <option value="{{ $masjid->id }}"
-                            data-kota="{{ $masjid->kota_nama }}"
-                            data-provinsi="{{ $masjid->provinsi_nama }}"
-                            {{ old('masjid_id') == $masjid->id ? 'selected' : '' }}>
-                        {{ $masjid->nama }}
+                @foreach($lembagaList as $lembaga)
+                    <option value="{{ $lembaga->id }}"
+                            data-kota="{{ $lembaga->kota_nama }}"
+                            data-provinsi="{{ $lembaga->provinsi_nama }}"
+                            {{ old('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
+                        {{ $lembaga->nama }}
                     </option>
                 @endforeach
             </select>
         </div>
-        @error('masjid_id')
+        @error('lembaga_id')
             <div class="lg-err">
                 <svg fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -757,11 +757,11 @@
         @enderror
         <span class="lg-hint">Pilih lembaga zakat tempat Anda ingin membayar zakat</span>
 
-        <div class="cp-masjid-info" id="masjidInfo">
+        <div class="cp-lembaga-info" id="lembagaInfo">
             <svg fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
             </svg>
-            <span id="masjidInfoText"></span>
+            <span id="lembagaInfoText"></span>
         </div>
     </div>
 
@@ -963,20 +963,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ── LEMBAGA ZAKAT INFO ── */
-    const masjidSelect  = document.getElementById('masjid_id');
-    const masjidInfo    = document.getElementById('masjidInfo');
-    const masjidInfoTxt = document.getElementById('masjidInfoText');
+    const lembagaSelect  = document.getElementById('lembaga_id');
+    const lembagaInfo    = document.getElementById('lembagaInfo');
+    const lembagaInfoTxt = document.getElementById('lembagaInfoText');
 
-    masjidSelect.addEventListener('change', function () {
+    lembagaSelect.addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
         if (this.value && opt.dataset.kota) {
-            masjidInfoTxt.textContent = `${opt.dataset.kota}, ${opt.dataset.provinsi}`;
-            masjidInfo.classList.add('show');
+            lembagaInfoTxt.textContent = `${opt.dataset.kota}, ${opt.dataset.provinsi}`;
+            lembagaInfo.classList.add('show');
         } else {
-            masjidInfo.classList.remove('show');
+            lembagaInfo.classList.remove('show');
         }
     });
-    if (masjidSelect.value) masjidSelect.dispatchEvent(new Event('change'));
+    if (lembagaSelect.value) lembagaSelect.dispatchEvent(new Event('change'));
 
     /* ── FORM SUBMIT ── */
     const form           = document.getElementById('muzakkiProfileForm');

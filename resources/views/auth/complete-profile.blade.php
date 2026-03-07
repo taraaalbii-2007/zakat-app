@@ -1129,7 +1129,7 @@
         </div>
 
         <div class="lg-group">
-            <label for="nama_masjid" class="lg-label">Nama Lembaga Zakat <span class="req">*</span></label>
+            <label for="nama_lembaga" class="lg-label">Nama Lembaga Zakat <span class="req">*</span></label>
             <div class="lg-wrap">
                 <span class="lg-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1137,11 +1137,11 @@
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                 </span>
-                <input type="text" name="nama_masjid" id="nama_masjid"
-                    class="lg-input {{ $errors->has('nama_masjid') ? 'err' : '' }}" value="{{ old('nama_masjid') }}"
-                    required maxlength="255" placeholder="Masjid Al-Ikhlas / Yayasan Zakat Sejahtera">
+                <input type="text" name="nama_lembaga" id="nama_lembaga"
+                    class="lg-input {{ $errors->has('nama_lembaga') ? 'err' : '' }}" value="{{ old('nama_lembaga') }}"
+                    required maxlength="255" placeholder="Lembaga Al-Ikhlas / Yayasan Zakat Sejahtera">
             </div>
-            @error('nama_masjid')
+            @error('nama_lembaga')
                 <div class="lg-err">
                     <svg fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -1311,7 +1311,7 @@
         </div>
 
         <div class="lg-group">
-            <label for="email_masjid" class="lg-label">Email Lembaga Zakat <span class="req">*</span></label>
+            <label for="email_lembaga" class="lg-label">Email Lembaga Zakat <span class="req">*</span></label>
             <div class="lg-wrap">
                 <span class="lg-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1319,11 +1319,11 @@
                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </span>
-                <input type="email" name="email_masjid" id="email_masjid"
-                    class="lg-input {{ $errors->has('email_masjid') ? 'err' : '' }}" value="{{ old('email_masjid') }}"
+                <input type="email" name="email_lembaga" id="email_lembaga"
+                    class="lg-input {{ $errors->has('email_lembaga') ? 'err' : '' }}" value="{{ old('email_lembaga') }}"
                     required maxlength="255" placeholder="lembagazazkat@example.com">
             </div>
-            @error('email_masjid')
+            @error('email_lembaga')
                 <div class="lg-err">
                     <svg fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -1464,20 +1464,20 @@
 
         <div class="lg-group">
             <label class="lg-label">Upload Foto Lembaga Zakat <span class="req">*</span></label>
-            <label class="cp-file-label" for="foto_masjid_trigger">
+            <label class="cp-file-label" for="foto_lembaga_trigger">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span id="masjidFileName">Klik untuk pilih foto lembaga zakat (maks. 5 foto)…</span>
-                <input type="file" id="foto_masjid_trigger" accept="image/jpeg,image/jpg,image/png,image/webp"
+                <span id="lembagaFileName">Klik untuk pilih foto lembaga zakat (maks. 5 foto)…</span>
+                <input type="file" id="foto_lembaga_trigger" accept="image/jpeg,image/jpg,image/png,image/webp"
                     multiple>
             </label>
 
             {{-- Hidden input container untuk file terkompresi --}}
             <div id="hiddenFileInputs"></div>
 
-            @error('foto_masjid.*')
+            @error('foto_lembaga.*')
                 <div class="lg-err">
                     <svg fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -1490,7 +1490,7 @@
 
             <div style="display:flex; align-items:center; gap:.75rem; margin-top:.25rem; flex-wrap:wrap;">
                 <span class="lg-hint">Maks. 5 foto · JPG, JPEG, PNG · Maks. 2MB per foto</span>
-                <span class="compress-badge" id="masjidCompressBadge">Gambar dikompresi otomatis</span>
+                <span class="compress-badge" id="lembagaCompressBadge">Gambar dikompresi otomatis</span>
             </div>
 
             {{-- Gallery Preview --}}
@@ -1729,10 +1729,10 @@
             /* ══════════════════════════════════
                FOTO LEMBAGA ZAKAT — COMPRESS + PERSISTENT GALLERY
             ══════════════════════════════════ */
-            const fotoTrigger = document.getElementById('foto_masjid_trigger');
+            const fotoTrigger = document.getElementById('foto_lembaga_trigger');
             const hiddenInputs = document.getElementById('hiddenFileInputs');
-            const masjidFileName = document.getElementById('masjidFileName');
-            const masjidBadge = document.getElementById('masjidCompressBadge');
+            const lembagaFileName = document.getElementById('lembagaFileName');
+            const lembagaBadge = document.getElementById('lembagaCompressBadge');
             const galleryCount = document.getElementById('galleryCountText');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const overlayText = document.getElementById('overlayText');
@@ -1768,7 +1768,7 @@
                 }
 
                 const count = storedFiles.length;
-                masjidFileName.textContent = count > 0 ?
+                lembagaFileName.textContent = count > 0 ?
                     `${count} foto dipilih — klik untuk menambah atau ganti` :
                     'Klik untuk pilih foto lembaga zakat (maks. 5 foto)…';
 
@@ -1779,11 +1779,11 @@
                 if (count > 0) {
                     const totalOrig = storedFiles.reduce((s, f) => s + (f._origSize || f.size), 0);
                     const totalComp = storedFiles.reduce((s, f) => s + f.size, 0);
-                    masjidBadge.textContent =
+                    lembagaBadge.textContent =
                         `Dikompresi: ${(totalOrig/1024).toFixed(0)}KB ke ${(totalComp/1024).toFixed(0)}KB`;
-                    masjidBadge.classList.add('visible');
+                    lembagaBadge.classList.add('visible');
                 } else {
-                    masjidBadge.classList.remove('visible');
+                    lembagaBadge.classList.remove('visible');
                 }
             }
 
@@ -1850,7 +1850,7 @@
             function buildHiddenInputs() {
                 hiddenInputs.innerHTML = '';
                 storedFiles.forEach(file => {
-                    const input = injectFileToInput('foto_masjid[]', file);
+                    const input = injectFileToInput('foto_lembaga[]', file);
                     hiddenInputs.appendChild(input);
                 });
             }
