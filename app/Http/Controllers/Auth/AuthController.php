@@ -25,6 +25,7 @@ use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 use App\Traits\LogsActivity;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Laravel\Facades\Image;
 
 class AuthController extends Controller
 {
@@ -1197,9 +1198,11 @@ class AuthController extends Controller
             // STEP 2: Upload foto admin
             $adminFotoPath = null;
             if ($request->hasFile('admin_foto')) {
-                $adminFotoPath = $request->file('admin_foto')->store('admin-fotos', 'public');
+                $adminFotoPath = $this->uploadAndCompressGeneral(
+                    $request->file('admin_foto'),
+                    'admin-fotos'
+                );
             }
-
             // STEP 3: Upload foto masjid (multiple)
             $fotoMasjidArray = [];
             if ($request->hasFile('foto_masjid')) {
@@ -1212,8 +1215,8 @@ class AuthController extends Controller
                         ->withInput();
                 }
 
-                foreach ($uploadedFiles as $index => $foto) {
-                    $path = $foto->store('masjid-fotos', 'public');
+                foreach ($uploadedFiles as $foto) {
+                    $path = $this->uploadAndCompressGeneral($foto, 'masjid-fotos');
                     $fotoMasjidArray[] = $path;
                 }
             }
@@ -1476,7 +1479,7 @@ class AuthController extends Controller
             // STEP 2: Upload foto (opsional)
             $fotoPath = null;
             if ($request->hasFile('foto')) {
-                $fotoPath = $request->file('foto')->store('muzakki-fotos', 'public');
+                $fotoPath = $this->uploadAndCompressGeneral($request->file('foto'), 'muzakki-fotos');
             }
 
             // STEP 3: Buat record muzakki
@@ -1532,6 +1535,23 @@ class AuthController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
                 ->withInput();
         }
+    }
+
+    private function uploadAndCompressGeneral($file, string $directory): string
+    {
+        $filename = Str::uuid() . '.webp';
+        $savePath = storage_path('app/public/' . $directory . '/' . $filename);
+
+        if (!file_exists(dirname($savePath))) {
+            mkdir(dirname($savePath), 0755, true);
+        }
+
+        Image::read($file)
+            ->scaleDown(width: 1920, height: 1920)
+            ->toWebp(quality: 82)
+            ->save($savePath);
+
+        return $directory . '/' . $filename;
     }
 
     /**

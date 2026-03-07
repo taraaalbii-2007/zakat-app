@@ -91,7 +91,7 @@
     .cp-section svg { width: 14px; height: 14px; color: #16a34a; flex-shrink: 0; }
 
     /* ══════════════════════════════════
-       FORM GROUP — identik login
+       FORM GROUP
     ══════════════════════════════════ */
     .lg-group { margin-bottom: .9rem; }
 
@@ -115,6 +115,7 @@
         pointer-events: none;
         display: flex; align-items: center;
         transition: color .2s;
+        z-index: 1;
     }
     .lg-icon svg { width: 15px; height: 15px; display: block; }
     .lg-wrap:focus-within .lg-icon { color: #16a34a; }
@@ -162,16 +163,27 @@
         transition: background-color 9999s ease 0s;
     }
 
-    /* SELECT */
+    /* ══════════════════════════════════
+       SELECT — samakan dengan input biasa
+    ══════════════════════════════════ */
     select.lg-input {
+        background-color: #ffffff !important;
+        color: #111827 !important;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right .875rem center;
         padding-right: 2.25rem;
-        padding-left: .875rem;
+        padding-left: 2.6rem;
         cursor: pointer;
     }
-    select.lg-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.1); }
+    select.lg-input:hover { border-color: #d1d5db; }
+    select.lg-input:focus {
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+    }
+    /* Placeholder option */
+    select.lg-input option[value=""] { color: #c4cad4; }
+    select.lg-input option            { color: #111827; background: #ffffff; }
 
     /* PASSWORD TOGGLE */
     .lg-input.has-toggle { padding-right: 3rem; }
@@ -252,7 +264,6 @@
     .cp-file-label svg { width: 16px; height: 16px; flex-shrink: 0; color: #9ca3af; }
     .cp-file-label:hover svg { color: #16a34a; }
     .cp-file-label input[type="file"] { display: none; }
-    .cp-file-name { font-size: .72rem; color: #9ca3af; margin-top: .25rem; }
 
     /* FOTO PREVIEW */
     .cp-foto-wrap {
@@ -273,10 +284,24 @@
     .cp-foto-thumb.has-image { border-color: #86efac; border-style: solid; }
     .cp-foto-thumb svg { width: 22px; height: 22px; color: #d1d5db; }
     .cp-foto-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .cp-foto-info { font-size: .7rem; color: #9ca3af; line-height: 1.5; }
 
     /* ══════════════════════════════════
-       MASJID INFO CARD
+       COMPRESS INFO — mirip gambar referensi
+    ══════════════════════════════════ */
+    .cp-compress-info {
+        display: none;
+        align-items: center;
+        gap: .3rem;
+        font-size: .72rem;
+        font-weight: 700;
+        color: #16a34a;
+        margin-top: .4rem;
+    }
+    .cp-compress-info.show { display: flex; }
+    .cp-compress-info svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ══════════════════════════════════
+       LEMBAGA ZAKAT INFO CARD
     ══════════════════════════════════ */
     .cp-masjid-info {
         display: none;
@@ -317,7 +342,7 @@
     }
 
     /* ══════════════════════════════════
-       BUTTON SUBMIT — identik btn-masuk
+       BUTTON SUBMIT
     ══════════════════════════════════ */
     .btn-masuk {
         display: flex; align-items: center; justify-content: center; gap: .5rem;
@@ -663,6 +688,17 @@
                 {{ $message }}
             </div>
         @enderror
+
+        <span class="lg-hint">Maks. 1 foto · JPG, PNG · Maks. 2MB per foto</span>
+
+        {{-- Info kompresi — muncul setelah foto dipilih --}}
+        <div class="cp-compress-info" id="compressInfo">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span id="compressText"></span>
+        </div>
+
         <div class="cp-foto-wrap">
             <div class="cp-foto-thumb" id="fotoThumb">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -670,14 +706,14 @@
                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
             </div>
-            <span class="lg-hint">JPG, JPEG, PNG · Maks. 2MB</span>
+            <span class="lg-hint" id="fotoSlotText">0 dari 1 slot terisi</span>
         </div>
     </div>
 
     <div class="cp-divider"></div>
 
     {{-- ════════════════════════════
-         SECTION 3 — PILIH MASJID
+         SECTION 3 — PILIH LEMBAGA ZAKAT
     ════════════════════════════ --}}
     <div class="cp-section">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -685,24 +721,32 @@
                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-        Pilih Masjid
+        Pilih Lembaga Zakat
     </div>
 
     <div class="lg-group">
-        <label for="masjid_id" class="lg-label">Masjid Tempat Berzakat <span class="req">*</span></label>
-        <select name="masjid_id" id="masjid_id"
-                class="lg-input {{ $errors->has('masjid_id') ? 'err' : '' }}"
-                required>
-            <option value="">— Pilih Masjid —</option>
-            @foreach($masjidList as $masjid)
-                <option value="{{ $masjid->id }}"
-                        data-kota="{{ $masjid->kota_nama }}"
-                        data-provinsi="{{ $masjid->provinsi_nama }}"
-                        {{ old('masjid_id') == $masjid->id ? 'selected' : '' }}>
-                    {{ $masjid->nama }}
-                </option>
-            @endforeach
-        </select>
+        <label for="masjid_id" class="lg-label">Tempat Lembaga Zakat <span class="req">*</span></label>
+        <div class="lg-wrap">
+            <span class="lg-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+            </span>
+            <select name="masjid_id" id="masjid_id"
+                    class="lg-input {{ $errors->has('masjid_id') ? 'err' : '' }}"
+                    required>
+                <option value="">— Pilih Lembaga Zakat —</option>
+                @foreach($masjidList as $masjid)
+                    <option value="{{ $masjid->id }}"
+                            data-kota="{{ $masjid->kota_nama }}"
+                            data-provinsi="{{ $masjid->provinsi_nama }}"
+                            {{ old('masjid_id') == $masjid->id ? 'selected' : '' }}>
+                        {{ $masjid->nama }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         @error('masjid_id')
             <div class="lg-err">
                 <svg fill="currentColor" viewBox="0 0 20 20">
@@ -711,7 +755,7 @@
                 {{ $message }}
             </div>
         @enderror
-        <span class="lg-hint">Pilih masjid tempat Anda ingin membayar zakat</span>
+        <span class="lg-hint">Pilih lembaga zakat tempat Anda ingin membayar zakat</span>
 
         <div class="cp-masjid-info" id="masjidInfo">
             <svg fill="currentColor" viewBox="0 0 20 20">
@@ -738,7 +782,7 @@
 <div class="cp-overlay" id="loadingOverlay">
     <div class="cp-overlay-box">
         <div class="cp-overlay-spinner"></div>
-        <p>Menyimpan data…</p>
+        <p>Menyimpan &amp; mengompresi foto…</p>
     </div>
 </div>
 
@@ -757,7 +801,13 @@
 document.addEventListener('DOMContentLoaded', function () {
     const isGoogleUser = {{ $isGoogleUser ? 'true' : 'false' }};
 
-    /* ── PASSWORD TOGGLE (reusable, identik login) ── */
+    /* ── PLACEHOLDER SVG ── */
+    const FOTO_ICON_SVG = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    </svg>`;
+
+    /* ── PASSWORD TOGGLE ── */
     window.togglePw = function(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon  = document.getElementById(iconId);
@@ -824,7 +874,6 @@ document.addEventListener('DOMContentLoaded', function () {
             text.textContent = pw.length ? `Kekuatan: ${labels[s]}` : 'Kekuatan password';
         });
 
-        /* Password match */
         const confirmInput = document.getElementById('password_confirmation');
         const matchText    = document.getElementById('passwordMatchText');
         function checkMatch() {
@@ -843,36 +892,81 @@ document.addEventListener('DOMContentLoaded', function () {
         passwordInput.addEventListener('input', () => { if (confirmInput.value) checkMatch(); });
     }
 
-    /* ── FOTO PREVIEW ── */
-    const fotoInput = document.getElementById('foto');
-    const fotoThumb = document.getElementById('fotoThumb');
-    const fileName  = document.getElementById('fileName');
+    /* ══════════════════════════════════════
+       FOTO PREVIEW + INFO KOMPRESI ESTIMASI
+    ══════════════════════════════════════ */
+    const fotoInput    = document.getElementById('foto');
+    const fotoThumb    = document.getElementById('fotoThumb');
+    const fileName     = document.getElementById('fileName');
+    const compressInfo = document.getElementById('compressInfo');
+    const compressText = document.getElementById('compressText');
+    const fotoSlotText = document.getElementById('fotoSlotText');
+
+    /**
+     * Estimasi ukuran WebP setelah dikompresi oleh Intervention Image (quality 82).
+     * PNG biasanya lebih besar → rasio lebih kecil.
+     * JPEG sudah terkompresi → rasio sedikit lebih tinggi.
+     */
+    function estimateWebpKb(file) {
+        const kb    = file.size / 1024;
+        const ratio = file.type === 'image/png' ? 0.09 : 0.16;
+        return Math.max(15, Math.round(kb * ratio));
+    }
+
+    function resetFotoPreview() {
+        fotoThumb.innerHTML = FOTO_ICON_SVG;
+        fotoThumb.classList.remove('has-image');
+        fileName.textContent = 'Klik untuk pilih foto profil…';
+        compressInfo.classList.remove('show');
+        compressText.textContent = '';
+        fotoSlotText.textContent = '0 dari 1 slot terisi';
+    }
+
     if (fotoInput) {
         fotoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
-            if (!file) return;
-            if (!['image/jpeg','image/jpg','image/png'].includes(file.type)) {
-                alert('Format harus JPG/JPEG/PNG');
-                this.value = ''; return;
+            if (!file) { resetFotoPreview(); return; }
+
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Format tidak didukung. Gunakan JPG atau PNG.');
+                this.value = '';
+                resetFotoPreview();
+                return;
             }
+
             if (file.size > 2 * 1024 * 1024) {
-                alert('Ukuran maksimal 2MB');
-                this.value = ''; return;
+                alert('Ukuran file melebihi 2MB. Pilih foto yang lebih kecil.');
+                this.value = '';
+                resetFotoPreview();
+                return;
             }
+
             const reader = new FileReader();
             reader.onload = ev => {
+                // Preview thumbnail
                 fotoThumb.innerHTML = `<img src="${ev.target.result}" alt="Foto Profil">`;
                 fotoThumb.classList.add('has-image');
                 fileName.textContent = file.name;
+
+                // Hitung & tampilkan info kompresi estimasi
+                const originalKb  = Math.round(file.size / 1024);
+                const estimatedKb = estimateWebpKb(file);
+                compressText.textContent = `Dikompresi: ${originalKb}KB ke ±${estimatedKb}KB (WebP)`;
+                compressInfo.classList.add('show');
+
+                // Update slot info
+                fotoSlotText.textContent = '1 dari 1 slot terisi';
             };
             reader.readAsDataURL(file);
         });
     }
 
-    /* ── MASJID INFO ── */
-    const masjidSelect = document.getElementById('masjid_id');
-    const masjidInfo   = document.getElementById('masjidInfo');
-    const masjidInfoTxt= document.getElementById('masjidInfoText');
+    /* ── LEMBAGA ZAKAT INFO ── */
+    const masjidSelect  = document.getElementById('masjid_id');
+    const masjidInfo    = document.getElementById('masjidInfo');
+    const masjidInfoTxt = document.getElementById('masjidInfoText');
+
     masjidSelect.addEventListener('change', function () {
         const opt = this.options[this.selectedIndex];
         if (this.value && opt.dataset.kota) {
@@ -885,9 +979,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (masjidSelect.value) masjidSelect.dispatchEvent(new Event('change'));
 
     /* ── FORM SUBMIT ── */
-    const form          = document.getElementById('muzakkiProfileForm');
-    const submitBtn     = document.getElementById('submitBtn');
-    const loadingOverlay= document.getElementById('loadingOverlay');
+    const form           = document.getElementById('muzakkiProfileForm');
+    const submitBtn      = document.getElementById('submitBtn');
+    const loadingOverlay = document.getElementById('loadingOverlay');
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
