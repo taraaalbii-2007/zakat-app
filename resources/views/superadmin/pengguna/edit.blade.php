@@ -16,7 +16,9 @@
             @csrf
             @method('PUT')
 
-            {{-- SECTION 1 – INFORMASI AKUN --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
+            {{-- SECTION 1 – INFORMASI AKUN                              --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
             <div class="mb-6 sm:mb-8">
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">1</span>
@@ -34,6 +36,7 @@
                             <option value="superadmin"   {{ old('peran', $pengguna->peran) === 'superadmin'   ? 'selected' : '' }}>Super Admin</option>
                             <option value="admin_masjid" {{ old('peran', $pengguna->peran) === 'admin_masjid' ? 'selected' : '' }}>Admin Masjid</option>
                             <option value="amil"         {{ old('peran', $pengguna->peran) === 'amil'         ? 'selected' : '' }}>Amil</option>
+                            <option value="muzakki"      {{ old('peran', $pengguna->peran) === 'muzakki'      ? 'selected' : '' }}>Muzakki</option>
                         </select>
                         @error('peran') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         <div id="info-superadmin" class="hidden mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
@@ -44,6 +47,9 @@
                         </div>
                         <div id="info-amil" class="hidden mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                             <p class="text-xs text-emerald-700">Perubahan di sini akan memperbarui akun dan data profil amil.</p>
+                        </div>
+                        <div id="info-muzakki" class="hidden mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-700">Perubahan di sini akan memperbarui akun dan data profil muzakki.</p>
                         </div>
                     </div>
 
@@ -71,7 +77,9 @@
                 </div>
             </div>
 
-            {{-- SECTION 2 – PASSWORD --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
+            {{-- SECTION 2 – PASSWORD                                     --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
             <div class="mb-6 sm:mb-8">
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">2</span>
@@ -115,20 +123,17 @@
             @php $masjid = $pengguna->masjid ?? null; @endphp
             <div id="section-admin-masjid" class="{{ old('peran', $pengguna->peran) === 'admin_masjid' ? '' : 'hidden' }} mb-6 sm:mb-8">
 
-                {{-- SUB: Data Admin --}}
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-900 mb-4 pb-2 border-b border-blue-200">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs">3</span>
                     Data Admin Masjid
                 </h3>
 
-                {{-- Pilih Masjid --}}
                 <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
                     <label for="masjid_id" class="block text-sm font-medium text-gray-700 mb-2">
                         Masjid <span class="text-red-500">*</span>
                     </label>
                     <select name="masjid_id" id="masjid_id"
-                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all @error('masjid_id') border-red-500 @enderror"
-                        onchange="onMasjidChange(this.value)">
+                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all @error('masjid_id') border-red-500 @enderror">
                         <option value="">-- Pilih Masjid --</option>
                         @foreach($masjidList as $m)
                             <option value="{{ $m->id }}" {{ old('masjid_id', $pengguna->masjid_id) == $m->id ? 'selected' : '' }}>
@@ -137,7 +142,7 @@
                         @endforeach
                     </select>
                     @error('masjid_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                    <p class="mt-1 text-xs text-blue-600">Pilih masjid yang akan dikelola admin ini. Data masjid akan terisi otomatis.</p>
+                    <p class="mt-1 text-xs text-blue-600">Pilih masjid yang akan dikelola admin ini.</p>
                 </div>
 
                 <div class="space-y-4 mb-6">
@@ -168,9 +173,7 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Foto Admin <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span>
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Admin <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span></label>
                         @if($masjid?->admin_foto)
                             <div class="mb-2 flex items-center gap-3">
                                 <img src="{{ Storage::url($masjid->admin_foto) }}" alt="Foto Admin"
@@ -185,12 +188,11 @@
                             </div>
                         @endif
                         <input type="file" name="admin_foto" id="admin_foto" accept="image/jpeg,image/png,image/jpg"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 @error('admin_foto') border border-red-500 rounded-xl p-1 @enderror">
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                         @error('admin_foto') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                {{-- SUB: Identitas Masjid --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Identitas Masjid</h4>
                 <div class="space-y-4 mb-6">
                     <div>
@@ -222,23 +224,18 @@
                     <div>
                         <label for="deskripsi_masjid" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi <span class="text-gray-400 text-xs font-normal">(opsional)</span></label>
                         <textarea name="deskripsi_masjid" id="deskripsi_masjid" rows="2"
-                            placeholder="Deskripsi singkat tentang masjid"
-                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all @error('deskripsi_masjid') border-red-500 @enderror">{{ old('deskripsi_masjid', $masjid?->deskripsi) }}</textarea>
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all">{{ old('deskripsi_masjid', $masjid?->deskripsi) }}</textarea>
                     </div>
                 </div>
 
-                {{-- SUB: Alamat & Wilayah --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Alamat & Wilayah</h4>
                 <div class="space-y-4 mb-6">
                     <div>
                         <label for="alamat" class="block text-sm font-medium text-gray-700 mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
                         <textarea name="alamat" id="alamat" rows="2"
-                            placeholder="Jl. Contoh No. 123, RT 01/RW 02"
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all @error('alamat') border-red-500 @enderror">{{ old('alamat', $masjid?->alamat) }}</textarea>
                         @error('alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
-                    {{-- Info wilayah saat ini --}}
                     @if($masjid?->provinsi_nama)
                     <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
                         <p class="text-xs text-gray-500 font-medium mb-1">Wilayah saat ini:</p>
@@ -248,9 +245,7 @@
                         </p>
                     </div>
                     @endif
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {{-- Provinsi --}}
                         <div>
                             <label for="provinsi_kode" class="block text-sm font-medium text-gray-700 mb-2">Provinsi <span class="text-red-500">*</span></label>
                             <select name="provinsi_kode" id="provinsi_kode"
@@ -266,7 +261,6 @@
                             </select>
                             @error('provinsi_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kota --}}
                         <div>
                             <label for="kota_kode" class="block text-sm font-medium text-gray-700 mb-2">Kota/Kabupaten <span class="text-red-500">*</span></label>
                             <select name="kota_kode" id="kota_kode"
@@ -276,7 +270,6 @@
                             </select>
                             @error('kota_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kecamatan --}}
                         <div>
                             <label for="kecamatan_kode" class="block text-sm font-medium text-gray-700 mb-2">Kecamatan <span class="text-red-500">*</span></label>
                             <select name="kecamatan_kode" id="kecamatan_kode"
@@ -286,7 +279,6 @@
                             </select>
                             @error('kecamatan_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kelurahan --}}
                         <div>
                             <label for="kelurahan_kode" class="block text-sm font-medium text-gray-700 mb-2">Kelurahan/Desa <span class="text-red-500">*</span></label>
                             <select name="kelurahan_kode" id="kelurahan_kode"
@@ -302,17 +294,15 @@
                         <input type="text" name="kode_pos" id="kode_pos"
                             value="{{ old('kode_pos', $masjid?->kode_pos) }}"
                             placeholder="12345" maxlength="5"
-                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all @error('kode_pos') border-red-500 @enderror">
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all">
                     </div>
                 </div>
 
-                {{-- SUB: Sejarah & Info Tambahan --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Sejarah & Info Tambahan <span class="text-gray-400 text-xs font-normal">(opsional)</span></h4>
                 <div class="space-y-4 mb-6">
                     <div>
                         <label for="sejarah" class="block text-sm font-medium text-gray-700 mb-2">Sejarah Masjid</label>
                         <textarea name="sejarah" id="sejarah" rows="3"
-                            placeholder="Ceritakan sejarah singkat masjid ini..."
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all">{{ old('sejarah', $masjid?->sejarah) }}</textarea>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -320,30 +310,27 @@
                             <label for="tahun_berdiri" class="block text-sm font-medium text-gray-700 mb-2">Tahun Berdiri</label>
                             <input type="number" name="tahun_berdiri" id="tahun_berdiri"
                                 value="{{ old('tahun_berdiri', $masjid?->tahun_berdiri) }}"
-                                placeholder="{{ date('Y') }}" min="1900" max="{{ date('Y') }}"
+                                min="1900" max="{{ date('Y') }}"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all">
                         </div>
                         <div>
                             <label for="pendiri" class="block text-sm font-medium text-gray-700 mb-2">Pendiri</label>
                             <input type="text" name="pendiri" id="pendiri"
                                 value="{{ old('pendiri', $masjid?->pendiri) }}"
-                                placeholder="Nama pendiri masjid"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all">
                         </div>
                         <div>
                             <label for="kapasitas_jamaah" class="block text-sm font-medium text-gray-700 mb-2">Kapasitas Jamaah</label>
                             <input type="number" name="kapasitas_jamaah" id="kapasitas_jamaah"
                                 value="{{ old('kapasitas_jamaah', $masjid?->kapasitas_jamaah) }}"
-                                placeholder="500" min="1"
+                                min="1"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all">
                         </div>
                     </div>
                 </div>
 
-                {{-- SUB: Foto Masjid --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Foto Masjid <span class="text-gray-400 text-xs font-normal">(opsional, maks 5 foto)</span></h4>
                 <div>
-                    {{-- Foto existing --}}
                     @if($masjid && !empty($masjid->foto))
                         <div class="mb-3">
                             <p class="text-xs text-gray-500 mb-2">Foto saat ini:</p>
@@ -363,10 +350,8 @@
                         </div>
                     @endif
                     <input type="file" name="foto_masjid[]" id="foto_masjid" multiple accept="image/jpeg,image/png,image/jpg"
-                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 @error('foto_masjid') border border-red-500 rounded-xl p-1 @enderror">
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                     <p class="mt-1 text-xs text-gray-400">Format: JPG, PNG. Maks 2MB per foto, maks 5 foto total.</p>
-                    @error('foto_masjid') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                    @error('foto_masjid.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
             </div>
 
@@ -379,7 +364,6 @@
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-600 text-white text-xs">3</span>
                     Data Amil
                 </h3>
-
                 <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
                     <label for="masjid_id_amil" class="block text-sm font-medium text-gray-700 mb-2">
                         Masjid <span class="text-red-500">*</span>
@@ -394,19 +378,15 @@
                         @endforeach
                     </select>
                     @error('masjid_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
-                    <p class="mt-1 text-xs text-emerald-600">Amil akan ditautkan ke masjid ini.</p>
                 </div>
-
                 <div class="space-y-4">
                     <div>
                         <label for="amil_nama_lengkap" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input type="text" name="amil_nama_lengkap" id="amil_nama_lengkap"
                             value="{{ old('amil_nama_lengkap', $amil?->nama_lengkap) }}"
-                            placeholder="Nama lengkap amil"
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all @error('amil_nama_lengkap') border-red-500 @enderror">
                         @error('amil_nama_lengkap') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label for="amil_jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
@@ -422,7 +402,6 @@
                             <label for="amil_tempat_lahir" class="block text-sm font-medium text-gray-700 mb-2">Tempat Lahir <span class="text-red-500">*</span></label>
                             <input type="text" name="amil_tempat_lahir" id="amil_tempat_lahir"
                                 value="{{ old('amil_tempat_lahir', $amil?->tempat_lahir) }}"
-                                placeholder="Jakarta"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all @error('amil_tempat_lahir') border-red-500 @enderror">
                             @error('amil_tempat_lahir') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
@@ -435,13 +414,11 @@
                             @error('amil_tanggal_lahir') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="amil_telepon" class="block text-sm font-medium text-gray-700 mb-2">Telepon <span class="text-red-500">*</span></label>
                             <input type="text" name="amil_telepon" id="amil_telepon"
                                 value="{{ old('amil_telepon', $amil?->telepon) }}"
-                                placeholder="08xxxxxxxxxx"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all @error('amil_telepon') border-red-500 @enderror">
                             @error('amil_telepon') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
@@ -456,15 +433,12 @@
                             @error('amil_status') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
                     <div>
                         <label for="amil_alamat" class="block text-sm font-medium text-gray-700 mb-2">Alamat <span class="text-red-500">*</span></label>
                         <textarea name="amil_alamat" id="amil_alamat" rows="2"
-                            placeholder="Alamat lengkap amil"
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 resize-none transition-all @error('amil_alamat') border-red-500 @enderror">{{ old('amil_alamat', $amil?->alamat) }}</textarea>
                         @error('amil_alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="amil_tanggal_mulai_tugas" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai Tugas <span class="text-red-500">*</span></label>
@@ -481,19 +455,14 @@
                             @error('amil_tanggal_selesai_tugas') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
                     <div>
                         <label for="amil_wilayah_tugas" class="block text-sm font-medium text-gray-700 mb-2">Wilayah Tugas <span class="text-gray-400 text-xs font-normal">(opsional)</span></label>
                         <input type="text" name="amil_wilayah_tugas" id="amil_wilayah_tugas"
                             value="{{ old('amil_wilayah_tugas', $amil?->wilayah_tugas) }}"
-                            placeholder="Contoh: Kelurahan Cempaka Putih"
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all">
                     </div>
-
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Foto Amil <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span>
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Amil <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span></label>
                         @if($amil?->foto)
                             <div class="mb-2 flex items-center gap-3">
                                 <img src="{{ Storage::url($amil->foto) }}" alt="Foto Amil"
@@ -508,24 +477,127 @@
                             </div>
                         @endif
                         <input type="file" name="amil_foto" id="amil_foto" accept="image/jpeg,image/png,image/jpg"
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 @error('amil_foto') border border-red-500 rounded-xl p-1 @enderror">
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
                         @error('amil_foto') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
                     <div>
                         <label for="amil_keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan <span class="text-gray-400 text-xs font-normal">(opsional)</span></label>
                         <textarea name="amil_keterangan" id="amil_keterangan" rows="2"
-                            placeholder="Catatan tambahan"
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 resize-none transition-all">{{ old('amil_keterangan', $amil?->keterangan) }}</textarea>
                     </div>
                 </div>
             </div>
 
-            {{-- SECTION 4 – STATUS AKUN --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
+            {{-- SECTION 3C – DATA MUZAKKI                               --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
+            @php $muzakki = $pengguna->muzakki ?? null; @endphp
+            <div id="section-muzakki" class="{{ old('peran', $pengguna->peran) === 'muzakki' ? '' : 'hidden' }} mb-6 sm:mb-8">
+                <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-amber-900 mb-4 pb-2 border-b border-amber-200">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs">3</span>
+                    Data Muzakki
+                </h3>
+
+                {{-- Pilih Masjid --}}
+                <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <label for="muzakki_masjid_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Masjid <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                    </label>
+                    <select name="muzakki_masjid_id" id="muzakki_masjid_id"
+                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_masjid_id') border-red-500 @enderror">
+                        <option value="">-- Pilih Masjid (Opsional) --</option>
+                        @foreach($masjidList as $m)
+                            <option value="{{ $m->id }}" {{ old('muzakki_masjid_id', $muzakki?->masjid_id) == $m->id ? 'selected' : '' }}>
+                                {{ $m->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('muzakki_masjid_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    <p class="mt-1 text-xs text-amber-700">Pilih masjid jika muzakki terdaftar di masjid tertentu.</p>
+                </div>
+
+                <div class="space-y-4">
+                    {{-- Nama --}}
+                    <div>
+                        <label for="muzakki_nama" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Lengkap <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="muzakki_nama" id="muzakki_nama"
+                            value="{{ old('muzakki_nama', $muzakki?->nama) }}"
+                            placeholder="Nama lengkap muzakki"
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_nama') border-red-500 @enderror">
+                        @error('muzakki_nama') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- NIK & Telepon --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="muzakki_nik" class="block text-sm font-medium text-gray-700 mb-2">
+                                NIK <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                            </label>
+                            <input type="text" name="muzakki_nik" id="muzakki_nik"
+                                value="{{ old('muzakki_nik', $muzakki?->nik) }}"
+                                placeholder="16 digit NIK"
+                                maxlength="16"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_nik') border-red-500 @enderror">
+                            @error('muzakki_nik') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label for="muzakki_telepon" class="block text-sm font-medium text-gray-700 mb-2">
+                                Telepon <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                            </label>
+                            <input type="text" name="muzakki_telepon" id="muzakki_telepon"
+                                value="{{ old('muzakki_telepon', $muzakki?->telepon) }}"
+                                placeholder="08xxxxxxxxxx"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_telepon') border-red-500 @enderror">
+                            @error('muzakki_telepon') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Alamat --}}
+                    <div>
+                        <label for="muzakki_alamat" class="block text-sm font-medium text-gray-700 mb-2">
+                            Alamat <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                        </label>
+                        <textarea name="muzakki_alamat" id="muzakki_alamat" rows="2"
+                            placeholder="Alamat lengkap muzakki"
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 resize-none transition-all @error('muzakki_alamat') border-red-500 @enderror">{{ old('muzakki_alamat', $muzakki?->alamat) }}</textarea>
+                        @error('muzakki_alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Foto --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Foto <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span>
+                        </label>
+                        @if($muzakki?->foto)
+                            <div class="mb-2 flex items-center gap-3">
+                                <img src="{{ $muzakki->foto_url }}" alt="Foto Muzakki"
+                                    class="w-16 h-16 object-cover rounded-xl border border-gray-200">
+                                <div>
+                                    <p class="text-xs text-gray-500">Foto saat ini</p>
+                                    <label class="flex items-center gap-2 mt-1 cursor-pointer">
+                                        <input type="checkbox" name="hapus_muzakki_foto" value="1" class="rounded">
+                                        <span class="text-xs text-red-600">Hapus foto</span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endif
+                        <input type="file" name="muzakki_foto" id="muzakki_foto" accept="image/jpeg,image/png,image/jpg"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 @error('muzakki_foto') border border-red-500 rounded-xl p-1 @enderror">
+                        <p class="mt-1 text-xs text-gray-400">Format: JPG, PNG. Maks 2MB.</p>
+                        @error('muzakki_foto') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- ════════════════════════════════════════════════════════ --}}
+            {{-- SECTION 4 – STATUS AKUN                                 --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
             <div class="mb-6 sm:mb-8">
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
                     <span id="status-step-num" class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">
-                        {{ in_array(old('peran', $pengguna->peran), ['admin_masjid','amil']) ? '4' : '3' }}
+                        {{ in_array(old('peran', $pengguna->peran), ['admin_masjid', 'amil', 'muzakki']) ? '4' : '3' }}
                     </span>
                     Status Akun
                 </h3>
@@ -582,7 +654,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const currentPeran = '{{ old('peran', $pengguna->peran) }}';
     handlePeranChange(currentPeran);
 
-    // Load wilayah jika admin_masjid dan ada provinsi lama
     const oldProvinsi = '{{ old('provinsi_kode', $pengguna->masjid?->provinsi_kode ?? '') }}';
     if (oldProvinsi && currentPeran === 'admin_masjid') {
         loadKota(
@@ -595,18 +666,22 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function handlePeranChange(value) {
-    const sectionAdmin = document.getElementById('section-admin-masjid');
-    const sectionAmil  = document.getElementById('section-amil');
-    const statusStep   = document.getElementById('status-step-num');
-    const infoSuper    = document.getElementById('info-superadmin');
-    const infoAdmin    = document.getElementById('info-admin-masjid');
-    const infoAmil     = document.getElementById('info-amil');
+    const sectionAdmin   = document.getElementById('section-admin-masjid');
+    const sectionAmil    = document.getElementById('section-amil');
+    const sectionMuzakki = document.getElementById('section-muzakki');
+    const statusStep     = document.getElementById('status-step-num');
+    const infoSuper      = document.getElementById('info-superadmin');
+    const infoAdmin      = document.getElementById('info-admin-masjid');
+    const infoAmil       = document.getElementById('info-amil');
+    const infoMuzakki    = document.getElementById('info-muzakki');
 
     sectionAdmin.classList.add('hidden');
     sectionAmil.classList.add('hidden');
+    sectionMuzakki.classList.add('hidden');
     infoSuper.classList.add('hidden');
     infoAdmin.classList.add('hidden');
     infoAmil.classList.add('hidden');
+    infoMuzakki.classList.add('hidden');
 
     if (value === 'admin_masjid') {
         sectionAdmin.classList.remove('hidden');
@@ -616,17 +691,16 @@ function handlePeranChange(value) {
         sectionAmil.classList.remove('hidden');
         infoAmil.classList.remove('hidden');
         statusStep.textContent = '4';
+    } else if (value === 'muzakki') {
+        sectionMuzakki.classList.remove('hidden');
+        infoMuzakki.classList.remove('hidden');
+        statusStep.textContent = '4';
     } else if (value === 'superadmin') {
         infoSuper.classList.remove('hidden');
         statusStep.textContent = '3';
     } else {
         statusStep.textContent = '3';
     }
-}
-
-function onMasjidChange(masjidId) {
-    // Kosongkan field masjid jika masjid diganti
-    // (opsional: bisa fetch data masjid via AJAX untuk auto-fill)
 }
 
 function togglePassword(id) {

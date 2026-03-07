@@ -41,6 +41,7 @@ class PenggunaRegistrationMail extends Mailable
             'admin_masjid' => 'Admin Masjid',
             'amil'         => 'Amil',
             'superadmin'   => 'Super Admin',
+            'muzakki'      => 'Muzakki',
             default        => ucfirst($peran),
         };
     }

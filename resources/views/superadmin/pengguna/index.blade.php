@@ -92,6 +92,7 @@
                                 <option value="superadmin"   {{ request('peran') === 'superadmin'   ? 'selected' : '' }}>Super Admin</option>
                                 <option value="admin_masjid" {{ request('peran') === 'admin_masjid' ? 'selected' : '' }}>Admin Masjid</option>
                                 <option value="amil"         {{ request('peran') === 'amil'         ? 'selected' : '' }}>Amil</option>
+                                <option value="muzakki"      {{ request('peran') === 'muzakki'      ? 'selected' : '' }}>Muzakki</option>
                             </select>
                         </div>
                         {{-- Filter Status --}}
@@ -150,6 +151,22 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($pengguna as $user)
+                                @php
+                                    $peranLabel = match($user->peran) {
+                                        'superadmin'   => 'Super Admin',
+                                        'admin_masjid' => 'Admin Masjid',
+                                        'amil'         => 'Amil',
+                                        'muzakki'      => 'Muzakki',
+                                        default        => ucfirst($user->peran)
+                                    };
+                                    $peranColor = match($user->peran) {
+                                        'superadmin'   => 'bg-purple-100 text-purple-800',
+                                        'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                        'amil'         => 'bg-green-100 text-green-800',
+                                        'muzakki'      => 'bg-amber-100 text-amber-800',
+                                        default        => 'bg-gray-100 text-gray-800'
+                                    };
+                                @endphp
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-3">
@@ -178,20 +195,6 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @php
-                                            $peranLabel = match($user->peran) {
-                                                'superadmin' => 'Super Admin',
-                                                'admin_masjid' => 'Admin Masjid',
-                                                'amil' => 'Amil',
-                                                default => ucfirst($user->peran)
-                                            };
-                                            $peranColor = match($user->peran) {
-                                                'superadmin' => 'bg-purple-100 text-purple-800',
-                                                'admin_masjid' => 'bg-blue-100 text-blue-800',
-                                                'amil' => 'bg-green-100 text-green-800',
-                                                default => 'bg-gray-100 text-gray-800'
-                                            };
-                                        @endphp
                                         <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">
                                             {{ $peranLabel }}
                                         </span>
@@ -201,13 +204,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($user->is_active)
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                                Aktif
-                                            </span>
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
                                         @else
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
-                                                Nonaktif
-                                            </span>
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
@@ -234,6 +233,22 @@
                 {{-- ── Mobile Cards ── --}}
                 <div class="md:hidden divide-y divide-gray-200">
                     @foreach ($pengguna as $user)
+                        @php
+                            $peranLabel = match($user->peran) {
+                                'superadmin'   => 'Super Admin',
+                                'admin_masjid' => 'Admin Masjid',
+                                'amil'         => 'Amil',
+                                'muzakki'      => 'Muzakki',
+                                default        => ucfirst($user->peran)
+                            };
+                            $peranColor = match($user->peran) {
+                                'superadmin'   => 'bg-purple-100 text-purple-800',
+                                'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                'amil'         => 'bg-green-100 text-green-800',
+                                'muzakki'      => 'bg-amber-100 text-amber-800',
+                                default        => 'bg-gray-100 text-gray-800'
+                            };
+                        @endphp
                         <div class="p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-3 flex-1 min-w-0">
@@ -243,36 +258,14 @@
                                         </span>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-gray-900 truncate">
-                                            {{ $user->username ?? '-' }}
-                                        </h3>
+                                        <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $user->username ?? '-' }}</h3>
                                         <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
                                         <div class="flex flex-wrap gap-1.5 mt-2">
-                                            @php
-                                                $peranLabel = match($user->peran) {
-                                                    'superadmin' => 'Super Admin',
-                                                    'admin_masjid' => 'Admin Masjid',
-                                                    'amil' => 'Amil',
-                                                    default => ucfirst($user->peran)
-                                                };
-                                                $peranColor = match($user->peran) {
-                                                    'superadmin' => 'bg-purple-100 text-purple-800',
-                                                    'admin_masjid' => 'bg-blue-100 text-blue-800',
-                                                    'amil' => 'bg-green-100 text-green-800',
-                                                    default => 'bg-gray-100 text-gray-800'
-                                                };
-                                            @endphp
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">
-                                                {{ $peranLabel }}
-                                            </span>
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">{{ $peranLabel }}</span>
                                             @if($user->is_active)
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                                                    Aktif
-                                                </span>
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
                                             @else
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
-                                                    Nonaktif
-                                                </span>
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
                                             @endif
                                         </div>
                                         @if($user->masjid)
@@ -422,7 +415,7 @@
         const deleteBtn         = document.getElementById('dropdown-delete-btn');
         const tableContainer    = document.getElementById('table-container');
 
-        // ── Dropdown ─────────────────────────────────────────────────────────
+        // ── Dropdown ──────────────────────────────────────────────────────────
         document.addEventListener('click', function (e) {
             const toggle = e.target.closest('.dropdown-toggle');
 
@@ -445,34 +438,22 @@
                 currentNama = nama;
                 dropdownContainer.setAttribute('data-current-uuid', uuid);
 
-                // Posisi dropdown
                 const rect      = toggle.getBoundingClientRect();
                 const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                const dropdownH = 180; // Tinggi dropdown menu (disesuaikan dengan konten)
-                
-                // Hitung ruang yang tersedia di bawah dan di atas
+                const dropdownH = 180;
+
                 const spaceBelow = window.innerHeight - rect.bottom;
                 const spaceAbove = rect.top;
-                
-                // Tentukan posisi vertikal
+
                 let top;
                 if (spaceBelow >= dropdownH || spaceBelow >= spaceAbove) {
-                    // Tampilkan di bawah
                     top = rect.bottom + window.scrollY + 5;
                 } else {
-                    // Tampilkan di atas
                     top = rect.top + window.scrollY - dropdownH - 5;
                 }
-                
-                // Tentukan posisi horizontal
+
                 let left = rect.right + window.scrollX - dropdownW;
-                
-                // Pastikan tidak keluar dari viewport kanan
-                if (left < window.scrollX + 10) {
-                    left = window.scrollX + 10;
-                }
-                
-                // Pastikan tidak keluar dari viewport kiri
+                if (left < window.scrollX + 10) left = window.scrollX + 10;
                 if (left + dropdownW > window.innerWidth + window.scrollX) {
                     left = window.innerWidth + window.scrollX - dropdownW - 10;
                 }
@@ -483,7 +464,6 @@
                 detailLink.href = `/pengguna/${uuid}`;
                 editLink.href   = `/pengguna/${uuid}/edit`;
 
-                // Toggle status label
                 toggleLabel.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
                 toggleBtn.classList.toggle('hidden', isSelf);
                 deleteBtn.classList.toggle('hidden', isSelf);
@@ -501,19 +481,19 @@
             if (!currentUuid) return;
             dropdownContainer.classList.add('hidden');
 
-            const form    = document.createElement('form');
-            form.method   = 'POST';
-            form.action   = `/pengguna/${currentUuid}/toggle-status`;
+            const form   = document.createElement('form');
+            form.method  = 'POST';
+            form.action  = `/pengguna/${currentUuid}/toggle-status`;
 
-            const csrf    = document.createElement('input');
-            csrf.type     = 'hidden';
-            csrf.name     = '_token';
-            csrf.value    = '{{ csrf_token() }}';
+            const csrf   = document.createElement('input');
+            csrf.type    = 'hidden';
+            csrf.name    = '_token';
+            csrf.value   = '{{ csrf_token() }}';
 
-            const method  = document.createElement('input');
-            method.type   = 'hidden';
-            method.name   = '_method';
-            method.value  = 'PATCH';
+            const method = document.createElement('input');
+            method.type  = 'hidden';
+            method.name  = '_method';
+            method.value = 'PATCH';
 
             form.appendChild(csrf);
             form.appendChild(method);
@@ -531,19 +511,19 @@
 
         document.getElementById('confirm-delete-btn').addEventListener('click', function () {
             if (!currentUuid) return;
-            const form    = document.createElement('form');
-            form.method   = 'POST';
-            form.action   = `/pengguna/${currentUuid}`;
+            const form   = document.createElement('form');
+            form.method  = 'POST';
+            form.action  = `/pengguna/${currentUuid}`;
 
-            const csrf    = document.createElement('input');
-            csrf.type     = 'hidden';
-            csrf.name     = '_token';
-            csrf.value    = '{{ csrf_token() }}';
+            const csrf   = document.createElement('input');
+            csrf.type    = 'hidden';
+            csrf.name    = '_token';
+            csrf.value   = '{{ csrf_token() }}';
 
-            const method  = document.createElement('input');
-            method.type   = 'hidden';
-            method.name   = '_method';
-            method.value  = 'DELETE';
+            const method = document.createElement('input');
+            method.type  = 'hidden';
+            method.name  = '_method';
+            method.value = 'DELETE';
 
             form.appendChild(csrf);
             form.appendChild(method);

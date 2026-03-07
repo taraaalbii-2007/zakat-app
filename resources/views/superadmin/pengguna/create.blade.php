@@ -36,8 +36,10 @@
                             <option value="superadmin"   {{ old('peran') === 'superadmin'   ? 'selected' : '' }}>Super Admin</option>
                             <option value="admin_masjid" {{ old('peran') === 'admin_masjid' ? 'selected' : '' }}>Admin Masjid</option>
                             <option value="amil"         {{ old('peran') === 'amil'         ? 'selected' : '' }}>Amil</option>
+                            <option value="muzakki"      {{ old('peran') === 'muzakki'      ? 'selected' : '' }}>Muzakki</option>
                         </select>
                         @error('peran') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+
                         {{-- Info peran --}}
                         <div id="info-superadmin" class="hidden mt-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                             <p class="text-xs text-purple-700">Super Admin hanya memerlukan informasi akun dan password.</p>
@@ -47,6 +49,9 @@
                         </div>
                         <div id="info-amil" class="hidden mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
                             <p class="text-xs text-emerald-700">Amil akan ditautkan ke masjid yang sudah ada. Pilih masjid dan lengkapi data profil amil.</p>
+                        </div>
+                        <div id="info-muzakki" class="hidden mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-700">Muzakki adalah pembayar zakat. Lengkapi data profil dan pilih masjid yang dituju.</p>
                         </div>
                     </div>
 
@@ -111,7 +116,6 @@
             {{-- ════════════════════════════════════════════════════════ --}}
             <div id="section-admin-masjid" class="{{ old('peran') === 'admin_masjid' ? '' : 'hidden' }} mb-6 sm:mb-8">
 
-                {{-- SUB: Data Admin --}}
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-blue-900 mb-4 pb-2 border-b border-blue-200">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs">3</span>
                     Data Admin Masjid
@@ -148,7 +152,6 @@
                     </div>
                 </div>
 
-                {{-- SUB: Identitas Masjid --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Identitas Masjid</h4>
                 <div class="space-y-4 mb-6">
                     <div>
@@ -178,11 +181,10 @@
                         <label for="deskripsi_masjid" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi <span class="text-gray-400 text-xs font-normal">(opsional)</span></label>
                         <textarea name="deskripsi_masjid" id="deskripsi_masjid" rows="2"
                             placeholder="Deskripsi singkat tentang masjid"
-                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all @error('deskripsi_masjid') border-red-500 @enderror">{{ old('deskripsi_masjid') }}</textarea>
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 resize-none transition-all">{{ old('deskripsi_masjid') }}</textarea>
                     </div>
                 </div>
 
-                {{-- SUB: Alamat & Wilayah --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Alamat & Wilayah</h4>
                 <div class="space-y-4 mb-6">
                     <div>
@@ -193,7 +195,6 @@
                         @error('alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {{-- Provinsi --}}
                         <div>
                             <label for="provinsi_kode" class="block text-sm font-medium text-gray-700 mb-2">Provinsi <span class="text-red-500">*</span></label>
                             <select name="provinsi_kode" id="provinsi_kode"
@@ -208,7 +209,6 @@
                             </select>
                             @error('provinsi_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kota --}}
                         <div>
                             <label for="kota_kode" class="block text-sm font-medium text-gray-700 mb-2">Kota/Kabupaten <span class="text-red-500">*</span></label>
                             <select name="kota_kode" id="kota_kode"
@@ -218,7 +218,6 @@
                             </select>
                             @error('kota_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kecamatan --}}
                         <div>
                             <label for="kecamatan_kode" class="block text-sm font-medium text-gray-700 mb-2">Kecamatan <span class="text-red-500">*</span></label>
                             <select name="kecamatan_kode" id="kecamatan_kode"
@@ -228,7 +227,6 @@
                             </select>
                             @error('kecamatan_kode') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
-                        {{-- Kelurahan --}}
                         <div>
                             <label for="kelurahan_kode" class="block text-sm font-medium text-gray-700 mb-2">Kelurahan/Desa <span class="text-red-500">*</span></label>
                             <select name="kelurahan_kode" id="kelurahan_kode"
@@ -243,11 +241,10 @@
                         <label for="kode_pos" class="block text-sm font-medium text-gray-700 mb-2">Kode Pos</label>
                         <input type="text" name="kode_pos" id="kode_pos" value="{{ old('kode_pos') }}"
                             placeholder="12345" maxlength="5"
-                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all @error('kode_pos') border-red-500 @enderror">
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all">
                     </div>
                 </div>
 
-                {{-- SUB: Sejarah Masjid --}}
                 <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Sejarah & Info Tambahan <span class="text-gray-400 text-xs font-normal">(opsional)</span></h4>
                 <div class="space-y-4 mb-6">
                     <div>
@@ -278,11 +275,10 @@
                     </div>
                 </div>
 
-                {{-- SUB: Foto Masjid --}}
-                <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100"> Foto Masjid <span class="text-gray-400 text-xs font-normal">(opsional, maks 5 foto)</span></h4>
+                <h4 class="text-sm font-semibold text-blue-800 mb-3 pb-1 border-b border-blue-100">Foto Masjid <span class="text-gray-400 text-xs font-normal">(opsional, maks 5 foto)</span></h4>
                 <div>
                     <input type="file" name="foto_masjid[]" id="foto_masjid" multiple accept="image/jpeg,image/png,image/jpg"
-                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 @error('foto_masjid') border border-red-500 rounded-xl p-1 @enderror">
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                     <p class="mt-1 text-xs text-gray-400">Format: JPG, PNG. Maks 2MB per foto, maks 5 foto.</p>
                     @error('foto_masjid') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     @error('foto_masjid.*') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -298,7 +294,6 @@
                     Data Amil
                 </h3>
 
-                {{-- Pilih Masjid (hanya untuk amil) --}}
                 <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
                     <label for="masjid_id" class="block text-sm font-medium text-gray-700 mb-2">
                         Masjid <span class="text-red-500">*</span>
@@ -317,7 +312,6 @@
                 </div>
 
                 <div class="space-y-4">
-                    {{-- Nama Lengkap --}}
                     <div>
                         <label for="amil_nama_lengkap" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap <span class="text-red-500">*</span></label>
                         <input type="text" name="amil_nama_lengkap" id="amil_nama_lengkap" value="{{ old('amil_nama_lengkap') }}"
@@ -325,8 +319,6 @@
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all @error('amil_nama_lengkap') border-red-500 @enderror">
                         @error('amil_nama_lengkap') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
-                    {{-- Jenis Kelamin, Tempat & Tanggal Lahir --}}
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label for="amil_jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-2">Jenis Kelamin <span class="text-red-500">*</span></label>
@@ -353,8 +345,6 @@
                             @error('amil_tanggal_lahir') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
-                    {{-- Telepon & Status --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="amil_telepon" class="block text-sm font-medium text-gray-700 mb-2">Telepon <span class="text-red-500">*</span></label>
@@ -374,8 +364,6 @@
                             @error('amil_status') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
-                    {{-- Alamat --}}
                     <div>
                         <label for="amil_alamat" class="block text-sm font-medium text-gray-700 mb-2">Alamat <span class="text-red-500">*</span></label>
                         <textarea name="amil_alamat" id="amil_alamat" rows="2"
@@ -383,8 +371,6 @@
                             class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 resize-none transition-all @error('amil_alamat') border-red-500 @enderror">{{ old('amil_alamat') }}</textarea>
                         @error('amil_alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
-
-                    {{-- Tanggal Mulai & Selesai --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="amil_tanggal_mulai_tugas" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai Tugas <span class="text-red-500">*</span></label>
@@ -401,8 +387,6 @@
                             @error('amil_tanggal_selesai_tugas') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
-
-                    {{-- Wilayah Tugas, Foto, Keterangan --}}
                     <div>
                         <label for="amil_wilayah_tugas" class="block text-sm font-medium text-gray-700 mb-2">Wilayah Tugas <span class="text-gray-400 text-xs font-normal">(opsional)</span></label>
                         <input type="text" name="amil_wilayah_tugas" id="amil_wilayah_tugas" value="{{ old('amil_wilayah_tugas') }}"
@@ -425,12 +409,101 @@
             </div>
 
             {{-- ════════════════════════════════════════════════════════ --}}
+            {{-- SECTION 3C – DATA MUZAKKI                               --}}
+            {{-- ════════════════════════════════════════════════════════ --}}
+            <div id="section-muzakki" class="{{ old('peran') === 'muzakki' ? '' : 'hidden' }} mb-6 sm:mb-8">
+                <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-amber-900 mb-4 pb-2 border-b border-amber-200">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white text-xs">3</span>
+                    Data Muzakki
+                </h3>
+
+                {{-- Pilih Masjid --}}
+                <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <label for="muzakki_masjid_id" class="block text-sm font-medium text-gray-700 mb-2">
+                        Masjid <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                    </label>
+                    <select name="muzakki_masjid_id" id="muzakki_masjid_id"
+                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_masjid_id') border-red-500 @enderror">
+                        <option value="">-- Pilih Masjid (Opsional) --</option>
+                        @foreach($masjidList as $masjid)
+                            <option value="{{ $masjid->id }}" {{ old('muzakki_masjid_id') == $masjid->id ? 'selected' : '' }}>
+                                {{ $masjid->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('muzakki_masjid_id') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    <p class="mt-1 text-xs text-amber-700">Pilih masjid jika muzakki terdaftar di masjid tertentu.</p>
+                </div>
+
+                <div class="space-y-4">
+                    {{-- Nama --}}
+                    <div>
+                        <label for="muzakki_nama" class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Lengkap <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="muzakki_nama" id="muzakki_nama"
+                            value="{{ old('muzakki_nama') }}"
+                            placeholder="Nama lengkap muzakki"
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_nama') border-red-500 @enderror">
+                        @error('muzakki_nama') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- NIK & Telepon --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="muzakki_nik" class="block text-sm font-medium text-gray-700 mb-2">
+                                NIK <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                            </label>
+                            <input type="text" name="muzakki_nik" id="muzakki_nik"
+                                value="{{ old('muzakki_nik') }}"
+                                placeholder="16 digit NIK"
+                                maxlength="16"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_nik') border-red-500 @enderror">
+                            @error('muzakki_nik') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label for="muzakki_telepon" class="block text-sm font-medium text-gray-700 mb-2">
+                                Telepon <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                            </label>
+                            <input type="text" name="muzakki_telepon" id="muzakki_telepon"
+                                value="{{ old('muzakki_telepon') }}"
+                                placeholder="08xxxxxxxxxx"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 transition-all @error('muzakki_telepon') border-red-500 @enderror">
+                            @error('muzakki_telepon') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Alamat --}}
+                    <div>
+                        <label for="muzakki_alamat" class="block text-sm font-medium text-gray-700 mb-2">
+                            Alamat <span class="text-gray-400 text-xs font-normal">(opsional)</span>
+                        </label>
+                        <textarea name="muzakki_alamat" id="muzakki_alamat" rows="2"
+                            placeholder="Alamat lengkap muzakki"
+                            class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-500 resize-none transition-all @error('muzakki_alamat') border-red-500 @enderror">{{ old('muzakki_alamat') }}</textarea>
+                        @error('muzakki_alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    {{-- Foto --}}
+                    <div>
+                        <label for="muzakki_foto" class="block text-sm font-medium text-gray-700 mb-2">
+                            Foto <span class="text-gray-400 text-xs font-normal">(opsional, maks 2MB)</span>
+                        </label>
+                        <input type="file" name="muzakki_foto" id="muzakki_foto" accept="image/jpeg,image/png,image/jpg"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 @error('muzakki_foto') border border-red-500 rounded-xl p-1 @enderror">
+                        <p class="mt-1 text-xs text-gray-400">Format: JPG, PNG. Maks 2MB.</p>
+                        @error('muzakki_foto') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- ════════════════════════════════════════════════════════ --}}
             {{-- SECTION 4 – STATUS AKUN                                 --}}
             {{-- ════════════════════════════════════════════════════════ --}}
             <div class="mb-6 sm:mb-8">
                 <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
                     <span id="status-step-num" class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">
-                        {{ in_array(old('peran'), ['admin_masjid','amil']) ? '4' : '3' }}
+                        {{ in_array(old('peran'), ['admin_masjid', 'amil', 'muzakki']) ? '4' : '3' }}
                     </span>
                     Status Akun
                 </h3>
@@ -472,7 +545,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const oldPeran = '{{ old('peran', '') }}';
     if (oldPeran) handlePeranChange(oldPeran);
 
-    // Reload wilayah jika ada old value setelah validasi error
     const oldProvinsi = '{{ old('provinsi_kode', '') }}';
     if (oldProvinsi) {
         loadKota(oldProvinsi, '{{ old('kota_kode', '') }}');
@@ -480,19 +552,23 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function handlePeranChange(value) {
-    const sectionAdmin  = document.getElementById('section-admin-masjid');
-    const sectionAmil   = document.getElementById('section-amil');
-    const statusStep    = document.getElementById('status-step-num');
-    const infoSuper     = document.getElementById('info-superadmin');
-    const infoAdmin     = document.getElementById('info-admin-masjid');
-    const infoAmil      = document.getElementById('info-amil');
+    const sectionAdmin   = document.getElementById('section-admin-masjid');
+    const sectionAmil    = document.getElementById('section-amil');
+    const sectionMuzakki = document.getElementById('section-muzakki');
+    const statusStep     = document.getElementById('status-step-num');
+    const infoSuper      = document.getElementById('info-superadmin');
+    const infoAdmin      = document.getElementById('info-admin-masjid');
+    const infoAmil       = document.getElementById('info-amil');
+    const infoMuzakki    = document.getElementById('info-muzakki');
 
     // Reset semua
     sectionAdmin.classList.add('hidden');
     sectionAmil.classList.add('hidden');
+    sectionMuzakki.classList.add('hidden');
     infoSuper.classList.add('hidden');
     infoAdmin.classList.add('hidden');
     infoAmil.classList.add('hidden');
+    infoMuzakki.classList.add('hidden');
 
     if (value === 'admin_masjid') {
         sectionAdmin.classList.remove('hidden');
@@ -501,6 +577,10 @@ function handlePeranChange(value) {
     } else if (value === 'amil') {
         sectionAmil.classList.remove('hidden');
         infoAmil.classList.remove('hidden');
+        statusStep.textContent = '4';
+    } else if (value === 'muzakki') {
+        sectionMuzakki.classList.remove('hidden');
+        infoMuzakki.classList.remove('hidden');
         statusStep.textContent = '4';
     } else if (value === 'superadmin') {
         infoSuper.classList.remove('hidden');
@@ -515,7 +595,7 @@ function togglePassword(id) {
     el.type = el.type === 'password' ? 'text' : 'password';
 }
 
-// ── Wilayah AJAX ─────────────────────────────────────────────────────────────
+// ── Wilayah AJAX ──────────────────────────────────────────────────────────────
 
 function setLoading(selectId, msg = 'Memuat...') {
     const el = document.getElementById(selectId);
@@ -597,9 +677,7 @@ function loadKelurahan(kecamatanKode, selectedKel = '') {
                 sel.add(opt);
             });
             sel.disabled = false;
-            if (selectedKel) {
-                fillKodePos(sel);
-            }
+            if (selectedKel) fillKodePos(sel);
         })
         .catch(() => resetSelect('kelurahan_kode', '-- Gagal memuat --'));
 }
