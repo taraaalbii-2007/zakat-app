@@ -1,14 +1,14 @@
 @extends('layouts.auth')
 
-@section('title', 'Lengkapi Profil Admin Masjid')
+@section('title', 'Lengkapi Profil Admin Lembaga Zakat')
 @section('auth-title', 'Lengkapi Profil')
-@section('auth-subtitle', 'Isi data diri dan masjid untuk menyelesaikan pendaftaran')
+@section('auth-subtitle', 'Isi data diri dan lembaga zakat untuk menyelesaikan pendaftaran')
 
 @push('styles')
     <style>
         /* ══════════════════════════════════
-           HIDE / OVERRIDE LAYOUT ELEMENTS
-        ══════════════════════════════════ */
+               HIDE / OVERRIDE LAYOUT ELEMENTS
+            ══════════════════════════════════ */
         .right-brand,
         .right-eyebrow {
             display: none !important;
@@ -47,8 +47,8 @@
         }
 
         /* ══════════════════════════════════
-           STEP INDICATOR
-        ══════════════════════════════════ */
+               STEP INDICATOR
+            ══════════════════════════════════ */
         .cp-steps {
             display: flex;
             align-items: center;
@@ -110,8 +110,8 @@
         }
 
         /* ══════════════════════════════════
-           SECTION TITLE
-        ══════════════════════════════════ */
+               SECTION TITLE
+            ══════════════════════════════════ */
         .cp-section {
             display: flex;
             align-items: center;
@@ -147,8 +147,8 @@
         }
 
         /* ══════════════════════════════════
-           FORM GROUP — identik login
-        ══════════════════════════════════ */
+               FORM GROUP — identik login
+            ══════════════════════════════════ */
         .lg-group {
             margin-bottom: .9rem;
         }
@@ -241,26 +241,27 @@
         }
 
         .lg-input:read-only {
-    background: #f9fafb;
-    color: #9ca3af;
-    cursor: not-allowed;
-    border-color: #f3f4f6;
-}
+            background: #f9fafb;
+            color: #9ca3af;
+            cursor: not-allowed;
+            border-color: #f3f4f6;
+        }
 
-/* Select disabled = belum bisa dipilih, tapi tetap terlihat bersih */
-select.lg-input:disabled {
-    background: #fff;
-    color: #c4cad4;
-    cursor: not-allowed;
-    border-color: #e5e7eb;
-    opacity: 1;
-}
+        /* Select disabled = belum bisa dipilih, tapi tetap terlihat bersih */
+        select.lg-input:disabled {
+            background: #fff;
+            color: #c4cad4;
+            cursor: not-allowed;
+            border-color: #e5e7eb;
+            opacity: 1;
+        }
 
-/* Select enabled = tampil normal seperti input lain */
-select.lg-input:not(:disabled) {
-    background: #fff;
-    color: #111827;
-}
+        /* Select enabled = tampil normal seperti input lain */
+        select.lg-input:not(:disabled) {
+            background: #fff;
+            color: #111827;
+        }
+
         .lg-input.err {
             border-color: #f43f5e;
         }
@@ -338,8 +339,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           HELPER TEXTS
-        ══════════════════════════════════ */
+               HELPER TEXTS
+            ══════════════════════════════════ */
         .lg-err {
             display: flex;
             align-items: center;
@@ -376,8 +377,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           PASSWORD STRENGTH
-        ══════════════════════════════════ */
+               PASSWORD STRENGTH
+            ══════════════════════════════════ */
         .pw-strength {
             margin-top: .4rem;
         }
@@ -398,8 +399,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           2 / 3 COLUMN GRID
-        ══════════════════════════════════ */
+               2 / 3 COLUMN GRID
+            ══════════════════════════════════ */
         .cp-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -423,8 +424,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           FILE UPLOAD
-        ══════════════════════════════════ */
+               FILE UPLOAD
+            ══════════════════════════════════ */
         .cp-file-label {
             display: flex;
             align-items: center;
@@ -500,7 +501,7 @@ select.lg-input:not(:disabled) {
             object-fit: cover;
         }
 
-        /* FOTO GALLERY (masjid — max 5) */
+        /* FOTO GALLERY (lembaga zakat — max 5) */
         .cp-gallery {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -602,8 +603,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           ALERT BOX
-        ══════════════════════════════════ */
+               ALERT BOX
+            ══════════════════════════════════ */
         .cp-alert {
             display: flex;
             align-items: flex-start;
@@ -651,8 +652,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           DIVIDER
-        ══════════════════════════════════ */
+               DIVIDER
+            ══════════════════════════════════ */
         .cp-divider {
             height: 1px;
             background: #f3f4f6;
@@ -660,8 +661,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           BUTTON SUBMIT
-        ══════════════════════════════════ */
+               BUTTON SUBMIT
+            ══════════════════════════════════ */
         .btn-masuk {
             display: flex;
             align-items: center;
@@ -740,8 +741,8 @@ select.lg-input:not(:disabled) {
         }
 
         /* ══════════════════════════════════
-           LOADING OVERLAY
-        ══════════════════════════════════ */
+               LOADING OVERLAY
+            ══════════════════════════════════ */
         .cp-overlay {
             position: fixed;
             inset: 0;
@@ -796,7 +797,7 @@ select.lg-input:not(:disabled) {
         <div class="cp-step-line done"></div>
         <div class="cp-step active">
             <div class="cp-step-dot">2</div>
-            <span>Profil &amp; Masjid</span>
+            <span>Profil &amp; Lembaga</span>
         </div>
         <div class="cp-step-line"></div>
         <div class="cp-step">
@@ -924,8 +925,7 @@ select.lg-input:not(:disabled) {
                             minlength="8" autocomplete="new-password" placeholder="Min. 8 karakter">
                         <button type="button" class="pw-btn" onclick="togglePw('password','eye1')"
                             aria-label="Tampilkan password">
-                            <svg id="eye1" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                stroke-width="2">
+                            <svg id="eye1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -962,12 +962,11 @@ select.lg-input:not(:disabled) {
                             </svg>
                         </span>
                         <input type="password" name="password_confirmation" id="password_confirmation"
-                            class="lg-input has-toggle {{ $errors->has('password_confirmation') ? 'err' : '' }}" required
-                            minlength="8" autocomplete="new-password" placeholder="Ulangi password">
+                            class="lg-input has-toggle {{ $errors->has('password_confirmation') ? 'err' : '' }}"
+                            required minlength="8" autocomplete="new-password" placeholder="Ulangi password">
                         <button type="button" class="pw-btn" onclick="togglePw('password_confirmation','eye2')"
                             aria-label="Tampilkan password">
-                            <svg id="eye2" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                stroke-width="2">
+                            <svg id="eye2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -992,13 +991,13 @@ select.lg-input:not(:disabled) {
 
         <div class="cp-divider"></div>
 
-        {{-- SECTION 2 — DATA ADMIN --}}
+        {{-- SECTION 2 — DATA ADMIN LEMBAGA ZAKAT --}}
         <div class="cp-section">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            Data Admin Masjid
+            Data Admin Lembaga Zakat
             <span class="opt-tag">(Wajib diisi)</span>
         </div>
 
@@ -1119,19 +1118,18 @@ select.lg-input:not(:disabled) {
 
         <div class="cp-divider"></div>
 
-        {{-- SECTION 3 — DATA MASJID --}}
+        {{-- SECTION 3 — DATA LEMBAGA ZAKAT --}}
         <div class="cp-section">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
-            Data Masjid
+            Data Lembaga Zakat
             <span class="opt-tag">(Wajib diisi)</span>
         </div>
 
         <div class="lg-group">
-            <label for="nama_masjid" class="lg-label">Nama Masjid <span class="req">*</span></label>
+            <label for="nama_masjid" class="lg-label">Nama Lembaga Zakat <span class="req">*</span></label>
             <div class="lg-wrap">
                 <span class="lg-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1141,7 +1139,7 @@ select.lg-input:not(:disabled) {
                 </span>
                 <input type="text" name="nama_masjid" id="nama_masjid"
                     class="lg-input {{ $errors->has('nama_masjid') ? 'err' : '' }}" value="{{ old('nama_masjid') }}"
-                    required maxlength="255" placeholder="Masjid Al-Ikhlas">
+                    required maxlength="255" placeholder="Masjid Al-Ikhlas / Yayasan Zakat Sejahtera">
             </div>
             @error('nama_masjid')
                 <div class="lg-err">
@@ -1165,7 +1163,7 @@ select.lg-input:not(:disabled) {
                     </svg>
                 </span>
                 <textarea name="alamat" id="alamat" class="lg-input {{ $errors->has('alamat') ? 'err' : '' }}" required
-                    rows="3" placeholder="Jalan, RT/RW, No. Rumah, dll">{{ old('alamat') }}</textarea>
+                    rows="3" placeholder="Jalan, RT/RW, No. Bangunan, dll">{{ old('alamat') }}</textarea>
             </div>
             @error('alamat')
                 <div class="lg-err">
@@ -1287,7 +1285,7 @@ select.lg-input:not(:disabled) {
             </div>
 
             <div class="lg-group">
-                <label for="telepon" class="lg-label">Telepon Masjid <span class="req">*</span></label>
+                <label for="telepon" class="lg-label">Telepon Lembaga Zakat <span class="req">*</span></label>
                 <div class="lg-wrap">
                     <span class="lg-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1313,7 +1311,7 @@ select.lg-input:not(:disabled) {
         </div>
 
         <div class="lg-group">
-            <label for="email_masjid" class="lg-label">Email Masjid <span class="req">*</span></label>
+            <label for="email_masjid" class="lg-label">Email Lembaga Zakat <span class="req">*</span></label>
             <div class="lg-wrap">
                 <span class="lg-icon">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1323,7 +1321,7 @@ select.lg-input:not(:disabled) {
                 </span>
                 <input type="email" name="email_masjid" id="email_masjid"
                     class="lg-input {{ $errors->has('email_masjid') ? 'err' : '' }}" value="{{ old('email_masjid') }}"
-                    required maxlength="255" placeholder="masjid@example.com">
+                    required maxlength="255" placeholder="lembagazazkat@example.com">
             </div>
             @error('email_masjid')
                 <div class="lg-err">
@@ -1340,12 +1338,12 @@ select.lg-input:not(:disabled) {
 
         <div class="cp-divider"></div>
 
-        {{-- SECTION 4 — SEJARAH --}}
+        {{-- SECTION 4 — SEJARAH LEMBAGA ZAKAT --}}
         <div class="cp-section">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Sejarah Masjid
+            Sejarah Lembaga Zakat
             <span class="opt-tag">(Wajib diisi)</span>
         </div>
 
@@ -1359,7 +1357,7 @@ select.lg-input:not(:disabled) {
                     </svg>
                 </span>
                 <textarea name="sejarah" id="sejarah" class="lg-input {{ $errors->has('sejarah') ? 'err' : '' }}" rows="4"
-                    required placeholder="Ceritakan sejarah singkat masjid...">{{ old('sejarah') }}</textarea>
+                    required placeholder="Ceritakan sejarah singkat lembaga zakat...">{{ old('sejarah') }}</textarea>
             </div>
             @error('sejarah')
                 <div class="lg-err">
@@ -1426,7 +1424,7 @@ select.lg-input:not(:disabled) {
             </div>
 
             <div class="lg-group">
-                <label for="kapasitas_jamaah" class="lg-label">Kapasitas Jamaah <span class="req">*</span></label>
+                <label for="kapasitas_jamaah" class="lg-label">Kapasitas <span class="req">*</span></label>
                 <div class="lg-wrap">
                     <span class="lg-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1448,31 +1446,30 @@ select.lg-input:not(:disabled) {
                         {{ $message }}
                     </div>
                 @enderror
-                <span class="lg-hint">Jumlah jamaah maksimal</span>
+                <span class="lg-hint">Estimasi jumlah penerima zakat</span>
             </div>
         </div>
 
         <div class="cp-divider"></div>
 
-        {{-- SECTION 5 — FOTO MASJID --}}
+        {{-- SECTION 5 — FOTO LEMBAGA ZAKAT --}}
         <div class="cp-section">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Foto Masjid
+            Foto Lembaga Zakat
             <span class="opt-tag">(Wajib min. 1 foto)</span>
         </div>
 
         <div class="lg-group">
-            <label class="lg-label">Upload Foto Masjid <span class="req">*</span></label>
+            <label class="lg-label">Upload Foto Lembaga Zakat <span class="req">*</span></label>
             <label class="cp-file-label" for="foto_masjid_trigger">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <span id="masjidFileName">Klik untuk pilih foto masjid (maks. 5 foto)…</span>
-                {{-- Input trigger, bukan input submit. File sebenarnya dikirim via hidden input --}}
+                <span id="masjidFileName">Klik untuk pilih foto lembaga zakat (maks. 5 foto)…</span>
                 <input type="file" id="foto_masjid_trigger" accept="image/jpeg,image/jpg,image/png,image/webp"
                     multiple>
             </label>
@@ -1568,7 +1565,7 @@ select.lg-input:not(:disabled) {
                     });
                 } catch (err) {
                     console.error('Compress error:', err);
-                    return file; // fallback ke file asli
+                    return file;
                 }
             }
 
@@ -1624,10 +1621,10 @@ select.lg-input:not(:disabled) {
                         try {
                             const res = await fetch(
                                 `/api/check-username?username=${encodeURIComponent(val)}&pengguna_id={{ $pengguna->id }}`
-                                );
+                            );
                             const r = await res.json();
                             help.className = r.available ? 'lg-hint success' : 'lg-hint error';
-                            help.textContent = (r.available ? '' : '') + r.message;
+                            help.textContent = r.message;
                         } catch {
                             help.className = 'lg-hint error';
                             help.textContent = 'Gagal memeriksa username';
@@ -1707,7 +1704,6 @@ select.lg-input:not(:disabled) {
 
                     const compressed = await compressImage(file, 0.4, 800);
 
-                    // Inject file terkompresi ke input
                     const dt = new DataTransfer();
                     dt.items.add(compressed);
                     Object.defineProperty(adminFotoInput, 'files', {
@@ -1731,10 +1727,7 @@ select.lg-input:not(:disabled) {
             }
 
             /* ══════════════════════════════════
-               FOTO MASJID — COMPRESS + PERSISTENT GALLERY
-               Gambar yang sudah diupload tidak hilang saat
-               memilih gambar baru. Simpan semua File di array,
-               lalu inject ke hidden inputs saat submit.
+               FOTO LEMBAGA ZAKAT — COMPRESS + PERSISTENT GALLERY
             ══════════════════════════════════ */
             const fotoTrigger = document.getElementById('foto_masjid_trigger');
             const hiddenInputs = document.getElementById('hiddenFileInputs');
@@ -1744,7 +1737,6 @@ select.lg-input:not(:disabled) {
             const loadingOverlay = document.getElementById('loadingOverlay');
             const overlayText = document.getElementById('overlayText');
 
-            // Array untuk menyimpan semua File objects yang sudah dicompress
             let storedFiles = [];
 
             function slotPlaceholder(i) {
@@ -1778,7 +1770,7 @@ select.lg-input:not(:disabled) {
                 const count = storedFiles.length;
                 masjidFileName.textContent = count > 0 ?
                     `${count} foto dipilih — klik untuk menambah atau ganti` :
-                    'Klik untuk pilih foto masjid (maks. 5 foto)…';
+                    'Klik untuk pilih foto lembaga zakat (maks. 5 foto)…';
 
                 galleryCount.textContent = count > 0 ?
                     `${count} dari ${MAX_FOTO} slot terisi` :
@@ -1815,7 +1807,8 @@ select.lg-input:not(:disabled) {
                     const filesToProcess = newFiles.slice(0, available);
                     if (newFiles.length > available) {
                         alert(
-                            `Hanya ${available} slot tersisa. ${newFiles.length - available} foto diabaikan.`);
+                            `Hanya ${available} slot tersisa. ${newFiles.length - available} foto diabaikan.`
+                        );
                     }
 
                     for (const f of filesToProcess) {
@@ -1846,7 +1839,7 @@ select.lg-input:not(:disabled) {
                     }
 
                     loadingOverlay.classList.remove('active');
-                    this.value = ''; // reset trigger agar bisa pilih file sama lagi
+                    this.value = '';
                     renderGallery();
                 });
             }
@@ -1956,7 +1949,7 @@ select.lg-input:not(:disabled) {
                 e.preventDefault();
 
                 if (storedFiles.length === 0) {
-                    alert('Harap upload minimal 1 foto masjid.');
+                    alert('Harap upload minimal 1 foto lembaga zakat.');
                     return;
                 }
 
