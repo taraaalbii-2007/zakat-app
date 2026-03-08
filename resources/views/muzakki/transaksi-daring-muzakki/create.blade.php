@@ -17,7 +17,7 @@
                         </div>
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-gray-900">Bayar Zakat</h2>
-                            <p class="text-xs text-gray-500 mt-0.5">{{ $masjid->nama }}</p>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ $lembaga->nama }}</p>
                         </div>
                     </div>
                     <a href="{{ route('transaksi-daring-muzakki.index') }}"
@@ -585,8 +585,8 @@
 
                             {{-- Info Transfer --}}
                             <div id="dInfoTransfer" class="hidden space-y-3">
-                                @if ($rekeningMasjidList->isNotEmpty())
-                                    @foreach ($rekeningMasjidList as $rek)
+                                @if ($rekeningLembagaList->isNotEmpty())
+                                    @foreach ($rekeningLembagaList as $rek)
                                         <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                                             <div>
                                                 <p class="text-xs font-bold text-gray-700">{{ $rek->nama_bank }}</p>
@@ -598,7 +598,7 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <p class="text-xs text-gray-400 italic">Belum ada rekening aktif. Hubungi pengurus masjid.</p>
+                                    <p class="text-xs text-gray-400 italic">Belum ada rekening aktif. Hubungi pengurus lembaga.</p>
                                 @endif
 
                                 <div>
@@ -625,12 +625,12 @@
                                 @if ($konfigurasiQris && !empty($konfigurasiQris->qris_image_path))
                                     <div class="flex justify-center">
                                         <div class="bg-white p-4 rounded-2xl border-2 border-primary-200 shadow-sm w-72 sm:w-80">
-                                            <img src="{{ $konfigurasiQris->qris_image_url }}" class="w-full object-contain rounded-lg" alt="QRIS Masjid">
+                                            <img src="{{ $konfigurasiQris->qris_image_url }}" class="w-full object-contain rounded-lg" alt="QRIS Lembaga">
                                             <p class="text-center text-xs text-primary-600 font-semibold mt-3">Scan untuk Membayar Zakat</p>
                                         </div>
                                     </div>
                                 @else
-                                    <p class="text-xs text-gray-400 italic">Hubungi pengurus masjid untuk mendapatkan kode QRIS.</p>
+                                    <p class="text-xs text-gray-400 italic">Hubungi pengurus lembaga untuk mendapatkan kode QRIS.</p>
                                 @endif
 
                                 <div>

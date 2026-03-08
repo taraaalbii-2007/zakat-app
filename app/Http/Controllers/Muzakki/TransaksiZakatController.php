@@ -8,7 +8,7 @@ use App\Models\JenisZakat;
 use App\Models\TipeZakat;
 use App\Models\ProgramZakat;
 use App\Models\Amil;
-use App\Models\RekeningMasjid;
+use App\Models\RekeningLembaga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ class TransaksiZakatController extends Controller
 {
     protected $user;
     protected $muzakki;
-    protected $masjid;
+    protected $lembaga;
 
     const NOMINAL_ZAKAT_FITRAH_PER_JIWA = 50000;
     const BERAS_KG_PER_JIWA             = 2.5;
@@ -40,14 +40,14 @@ class TransaksiZakatController extends Controller
                     ->with('error', 'Profil muzakki belum dilengkapi. Silakan lengkapi profil terlebih dahulu.');
             }
 
-            $this->masjid = $this->muzakki->masjid;
-            if (!$this->masjid) {
+            $this->lembaga = $this->muzakki->lembaga;
+            if (!$this->lembaga) {
                 return redirect()->route('dashboard')
-                    ->with('error', 'Anda belum memilih masjid. Silakan lengkapi profil terlebih dahulu.');
+                    ->with('error', 'Anda belum memilih lembaga. Silakan lengkapi profil terlebih dahulu.');
             }
 
             view()->share([
-                'masjid'          => $this->masjid,
+                'lembaga'          => $this->lembaga,
                 'muzakki'         => $this->muzakki,
                 'zakatFitrahInfo' => [
                     'nominal_per_jiwa' => self::NOMINAL_ZAKAT_FITRAH_PER_JIWA,
@@ -118,15 +118,15 @@ class TransaksiZakatController extends Controller
     public function create()
     {
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::where('masjid_id', $this->masjid->id)
+        $programZakatList = ProgramZakat::where('lembaga_id', $this->lembaga->id)
             ->where('status', 'aktif')
             ->orderBy('nama_program')
             ->get();
-        $amilList = Amil::where('masjid_id', $this->masjid->id)
+        $amilList = Amil::where('lembaga_id', $this->lembaga->id)
             ->where('status', 'aktif')
             ->with('pengguna')
             ->get();
-        $rekeningMasjidList = RekeningMasjid::where('masjid_id', $this->masjid->id)
+        $rekeningLembagaList = RekeningLembaga::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->get();
 
@@ -158,7 +158,7 @@ class TransaksiZakatController extends Controller
             'beras_liter'      => self::BERAS_LITER_PER_JIWA,
         ];
 
-        $konfigurasiQris = \App\Models\KonfigurasiQris::where('masjid_id', $this->masjid->id)
+        $konfigurasiQris = \App\Models\KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->first();
 
@@ -167,7 +167,7 @@ class TransaksiZakatController extends Controller
             'programZakatList',
             'amilList',
             'tipeZakatList',
-            'rekeningMasjidList',
+            'rekeningLembagaList',
             'zakatFitrahInfo',
             'muzakkiData',
             'konfigurasiQris'
@@ -215,10 +215,10 @@ class TransaksiZakatController extends Controller
             DB::beginTransaction();
 
             $transaksi = new TransaksiPenerimaan();
-            $transaksi->masjid_id         = $this->masjid->id;
+            $transaksi->lembaga_id         = $this->lembaga->id;
             $transaksi->muzakki_id        = $this->muzakki->id;
             $transaksi->diinput_muzakki   = true;
-            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
             $transaksi->tanggal_transaksi = $request->tanggal_transaksi ?? now()->format('Y-m-d');
             $transaksi->waktu_transaksi   = now();
 
@@ -280,7 +280,7 @@ class TransaksiZakatController extends Controller
     public function show(string $uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid', 'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna', 'verifiedBy',
+            'lembaga', 'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna', 'verifiedBy',
         ])
             ->where('uuid', $uuid)
             ->where('muzakki_id', $this->muzakki->id)

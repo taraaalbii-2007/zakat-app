@@ -23,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
         View::share('appConfig', $appConfig);
 
         View::composer('*', function ($view) {
-            if (Auth::check() && Auth::user()->peran === 'admin_masjid') {
-                $masjid = Auth::user()->masjid;
-                $pendingApprovalCount = $masjid
-                    ? TransaksiPenyaluran::byMasjid($masjid->id)->byStatus('draft')->count()
+            if (Auth::check() && Auth::user()->peran === 'admin_lembaga') {
+                $lembaga = Auth::user()->lembaga;
+                $pendingApprovalCount = $lembaga
+                    ? TransaksiPenyaluran::byLembaga($lembaga->id)->byStatus('draft')->count()
                     : 0;
             } else {
                 $pendingApprovalCount = 0;
@@ -35,28 +35,28 @@ class AppServiceProvider extends ServiceProvider
             // ── Badge count untuk menu sidebar amil ──
             $sidebarCounts = ['datang_langsung' => 0, 'daring' => 0, 'dijemput' => 0];
 
-            if (Auth::check() && in_array(Auth::user()->peran, ['amil', 'admin_masjid'])) {
+            if (Auth::check() && in_array(Auth::user()->peran, ['amil', 'admin_lembaga'])) {
                 $user     = Auth::user();
-                $masjidId = $user->masjid_id;
+                $lembagaId = $user->lembaga_id;
 
-                // Jika amil, coba ambil masjid_id dari relasi amil
+                // Jika amil, coba ambil lembaga_id dari relasi amil
                 if ($user->peran === 'amil' && $user->amil) {
-                    $masjidId = $user->amil->masjid_id ?? $masjidId;
+                    $lembagaId = $user->amil->lembaga_id ?? $lembagaId;
                 }
 
-                if ($masjidId) {
+                if ($lembagaId) {
                     $sidebarCounts = [
                         // Datang langsung: transaksi pending (belum verified)
                         'datang_langsung' => 0, 
 
                         // Daring: menunggu konfirmasi pembayaran
-                        'daring' => TransaksiPenerimaan::where('masjid_id', $masjidId)
+                        'daring' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'daring')
                             ->where('konfirmasi_status', 'menunggu_konfirmasi')
                             ->count(),
 
                         // Dijemput: menunggu penjemputan atau belum dilengkapi data zakat
-                        'dijemput' => TransaksiPenerimaan::where('masjid_id', $masjidId)
+                        'dijemput' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'dijemput')
                             ->where(function ($q) {
                                 $q->where('status_penjemputan', 'menunggu')

@@ -17,13 +17,13 @@ class TransaksiPenerimaanExport implements FromCollection, WithHeadings, WithMap
 {
     protected $filters;
     protected $user;
-    protected $masjid;
+    protected $lembaga;
 
-    public function __construct($filters, $user, $masjid)
+    public function __construct($filters, $user, $lembaga)
     {
         $this->filters = $filters;
         $this->user = $user;
-        $this->masjid = $masjid;
+        $this->lembaga = $lembaga;
     }
 
     /**
@@ -36,7 +36,7 @@ class TransaksiPenerimaanExport implements FromCollection, WithHeadings, WithMap
             'tipeZakat', 
             'programZakat', 
             'amil'
-        ])->byMasjid($this->masjid->id);
+        ])->byLembaga($this->lembaga->id);
 
         // Apply filters
         if (!empty($this->filters['q'])) {

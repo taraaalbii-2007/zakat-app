@@ -17,7 +17,7 @@ class ProfilMuzakkiController extends Controller
 {
     protected $user;
     protected $muzakki;
-    protected $masjid;
+    protected $lembaga;
 
     public function __construct()
     {
@@ -27,12 +27,12 @@ class ProfilMuzakkiController extends Controller
             if (!$this->user->isMuzakki())  abort(403, 'Hanya Muzakki yang dapat mengakses halaman ini');
 
             $this->muzakki = $this->user->muzakki;
-            $this->masjid  = $this->muzakki ? $this->muzakki->masjid : null;
+            $this->lembaga  = $this->muzakki ? $this->muzakki->lembaga : null;
 
             if (!$this->muzakki) abort(404, 'Data muzakki tidak ditemukan.');
-            if (!$this->masjid)  abort(404, 'Data masjid tidak ditemukan.');
+            if (!$this->lembaga)  abort(404, 'Data lembaga tidak ditemukan.');
 
-            view()->share('masjid', $this->masjid);
+            view()->share('lembaga', $this->lembaga);
             return $next($request);
         });
     }
@@ -42,7 +42,7 @@ class ProfilMuzakkiController extends Controller
     // ---------------------------------------------------------------
     public function show()
     {
-        $muzakki = $this->muzakki->load(['pengguna', 'masjid']);
+        $muzakki = $this->muzakki->load(['pengguna', 'lembaga']);
         $user    = $this->user;
 
         $stats = [
@@ -65,7 +65,7 @@ class ProfilMuzakkiController extends Controller
     // ---------------------------------------------------------------
     public function edit()
     {
-        $muzakki = $this->muzakki->load(['pengguna', 'masjid']);
+        $muzakki = $this->muzakki->load(['pengguna', 'lembaga']);
         $user    = $this->user;
         return view('muzakki.profil.edit', compact('muzakki', 'user'));
     }

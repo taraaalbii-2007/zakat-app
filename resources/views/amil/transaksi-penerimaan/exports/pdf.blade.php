@@ -174,13 +174,13 @@
 
 <body>
     <div class="header">
-        <h1>{{ strtoupper($masjid->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}</h1>
+        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}</h1>
         <h2>Laporan Detail Transaksi Penerimaan Zakat</h2>
         <div class="subtitle">
-            {{ $masjid->alamat ?? '' }}
-            {{ $masjid->kelurahan_nama ? ', Kel. ' . $masjid->kelurahan_nama : '' }}
-            {{ $masjid->kecamatan_nama ? ', Kec. ' . $masjid->kecamatan_nama : '' }}
-            {{ $masjid->kota_nama ? ', ' . $masjid->kota_nama : '' }}
+            {{ $lembaga->alamat ?? '' }}
+            {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
+            {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
+            {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
         </div>
     </div>
 
@@ -438,12 +438,12 @@
                 <td style="width: 70%;"></td>
                 <td style="width: 30%;">
                     <div class="signature-wrapper">
-                        <div style="margin-bottom: 5px;">{{ $masjid->kota_nama ?? 'Bandung' }},
+                        <div style="margin-bottom: 5px;">{{ $lembaga->kota_nama ?? 'Bandung' }},
                             {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
                         <div>Mengetahui,</div>
-                        <div style="margin-bottom: 10px;"><strong>Admin Masjid</strong></div>
+                        <div style="margin-bottom: 10px;"><strong>Admin Lembaga</strong></div>
                         <div class="signature-space"></div>
-                        <div class="signature-name">{{ $masjid->admin_nama ?? '_____________________' }}</div>
+                        <div class="signature-name">{{ $lembaga->admin_nama ?? '_____________________' }}</div>
                     </div>
                 </td>
             </tr>
@@ -451,10 +451,10 @@
     </div>
 
     <div class="footer-note">
-        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $masjid->nama ?? 'Masjid' }}.</p>
+        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $lembaga->nama ?? 'Lembaga' }}.</p>
         <p>*Zakat Fitrah: Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'] ?? 50000, 0, ',', '.') }}/jiwa atau {{ ($zakatFitrahInfo['beras_kg'] ?? 2.5) }} kg ({{ ($zakatFitrahInfo['beras_liter'] ?? 3.5) }} liter) beras.</p>
         <p>*Fidyah: 1 mud = {{ ($fidyahInfo['berat_per_hari_gram'] ?? 675) }} gram bahan pokok per hari, atau makanan siap santap, atau uang senilai makanan.</p>
-        <p>Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi masjid. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
+        <p>Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi lembaga. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
         <p>Dicetak pada: {{ $tanggalExport }}</p>
     </div>
 </body>

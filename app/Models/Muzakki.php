@@ -16,7 +16,7 @@ class Muzakki extends Model
     protected $fillable = [
         'uuid',
         'pengguna_id',
-        'masjid_id',
+        'lembaga_id',
         'nama',
         'telepon',
         'email',
@@ -58,11 +58,11 @@ class Muzakki extends Model
     }
 
     /**
-     * Relasi ke tabel masjid
+     * Relasi ke tabel lembaga
      */
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     /**
@@ -134,11 +134,11 @@ class Muzakki extends Model
     }
 
     /**
-     * Filter berdasarkan masjid
+     * Filter berdasarkan lembaga
      */
-    public function scopeByMasjid($query, int $masjidId)
+    public function scopeByLembaga($query, int $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     /**

@@ -81,7 +81,7 @@
                 <div class="flex-1 text-center sm:text-left">
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-1">{{ $muzakki->nama }}</h2>
                     <p class="text-xs sm:text-sm text-gray-500 mb-2">
-                        @if($muzakki->masjid) {{ $muzakki->masjid->nama }} @endif
+                        @if($muzakki->lembaga) {{ $muzakki->lembaga->nama }} @endif
                     </p>
                     <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
@@ -184,7 +184,7 @@
                         ['Email',         $muzakki->email],
                         ['NIK',           $muzakki->nik],
                         ['Alamat',        $muzakki->alamat],
-                        ['Masjid',        optional($muzakki->masjid)->nama],
+                        ['Lembaga',        optional($muzakki->lembaga)->nama],
                     ] as [$label, $value])
                     <div>
                         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">

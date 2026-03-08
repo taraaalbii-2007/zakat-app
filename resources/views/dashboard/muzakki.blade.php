@@ -344,7 +344,7 @@
     .trx-nominal { font-size: .83rem; font-weight: 700; color: var(--primary-700); }
 
     /* ── INFO MASJID ── */
-    .masjid-card {
+    .lembaga-card {
         background: linear-gradient(135deg, var(--primary-50) 0%, #fff 100%);
         border: 1px solid var(--primary-100);
         border-radius: var(--radius-sm);
@@ -354,7 +354,7 @@
         gap: 1rem;
     }
 
-    .masjid-icon {
+    .lembaga-icon {
         width: 44px; height: 44px;
         border-radius: var(--radius-sm);
         background: linear-gradient(135deg, var(--primary), var(--accent));
@@ -365,8 +365,8 @@
         flex-shrink: 0;
     }
 
-    .masjid-name { font-size: .9rem; font-weight: 700; color: var(--n-900); }
-    .masjid-loc  { font-size: .72rem; font-weight: 500; color: var(--n-500); margin-top: 2px; }
+    .lembaga-name { font-size: .9rem; font-weight: 700; color: var(--n-900); }
+    .lembaga-loc  { font-size: .72rem; font-weight: 500; color: var(--n-500); margin-top: 2px; }
 
     /* ── NISAB BLOCK ── */
     .nisab-block {
@@ -514,7 +514,7 @@
                 <h1 class="hero-title">Assalamu'alaikum, {{ $muzakki->nama_singkat }}!</h1>
                 <p class="hero-sub">
                     Semoga zakat Anda menjadi berkah &mdash;
-                    {{ $masjid?->nama ?? 'Masjid belum dipilih' }}
+                    {{ $lembaga?->nama ?? 'Masjid belum dipilih' }}
                 </p>
             </div>
             <div class="hero-time hidden sm:block">
@@ -627,24 +627,24 @@
                     <p class="panel-title">Masjid Saya</p>
                 </div>
                 <div class="panel-body">
-                    @if($masjid)
-                    <div class="masjid-card">
-                        <div class="masjid-icon">
+                    @if($lembaga)
+                    <div class="lembaga-card">
+                        <div class="lembaga-icon">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
                                       d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
                             </svg>
                         </div>
                         <div>
-                            <p class="masjid-name">{{ $masjid->nama }}</p>
-                            <p class="masjid-loc">
-                                {{ $masjid->kecamatan_nama }}, {{ $masjid->kota_nama }}
+                            <p class="lembaga-name">{{ $lembaga->nama }}</p>
+                            <p class="lembaga-loc">
+                                {{ $lembaga->kecamatan_nama }}, {{ $lembaga->kota_nama }}
                             </p>
                         </div>
                     </div>
                     @else
                     <p style="font-size:.8rem; color:var(--n-400); text-align:center; padding:.5rem 0;">
-                        Belum memilih masjid
+                        Belum memilih lembaga
                     </p>
                     @endif
                 </div>
@@ -677,7 +677,7 @@
         <div class="panel">
             <div class="panel-head">
                 <p class="panel-title">5 Transaksi Terakhir</p>
-                <a href=""
+                <a href="riwayat-transaksi-muzakki"
                    style="font-size:.75rem; font-weight:600; color:var(--primary); text-decoration:none;">
                     Lihat Semua →
                 </a>

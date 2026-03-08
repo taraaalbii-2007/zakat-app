@@ -12,7 +12,7 @@ class RiwayatTransaksiController extends Controller
 {
     protected $user;
     protected $muzakki;
-    protected $masjid;
+    protected $lembaga;
 
     public function __construct()
     {
@@ -29,14 +29,14 @@ class RiwayatTransaksiController extends Controller
                     ->with('error', 'Profil muzakki belum dilengkapi.');
             }
 
-            $this->masjid = $this->muzakki->masjid;
-            if (!$this->masjid) {
+            $this->lembaga = $this->muzakki->lembaga;
+            if (!$this->lembaga) {
                 return redirect()->route('dashboard')
-                    ->with('error', 'Anda belum memilih masjid.');
+                    ->with('error', 'Anda belum memilih lembaga.');
             }
 
             view()->share([
-                'masjid'  => $this->masjid,
+                'lembaga'  => $this->lembaga,
                 'muzakki' => $this->muzakki,
             ]);
 
