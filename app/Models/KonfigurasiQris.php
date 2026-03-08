@@ -13,7 +13,7 @@ class KonfigurasiQris extends Model
     protected $table = 'konfigurasi_qris';
 
     protected $fillable = [
-        'masjid_id',
+        'lembaga_id',
         'qris_image_path',
         'is_active',
     ];
@@ -36,8 +36,8 @@ class KonfigurasiQris extends Model
         return null;
     }
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class);
+        return $this->belongsTo(Lembaga::class);
     }
 }

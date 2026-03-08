@@ -3,7 +3,7 @@
 @php
     $authUser = auth()->user();
     $isSuperadmin = $authUser?->isSuperadmin();
-    $isAdminMasjid = $authUser?->isAdminMasjid();
+    $isAdminLembaga = $authUser?->isAdminLembaga();
     $isAmil = $authUser?->isAmil();
     $isMuzakki = $authUser?->isMuzakki();
 
@@ -25,9 +25,9 @@
     $readIds = session($notifSessionKey, []);
 
     if ($isAmil && isset($authUser->amil)) {
-        $masjidId = $authUser->amil->masjid_id;
+        $lembagaId = $authUser->amil->lembaga_id;
 
-        $daringPending = \App\Models\TransaksiPenerimaan::where('masjid_id', $masjidId)
+        $daringPending = \App\Models\TransaksiPenerimaan::where('lembaga_id', $lembagaId)
             ->where('metode_penerimaan', 'daring')
             ->where('status', 'pending')
             ->where('konfirmasi_status', 'menunggu_konfirmasi')
@@ -53,7 +53,7 @@
                 ],
             );
 
-        $dijemputPending = \App\Models\TransaksiPenerimaan::where('masjid_id', $masjidId)
+        $dijemputPending = \App\Models\TransaksiPenerimaan::where('lembaga_id', $lembagaId)
             ->where('metode_penerimaan', 'dijemput')
             ->where('status', 'pending')
             ->where('status_penjemputan', 'menunggu')
@@ -138,22 +138,22 @@
 
     $roleLabel = match (true) {
         $isSuperadmin => 'Super Admin',
-        $isAdminMasjid => 'Admin Masjid',
+        $isAdminLembaga => 'Admin Lembaga',
         $isAmil => 'Amil',
         $isMuzakki => 'Muzakki',
         default => 'Pengguna',
     };
     $badgeClass = match (true) {
         $isSuperadmin => 'bg-indigo-100 text-indigo-700',
-        $isAdminMasjid => 'bg-emerald-100 text-emerald-700',
+        $isAdminLembaga => 'bg-emerald-100 text-emerald-700',
         $isAmil => 'bg-amber-100 text-amber-700',
         $isMuzakki => 'bg-sky-100 text-sky-700',
         default => 'bg-gray-100 text-gray-700',
     };
 
     $avatarUrl = null;
-    if ($isAdminMasjid && $authUser?->masjid?->admin_foto) {
-        $avatarUrl = $authUser->masjid->admin_foto_url;
+    if ($isAdminLembaga && $authUser?->lembaga?->admin_foto) {
+        $avatarUrl = $authUser->lembaga->admin_foto_url;
     } elseif ($isAmil && isset($authUser->amil) && $authUser->amil->foto) {
         if (\Storage::disk('public')->exists($authUser->amil->foto)) {
             $avatarUrl = \Storage::url($authUser->amil->foto);
@@ -205,7 +205,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <p class="text-sm font-semibold text-gray-800 truncate">
-                        {{ $isAdminMasjid && $authUser?->masjid?->admin_nama ? $authUser->masjid->admin_nama : $authUser->username ?? 'Pengguna' }}
+                        {{ $isAdminLembaga && $authUser?->lembaga?->admin_nama ? $authUser->lembaga->admin_nama : $authUser->username ?? 'Pengguna' }}
                     </p>
                     <p class="text-xs text-gray-400 truncate">{{ $authUser->email ?? '' }}</p>
                 </div>
@@ -435,7 +435,7 @@
                         {{-- Name + Role --}}
                         <div class="hidden lg:block text-left">
                             <p class="text-[12.5px] font-semibold text-gray-800 leading-tight">
-                                {{ $isAdminMasjid && $authUser?->masjid?->admin_nama ? $authUser->masjid->admin_nama : $authUser->username ?? 'Pengguna' }}
+                                {{ $isAdminLembaga && $authUser?->lembaga?->admin_nama ? $authUser->lembaga->admin_nama : $authUser->username ?? 'Pengguna' }}
                             </p>
                             <p class="text-[10.5px] text-gray-400 leading-tight mt-0.5">{{ $roleLabel }}</p>
                         </div>
@@ -463,7 +463,7 @@
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-1.5 flex-wrap">
                                         <p class="text-[12.5px] font-bold text-gray-900 truncate leading-tight">
-                                            {{ $isAdminMasjid && $authUser?->masjid?->admin_nama ? $authUser->masjid->admin_nama : $authUser->username ?? 'Pengguna' }}
+                                            {{ $isAdminLembaga && $authUser?->lembaga?->admin_nama ? $authUser->lembaga->admin_nama : $authUser->username ?? 'Pengguna' }}
                                         </p>
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9.5px] font-bold {{ $badgeClass }}">{{ $roleLabel }}</span>
                                     </div>
@@ -510,9 +510,9 @@
                                 </a>
                             @endif
 
-                            @if ($isAdminMasjid)
-                                <a href="{{ route('admin-masjid.profil.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('admin-masjid.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                            @if ($isAdminLembaga)
+                                <a href="{{ route('admin-lembaga.profil.show') }}"
+                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('admin-lembaga.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

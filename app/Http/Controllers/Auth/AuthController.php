@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\Pengguna;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 use App\Models\GoogleConfig;
 use App\Models\MailConfig;
 use App\Models\RecaptchaConfig;
@@ -280,7 +280,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'email'           => 'required|email|unique:pengguna,email',
-            'role'            => 'required|in:admin_masjid,muzakki',  // ← TAMBAH
+            'role'            => 'required|in:admin_lembaga,muzakki',  // ← TAMBAH
             'recaptcha_token' => 'nullable|string',
         ], [
             'email.required'  => 'Email wajib diisi',
@@ -460,7 +460,7 @@ class AuthController extends Controller
         // ← BACA ROLE DARI CACHE (dengan fallback ke session, lalu default)
         $role = $otpData['role']
             ?? session('otp_role')
-            ?? 'admin_masjid';
+            ?? 'admin_lembaga';
 
         DB::beginTransaction();
 
@@ -1135,14 +1135,14 @@ class AuthController extends Controller
             ],
             'password' => $isGoogleUser ? 'nullable' : 'required|string|min:8|confirmed',
 
-            // Data Admin Masjid
+            // Data Admin Lembaga
             'admin_nama' => 'required|string|max:255',
             'admin_telepon' => 'required|string|max:20',
             'admin_email' => 'required|email|max:255',
             'admin_foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
 
-            // Data Masjid
-            'nama_masjid' => 'required|string|max:255',
+            // Data Lembaga
+            'nama_lembaga' => 'required|string|max:255',
             'alamat' => 'required|string',
             'provinsi_kode' => 'required|string|exists:indonesia_provinces,code',
             'kota_kode' => 'required|string|exists:indonesia_cities,code',
@@ -1150,16 +1150,16 @@ class AuthController extends Controller
             'kelurahan_kode' => 'required|string|exists:indonesia_villages,code',
             'kode_pos' => 'required|string|max:5',
             'telepon' => 'required|string|max:20',
-            'email_masjid' => 'required|email|max:255',
+            'email_lembaga' => 'required|email|max:255',
 
-            // Sejarah Masjid
+            // Sejarah Lembaga
             'sejarah' => 'required|string',
             'tahun_berdiri' => 'required|integer|min:1900|max:' . date('Y'),
             'pendiri' => 'required|string|max:255',
             'kapasitas_jamaah' => 'required|integer|min:1',
 
-            // Foto Masjid
-            'foto_masjid.*' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            // Foto Lembaga
+            'foto_lembaga.*' => 'required|image|mimes:jpeg,jpg,png|max:2048',
 
             // reCAPTCHA
             'recaptcha_token' => 'nullable|string',
@@ -1203,21 +1203,21 @@ class AuthController extends Controller
                     'admin-fotos'
                 );
             }
-            // STEP 3: Upload foto masjid (multiple)
-            $fotoMasjidArray = [];
-            if ($request->hasFile('foto_masjid')) {
-                $uploadedFiles = $request->file('foto_masjid');
+            // STEP 3: Upload foto lembaga (multiple)
+            $fotoLembagaArray = [];
+            if ($request->hasFile('foto_lembaga')) {
+                $uploadedFiles = $request->file('foto_lembaga');
 
-                if (count($uploadedFiles) > Masjid::MAX_FOTO) {
+                if (count($uploadedFiles) > Lembaga::MAX_FOTO) {
                     DB::rollBack();
                     return back()
-                        ->with('error', 'Maksimal ' . Masjid::MAX_FOTO . ' foto masjid yang diperbolehkan')
+                        ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto lembaga yang diperbolehkan')
                         ->withInput();
                 }
 
                 foreach ($uploadedFiles as $foto) {
-                    $path = $this->uploadAndCompressGeneral($foto, 'masjid-fotos');
-                    $fotoMasjidArray[] = $path;
+                    $path = $this->uploadAndCompressGeneral($foto, 'lembaga-fotos');
+                    $fotoLembagaArray[] = $path;
                 }
             }
 
@@ -1240,39 +1240,39 @@ class AuthController extends Controller
                 $kodePos = $kelurahan->meta['postal_code'] ?? null;
             }
 
-            // STEP 6: Generate kode masjid otomatis
-            $kodeMasjid = $this->generateKodeMasjid();
+            // STEP 6: Generate kode lembaga otomatis
+            $kodeLembaga = $this->generateKodeLembaga();
 
-            // STEP 7: Cek duplikasi nama masjid di kelurahan yang sama
-            $existingMasjid = Masjid::where('nama', $request->nama_masjid)
+            // STEP 7: Cek duplikasi nama lembaga di kelurahan yang sama
+            $existingLembaga = Lembaga::where('nama', $request->nama_lembaga)
                 ->where('kelurahan_kode', $request->kelurahan_kode)
                 ->first();
 
-            if ($existingMasjid) {
+            if ($existingLembaga) {
                 DB::rollBack();
                 return back()
-                    ->with('error', 'Masjid dengan nama "' . $request->nama_masjid . '" sudah terdaftar di kelurahan ' . $kelurahan->name)
+                    ->with('error', 'Lembaga dengan nama "' . $request->nama_lembaga . '" sudah terdaftar di kelurahan ' . $kelurahan->name)
                     ->withInput();
             }
 
             // =====================================================
             // STEP 8: CREATE DATA MASJID
             // =====================================================
-            $masjid = Masjid::create([
+            $lembaga = Lembaga::create([
                 'uuid' => (string) Str::uuid(),
-                'kode_masjid' => $kodeMasjid,
+                'kode_lembaga' => $kodeLembaga,
 
-                // Data Admin Masjid
+                // Data Admin Lembaga
                 'admin_nama' => $request->admin_nama,
                 'admin_telepon' => $request->admin_telepon,
                 'admin_email' => $request->admin_email ?? $pengguna->email,
                 'admin_foto' => $adminFotoPath,
 
-                // Data Masjid
-                'nama' => $request->nama_masjid,
+                // Data Lembaga
+                'nama' => $request->nama_lembaga,
                 'alamat' => $request->alamat,
                 'telepon' => $request->telepon,
-                'email' => $request->email_masjid,
+                'email' => $request->email_lembaga,
 
                 // Data Wilayah
                 'provinsi_kode' => $request->provinsi_kode,
@@ -1291,15 +1291,15 @@ class AuthController extends Controller
                 'pendiri' => $request->pendiri,
                 'kapasitas_jamaah' => $request->kapasitas_jamaah,
 
-                // Foto Masjid
-                'foto' => !empty($fotoMasjidArray) ? $fotoMasjidArray : null,
+                // Foto Lembaga
+                'foto' => !empty($fotoLembagaArray) ? $fotoLembagaArray : null,
 
                 'is_active' => true,
             ]);
 
 
             $pengguna->update([
-                'masjid_id' => $masjid->id,
+                'lembaga_id' => $lembaga->id,
             ]);
 
             // STEP 10: Cleanup cache registrasi
@@ -1313,8 +1313,8 @@ class AuthController extends Controller
                     'nama' => $request->admin_nama,
                     'username' => $penggunaData['username'],
                     'email' => $pengguna->email,
-                    'nama_masjid' => $request->nama_masjid,
-                    'kode_masjid' => $kodeMasjid,
+                    'nama_lembaga' => $request->nama_lembaga,
+                    'kode_lembaga' => $kodeLembaga,
                     'isGoogleUser' => $isGoogleUser,
                     'password' => $isGoogleUser ? null : $request->password,
                 ], function ($message) use ($pengguna) {
@@ -1330,10 +1330,10 @@ class AuthController extends Controller
             // COMMIT TRANSAKSI - SEMUA DATA TERSIMPAN
             // =====================================================
             DB::commit();
-            $this->logRegistrasi('Registrasi akun dan data masjid berhasil', [
+            $this->logRegistrasi('Registrasi akun dan data lembaga berhasil', [
                 'username'    => $penggunaData['username'],
-                'nama_masjid' => $request->nama_masjid,
-                'kode_masjid' => $kodeMasjid,
+                'nama_lembaga' => $request->nama_lembaga,
+                'kode_lembaga' => $kodeLembaga,
                 'via_google'  => $isGoogleUser,
             ], $pengguna->id);
 
@@ -1391,7 +1391,7 @@ class AuthController extends Controller
         $isGoogleUser = !empty($pengguna->google_id);
         $maskedEmail  = $this->maskEmail($pengguna->email);
 
-        $masjidList = Masjid::where('is_active', true)
+        $lembagaList = Lembaga::where('is_active', true)
             ->orderBy('nama', 'asc')
             ->get(['id', 'nama', 'kota_nama', 'provinsi_nama']);
 
@@ -1402,7 +1402,7 @@ class AuthController extends Controller
             'pengguna',
             'maskedEmail',
             'isGoogleUser',
-            'masjidList',
+            'lembagaList',
             'token',
             'recaptchaSiteKey'
         ));
@@ -1421,7 +1421,7 @@ class AuthController extends Controller
         $rules = [
             'nama'            => 'required|string|max:255',
             'telepon'         => 'required|string|max:20',
-            'masjid_id'       => 'required|exists:masjid,id',
+            'lembaga_id'       => 'required|exists:lembaga,id',
             'username'        => $isGoogleUser ? 'nullable' : [
                 'required',
                 'string',
@@ -1438,8 +1438,8 @@ class AuthController extends Controller
         $messages = [
             'nama.required'      => 'Nama lengkap wajib diisi',
             'telepon.required'   => 'Nomor telepon wajib diisi',
-            'masjid_id.required' => 'Pilih masjid terlebih dahulu',
-            'masjid_id.exists'   => 'Masjid tidak ditemukan',
+            'lembaga_id.required' => 'Pilih lembaga terlebih dahulu',
+            'lembaga_id.exists'   => 'Lembaga tidak ditemukan',
             'username.required'  => 'Username wajib diisi',
             'username.min'       => 'Username minimal 6 karakter',
             'username.regex'     => 'Username hanya boleh huruf, angka, dan underscore',
@@ -1486,7 +1486,7 @@ class AuthController extends Controller
             \App\Models\Muzakki::create([
                 'uuid'        => (string) Str::uuid(),
                 'pengguna_id' => $pengguna->id,
-                'masjid_id'   => $request->masjid_id,
+                'lembaga_id'   => $request->lembaga_id,
                 'nama'        => $request->nama,
                 'telepon'     => $request->telepon,
                 'email'       => $pengguna->email,
@@ -1507,8 +1507,8 @@ class AuthController extends Controller
                     'isGoogleUser' => $isGoogleUser,
                     'password'     => $isGoogleUser ? null : $request->password,
                     'peran'        => 'muzakki',
-                    'nama_masjid'  => null,
-                    'kode_masjid'  => null,
+                    'nama_lembaga'  => null,
+                    'kode_lembaga'  => null,
                 ], function ($message) use ($pengguna) {
                     $message->to($pengguna->email)
                         ->subject('Registrasi Berhasil - Niat Zakat');
@@ -1522,7 +1522,7 @@ class AuthController extends Controller
             $this->logRegistrasi('Registrasi muzakki berhasil', [
                 'username'  => $penggunaData['username'],
                 'nama'      => $request->nama,
-                'masjid_id' => $request->masjid_id,
+                'lembaga_id' => $request->lembaga_id,
             ], $pengguna->id);
 
             return redirect()->route('login')
@@ -1592,32 +1592,32 @@ class AuthController extends Controller
         return $username;
     }
 
-    private function generateKodeMasjid(): string
+    private function generateKodeLembaga(): string
     {
         $prefix = 'MSJ';
         $year = date('Y');
 
         return DB::transaction(function () use ($prefix, $year) {
-            $lastMasjid = Masjid::whereYear('created_at', $year)
+            $lastLembaga = Lembaga::whereYear('created_at', $year)
                 ->lockForUpdate()
                 ->orderBy('id', 'desc')
                 ->first();
 
-            $number = $lastMasjid ? (int) substr($lastMasjid->kode_masjid, -4) + 1 : 1;
-            $kodeMasjid = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
+            $number = $lastLembaga ? (int) substr($lastLembaga->kode_lembaga, -4) + 1 : 1;
+            $kodeLembaga = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
 
             $attempts = 0;
-            while (Masjid::where('kode_masjid', $kodeMasjid)->exists() && $attempts < 10) {
+            while (Lembaga::where('kode_lembaga', $kodeLembaga)->exists() && $attempts < 10) {
                 $number++;
-                $kodeMasjid = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
+                $kodeLembaga = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
                 $attempts++;
             }
 
             if ($attempts >= 10) {
-                throw new \Exception('Failed to generate unique kode masjid after 10 attempts');
+                throw new \Exception('Failed to generate unique kode lembaga after 10 attempts');
             }
 
-            return $kodeMasjid;
+            return $kodeLembaga;
         });
     }
 
@@ -1690,7 +1690,7 @@ class AuthController extends Controller
     public function redirectToGoogle(Request $request)
     {
         $action = $request->query('action', 'login');
-        $role   = $request->query('role', 'admin_masjid'); // ← AMBIL ROLE
+        $role   = $request->query('role', 'admin_lembaga'); // ← AMBIL ROLE
 
         session([
             'oauth_action' => $action,
@@ -1761,7 +1761,7 @@ class AuthController extends Controller
         }
 
         // ← BACA ROLE DARI SESSION
-        $role = session('oauth_role', 'admin_masjid');
+        $role = session('oauth_role', 'admin_lembaga');
         session()->forget('oauth_role');
 
         DB::beginTransaction();

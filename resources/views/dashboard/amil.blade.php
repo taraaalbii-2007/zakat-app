@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Amil Masjid')
+@section('title', 'Dashboard Amil Lembaga')
 
 @push('styles')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -454,9 +454,9 @@
                 <div>
                     <div class="hero-pill">
                         <span class="hero-dot"></span>
-                        Amil Masjid
+                        Amil Lembaga
                     </div>
-                    <h1 class="hero-title">{{ $masjid->nama }}</h1>
+                    <h1 class="hero-title">{{ $lembaga->nama }}</h1>
                     <p class="hero-sub">Selamat datang, {{ $user->name ?? $user->username }} &mdash; Kelola zakat dengan amanah</p>
                 </div>
                 <div class="hero-time hidden sm:block">

@@ -19,7 +19,7 @@ class Amil extends Model
     protected $fillable = [
         'uuid',
         'pengguna_id',
-        'masjid_id',
+        'lembaga_id',
         'kode_amil',
         'nama_lengkap',
         'jenis_kelamin',
@@ -61,9 +61,9 @@ class Amil extends Model
         return $this->belongsTo(Pengguna::class);
     }
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class);
+        return $this->belongsTo(Lembaga::class);
     }
 
     public function transaksiPenerimaan()
@@ -80,10 +80,10 @@ class Amil extends Model
         return $query->where('status', 'aktif');
     }
 
-    public function scopeByMasjid($query, $masjidId = null)
+    public function scopeByLe($query, $lembagaId = null)
     {
-        if ($masjidId) {
-            return $query->where('masjid_id', $masjidId);
+        if ($lembagaId) {
+            return $query->where('lembaga_id', $lembagaId);
         }
         return $query;
     }

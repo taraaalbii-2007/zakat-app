@@ -66,11 +66,11 @@ class Kernel extends HttpKernel
         
         // Middleware khusus per role
         'superadmin' => \App\Http\Middleware\SuperadminOnly::class,
-        'admin.masjid' => \App\Http\Middleware\AdminMasjidOnly::class,
+        'admin.lembaga' => \App\Http\Middleware\AdminLembagaOnly::class,
         'amil' => \App\Http\Middleware\AmilOnly::class,
         
-        // Middleware untuk akses masjid
-        'masjid.access' => \App\Http\Middleware\MasjidAccess::class,
+        // Middleware untuk akses lembaga
+        'lembaga.access' => \App\Http\Middleware\LembagaAccess::class,
         
         // Middleware untuk complete profile
         'complete.profile' => \App\Http\Middleware\CompleteProfile::class,

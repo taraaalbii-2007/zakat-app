@@ -20,7 +20,7 @@ class TransaksiPenyaluran extends Model
         'tanggal_penyaluran',
         'waktu_penyaluran',
         'periode',
-        'masjid_id',
+        'lembaga_id',
         'mustahik_id',
         'kategori_mustahik_id',
         'jenis_zakat_id',
@@ -93,9 +93,9 @@ class TransaksiPenyaluran extends Model
     // ============================================
     // RELATIONSHIPS
     // ============================================
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class);
+        return $this->belongsTo(Lembaga::class);
     }
 
     public function mustahik()
@@ -212,9 +212,9 @@ class TransaksiPenyaluran extends Model
     // ============================================
     // SCOPES
     // ============================================
-    public function scopeByMasjid($query, int $masjidId)
+    public function scopeByLembaga($query, int $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     public function scopeByStatus($query, string $status)

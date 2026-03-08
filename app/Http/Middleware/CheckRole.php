@@ -12,7 +12,7 @@ class CheckRole
     /**
      * Handle an incoming request.
      * 
-     * Usage: ->middleware('role:superadmin,admin_masjid')
+     * Usage: ->middleware('role:superadmin,admin_lembaga')
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {

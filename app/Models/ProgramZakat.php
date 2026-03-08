@@ -15,7 +15,7 @@ class ProgramZakat extends Model
 
     protected $fillable = [
         'uuid',
-        'masjid_id',
+        'lembaga_id',
         'nama_program',
         'kode_program',
         'deskripsi',
@@ -54,9 +54,9 @@ class ProgramZakat extends Model
     // RELATIONSHIPS
     // ============================================================
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     /**
@@ -159,9 +159,9 @@ class ProgramZakat extends Model
     // SCOPES
     // ============================================================
 
-    public function scopeByMasjid($query, $masjidId)
+    public function scopeByLembaga($query, $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     public function scopeAktif($query)
@@ -182,12 +182,12 @@ class ProgramZakat extends Model
     // HELPERS
     // ============================================================
 
-    public static function generateKodeProgram($masjidId): string
+    public static function generateKodeProgram($lembagaId): string
     {
-        $masjid     = Masjid::find($masjidId);
+        $lembaga     = Lembaga::find($lembagaId);
         $tahun      = date('Y');
-        $kodeMasjid = $masjid->kode_masjid ?? 'MSJ';
+        $kodeLembaga = $lembaga->kode_lembaga ?? 'MSJ';
 
-        return "PROG-{$kodeMasjid}-{$tahun}";
+        return "PROG-{$kodeLembaga}-{$tahun}";
     }
 }

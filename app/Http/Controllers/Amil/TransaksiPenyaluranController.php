@@ -29,26 +29,26 @@ class TransaksiPenyaluranController extends Controller
     public function index(Request $request)
     {
         $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
-        $masjidId = $masjid->id;
+        $lembaga  = $user->amil->lembaga ?? $user->lembaga;
+        $lembagaId = $lembaga->id;
 
         // Stats ringkasan
         $stats = [
-            'total'            => TransaksiPenyaluran::byMasjid($masjidId)->count(),
-            'total_draft'      => TransaksiPenyaluran::byMasjid($masjidId)->byStatus('draft')->count(),
-            'total_disetujui'  => TransaksiPenyaluran::byMasjid($masjidId)->byStatus('disetujui')->count(),
-            'total_disalurkan' => TransaksiPenyaluran::byMasjid($masjidId)->byStatus('disalurkan')->count(),
-            'total_nominal'    => TransaksiPenyaluran::byMasjid($masjidId)
+            'total'            => TransaksiPenyaluran::byLembaga($lembagaId)->count(),
+            'total_draft'      => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('draft')->count(),
+            'total_disetujui'  => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('disetujui')->count(),
+            'total_disalurkan' => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('disalurkan')->count(),
+            'total_nominal'    => TransaksiPenyaluran::byLembaga($lembagaId)
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->sum('jumlah'),
-            'total_hari_ini'   => TransaksiPenyaluran::byMasjid($masjidId)
+            'total_hari_ini'   => TransaksiPenyaluran::byLembaga($lembagaId)
                 ->whereDate('tanggal_penyaluran', today())
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->sum('jumlah'),
         ];
 
         // Query dengan filter
-        $query = TransaksiPenyaluran::byMasjid($masjidId)
+        $query = TransaksiPenyaluran::byLembaga($lembagaId)
             ->with(['mustahik', 'kategoriMustahik', 'jenisZakat', 'programZakat', 'amil'])
             ->orderByDesc('tanggal_penyaluran')
             ->orderByDesc('created_at');
@@ -97,7 +97,7 @@ class TransaksiPenyaluranController extends Controller
             'transaksis',
             'stats',
             'jenisZakatList',
-            'masjid'
+            'lembaga'
         ));
     }
 
@@ -107,9 +107,9 @@ class TransaksiPenyaluranController extends Controller
     public function create()
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
-        $mustahikList = Mustahik::where('masjid_id', $masjid->id)
+        $mustahikList = Mustahik::where('lembaga_id', $lembaga->id)
             ->where('status_verifikasi', 'verified')
             ->where('is_active', true)
             ->with('kategoriMustahik')
@@ -118,10 +118,10 @@ class TransaksiPenyaluranController extends Controller
 
         $kategoriMustahikList = KategoriMustahik::all();
         $jenisZakatList       = JenisZakat::all();
-        $programZakatList     = ProgramZakat::where('masjid_id', $masjid->id)
+        $programZakatList     = ProgramZakat::where('lembaga_id', $lembaga->id)
             ->where('status', 'aktif')
             ->get();
-        $amilList = Amil::where('masjid_id', $masjid->id)->get();
+        $amilList = Amil::where('lembaga_id', $lembaga->id)->get();
 
         $tanggalHariIni     = today()->format('Y-m-d');
         $noTransaksiPreview = TransaksiPenyaluran::generateNoTransaksi();
@@ -131,20 +131,20 @@ class TransaksiPenyaluranController extends Controller
         // CATATAN: Sesuaikan nama model & kolom dengan struktur DB Anda
         // Contoh menggunakan model TransaksiPenerimaan:
         $totalPenerimaan = DB::table('transaksi_penerimaan')
-            ->where('masjid_id', $masjid->id)
+            ->where('lembaga_id', $lembaga->id)
             ->whereIn('status', ['disetujui', 'selesai', 'confirmed', 'verified'])
             ->sum('jumlah') ?? 0;
 
         // Total penerimaan bulan ini
         $totalPenerimaanBulanIni = DB::table('transaksi_penerimaan')
-            ->where('masjid_id', $masjid->id)
+            ->where('lembaga_id', $lembaga->id)
             ->whereIn('status', ['disetujui', 'selesai', 'confirmed', 'verified'])
             ->whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
             ->sum('jumlah') ?? 0;
 
         // Total yang sudah disalurkan
-        $totalDisalurkan = TransaksiPenyaluran::byMasjid($masjid->id)
+        $totalDisalurkan = TransaksiPenyaluran::byLembaga($lembaga->id)
             ->whereIn('status', ['disetujui', 'disalurkan'])
             ->sum('jumlah') ?? 0;
 
@@ -153,7 +153,7 @@ class TransaksiPenyaluranController extends Controller
 
         // ── INFO STOK BARANG ───────────────────────────────────────────────────
         // Ambil semua detail_barang dari transaksi sebelumnya untuk referensi
-        $riwayatBarang = TransaksiPenyaluran::byMasjid($masjid->id)
+        $riwayatBarang = TransaksiPenyaluran::byLembaga($lembaga->id)
             ->where('metode_penyaluran', 'barang')
             ->whereIn('status', ['draft', 'disetujui', 'disalurkan'])
             ->whereNotNull('detail_barang')
@@ -167,7 +167,7 @@ class TransaksiPenyaluranController extends Controller
         $ringkasanBarang = $this->parseRingkasanBarang($riwayatBarang);
 
         return view('amil.transaksi-penyaluran.create', compact(
-            'masjid',
+            'lembaga',
             'mustahikList',
             'kategoriMustahikList',
             'jenisZakatList',
@@ -254,7 +254,7 @@ class TransaksiPenyaluranController extends Controller
     public function store(Request $request)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
         $request->validate([
             'mustahik_id'          => 'required|exists:mustahik,id',
@@ -291,7 +291,7 @@ class TransaksiPenyaluranController extends Controller
             $fotoBuktiPath = null;
             if ($request->hasFile('foto_bukti')) {
                 $fotoBuktiPath = $request->file('foto_bukti')
-                    ->store("penyaluran/{$masjid->id}/bukti", 'public');
+                    ->store("penyaluran/{$lembaga->id}/bukti", 'public');
             }
 
             // ── Tanda Tangan: prioritaskan base64 (canvas draw), fallback ke file upload ──
@@ -303,17 +303,17 @@ class TransaksiPenyaluranController extends Controller
                 // Simpan dari base64 canvas
                 $pathTandaTangan = $this->saveTandaTanganBase64(
                     $base64Input,
-                    $masjid->id
+                    $lembaga->id
                 );
             } elseif ($request->hasFile('tanda_tangan')) {
                 // Simpan dari file upload
                 $pathTandaTangan = $request->file('tanda_tangan')
-                    ->store("penyaluran/{$masjid->id}/tanda_tangan", 'public');
+                    ->store("penyaluran/{$lembaga->id}/tanda_tangan", 'public');
             }
 
             // ── Buat transaksi ────────────────────────────────────────────────
             $transaksi = TransaksiPenyaluran::create([
-                'masjid_id'            => $masjid->id,
+                'lembaga_id'            => $lembaga->id,
                 'mustahik_id'          => $request->mustahik_id,
                 'kategori_mustahik_id' => $request->kategori_mustahik_id,
                 'tanggal_penyaluran'   => $request->tanggal_penyaluran,
@@ -335,7 +335,7 @@ class TransaksiPenyaluranController extends Controller
             // ── Upload foto dokumentasi (multiple) ────────────────────────────
             if ($request->hasFile('foto_dokumentasi')) {
                 foreach ($request->file('foto_dokumentasi') as $index => $foto) {
-                    $path = $foto->store("penyaluran/{$masjid->id}/dokumentasi", 'public');
+                    $path = $foto->store("penyaluran/{$lembaga->id}/dokumentasi", 'public');
                     DokumentasiPenyaluran::create([
                         'transaksi_penyaluran_id' => $transaksi->id,
                         'path_foto'               => $path,
@@ -363,9 +363,9 @@ class TransaksiPenyaluranController extends Controller
     public function update(Request $request, TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksiPenyaluran->status !== 'draft', 403);
 
         $request->validate([
@@ -411,7 +411,7 @@ class TransaksiPenyaluranController extends Controller
                     Storage::disk('public')->delete($transaksiPenyaluran->foto_bukti);
                 }
                 $data['foto_bukti'] = $request->file('foto_bukti')
-                    ->store("penyaluran/{$masjid->id}/bukti", 'public');
+                    ->store("penyaluran/{$lembaga->id}/bukti", 'public');
             }
 
             // ── Update tanda tangan: base64 canvas atau file upload ───────────
@@ -424,14 +424,14 @@ class TransaksiPenyaluranController extends Controller
                 }
                 $data['path_tanda_tangan'] = $this->saveTandaTanganBase64(
                     $base64Input,
-                    $masjid->id
+                    $lembaga->id
                 );
             } elseif ($request->hasFile('tanda_tangan')) {
                 if ($transaksiPenyaluran->path_tanda_tangan) {
                     Storage::disk('public')->delete($transaksiPenyaluran->path_tanda_tangan);
                 }
                 $data['path_tanda_tangan'] = $request->file('tanda_tangan')
-                    ->store("penyaluran/{$masjid->id}/tanda_tangan", 'public');
+                    ->store("penyaluran/{$lembaga->id}/tanda_tangan", 'public');
             }
 
             $transaksiPenyaluran->update($data);
@@ -440,7 +440,7 @@ class TransaksiPenyaluranController extends Controller
             if ($request->hasFile('foto_dokumentasi')) {
                 $lastUrutan = $transaksiPenyaluran->dokumentasi()->max('urutan') ?? -1;
                 foreach ($request->file('foto_dokumentasi') as $index => $foto) {
-                    $path = $foto->store("penyaluran/{$masjid->id}/dokumentasi", 'public');
+                    $path = $foto->store("penyaluran/{$lembaga->id}/dokumentasi", 'public');
                     DokumentasiPenyaluran::create([
                         'transaksi_penyaluran_id' => $transaksiPenyaluran->id,
                         'path_foto'               => $path,
@@ -470,7 +470,7 @@ class TransaksiPenyaluranController extends Controller
      * Return: path relatif (untuk disimpan ke DB), e.g.
      *         "penyaluran/5/tanda_tangan/tt_1234567890.png"
      */
-    private function saveTandaTanganBase64(string $base64Data, int $masjidId): string
+    private function saveTandaTanganBase64(string $base64Data, int $lembagaId): string
     {
         // Strip header data:image/png;base64,
         $base64Clean = preg_replace('/^data:image\/\w+;base64,/', '', $base64Data);
@@ -480,7 +480,7 @@ class TransaksiPenyaluranController extends Controller
             throw new \RuntimeException('Data tanda tangan tidak valid.');
         }
 
-        $folder   = "penyaluran/{$masjidId}/tanda_tangan";
+        $folder   = "penyaluran/{$lembagaId}/tanda_tangan";
         $filename = 'tt_' . time() . '_' . uniqid() . '.png';
         $path     = $folder . '/' . $filename;
 
@@ -493,9 +493,9 @@ class TransaksiPenyaluranController extends Controller
     public function show(TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
+        $lembaga  = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
 
         // Load semua relasi yang diperlukan
         $transaksiPenyaluran->load([
@@ -513,18 +513,18 @@ class TransaksiPenyaluranController extends Controller
         // Ganti nama variabel agar sesuai dengan view (dari $transaksiPenyaluran jadi $transaksi)
         $transaksi = $transaksiPenyaluran;
 
-        return view('amil.transaksi-penyaluran.show', compact('transaksi', 'masjid'));
+        return view('amil.transaksi-penyaluran.show', compact('transaksi', 'lembaga'));
     }
 
     public function edit(TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user    = Auth::user();
-        $masjid  = $user->amil->masjid ?? $user->masjid;
+        $lembaga  = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksiPenyaluran->status !== 'draft', 403, 'Hanya transaksi berstatus draft yang dapat diedit.');
 
-        $mustahikList         = Mustahik::where('masjid_id', $masjid->id)
+        $mustahikList         = Mustahik::where('lembaga_id', $lembaga->id)
             ->where('status_verifikasi', 'verified')
             ->where('is_active', true)
             ->with('kategoriMustahik')
@@ -532,8 +532,8 @@ class TransaksiPenyaluranController extends Controller
             ->get();
         $kategoriMustahikList = KategoriMustahik::all();
         $jenisZakatList       = JenisZakat::all();
-        $programZakatList     = ProgramZakat::where('masjid_id', $masjid->id)->where('status', 'aktif')->get();
-        $amilList             = Amil::where('masjid_id', $masjid->id)->get();
+        $programZakatList     = ProgramZakat::where('lembaga_id', $lembaga->id)->where('status', 'aktif')->get();
+        $amilList             = Amil::where('lembaga_id', $lembaga->id)->get();
 
         $transaksiPenyaluran->load('dokumentasi');
 
@@ -542,7 +542,7 @@ class TransaksiPenyaluranController extends Controller
 
         return view('amil.transaksi-penyaluran.edit', compact(
             'transaksi',
-            'masjid',
+            'lembaga',
             'mustahikList',
             'kategoriMustahikList',
             'jenisZakatList',
@@ -557,9 +557,9 @@ class TransaksiPenyaluranController extends Controller
     public function destroy(TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksiPenyaluran->status !== 'draft', 403, 'Hanya draft yang dapat dihapus.');
 
         $transaksiPenyaluran->delete();
@@ -572,9 +572,9 @@ class TransaksiPenyaluranController extends Controller
     public function konfirmasiDisalurkan(Request $request, TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksiPenyaluran->status !== 'disetujui', 403, 'Hanya transaksi yang sudah disetujui yang dapat dikonfirmasi.');
 
         $transaksiPenyaluran->update([
@@ -594,10 +594,10 @@ class TransaksiPenyaluranController extends Controller
     public function hapusDokumentasi(DokumentasiPenyaluran $dokumentasi)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
         $transaksi = $dokumentasi->transaksi;
-        abort_if($transaksi->masjid_id !== $masjid->id, 403);
+        abort_if($transaksi->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksi->status !== 'draft', 403);
 
         Storage::disk('public')->delete($dokumentasi->path_foto);
@@ -606,28 +606,28 @@ class TransaksiPenyaluranController extends Controller
         return back()->with('success', 'Foto dokumentasi berhasil dihapus.');
     }
 
-    private function getMasjid()
+    private function getLembaga()
     {
         $user = Auth::user();
 
-        if ($user->peran === 'admin_masjid') {
-            return $user->masjid; // relasi belongsTo via masjid_id
+        if ($user->peran === 'admin_lembaga') {
+            return $user->lembaga; // relasi belongsTo via lembaga_id
         }
 
         // amil
-        return optional($user->amil)->masjid;
+        return optional($user->amil)->lembaga;
     }
 
     public function cetak(TransaksiPenyaluran $transaksiPenyaluran)
     {
         $user   = Auth::user();
-        $masjid = $user->amil->masjid ?? $user->masjid;
+        $lembaga = $user->amil->lembaga ?? $user->lembaga;
 
-        abort_if($transaksiPenyaluran->masjid_id !== $masjid->id, 403);
+        abort_if($transaksiPenyaluran->lembaga_id !== $lembaga->id, 403);
         abort_if($transaksiPenyaluran->status !== 'disalurkan', 403, 'Hanya transaksi yang sudah disalurkan yang dapat dicetak.');
 
         $transaksiPenyaluran->load([
-            'masjid',
+            'lembaga',
             'mustahik',
             'kategoriMustahik',
             'jenisZakat',
@@ -644,9 +644,9 @@ class TransaksiPenyaluranController extends Controller
     /**
      * Ambil query transaksi dengan filter (dipakai bersama oleh exportPdf & exportExcel)
      */
-    private function buildExportQuery(Request $request, int $masjidId)
+    private function buildExportQuery(Request $request, int $lembagaId)
     {
-        $query = TransaksiPenyaluran::byMasjid($masjidId)
+        $query = TransaksiPenyaluran::byLembaga($lembagaId)
             ->with(['mustahik', 'kategoriMustahik', 'jenisZakat', 'programZakat', 'amil.pengguna'])
             ->orderByDesc('tanggal_penyaluran')
             ->orderByDesc('created_at');
@@ -688,10 +688,10 @@ class TransaksiPenyaluranController extends Controller
     public function exportPdf(Request $request)
     {
         $user     = Auth::user();
-        $masjid   = $user->amil->masjid ?? $user->masjid;
-        $masjidId = $masjid->id;
+        $lembaga   = $user->amil->lembaga ?? $user->lembaga;
+        $lembagaId = $lembaga->id;
 
-        $transaksis = $this->buildExportQuery($request, $masjidId)->get();
+        $transaksis = $this->buildExportQuery($request, $lembagaId)->get();
 
         // Hitung ringkasan
         $totalTransaksi  = $transaksis->count();
@@ -721,7 +721,7 @@ class TransaksiPenyaluranController extends Controller
 
         $html = view('amil.transaksi-penyaluran.export.pdf', compact(
             'transaksis',
-            'masjid',
+            'lembaga',
             'filters',
             'jenisZakatList',
             'totalTransaksi',
@@ -756,10 +756,10 @@ class TransaksiPenyaluranController extends Controller
     public function exportExcel(Request $request)
     {
         $user     = Auth::user();
-        $masjid   = $user->amil->masjid ?? $user->masjid;
-        $masjidId = $masjid->id;
+        $lembaga   = $user->amil->lembaga ?? $user->lembaga;
+        $lembagaId = $lembaga->id;
 
-        $transaksis = $this->buildExportQuery($request, $masjidId)->get();
+        $transaksis = $this->buildExportQuery($request, $lembagaId)->get();
 
         // ── Buat spreadsheet ──────────────────────────────────────────────────
         $spreadsheet = new Spreadsheet();
@@ -783,7 +783,7 @@ class TransaksiPenyaluranController extends Controller
 
         // ── Baris 1: Judul ────────────────────────────────────────────────────
         $sheet->mergeCells('A1:M1');
-        $sheet->setCellValue('A1', strtoupper($masjid->nama ?? 'LAPORAN TRANSAKSI PENYALURAN ZAKAT'));
+        $sheet->setCellValue('A1', strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENYALURAN ZAKAT'));
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 14],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
@@ -799,10 +799,10 @@ class TransaksiPenyaluranController extends Controller
 
         // ── Baris 3: Alamat ───────────────────────────────────────────────────
         $alamat = implode('', array_filter([
-            $masjid->alamat ?? '',
-            $masjid->kelurahan_nama ? ', Kel. ' . $masjid->kelurahan_nama : '',
-            $masjid->kecamatan_nama ? ', Kec. ' . $masjid->kecamatan_nama : '',
-            $masjid->kota_nama      ? ', ' . $masjid->kota_nama            : '',
+            $lembaga->alamat ?? '',
+            $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '',
+            $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '',
+            $lembaga->kota_nama      ? ', ' . $lembaga->kota_nama            : '',
         ]));
         $sheet->mergeCells('A3:M3');
         $sheet->setCellValue('A3', $alamat);

@@ -42,7 +42,7 @@
                                 Selamat Datang, Amil!
                             </h1>
                             <p style="margin:0; color:rgba(255,255,255,0.85); font-size:14px; line-height:1.6;">
-                                Anda telah didaftarkan sebagai Amil di <strong style="color:#ffffff;">{{ $amil->masjid->nama ?? 'Masjid' }}</strong>
+                                Anda telah didaftarkan sebagai Amil di <strong style="color:#ffffff;">{{ $amil->lembaga->nama ?? 'Lembaga' }}</strong>
                             </p>
                         </td>
                     </tr>
@@ -135,30 +135,30 @@
 
                             <!-- ===== INFORMASI MASJID ===== -->
                             <p style="margin:0 0 16px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
-                                Informasi Masjid
+                                Informasi Lembaga
                             </p>
 
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
 
-                                <!-- Nama Masjid -->
+                                <!-- Nama Lembaga -->
                                 <tr>
-                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Masjid</td>
+                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Lembaga</td>
                                     <td style="padding:7px 4px; width:10px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
-                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->nama ?? '-' }}</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->lembaga->nama ?? '-' }}</td>
                                 </tr>
 
-                                <!-- Kode Masjid -->
+                                <!-- Kode Lembaga -->
                                 <tr>
-                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Masjid</td>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Lembaga</td>
                                     <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
-                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->kode_masjid ?? '-' }}</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->lembaga->kode_lembaga ?? '-' }}</td>
                                 </tr>
 
                                 <!-- Alamat -->
                                 <tr>
                                     <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Alamat</td>
                                     <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
-                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->masjid->alamat ?? '-' }}</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $amil->lembaga->alamat ?? '-' }}</td>
                                 </tr>
 
                                 <!-- Wilayah Tugas (jika ada) -->

@@ -23,7 +23,7 @@
                         Kembali
                     </a>
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {{ $masjid->nama }}
+                        {{ $lembaga->nama }}
                     </span>
                 </div>
             </div>
@@ -628,7 +628,7 @@
                         <div>
                             <p class="text-sm font-semibold text-amber-800">Proses Approval</p>
                             <p class="text-xs text-amber-700 mt-1">
-                                Transaksi akan disimpan sebagai <strong>Draft</strong> dan menunggu persetujuan Admin Masjid.
+                                Transaksi akan disimpan sebagai <strong>Draft</strong> dan menunggu persetujuan Admin Lembaga.
                                 Setelah disetujui, Anda perlu mengkonfirmasi bahwa dana/barang sudah diserahkan ke mustahik.
                             </p>
                         </div>

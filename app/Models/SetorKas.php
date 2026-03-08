@@ -21,7 +21,7 @@ class SetorKas extends Model
         'periode_dari',
         'periode_sampai',
         'amil_id',
-        'masjid_id',
+        'lembaga_id',
         'diterima_oleh',
         'jumlah_disetor',
         'jumlah_dari_datang_langsung',
@@ -63,7 +63,7 @@ class SetorKas extends Model
                 $model->uuid = (string) Str::uuid();
             }
             if (empty($model->no_setor)) {
-                $model->no_setor = static::generateNoSetor($model->amil_id, $model->masjid_id);
+                $model->no_setor = static::generateNoSetor($model->amil_id, $model->lembaga_id);
             }
         });
 
@@ -86,22 +86,22 @@ class SetorKas extends Model
         });
     }
 
-    public static function generateNoSetor(int $amilId, int $masjidId): string
+    public static function generateNoSetor(int $amilId, int $lembagaId): string
     {
-        $masjid     = Masjid::find($masjidId);
-        $kodeMasjid = $masjid ? $masjid->kode_masjid : 'MSJ0001';
+        $lembaga     = Lembaga::find($lembagaId);
+        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ0001';
         $year       = date('Y');
         $month      = date('m');
 
         $last = static::whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->orderBy('id', 'desc')
             ->first();
 
         $seq = $last ? ((int) substr($last->no_setor, -4)) + 1 : 1;
 
-        return 'SETOR-' . $kodeMasjid . '-' . $year . $month . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
+        return 'SETOR-' . $kodeLembaga . '-' . $year . $month . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
     }
 
     // ============================================
@@ -120,9 +120,9 @@ class SetorKas extends Model
         return $this->belongsTo(Amil::class, 'amil_id');
     }
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     public function penerimaSetoran()
@@ -133,9 +133,9 @@ class SetorKas extends Model
     // ============================================
     // SCOPES
     // ============================================
-    public function scopeByMasjid($query, int $masjidId)
+    public function scopeByLembaga($query, int $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     public function scopeByAmil($query, int $amilId)

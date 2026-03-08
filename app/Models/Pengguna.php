@@ -28,7 +28,7 @@ class Pengguna extends Authenticatable
     protected $fillable = [
         'uuid',
         'peran',
-        'masjid_id', // ✅ TAMBAHKAN INI
+        'lembaga_id', // ✅ TAMBAHKAN INI
         'username',
         'email',
         'email_verified_at',
@@ -88,19 +88,19 @@ class Pengguna extends Authenticatable
     // ===============================
 
     /**
-     * Relasi ke Masjid sebagai Admin (untuk admin_masjid)
+     * Relasi ke Lembaga sebagai Admin (untuk admin_lembaga)
      */
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     /**
-     * Relasi ke tabel Masjid sebagai Amil
+     * Relasi ke tabel Lembaga sebagai Amil
      */
-    public function masjidAsAmil()
+    public function lembagaAsAmil()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     /**
@@ -146,7 +146,7 @@ class Pengguna extends Authenticatable
     {
         return match ($this->peran) {
             'superadmin' => 'Super Admin',
-            'admin_masjid' => 'Admin Masjid',
+            'admin_lembaga' => 'Admin Lembaga',
             'amil' => 'Amil',
             default => 'Unknown'
         };
@@ -185,14 +185,14 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Get masjid name (if any)
+     * Get lembaga name (if any)
      */
-    public function getMasjidNameAttribute(): ?string
+    public function getLembagaNameAttribute(): ?string
     {
-        if (!$this->masjid) {
+        if (!$this->lembaga) {
             return null;
         }
-        return $this->masjid->nama;
+        return $this->lembaga->nama;
     }
 
     // ===============================
@@ -264,11 +264,11 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Scope untuk admin masjid
+     * Scope untuk admin lembaga
      */
-    public function scopeAdminMasjids($query)
+    public function scopeAdminLembagas($query)
     {
-        return $query->where('peran', 'admin_masjid');
+        return $query->where('peran', 'admin_lembaga');
     }
 
     /**
@@ -280,11 +280,11 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Scope untuk pengguna dengan masjid tertentu
+     * Scope untuk pengguna dengan lembaga tertentu
      */
-    public function scopeByMasjid($query, $masjidId)
+    public function scopeByLembaga($query, $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     /**
@@ -315,11 +315,11 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Check if user is admin masjid
+     * Check if user is admin lembaga
      */
-    public function isAdminMasjid(): bool
+    public function isAdminLembaga(): bool
     {
-        return $this->peran === 'admin_masjid';
+        return $this->peran === 'admin_lembaga';
     }
 
     /**
@@ -336,23 +336,23 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Check if user has masjid
+     * Check if user has lembaga
      */
-    public function hasMasjid(): bool
+    public function hasLembaga(): bool
     {
-        return !is_null($this->masjid_id);
+        return !is_null($this->lembaga_id);
     }
 
 
     /**
-     * Get masjid for current role
+     * Get lembaga for current role
      */
-    public function getCurrentMasjid()
+    public function getCurrentLembaga()
     {
-        if ($this->isAdminMasjid()) {
-            return $this->masjid;
+        if ($this->isAdminLembaga()) {
+            return $this->lembaga;
         } elseif ($this->isAmil() && $this->amil) {
-            return $this->amil->masjid;
+            return $this->amil->lembaga;
         }
         return null;
     }
@@ -494,22 +494,22 @@ class Pengguna extends Authenticatable
     }
 
     /**
-     * Assign masjid to user
+     * Assign lembaga to user
      */
-    public function assignMasjid($masjidId): bool
+    public function assignLembaga($lembagaId): bool
     {
         return $this->forceFill([
-            'masjid_id' => $masjidId,
+            'lembaga_id' => $lembagaId,
         ])->save();
     }
 
     /**
-     * Remove masjid assignment
+     * Remove lembaga assignment
      */
-    public function removeMasjid(): bool
+    public function removeLembaga(): bool
     {
         return $this->forceFill([
-            'masjid_id' => null,
+            'lembaga_id' => null,
         ])->save();
     }
 

@@ -13,7 +13,7 @@ class Mustahik extends Model
 
     protected $fillable = [
         'uuid',
-        'masjid_id',
+        'lembaga_id',
         'kategori_mustahik_id',
         'no_registrasi',
         'nik',
@@ -72,9 +72,9 @@ class Mustahik extends Model
     }
 
     // Relasi
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class);
+        return $this->belongsTo(Lembaga::class);
     }
 
     public function kategoriMustahik()
@@ -103,9 +103,9 @@ class Mustahik extends Model
         });
     }
 
-    public function scopeByMasjid($query, $masjidId)
+    public function scopeByLembaga($query, $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     public function scopeByKategori($query, $kategoriId)
@@ -246,7 +246,7 @@ class Mustahik extends Model
     // PERMISSION METHODS
     public function canBeEditedBy($userId, $userRole)
     {
-        if ($userRole === 'admin_masjid') {
+        if ($userRole === 'admin_lembaga') {
             return true;
         }
 
@@ -260,7 +260,7 @@ class Mustahik extends Model
 
     public function canBeDeletedBy($userId, $userRole)
     {
-        if ($userRole === 'admin_masjid') {
+        if ($userRole === 'admin_lembaga') {
             return true;
         }
 
@@ -274,17 +274,17 @@ class Mustahik extends Model
 
     public function canBeVerifiedBy($userRole)
     {
-        return $userRole === 'admin_masjid' && $this->status_verifikasi === 'pending';
+        return $userRole === 'admin_lembaga' && $this->status_verifikasi === 'pending';
     }
 
     public function canBeRejectedBy($userRole)
     {
-        return $userRole === 'admin_masjid' && $this->status_verifikasi === 'pending';
+        return $userRole === 'admin_lembaga' && $this->status_verifikasi === 'pending';
     }
 
     public function canBeToggledActiveBy($userRole)
     {
-        return $userRole === 'admin_masjid';
+        return $userRole === 'admin_lembaga';
     }
 
     // Untuk dropdown actions di index
