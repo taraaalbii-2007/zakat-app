@@ -12,9 +12,9 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Edit Profil</h1>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Perbarui data admin masjid, data masjid, dan sejarah</p>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Perbarui data admin lembaga, data lembaga, dan sejarah</p>
                 </div>
-                <a href="{{ route('admin-masjid.profil.show') }}"
+                <a href="{{ route('admin-lembaga.profil.show') }}"
                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin-masjid.profil.update') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin-lembaga.profil.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -35,7 +35,7 @@
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        Data Admin Masjid
+                        Data Admin Lembaga
                     </h2>
 
                     {{-- Foto Admin --}}
@@ -44,7 +44,7 @@
                         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-emerald-100 bg-gray-100 flex-shrink-0" id="admin-foto-preview-wrapper">
                                 <img id="admin-foto-preview"
-                                     src="{{ $masjid->admin_foto_url }}"
+                                     src="{{ $lembaga->admin_foto_url }}"
                                      alt="Foto Admin"
                                      class="w-full h-full object-cover"
                                      onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($user->username) }}&background=059669&color=fff&size=96'">
@@ -59,7 +59,7 @@
                                     </svg>
                                     Pilih Foto
                                 </button>
-                                @if($masjid->admin_foto)
+                                @if($lembaga->admin_foto)
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" name="hapus_admin_foto" value="1"
                                            class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
@@ -76,7 +76,7 @@
                         <div>
                             <label for="admin_nama" class="block text-sm font-medium text-gray-700 mb-1.5">Nama Admin</label>
                             <input type="text" name="admin_nama" id="admin_nama"
-                                value="{{ old('admin_nama', $masjid->admin_nama) }}"
+                                value="{{ old('admin_nama', $lembaga->admin_nama) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="Nama lengkap admin">
                             @error('admin_nama') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -84,7 +84,7 @@
                         <div>
                             <label for="admin_telepon" class="block text-sm font-medium text-gray-700 mb-1.5">No. Telepon Admin</label>
                             <input type="text" name="admin_telepon" id="admin_telepon"
-                                value="{{ old('admin_telepon', $masjid->admin_telepon) }}"
+                                value="{{ old('admin_telepon', $lembaga->admin_telepon) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="08xxxxxxxxxx">
                             @error('admin_telepon') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -92,9 +92,9 @@
                         <div>
                             <label for="admin_email" class="block text-sm font-medium text-gray-700 mb-1.5">Email Admin</label>
                             <input type="email" name="admin_email" id="admin_email"
-                                value="{{ old('admin_email', $masjid->admin_email) }}"
+                                value="{{ old('admin_email', $lembaga->admin_email) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                                placeholder="email@masjid.com">
+                                placeholder="email@lembaga.com">
                             @error('admin_email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -105,20 +105,20 @@
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        Data Masjid
+                        Data Lembaga
                     </h2>
 
-                    {{-- Foto Masjid --}}
+                    {{-- Foto Lembaga --}}
                     <div class="mb-5">
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Foto Masjid
-                            <span class="text-xs text-gray-400 font-normal ml-1">({{ $masjid->foto_count }}/{{ \App\Models\Masjid::MAX_FOTO }} foto)</span>
+                            Foto Lembaga
+                            <span class="text-xs text-gray-400 font-normal ml-1">({{ $lembaga->foto_count }}/{{ \App\Models\Lembaga::MAX_FOTO }} foto)</span>
                         </label>
 
                         {{-- Foto existing --}}
-                        @if($masjid->foto_count > 0)
+                        @if($lembaga->foto_count > 0)
                         <div class="flex flex-wrap gap-3 mb-4" id="existing-fotos">
-                            @foreach(($masjid->foto ?? []) as $index => $fotoPath)
+                            @foreach(($lembaga->foto ?? []) as $index => $fotoPath)
                             <div class="relative group" id="foto-item-{{ $index }}">
                                 <img src="{{ asset('storage/' . $fotoPath) }}"
                                      alt="Foto {{ $index + 1 }}"
@@ -146,22 +146,22 @@
                         @endif
 
                         {{-- Upload foto baru --}}
-                        @if($masjid->canAddMoreFotos())
+                        @if($lembaga->canAddMoreFotos())
                         <div>
                             <input type="file" name="fotos[]" id="fotos" accept="image/*" multiple class="hidden"
-                                   onchange="previewFotoMasjid(this)" data-max="{{ $masjid->getRemainingFotoSlots() }}">
+                                   onchange="previewFotoLembaga(this)" data-max="{{ $lembaga->getRemainingFotoSlots() }}">
                             <button type="button" onclick="document.getElementById('fotos').click()"
                                 class="inline-flex items-center px-3 py-2 border border-dashed border-emerald-400 text-emerald-700 text-xs font-medium rounded-lg hover:bg-emerald-50 transition">
                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                 </svg>
-                                Tambah Foto (maks. {{ $masjid->getRemainingFotoSlots() }} lagi)
+                                Tambah Foto (maks. {{ $lembaga->getRemainingFotoSlots() }} lagi)
                             </button>
                             <div id="new-fotos-preview" class="flex flex-wrap gap-3 mt-3"></div>
                         </div>
                         @else
                         <p class="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 inline-block">
-                            Batas maksimal {{ \App\Models\Masjid::MAX_FOTO }} foto telah tercapai. Hapus foto yang ada untuk menambah yang baru.
+                            Batas maksimal {{ \App\Models\Lembaga::MAX_FOTO }} foto telah tercapai. Hapus foto yang ada untuk menambah yang baru.
                         </p>
                         @endif
                         @error('fotos') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
@@ -171,33 +171,33 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                         <div>
                             <label for="nama" class="block text-sm font-medium text-gray-700 mb-1.5">
-                                Nama Masjid <span class="text-red-500">*</span>
+                                Nama Lembaga <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="nama" id="nama"
-                                value="{{ old('nama', $masjid->nama) }}"
+                                value="{{ old('nama', $lembaga->nama) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('nama') border-red-500 @enderror"
-                                placeholder="Nama masjid" required>
+                                placeholder="Nama lembaga" required>
                             @error('nama') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label for="telepon" class="block text-sm font-medium text-gray-700 mb-1.5">Telepon Masjid</label>
+                            <label for="telepon" class="block text-sm font-medium text-gray-700 mb-1.5">Telepon Lembaga</label>
                             <input type="text" name="telepon" id="telepon"
-                                value="{{ old('telepon', $masjid->telepon) }}"
+                                value="{{ old('telepon', $lembaga->telepon) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="021xxxxxxxx">
                         </div>
                         <div>
-                            <label for="email_masjid" class="block text-sm font-medium text-gray-700 mb-1.5">Email Masjid</label>
-                            <input type="email" name="email_masjid" id="email_masjid"
-                                value="{{ old('email_masjid', $masjid->email) }}"
+                            <label for="email_lembaga" class="block text-sm font-medium text-gray-700 mb-1.5">Email Lembaga</label>
+                            <input type="email" name="email_lembaga" id="email_lembaga"
+                                value="{{ old('email_lembaga', $lembaga->email) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                                placeholder="info@masjid.com">
-                            @error('email_masjid') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                                placeholder="info@lembaga.com">
+                            @error('email_lembaga') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label for="kode_pos" class="block text-sm font-medium text-gray-700 mb-1.5">Kode Pos</label>
                             <input type="text" name="kode_pos" id="kode_pos"
-                                value="{{ old('kode_pos', $masjid->kode_pos) }}"
+                                value="{{ old('kode_pos', $lembaga->kode_pos) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="12345">
                         </div>
@@ -210,7 +210,7 @@
                         </label>
                         <textarea name="alamat" id="alamat" rows="2"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none @error('alamat') border-red-500 @enderror"
-                            placeholder="Jl. ..." required>{{ old('alamat', $masjid->alamat) }}</textarea>
+                            placeholder="Jl. ..." required>{{ old('alamat', $lembaga->alamat) }}</textarea>
                         @error('alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
@@ -225,7 +225,7 @@
                                 required>
                                 <option value="">-- Pilih Provinsi --</option>
                                 @foreach($provinces as $prov)
-                                    <option value="{{ $prov->code }}" {{ old('provinsi_kode', $masjid->provinsi_kode) == $prov->code ? 'selected' : '' }}>
+                                    <option value="{{ $prov->code }}" {{ old('provinsi_kode', $lembaga->provinsi_kode) == $prov->code ? 'selected' : '' }}>
                                         {{ $prov->name }}
                                     </option>
                                 @endforeach
@@ -269,10 +269,10 @@
 
                     {{-- Deskripsi --}}
                     <div class="mt-4">
-                        <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi Masjid</label>
+                        <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi Lembaga</label>
                         <textarea name="deskripsi" id="deskripsi" rows="3"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none"
-                            placeholder="Deskripsi singkat tentang masjid...">{{ old('deskripsi', $masjid->deskripsi) }}</textarea>
+                            placeholder="Deskripsi singkat tentang lembaga...">{{ old('deskripsi', $lembaga->deskripsi) }}</textarea>
                     </div>
                 </div>
 
@@ -281,14 +281,14 @@
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                        Sejarah Masjid
+                        Sejarah Lembaga
                     </h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                         <div>
                             <label for="tahun_berdiri" class="block text-sm font-medium text-gray-700 mb-1.5">Tahun Berdiri</label>
                             <input type="number" name="tahun_berdiri" id="tahun_berdiri"
-                                value="{{ old('tahun_berdiri', $masjid->tahun_berdiri) }}"
+                                value="{{ old('tahun_berdiri', $lembaga->tahun_berdiri) }}"
                                 min="1000" max="{{ date('Y') + 1 }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="{{ date('Y') }}">
@@ -297,14 +297,14 @@
                         <div>
                             <label for="pendiri" class="block text-sm font-medium text-gray-700 mb-1.5">Pendiri</label>
                             <input type="text" name="pendiri" id="pendiri"
-                                value="{{ old('pendiri', $masjid->pendiri) }}"
+                                value="{{ old('pendiri', $lembaga->pendiri) }}"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
-                                placeholder="Nama pendiri masjid">
+                                placeholder="Nama pendiri lembaga">
                         </div>
                         <div>
                             <label for="kapasitas_jamaah" class="block text-sm font-medium text-gray-700 mb-1.5">Kapasitas Jamaah</label>
                             <input type="number" name="kapasitas_jamaah" id="kapasitas_jamaah"
-                                value="{{ old('kapasitas_jamaah', $masjid->kapasitas_jamaah) }}"
+                                value="{{ old('kapasitas_jamaah', $lembaga->kapasitas_jamaah) }}"
                                 min="0"
                                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                                 placeholder="Contoh: 1000">
@@ -313,16 +313,16 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="sejarah" class="block text-sm font-medium text-gray-700 mb-1.5">Sejarah Masjid</label>
+                        <label for="sejarah" class="block text-sm font-medium text-gray-700 mb-1.5">Sejarah Lembaga</label>
                         <textarea name="sejarah" id="sejarah" rows="5"
                             class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none"
-                            placeholder="Ceritakan sejarah berdirinya masjid...">{{ old('sejarah', $masjid->sejarah) }}</textarea>
+                            placeholder="Ceritakan sejarah berdirinya lembaga...">{{ old('sejarah', $lembaga->sejarah) }}</textarea>
                     </div>
                 </div>
 
                 {{-- ── Action Buttons ── --}}
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <a href="{{ route('admin-masjid.profil.show') }}"
+                    <a href="{{ route('admin-lembaga.profil.show') }}"
                         class="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">
                         Batal
                     </a>
@@ -354,8 +354,8 @@ function previewAdminFoto(input) {
     }
 }
 
-// ── Preview foto masjid baru ──────────────────────────────────
-function previewFotoMasjid(input) {
+// ── Preview foto lembaga baru ──────────────────────────────────
+function previewFotoLembaga(input) {
     const container = document.getElementById('new-fotos-preview');
     const max       = parseInt(input.dataset.max || 5);
     container.innerHTML = '';
@@ -491,9 +491,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inisialisasi awal dengan nilai yang sudah dipilih
     const selectedProvince = provinsiSelect.value;
-    const selectedCity = '{{ $masjid->kota_kode }}';
-    const selectedDistrict = '{{ $masjid->kecamatan_kode }}';
-    const selectedVillage = '{{ $masjid->kelurahan_kode }}';
+    const selectedCity = '{{ $lembaga->kota_kode }}';
+    const selectedDistrict = '{{ $lembaga->kecamatan_kode }}';
+    const selectedVillage = '{{ $lembaga->kelurahan_kode }}';
 
     if (selectedProvince) {
         loadCities(selectedProvince, selectedCity);

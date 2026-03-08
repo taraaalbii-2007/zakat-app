@@ -295,7 +295,7 @@
 
     <div class="kwitansi" id="kwitansi-content">
 
-        {{-- Header Masjid --}}
+        {{-- Header Lembaga --}}
         <div class="header">
             <div class="header-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,13 +304,13 @@
                 </svg>
             </div>
             <div class="header-text">
-                <h1>{{ $transaksi->masjid->nama ?? 'Masjid' }}</h1>
-                <p>{{ $transaksi->masjid->alamat_lengkap ?? $transaksi->masjid->alamat ?? '-' }}</p>
-                @if($transaksi->masjid->telepon || $transaksi->masjid->email)
+                <h1>{{ $transaksi->lembaga->nama ?? 'Lembaga' }}</h1>
+                <p>{{ $transaksi->lembaga->alamat_lengkap ?? $transaksi->lembaga->alamat ?? '-' }}</p>
+                @if($transaksi->lembaga->telepon || $transaksi->lembaga->email)
                 <p>
-                    @if($transaksi->masjid->telepon) Telp: {{ $transaksi->masjid->telepon }} @endif
-                    @if($transaksi->masjid->telepon && $transaksi->masjid->email) &nbsp;&bull;&nbsp; @endif
-                    @if($transaksi->masjid->email) {{ $transaksi->masjid->email }} @endif
+                    @if($transaksi->lembaga->telepon) Telp: {{ $transaksi->lembaga->telepon }} @endif
+                    @if($transaksi->lembaga->telepon && $transaksi->lembaga->email) &nbsp;&bull;&nbsp; @endif
+                    @if($transaksi->lembaga->email) {{ $transaksi->lembaga->email }} @endif
                 </p>
                 @endif
             </div>
@@ -476,7 +476,7 @@
                 {{-- ── Penerima (Mustahik) — KIRI ── --}}
                 <div class="recipient-box">
                     <div class="sig-city-date">
-                        {{ optional($transaksi->masjid)->kota_nama ?? '' }},
+                        {{ optional($transaksi->lembaga)->kota_nama ?? '' }},
                         {{ $transaksi->tanggal_penyaluran->translatedFormat('d F Y') }}
                     </div>
                     <div class="sig-position">Yang Menerima,</div>
@@ -523,7 +523,7 @@
                 {{-- ── Amil Penyalur — KANAN ── --}}
                 <div class="signature-box">
                     <div class="sig-city-date">
-                        {{ optional($transaksi->masjid)->kota_nama ?? '' }},
+                        {{ optional($transaksi->lembaga)->kota_nama ?? '' }},
                         {{ $transaksi->tanggal_penyaluran->translatedFormat('d F Y') }}
                     </div>
                     <div class="sig-position">Amil Penyalur,</div>
@@ -568,7 +568,7 @@
 
         {{-- Footer --}}
         <div class="footer">
-            <p>{{ $transaksi->masjid->nama ?? 'Masjid' }} &mdash; Pengelolaan Zakat Transparan & Amanah</p>
+            <p>{{ $transaksi->lembaga->nama ?? 'Lembaga' }} &mdash; Pengelolaan Zakat Transparan & Amanah</p>
             <p>Semoga Allah SWT melipatgandakan kebaikan dan memudahkan urusan mustahik &bull; Dokumen ini sah tanpa tanda tangan basah</p>
         </div>
 

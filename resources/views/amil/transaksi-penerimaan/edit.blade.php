@@ -35,7 +35,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">{{ $headerTitle }}</h2>
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $masjid->nama }} &middot; No: {{ $noTransaksiPreview }}
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $lembaga->nama }} &middot; No: {{ $noTransaksiPreview }}
                         </p>
                     </div>
                     <div class="flex items-center gap-2">
@@ -554,7 +554,7 @@
                                         <option value="">-- Pilih cara penyerahan --</option>
                                         <option value="dibagikan" {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'dibagikan' ? 'selected' : '' }}>Dibagikan kepada mustahik</option>
                                         <option value="dijamu"    {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'dijamu'    ? 'selected' : '' }}>Dijamu (makan bersama)</option>
-                                        <option value="via_lembaga" {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'via_lembaga' ? 'selected' : '' }}>Diserahkan via lembaga/masjid</option>
+                                        <option value="via_lembaga" {{ old('fidyah_cara_serah', $transaksi->fidyah_cara_serah) === 'via_lembaga' ? 'selected' : '' }}>Diserahkan via lembaga/lembaga</option>
                                     </select>
                                 </div>
                                 <div class="bg-white border border-orange-200 rounded-lg p-3">
@@ -667,7 +667,7 @@
                                         </svg>
                                     </div>
                                     <p class="text-sm font-semibold text-gray-900">Transfer Bank</p>
-                                    <p class="text-xs text-gray-500 text-center">Ke rekening masjid</p>
+                                    <p class="text-xs text-gray-500 text-center">Ke rekening lembaga</p>
                                 </label>
                                 <label id="cardQris"
                                     class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'qris' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
@@ -681,7 +681,7 @@
                                         </svg>
                                     </div>
                                     <p class="text-sm font-semibold text-gray-900">QRIS</p>
-                                    <p class="text-xs text-gray-500 text-center">Scan QR masjid</p>
+                                    <p class="text-xs text-gray-500 text-center">Scan QR lembaga</p>
                                 </label>
                             </div>
                             @error('metode_pembayaran')
@@ -723,7 +723,7 @@
                         {{-- Info Transfer --}}
                         <div id="infoTransferSec" class="{{ $transaksi->metode_pembayaran === 'transfer' ? '' : 'hidden' }} space-y-3">
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <p class="text-sm font-medium text-gray-800 mb-3">Rekening Transfer Masjid</p>
+                                <p class="text-sm font-medium text-gray-800 mb-3">Rekening Transfer Lembaga</p>
                                 @if ($rekeningList->isNotEmpty())
                                     @foreach ($rekeningList as $rek)
                                         <div class="bg-white border border-gray-200 rounded p-3 flex items-center justify-between mb-2 last:mb-0">
@@ -749,15 +749,15 @@
                         {{-- ★ Info QRIS — dari KonfigurasiQris (tanpa no referensi) ★ --}}
                         <div id="infoQrisSec" class="{{ $transaksi->metode_pembayaran === 'qris' ? '' : 'hidden' }} space-y-3">
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <p class="text-sm font-medium text-gray-800 mb-4">QRIS {{ $masjid->nama }}</p>
+                                <p class="text-sm font-medium text-gray-800 mb-4">QRIS {{ $lembaga->nama }}</p>
                                 @php $qrisImageUrl = $qrisConfig?->qris_image_url ?? null; @endphp
                                 @if ($qrisImageUrl)
                                     <div class="flex justify-center">
                                         <div class="bg-white p-4 rounded-lg border border-gray-200 inline-flex flex-col items-center gap-3">
                                             <img src="{{ $qrisImageUrl }}" class="w-48 h-48 object-contain"
-                                                alt="QRIS {{ $masjid->nama }}" loading="lazy">
+                                                alt="QRIS {{ $lembaga->nama }}" loading="lazy">
                                             <div class="text-center">
-                                                <p class="text-xs font-medium text-gray-800">{{ $masjid->nama }}</p>
+                                                <p class="text-xs font-medium text-gray-800">{{ $lembaga->nama }}</p>
                                                 <p class="text-xs text-gray-500 mt-0.5">Scan QR di atas untuk membayar</p>
                                             </div>
                                         </div>
@@ -771,7 +771,7 @@
                                                     d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                                             </svg>
                                             <p class="text-sm font-medium text-gray-500">QRIS belum dikonfigurasi</p>
-                                            <p class="text-xs text-gray-400 mt-1">Tunjukkan QRIS fisik masjid kepada muzakki</p>
+                                            <p class="text-xs text-gray-400 mt-1">Tunjukkan QRIS fisik lembaga kepada muzakki</p>
                                         </div>
                                     </div>
                                 @endif

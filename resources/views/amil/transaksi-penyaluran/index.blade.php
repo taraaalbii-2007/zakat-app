@@ -345,7 +345,7 @@
                                     $canDelete = $transaksi->bisa_dihapus;
                                     $canDisalurkan = $transaksi->bisa_disalurkan;
                                     $canApprove =
-                                        auth()->user()->peran === 'admin_masjid' && $transaksi->status === 'draft';
+                                        auth()->user()->peran === 'admin_lembaga' && $transaksi->status === 'draft';
                                 @endphp
 
                                 {{-- Parent Row --}}
@@ -663,7 +663,7 @@
                             $canEdit = $transaksi->bisa_diedit;
                             $canDelete = $transaksi->bisa_dihapus;
                             $canDisalurkan = $transaksi->bisa_disalurkan;
-                            $canApprove = auth()->user()->peran === 'admin_masjid' && $transaksi->status === 'draft';
+                            $canApprove = auth()->user()->peran === 'admin_lembaga' && $transaksi->status === 'draft';
                         @endphp
                         <div
                             class="expandable-card {{ $canDisalurkan ? 'bg-blue-50/30' : ($canApprove ? 'bg-yellow-50/30' : '') }}">

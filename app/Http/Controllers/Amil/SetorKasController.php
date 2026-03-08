@@ -31,7 +31,7 @@ class SetorKasController extends Controller
         if (!$amil) abort(403);
 
         $query = SetorKas::byAmil($amil->id)
-            ->with(['masjid', 'penerimaSetoran'])
+            ->with(['lembaga', 'penerimaSetoran'])
             ->latest();
 
         // Filter status
@@ -75,7 +75,7 @@ class SetorKasController extends Controller
         $periodeSampai = $request->periode_sampai;
 
         if ($periodeDari && $periodeSampai) {
-            $rekapKas = $this->hitungRekapKas($amil->id, $amil->masjid_id, $periodeDari, $periodeSampai);
+            $rekapKas = $this->hitungRekapKas($amil->id, $amil->lembaga_id, $periodeDari, $periodeSampai);
         }
 
         return view('amil.setor-kas.create', compact('amil', 'rekapKas', 'periodeDari', 'periodeSampai'));
@@ -104,7 +104,7 @@ class SetorKasController extends Controller
             // Hitung rekap dari kas harian
             $rekap = $this->hitungRekapKas(
                 $amil->id,
-                $amil->masjid_id,
+                $amil->lembaga_id,
                 $validated['periode_dari'],
                 $validated['periode_sampai']
             );
@@ -132,7 +132,7 @@ class SetorKasController extends Controller
                 'periode_dari'                => $validated['periode_dari'],
                 'periode_sampai'              => $validated['periode_sampai'],
                 'amil_id'                     => $amil->id,
-                'masjid_id'                   => $amil->masjid_id,
+                'lembaga_id'                   => $amil->lembaga_id,
                 'jumlah_disetor'              => $validated['jumlah_disetor'],
                 'jumlah_dari_datang_langsung' => $rekap['datang_langsung'] ?? 0,
                 'jumlah_dari_dijemput'        => $rekap['dijemput'] ?? 0,
@@ -146,7 +146,7 @@ class SetorKasController extends Controller
 
             return redirect()
                 ->route('amil.setor-kas.show', $setor->uuid)
-                ->with('success', 'Setoran kas berhasil diajukan. Menunggu konfirmasi admin masjid.');
+                ->with('success', 'Setoran kas berhasil diajukan. Menunggu konfirmasi admin lembaga.');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -162,7 +162,7 @@ class SetorKasController extends Controller
         $amil = $this->getAmil();
         if (!$amil || $setorKas->amil_id !== $amil->id) abort(403);
 
-        $setorKas->load(['amil.pengguna', 'masjid', 'penerimaSetoran']);
+        $setorKas->load(['amil.pengguna', 'lembaga', 'penerimaSetoran']);
 
         // Timeline events
         $timeline = $this->buildTimeline($setorKas);
@@ -181,7 +181,7 @@ class SetorKasController extends Controller
 
         $rekapKas = $this->hitungRekapKas(
             $amil->id,
-            $amil->masjid_id,
+            $amil->lembaga_id,
             $setorKas->periode_dari->format('Y-m-d'),
             $setorKas->periode_sampai->format('Y-m-d')
         );
@@ -212,7 +212,7 @@ class SetorKasController extends Controller
         try {
             $rekap = $this->hitungRekapKas(
                 $amil->id,
-                $amil->masjid_id,
+                $amil->lembaga_id,
                 $validated['periode_dari'],
                 $validated['periode_sampai']
             );
@@ -290,7 +290,7 @@ class SetorKasController extends Controller
 
         $rekap = $this->hitungRekapKas(
             $amil->id,
-            $amil->masjid_id,
+            $amil->lembaga_id,
             $request->periode_dari,
             $request->periode_sampai
         );
@@ -301,10 +301,10 @@ class SetorKasController extends Controller
     // ============================================
     // PRIVATE HELPERS
     // ============================================
-    private function hitungRekapKas(int $amilId, int $masjidId, string $dari, string $sampai): array
+    private function hitungRekapKas(int $amilId, int $lembagaId, string $dari, string $sampai): array
     {
         $kasHarians = KasHarianAmil::byAmil($amilId)
-            ->byMasjid($masjidId)
+            ->byLembaga($lembagaId)
             ->whereBetween('tanggal', [$dari, $sampai])
             ->get();
 
@@ -317,7 +317,7 @@ class SetorKasController extends Controller
 
         // Ambil dari transaksi penerimaan langsung untuk akurasi
         $transaksiPenerimaan = \App\Models\TransaksiPenerimaan::where('amil_id', $amilId)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->whereBetween('tanggal_transaksi', [$dari, $sampai])
             ->where('status', 'verified')
             ->get();

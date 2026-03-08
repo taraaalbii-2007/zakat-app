@@ -1,7 +1,7 @@
 {{--
     resources/views/amil/transaksi-datang-langsung/create-dijemput.blade.php
 
-    DIPAKAI OLEH  : Amil / Admin Masjid SAJA
+    DIPAKAI OLEH  : Amil / Admin Lembaga SAJA
     CONTROLLER    : createDijemput() → return view('...create-dijemput')
     STORE         : POST route('transaksi-datang-langsung.store') dengan metode_penerimaan=dijemput (hidden)
 
@@ -51,7 +51,7 @@
                         </span>
                     </div>
                     <p class="text-xs text-gray-500 mt-0.5">
-                        {{ $masjid->nama }} &middot; No: <span class="font-mono font-semibold text-gray-700">{{ $noTransaksiPreview }}</span>
+                        {{ $lembaga->nama }} &middot; No: <span class="font-mono font-semibold text-gray-700">{{ $noTransaksiPreview }}</span>
                     </p>
                 </div>
             </div>

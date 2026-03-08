@@ -8,7 +8,7 @@ use App\Models\JenisZakat;
 use App\Models\TipeZakat;
 use App\Models\ProgramZakat;
 use App\Models\Amil;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +23,7 @@ use App\Models\KonfigurasiQris;
 class TransaksiPenerimaanController extends Controller
 {
     protected $user;
-    protected $masjid;
+    protected $lembaga;
     protected $amil;
 
     // Konstanta zakat fitrah dari BAZNAS
@@ -45,41 +45,41 @@ class TransaksiPenerimaanController extends Controller
 
             // Inisialisasi awal
             $this->amil = null;
-            $this->masjid = null;
+            $this->lembaga = null;
 
-            // Dapatkan masjid_id dari user
-            $masjidId = $this->user->masjid_id;
+            // Dapatkan lembaga_id dari user
+            $lembagaId = $this->user->lembaga_id;
 
-            if ($this->user->isAdminMasjid()) {
-                // Admin masjid: langsung ambil masjid dari ID user
-                if ($masjidId) {
-                    $this->masjid = Masjid::find($masjidId);
+            if ($this->user->isAdminLembaga()) {
+                // Admin lembaga: langsung ambil lembaga dari ID user
+                if ($lembagaId) {
+                    $this->lembaga = Lembaga::find($lembagaId);
                 }
                 $this->amil = null;
             } elseif ($this->user->isAmil()) {
                 // Amil: coba ambil dari relasi amil
                 $this->amil = $this->user->amil;
 
-                // Coba ambil masjid dari amil
-                if ($this->amil && $this->amil->masjid_id) {
-                    $this->masjid = Masjid::find($this->amil->masjid_id);
+                // Coba ambil lembaga dari amil
+                if ($this->amil && $this->amil->lembaga_id) {
+                    $this->lembaga = Lembaga::find($this->amil->lembaga_id);
                 }
 
-                // Fallback ke masjid user jika masih null
-                if (!$this->masjid && $masjidId) {
-                    $this->masjid = Masjid::find($masjidId);
+                // Fallback ke lembaga user jika masih null
+                if (!$this->lembaga && $lembagaId) {
+                    $this->lembaga = Lembaga::find($lembagaId);
                 }
             } elseif ($this->user->isMuzakki()) {
                 // Muzakki: coba ambil dari relasi muzakki
                 $muzakki = $this->user->muzakki;
 
-                if ($muzakki && $muzakki->masjid_id) {
-                    $this->masjid = Masjid::find($muzakki->masjid_id);
+                if ($muzakki && $muzakki->lembaga_id) {
+                    $this->lembaga = Lembaga::find($muzakki->lembaga_id);
                 }
 
-                // Fallback ke masjid user
-                if (!$this->masjid && $masjidId) {
-                    $this->masjid = Masjid::find($masjidId);
+                // Fallback ke lembaga user
+                if (!$this->lembaga && $lembagaId) {
+                    $this->lembaga = Lembaga::find($lembagaId);
                 }
 
                 $this->amil = null;
@@ -87,20 +87,20 @@ class TransaksiPenerimaanController extends Controller
                 abort(403, 'Akses ditolak');
             }
 
-            // Final check: pastikan masjid ditemukan
-            if (!$this->masjid) {
-                Log::error('Masjid tidak ditemukan untuk user', [
+            // Final check: pastikan lembaga ditemukan
+            if (!$this->lembaga) {
+                Log::error('Lembaga tidak ditemukan untuk user', [
                     'user_id' => $this->user->id,
                     'peran' => $this->user->peran,
-                    'masjid_id_user' => $masjidId,
+                    'lembaga_id_user' => $lembagaId,
                     'amil_data' => $this->user->amil ? 'ada' : 'tidak ada',
                     'muzakki_data' => $this->user->muzakki ? 'ada' : 'tidak ada',
                 ]);
-                abort(404, 'Data masjid tidak ditemukan. Silakan hubungi administrator.');
+                abort(404, 'Data lembaga tidak ditemukan. Silakan hubungi administrator.');
             }
 
             // Share data ke view
-            view()->share('masjid', $this->masjid);
+            view()->share('lembaga', $this->lembaga);
             view()->share('zakatFitrahInfo', [
                 'nominal_per_jiwa' => self::NOMINAL_ZAKAT_FITRAH_PER_JIWA,
                 'beras_kg'         => self::BERAS_KG_PER_JIWA,
@@ -132,7 +132,7 @@ class TransaksiPenerimaanController extends Controller
     public function index(Request $request)
     {
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil'])
-            ->byMasjid($this->masjid->id);
+            ->byLembaga($this->lembaga->id);
 
         if ($request->filled('q'))                 $query->search($request->q);
         if ($request->filled('tanggal'))           $query->byTanggal($request->tanggal);
@@ -154,20 +154,20 @@ class TransaksiPenerimaanController extends Controller
 
         $transaksis       = $query->paginate(10)->withQueryString();
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::byMasjid($this->masjid->id)
+        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
             ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
-        $amilList         = Amil::byMasjid($this->masjid->id)->with('pengguna')->where('status', 'aktif')->get();
+        $amilList         = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
 
         $stats = [
-            'total'               => TransaksiPenerimaan::byMasjid($this->masjid->id)->count(),
-            'total_verified'      => TransaksiPenerimaan::byMasjid($this->masjid->id)->verified()->count(),
-            'total_pending'       => TransaksiPenerimaan::byMasjid($this->masjid->id)->pending()->count(),
-            'menunggu_konfirmasi' => TransaksiPenerimaan::byMasjid($this->masjid->id)->menungguKonfirmasi()->count(),
-            'total_nominal'       => TransaksiPenerimaan::byMasjid($this->masjid->id)->verified()->sum('jumlah'),
-            'total_hari_ini'      => TransaksiPenerimaan::byMasjid($this->masjid->id)->byTanggal(now())->verified()->sum('jumlah'),
-            'total_infaq'         => TransaksiPenerimaan::byMasjid($this->masjid->id)->verified()->sum('jumlah_infaq'),
+            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)->count(),
+            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->count(),
+            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->pending()->count(),
+            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)->menungguKonfirmasi()->count(),
+            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->sum('jumlah'),
+            'total_hari_ini'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byTanggal(now())->verified()->sum('jumlah'),
+            'total_infaq'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->sum('jumlah_infaq'),
             // Stats fidyah
-            'total_fidyah'        => TransaksiPenerimaan::byMasjid($this->masjid->id)->fidyah()->count(),
+            'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)->fidyah()->count(),
         ];
 
         return view('amil.transaksi-penerimaan.index', compact(
@@ -184,12 +184,12 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     public function indexDatangLangsung(Request $request)
     {
-        if (!$this->masjid) {
-            abort(404, 'Data masjid tidak ditemukan.');
+        if (!$this->lembaga) {
+            abort(404, 'Data lembaga tidak ditemukan.');
         }
 
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna'])
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung');
 
         if ($request->filled('q')) {
@@ -222,10 +222,10 @@ class TransaksiPenerimaanController extends Controller
         $transaksis = $query->paginate(10)->withQueryString();
 
         $jenisZakatList = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::byMasjid($this->masjid->id)
+        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
             ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
 
-        $baseQuery = TransaksiPenerimaan::byMasjid($this->masjid->id)
+        $baseQuery = TransaksiPenerimaan::byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung');
 
         $stats = [
@@ -250,7 +250,7 @@ class TransaksiPenerimaanController extends Controller
     public function indexDaring(Request $request)
     {
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil'])
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring');
 
         if ($request->filled('q'))                 $query->search($request->q);
@@ -266,11 +266,11 @@ class TransaksiPenerimaanController extends Controller
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
 
         $stats = [
-            'total'               => TransaksiPenerimaan::byMasjid($this->masjid->id)->byMetodePenerimaan('daring')->count(),
-            'total_verified'      => TransaksiPenerimaan::byMasjid($this->masjid->id)->byMetodePenerimaan('daring')->verified()->count(),
-            'total_pending'       => TransaksiPenerimaan::byMasjid($this->masjid->id)->byMetodePenerimaan('daring')->pending()->count(),
-            'menunggu_konfirmasi' => TransaksiPenerimaan::byMasjid($this->masjid->id)->byMetodePenerimaan('daring')->menungguKonfirmasi()->count(),
-            'total_nominal'       => TransaksiPenerimaan::byMasjid($this->masjid->id)->byMetodePenerimaan('daring')->verified()->sum('jumlah'),
+            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->count(),
+            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->verified()->count(),
+            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->pending()->count(),
+            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->menungguKonfirmasi()->count(),
+            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->verified()->sum('jumlah'),
         ];
 
         return view('amil.transaksi-penerimaan.index-daring', compact(
@@ -285,12 +285,12 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     public function indexDijemput(Request $request)
     {
-        if (!$this->masjid) {
-            abort(404, 'Data masjid tidak ditemukan.');
+        if (!$this->lembaga) {
+            abort(404, 'Data lembaga tidak ditemukan.');
         }
 
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna'])
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('dijemput');
 
         if ($request->filled('q')) {
@@ -313,25 +313,25 @@ class TransaksiPenerimaanController extends Controller
 
         $transaksis = $query->paginate(10)->withQueryString();
 
-        $amilList = Amil::byMasjid($this->masjid->id)
+        $amilList = Amil::byLembaga($this->lembaga->id)
             ->with('pengguna')
             ->where('status', 'aktif')
             ->get();
 
         $stats = [
-            'total' => TransaksiPenerimaan::byMasjid($this->masjid->id)
+            'total' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')->count(),
-            'menunggu' => TransaksiPenerimaan::byMasjid($this->masjid->id)
+            'menunggu' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
                 ->where('status_penjemputan', 'menunggu')->count(),
-            'dalam_proses' => TransaksiPenerimaan::byMasjid($this->masjid->id)
+            'dalam_proses' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
                 ->whereIn('status_penjemputan', ['diterima', 'dalam_perjalanan', 'sampai_lokasi'])->count(),
-            'perlu_dilengkapi' => TransaksiPenerimaan::byMasjid($this->masjid->id)
+            'perlu_dilengkapi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
                 ->whereIn('status_penjemputan', ['sampai_lokasi', 'selesai'])
                 ->whereNull('jenis_zakat_id')->count(),
-            'selesai' => TransaksiPenerimaan::byMasjid($this->masjid->id)
+            'selesai' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
                 ->where('status_penjemputan', 'selesai')
                 ->whereNotNull('jenis_zakat_id')->count(),
@@ -362,15 +362,15 @@ class TransaksiPenerimaanController extends Controller
 
         $mode = $this->getMode($request, $defaultMode);
 
-        $rekeningList = \App\Models\RekeningMasjid::where('masjid_id', $this->masjid->id)
+        $rekeningList = \App\Models\RekeningLembaga::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)->get();
 
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::byMasjid($this->masjid->id)
+        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
             ->whereIn('status', ['aktif'])->orderBy('nama_program')->get();
-        $amilList = Amil::byMasjid($this->masjid->id)->with('pengguna')->where('status', 'aktif')->get();
+        $amilList = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
 
-        $noTransaksiPreview = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+        $noTransaksiPreview = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
         $tanggalHariIni     = now()->format('Y-m-d');
 
         $tipeZakatList = [];
@@ -389,7 +389,7 @@ class TransaksiPenerimaanController extends Controller
             'berat_per_hari_gram' => self::FIDYAH_BERAT_PER_HARI_GRAM,
         ];
 
-        $qrisConfig = KonfigurasiQris::where('masjid_id', $this->masjid->id)
+        $qrisConfig = KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->first();
 
@@ -539,7 +539,7 @@ class TransaksiPenerimaanController extends Controller
     public function showDatangLangsung($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -548,7 +548,7 @@ class TransaksiPenerimaanController extends Controller
             'dikonfirmasiOleh'
         ])
             ->where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung')
             ->firstOrFail();
 
@@ -562,7 +562,7 @@ class TransaksiPenerimaanController extends Controller
     {
         Log::info('Transaksi Dijemput Store', [
             'user_id'   => $this->user->id,
-            'masjid_id' => $this->masjid->id,
+            'lembaga_id' => $this->lembaga->id,
             'request_data' => $request->except(['_token'])
         ]);
 
@@ -608,12 +608,12 @@ class TransaksiPenerimaanController extends Controller
 
             DB::beginTransaction();
 
-            $noTransaksi = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+            $noTransaksi = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
 
             Log::info('Menyimpan transaksi dijemput', ['no_transaksi' => $noTransaksi]);
 
             $transaksi = new TransaksiPenerimaan();
-            $transaksi->masjid_id          = $this->masjid->id;
+            $transaksi->lembaga_id          = $this->lembaga->id;
             $transaksi->no_transaksi       = $noTransaksi;
             $transaksi->tanggal_transaksi  = $request->tanggal_transaksi ?? now();
             $transaksi->waktu_transaksi    = now();
@@ -768,7 +768,7 @@ class TransaksiPenerimaanController extends Controller
     {
         Log::info('Transaksi Datang Langsung Store', [
             'user_id'   => $this->user->id,
-            'masjid_id' => $this->masjid->id,
+            'lembaga_id' => $this->lembaga->id,
         ]);
 
         try {
@@ -848,8 +848,8 @@ class TransaksiPenerimaanController extends Controller
             DB::beginTransaction();
 
             $transaksi = new TransaksiPenerimaan();
-            $transaksi->masjid_id         = $this->masjid->id;
-            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+            $transaksi->lembaga_id         = $this->lembaga->id;
+            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
             $transaksi->tanggal_transaksi = $request->tanggal_transaksi;
             $transaksi->waktu_transaksi   = now();
             $transaksi->muzakki_nama      = $request->muzakki_nama;
@@ -957,7 +957,7 @@ class TransaksiPenerimaanController extends Controller
     {
         Log::info('Transaksi Daring Store', [
             'user_id'   => $this->user->id,
-            'masjid_id' => $this->masjid->id,
+            'lembaga_id' => $this->lembaga->id,
         ]);
 
         try {
@@ -996,8 +996,8 @@ class TransaksiPenerimaanController extends Controller
             DB::beginTransaction();
 
             $transaksi = new TransaksiPenerimaan();
-            $transaksi->masjid_id         = $this->masjid->id;
-            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->masjid->id);
+            $transaksi->lembaga_id         = $this->lembaga->id;
+            $transaksi->no_transaksi      = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
             $transaksi->tanggal_transaksi = $request->tanggal_transaksi;
             $transaksi->waktu_transaksi   = now();
             $transaksi->muzakki_nama      = $request->muzakki_nama;
@@ -1040,7 +1040,7 @@ class TransaksiPenerimaanController extends Controller
     public function completePickup(Request $request, $uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if ($transaksi->metode_penerimaan !== 'dijemput' || $transaksi->status_penjemputan !== 'selesai') {
             return redirect()->route('transaksi-penerimaan.show', $uuid)
@@ -1305,7 +1305,7 @@ class TransaksiPenerimaanController extends Controller
     public function showDijemput($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -1314,7 +1314,7 @@ class TransaksiPenerimaanController extends Controller
             'dikonfirmasiOleh'
         ])
             ->where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('dijemput')
             ->firstOrFail();
 
@@ -1327,7 +1327,7 @@ class TransaksiPenerimaanController extends Controller
     public function showDaring($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -1336,7 +1336,7 @@ class TransaksiPenerimaanController extends Controller
             'dikonfirmasiOleh'
         ])
             ->where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring')
             ->firstOrFail();
 
@@ -1349,7 +1349,7 @@ class TransaksiPenerimaanController extends Controller
     public function showMuzakki($uuid)
     {
         $query = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -1360,7 +1360,7 @@ class TransaksiPenerimaanController extends Controller
         if ($this->user->isMuzakki() && $this->user->muzakki) {
             $query->where('muzakki_id', $this->user->muzakki->id);
         } else {
-            $query->byMasjid($this->masjid->id);
+            $query->byLembaga($this->lembaga->id);
         }
 
         $transaksi = $query->firstOrFail();
@@ -1371,7 +1371,7 @@ class TransaksiPenerimaanController extends Controller
     public function showPemantauan($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -1380,7 +1380,7 @@ class TransaksiPenerimaanController extends Controller
             'dikonfirmasiOleh'
         ])
             ->where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             // tidak ada filter metode — semua metode bisa dilihat
             ->firstOrFail();
 
@@ -1390,7 +1390,7 @@ class TransaksiPenerimaanController extends Controller
     public function showKas($uuid)
     {
         $query = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -1401,7 +1401,7 @@ class TransaksiPenerimaanController extends Controller
         if ($this->user->isMuzakki() && $this->user->muzakki) {
             $query->where('muzakki_id', $this->user->muzakki->id);
         } else {
-            $query->byMasjid($this->masjid->id);
+            $query->byLembaga($this->lembaga->id);
         }
 
         $transaksi = $query->firstOrFail();
@@ -1416,7 +1416,7 @@ class TransaksiPenerimaanController extends Controller
     public function edit($uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if ($transaksi->status !== 'pending') {
             return redirect()->route('transaksi-dijemput.show', $uuid)
@@ -1426,12 +1426,12 @@ class TransaksiPenerimaanController extends Controller
         $isDijemput    = $transaksi->metode_penerimaan === 'dijemput';
         $needsZakatData = $isDijemput && !$transaksi->jenis_zakat_id;
 
-        $rekeningList    = \App\Models\RekeningMasjid::where('masjid_id', $this->masjid->id)
+        $rekeningList    = \App\Models\RekeningLembaga::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)->get();
         $jenisZakatList  = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::byMasjid($this->masjid->id)
+        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
             ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
-        $amilList = Amil::byMasjid($this->masjid->id)->with('pengguna')->where('status', 'aktif')->get();
+        $amilList = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
 
         $tipeZakatList = [];
         foreach ($jenisZakatList as $jenis) {
@@ -1450,7 +1450,7 @@ class TransaksiPenerimaanController extends Controller
         ];
 
         // Ambil QRIS config
-        $qrisConfig = KonfigurasiQris::where('masjid_id', $this->masjid->id)
+        $qrisConfig = KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->first();
 
@@ -1497,7 +1497,7 @@ class TransaksiPenerimaanController extends Controller
     public function update(Request $request, $uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if ($transaksi->status !== 'pending') {
             return redirect()->route('transaksi-penerimaan.show', $uuid)
@@ -1789,7 +1789,7 @@ class TransaksiPenerimaanController extends Controller
     public function konfirmasiPembayaran(Request $request, $uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if (!$transaksi->bisaDikonfirmasi) {
             return redirect()->back()->with('error', 'Transaksi ini tidak bisa dikonfirmasi.');
@@ -1842,7 +1842,7 @@ class TransaksiPenerimaanController extends Controller
     public function tolakPembayaran(Request $request, $uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if ($transaksi->konfirmasi_status !== 'menunggu_konfirmasi') {
             return redirect()->back()->with('error', 'Status pembayaran tidak bisa ditolak.');
@@ -1889,7 +1889,7 @@ class TransaksiPenerimaanController extends Controller
     public function verify($uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if (!$transaksi->bisaDiverifikasi) {
             return redirect()->back()->with('error', 'Transaksi tidak dapat diverifikasi.');
@@ -1916,7 +1916,7 @@ class TransaksiPenerimaanController extends Controller
     public function reject(Request $request, $uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if (!$transaksi->bisaDitolak) {
             return redirect()->back()->with('error', 'Transaksi tidak dapat ditolak.');
@@ -1942,12 +1942,12 @@ class TransaksiPenerimaanController extends Controller
 
     public function updateStatusPenjemputan(Request $request, $uuid)
     {
-        if (!$this->user->isAmil() && !$this->user->isAdminMasjid()) {
+        if (!$this->user->isAmil() && !$this->user->isAdminLembaga()) {
             return response()->json(['error' => 'Hanya amil yang dapat update status penjemputan.'], 403);
         }
 
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->firstOrFail();
 
         if (!$transaksi->bisaDiupdatePenjemputan) {
@@ -2022,7 +2022,7 @@ class TransaksiPenerimaanController extends Controller
     public function printKwitansi($uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'masjid',
+            'lembaga',
             'jenisZakat',
             'tipeZakat',
             'programZakat',
@@ -2030,7 +2030,7 @@ class TransaksiPenerimaanController extends Controller
             'verifiedBy',
         ])
             ->where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)
+            ->byLembaga($this->lembaga->id)
             ->firstOrFail();
 
         return view('amil.transaksi-penerimaan.print', compact('transaksi'));
@@ -2042,7 +2042,7 @@ class TransaksiPenerimaanController extends Controller
     public function destroy($uuid)
     {
         $transaksi = TransaksiPenerimaan::where('uuid', $uuid)
-            ->byMasjid($this->masjid->id)->firstOrFail();
+            ->byLembaga($this->lembaga->id)->firstOrFail();
 
         if (!in_array($transaksi->status, ['pending', 'rejected'])) {
             return redirect()->back()->with('error', 'Transaksi dengan status ' . $transaksi->status . ' tidak dapat dihapus.');
@@ -2067,7 +2067,7 @@ class TransaksiPenerimaanController extends Controller
     {
         try {
             $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna'])
-                ->byMasjid($this->masjid->id);
+                ->byLembaga($this->lembaga->id);
 
             if ($request->filled('q'))                 $query->search($request->q);
             if ($request->filled('start_date') && $request->filled('end_date'))
@@ -2088,7 +2088,7 @@ class TransaksiPenerimaanController extends Controller
 
             $pdf = PDF::loadView('amil.transaksi-penerimaan.exports.pdf', [
                 'transaksis'    => $transaksis,
-                'masjid'        => $this->masjid,
+                'lembaga'        => $this->lembaga,
                 'user'          => $this->user,
                 'filters'       => $request->all(),
                 'jenisZakatList' => JenisZakat::all(),
@@ -2126,7 +2126,7 @@ class TransaksiPenerimaanController extends Controller
             ]);
             $filename = 'transaksi-penerimaan-' . date('Y-m-d-His') . '.xlsx';
             return Excel::download(
-                new TransaksiPenerimaanExport($filters, $this->user, $this->masjid),
+                new TransaksiPenerimaanExport($filters, $this->user, $this->lembaga),
                 $filename
             );
         } catch (\Exception $e) {

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Laporan Tahunan Keuangan Masjid - {{ $masjid->nama }}</title>
+    <title>Laporan Tahunan Keuangan Lembaga - {{ $lembaga->nama }}</title>
     <style>
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -227,18 +227,18 @@
 
     {{-- ══════════════════ HEADER ══════════════════ --}}
     <div class="header">
-        <h1>{{ strtoupper($masjid->nama ?? 'LAPORAN TAHUNAN KEUANGAN MASJID') }}</h1>
+        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN TAHUNAN KEUANGAN MASJID') }}</h1>
         <h2>Laporan Keuangan Tahunan – Tahun {{ $tahun }}</h2>
         <div class="subtitle">
-            {{ $masjid->alamat ?? '' }}
-            @if(isset($masjid->kelurahan_nama) && $masjid->kelurahan_nama)
-                , Kel. {{ $masjid->kelurahan_nama }}
+            {{ $lembaga->alamat ?? '' }}
+            @if(isset($lembaga->kelurahan_nama) && $lembaga->kelurahan_nama)
+                , Kel. {{ $lembaga->kelurahan_nama }}
             @endif
-            @if(isset($masjid->kecamatan_nama) && $masjid->kecamatan_nama)
-                , Kec. {{ $masjid->kecamatan_nama }}
+            @if(isset($lembaga->kecamatan_nama) && $lembaga->kecamatan_nama)
+                , Kec. {{ $lembaga->kecamatan_nama }}
             @endif
-            @if(isset($masjid->kota_nama) && $masjid->kota_nama)
-                , {{ $masjid->kota_nama }}
+            @if(isset($lembaga->kota_nama) && $lembaga->kota_nama)
+                , {{ $lembaga->kota_nama }}
             @endif
         </div>
     </div>
@@ -408,9 +408,9 @@
     {{-- ══════════════════ TANDA TANGAN ══════════════════ --}}
     <div class="footer-container">
         <div class="signature-wrapper">
-            <div>{{ $masjid->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
+            <div>{{ $lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
             <div style="margin-top: 15px;">Yang Membuat Laporan,</div>
-            <div class="signature-title">ADMIN MASJID</div>
+            <div class="signature-title">Admin Lembaga</div>
             <div class="signature-space"></div>
             <table class="signature-line-table">
                 <tr>

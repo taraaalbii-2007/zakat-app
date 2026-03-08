@@ -21,20 +21,20 @@ class KasHarianAmilController extends Controller
 {
     protected $user;
     protected $amil;
-    protected $masjid;
+    protected $lembaga;
 
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
             $this->user  = Auth::user();
             $this->amil  = $this->user->amil;
-            $this->masjid = $this->amil ? $this->amil->masjid : null;
+            $this->lembaga = $this->amil ? $this->amil->lembaga : null;
 
-            if (!$this->amil || !$this->masjid) {
-                abort(403, 'Data amil atau masjid tidak ditemukan.');
+            if (!$this->amil || !$this->lembaga) {
+                abort(403, 'Data amil atau lembaga tidak ditemukan.');
             }
 
-            view()->share('masjid', $this->masjid);
+            view()->share('lembaga', $this->lembaga);
 
             return $next($request);
         });
@@ -51,7 +51,7 @@ class KasHarianAmilController extends Controller
 
         // Ambil atau buat record kas untuk tanggal yang dipilih
         $kas = KasHarianAmil::where('amil_id', $this->amil->id)
-            ->where('masjid_id', $this->masjid->id)
+            ->where('lembaga_id', $this->lembaga->id)
             ->whereDate('tanggal', $tanggal)
             ->first();
 
@@ -59,7 +59,7 @@ class KasHarianAmilController extends Controller
         $belumBukaKas = is_null($kas) && $tanggal->isToday();
 
         // Saldo awal yang akan dipakai jika buka kas baru
-        $saldoAwalEstimasi = KasHarianAmil::getSaldoAwalHariIni($this->amil->id, $this->masjid->id);
+        $saldoAwalEstimasi = KasHarianAmil::getSaldoAwalHariIni($this->amil->id, $this->lembaga->id);
 
         // Transaksi penerimaan hari ini (jika kas ada)
         $transaksiPenerimaan = collect();
@@ -68,7 +68,7 @@ class KasHarianAmilController extends Controller
         if ($kas) {
             $transaksiPenerimaan = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat'])
                 ->where('amil_id', $this->amil->id)
-                ->where('masjid_id', $this->masjid->id)
+                ->where('lembaga_id', $this->lembaga->id)
                 ->whereDate('tanggal_transaksi', $tanggal)
                 ->where('status', 'verified')
                 ->orderByDesc('created_at')
@@ -76,7 +76,7 @@ class KasHarianAmilController extends Controller
 
             $transaksiPenyaluran = TransaksiPenyaluran::with(['mustahik', 'kategoriMustahik'])
                 ->where('amil_id', $this->amil->id)
-                ->where('masjid_id', $this->masjid->id)
+                ->where('lembaga_id', $this->lembaga->id)
                 ->whereDate('tanggal_penyaluran', $tanggal)
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->orderByDesc('created_at')
@@ -91,7 +91,7 @@ class KasHarianAmilController extends Controller
 
         // Riwayat 7 hari terakhir (collapsible)
         $riwayat7Hari = KasHarianAmil::where('amil_id', $this->amil->id)
-            ->where('masjid_id', $this->masjid->id)
+            ->where('lembaga_id', $this->lembaga->id)
             ->where('tanggal', '<', now()->toDateString())
             ->orderByDesc('tanggal')
             ->limit(7)
@@ -114,7 +114,7 @@ class KasHarianAmilController extends Controller
     public function bukaKas(Request $request)
     {
         // Cek apakah kas hari ini sudah ada
-        $kasAda = KasHarianAmil::kasHariIni($this->amil->id, $this->masjid->id);
+        $kasAda = KasHarianAmil::kasHariIni($this->amil->id, $this->lembaga->id);
 
         if ($kasAda) {
             return redirect()->route('kas-harian.index')
@@ -123,11 +123,11 @@ class KasHarianAmilController extends Controller
 
         DB::beginTransaction();
         try {
-            $saldoAwal = KasHarianAmil::getSaldoAwalHariIni($this->amil->id, $this->masjid->id);
+            $saldoAwal = KasHarianAmil::getSaldoAwalHariIni($this->amil->id, $this->lembaga->id);
 
             KasHarianAmil::create([
                 'amil_id'   => $this->amil->id,
-                'masjid_id' => $this->masjid->id,
+                'lembaga_id' => $this->lembaga->id,
                 'tanggal'   => today(),
                 'saldo_awal' => $saldoAwal,
                 'saldo_akhir' => $saldoAwal,
@@ -151,7 +151,7 @@ class KasHarianAmilController extends Controller
     // ============================================================
     public function tutupKas(Request $request)
     {
-        $kas = KasHarianAmil::kasHariIni($this->amil->id, $this->masjid->id);
+        $kas = KasHarianAmil::kasHariIni($this->amil->id, $this->lembaga->id);
 
         if (!$kas) {
             return redirect()->route('kas-harian.index')
@@ -223,7 +223,7 @@ class KasHarianAmilController extends Controller
     // ============================================================
     public function simpanCatatan(Request $request)
     {
-        $kas = KasHarianAmil::kasHariIni($this->amil->id, $this->masjid->id);
+        $kas = KasHarianAmil::kasHariIni($this->amil->id, $this->lembaga->id);
 
         if (!$kas || $kas->status !== 'open') {
             return redirect()->route('kas-harian.index')
@@ -247,7 +247,7 @@ class KasHarianAmilController extends Controller
     public function history(Request $request)
     {
         $query = KasHarianAmil::where('amil_id', $this->amil->id)
-            ->where('masjid_id', $this->masjid->id);
+            ->where('lembaga_id', $this->lembaga->id);
 
         // Filter tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
@@ -269,7 +269,7 @@ class KasHarianAmilController extends Controller
 
         // Data untuk chart saldo 30 hari
         $chart30Hari = KasHarianAmil::where('amil_id', $this->amil->id)
-            ->where('masjid_id', $this->masjid->id)
+            ->where('lembaga_id', $this->lembaga->id)
             ->where('tanggal', '>=', now()->subDays(29)->toDateString())
             ->orderBy('tanggal')
             ->get(['tanggal', 'saldo_akhir', 'total_penerimaan', 'total_penyaluran']);
@@ -342,7 +342,7 @@ class KasHarianAmilController extends Controller
     public function exportExcel(Request $request)
     {
         $query = KasHarianAmil::where('amil_id', $this->amil->id)
-            ->where('masjid_id', $this->masjid->id);
+            ->where('lembaga_id', $this->lembaga->id);
 
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->byPeriode($request->start_date, $request->end_date);
@@ -363,9 +363,9 @@ class KasHarianAmilController extends Controller
             $sheet->getColumnDimension($col)->setWidth($width);
         }
 
-        // Header masjid
+        // Header lembaga
         $sheet->mergeCells('A1:K1');
-        $sheet->setCellValue('A1', strtoupper($this->masjid->nama ?? 'LAPORAN KAS HARIAN AMIL'));
+        $sheet->setCellValue('A1', strtoupper($this->lembaga->nama ?? 'LAPORAN KAS HARIAN AMIL'));
         $sheet->getStyle('A1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 13],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],

@@ -143,4 +143,9 @@ class Amil extends Model
     {
         return $this->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan';
     }
+
+    public function scopeByLembaga($query, $lembagaId)
+    {
+        return $query->where('lembaga_id', $lembagaId);
+    }
 }

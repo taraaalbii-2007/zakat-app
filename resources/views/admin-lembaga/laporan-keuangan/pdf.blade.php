@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Keuangan Masjid - {{ $laporan->masjid->nama }}</title>
+    <title>Laporan Keuangan Lembaga - {{ $laporan->lembaga->nama }}</title>
     <style>
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -203,18 +203,18 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ strtoupper($laporan->masjid->nama ?? 'LAPORAN KEUANGAN MASJID') }}</h1>
+        <h1>{{ strtoupper($laporan->lembaga->nama ?? 'LAPORAN KEUANGAN MASJID') }}</h1>
         <h2>Laporan Keuangan Bulanan</h2>
         <div class="subtitle">
-            {{ $laporan->masjid->alamat ?? '' }}
-            @if(isset($laporan->masjid->kelurahan_nama) && $laporan->masjid->kelurahan_nama)
-                , Kel. {{ $laporan->masjid->kelurahan_nama }}
+            {{ $laporan->lembaga->alamat ?? '' }}
+            @if(isset($laporan->lembaga->kelurahan_nama) && $laporan->lembaga->kelurahan_nama)
+                , Kel. {{ $laporan->lembaga->kelurahan_nama }}
             @endif
-            @if(isset($laporan->masjid->kecamatan_nama) && $laporan->masjid->kecamatan_nama)
-                , Kec. {{ $laporan->masjid->kecamatan_nama }}
+            @if(isset($laporan->lembaga->kecamatan_nama) && $laporan->lembaga->kecamatan_nama)
+                , Kec. {{ $laporan->lembaga->kecamatan_nama }}
             @endif
-            @if(isset($laporan->masjid->kota_nama) && $laporan->masjid->kota_nama)
-                , {{ $laporan->masjid->kota_nama }}
+            @if(isset($laporan->lembaga->kota_nama) && $laporan->lembaga->kota_nama)
+                , {{ $laporan->lembaga->kota_nama }}
             @endif
         </div>
     </div>
@@ -378,9 +378,9 @@
     {{-- Signature Section - Rata Kanan --}}
     <div class="footer-container">
         <div class="signature-wrapper">
-            <div>{{ $laporan->masjid->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
+            <div>{{ $laporan->lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
             <div style="margin-top: 15px;">Yang Membuat Laporan,</div>
-            <div class="signature-title">ADMIN MASJID</div>
+            <div class="signature-title">ADMIN LEMBAGA</div>
             <div class="signature-space"></div>
             <table class="signature-line-table" style="margin-top: 0;">
                 <tr>

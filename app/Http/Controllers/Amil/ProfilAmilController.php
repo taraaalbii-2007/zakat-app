@@ -16,7 +16,7 @@ class ProfilAmilController extends Controller
 {
     protected $user;
     protected $amil;
-    protected $masjid;
+    protected $lembaga;
 
     public function __construct()
     {
@@ -26,12 +26,12 @@ class ProfilAmilController extends Controller
             if (!$this->user->isAmil()) abort(403, 'Hanya Amil yang dapat mengakses halaman ini');
 
             $this->amil   = $this->user->amil;
-            $this->masjid = $this->amil ? $this->amil->masjid : null;
+            $this->lembaga = $this->amil ? $this->amil->lembaga : null;
 
             if (!$this->amil)   abort(404, 'Data amil tidak ditemukan.');
-            if (!$this->masjid) abort(404, 'Data masjid tidak ditemukan.');
+            if (!$this->lembaga) abort(404, 'Data lembaga tidak ditemukan.');
 
-            view()->share('masjid', $this->masjid);
+            view()->share('lembaga', $this->lembaga);
             return $next($request);
         });
     }
@@ -41,7 +41,7 @@ class ProfilAmilController extends Controller
     // ---------------------------------------------------------------
     public function show()
     {
-        $amil = $this->amil->load(['pengguna', 'masjid']);
+        $amil = $this->amil->load(['pengguna', 'lembaga']);
 
         $stats = [
             'total_transaksi'     => $amil->transaksiPenerimaan()->count(),
@@ -61,7 +61,7 @@ class ProfilAmilController extends Controller
     // ---------------------------------------------------------------
     public function edit()
     {
-        $amil = $this->amil->load(['pengguna', 'masjid']);
+        $amil = $this->amil->load(['pengguna', 'lembaga']);
         return view('amil.profil.edit', compact('amil'));
     }
 
@@ -88,9 +88,9 @@ public function update(Request $request)
 
     $amil = $this->amil; // Ambil dari constructor
 
-    // ── Pastikan masjid_id selalu ada ─────────────────────
-    if (!$amil->masjid_id) {
-        $amil->masjid_id = $this->masjid->id;
+    // ── Pastikan lembaga_id selalu ada ─────────────────────
+    if (!$amil->lembaga_id) {
+        $amil->lembaga_id = $this->lembaga->id;
     }
 
     // ── Simpan data pribadi ──────────────────────────

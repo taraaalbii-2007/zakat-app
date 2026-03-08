@@ -12,11 +12,11 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Profil Saya</h1>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Informasi profil, akun dan data masjid</p>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Informasi profil, akun dan data lembaga</p>
                 </div>
                 {{-- Action Buttons --}}
                 <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('admin-masjid.profil.edit') }}"
+                    <a href="{{ route('admin-lembaga.profil.edit') }}"
                        class="inline-flex items-center px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -25,7 +25,7 @@
                         Edit Profil
                     </a>
                     @if(!$user->is_google_user)
-                    <a href="{{ route('admin-masjid.profil.email.edit') }}"
+                    <a href="{{ route('admin-lembaga.profil.email.edit') }}"
                        class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -33,7 +33,7 @@
                         </svg>
                         Ubah Email
                     </a>
-                    <a href="{{ route('admin-masjid.profil.password.edit') }}"
+                    <a href="{{ route('admin-lembaga.profil.password.edit') }}"
                        class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -56,15 +56,15 @@
                 <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mb-6">
                     <div class="flex-shrink-0">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-4 ring-emerald-100 bg-gray-100 mx-auto sm:mx-0">
-                            <img src="{{ $masjid->admin_foto_url }}"
+                            <img src="{{ $lembaga->admin_foto_url }}"
                                  alt="Foto Admin"
                                  class="w-full h-full object-cover"
-                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($masjid->admin_nama ?? $user->username) }}&background=059669&color=fff&size=96'">
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode($lembaga->admin_nama ?? $user->username) }}&background=059669&color=fff&size=96'">
                         </div>
                     </div>
                     <div class="flex-1 text-center sm:text-left">
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900 mb-0.5">
-                            {{ $masjid->admin_nama ?? $user->username }}
+                            {{ $lembaga->admin_nama ?? $user->username }}
                         </h2>
                         <p class="text-xs sm:text-sm text-gray-500 mb-3">{{ $user->email }}</p>
                         <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
@@ -73,7 +73,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                 </svg>
-                                Admin Masjid
+                                Admin Lembaga
                             </span>
                             @if($user->is_active)
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">Aktif</span>
@@ -108,7 +108,7 @@
                         <div class="flex items-center gap-2">
                             <p class="text-sm text-gray-900 font-medium">{{ $user->email ?? '-' }}</p>
                             @if(!$user->is_google_user)
-                            <a href="{{ route('admin-masjid.profil.email.edit') }}"
+                            <a href="{{ route('admin-lembaga.profil.email.edit') }}"
                                class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 transition flex-shrink-0">
                                 Ubah
                             </a>
@@ -136,7 +136,7 @@
                     @if(!$user->is_google_user)
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Keamanan</p>
-                        <a href="{{ route('admin-masjid.profil.password.edit') }}"
+                        <a href="{{ route('admin-lembaga.profil.password.edit') }}"
                            class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition">
                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -156,20 +156,20 @@
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    Data Admin Masjid
+                    Data Admin Lembaga
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nama Admin</p>
-                        <p class="text-sm text-gray-900 font-medium">{{ $masjid->admin_nama ?? '-' }}</p>
+                        <p class="text-sm text-gray-900 font-medium">{{ $lembaga->admin_nama ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">No. Telepon Admin</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->admin_telepon ?? '-' }}</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->admin_telepon ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email Admin</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->admin_email ?? '-' }}</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->admin_email ?? '-' }}</p>
                     </div>
                 </div>
             </div>
@@ -181,14 +181,14 @@
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    Data Masjid
+                    Data Lembaga
                 </h3>
 
-                @if($masjid->foto_count > 0)
+                @if($lembaga->foto_count > 0)
                 <div class="mb-5">
-                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Foto Masjid</p>
+                    <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Foto Lembaga</p>
                     <div class="flex flex-wrap gap-3">
-                        @foreach($masjid->foto_urls as $i => $url)
+                        @foreach($lembaga->foto_urls as $i => $url)
                         <div class="relative">
                             <img src="{{ $url }}" alt="Foto {{ $i+1 }}"
                                  class="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-xl border border-gray-200 shadow-sm">
@@ -203,29 +203,29 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                     <div class="md:col-span-2 lg:col-span-3">
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nama Masjid</p>
-                        <p class="text-base text-gray-900 font-semibold">{{ $masjid->nama ?? '-' }}</p>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nama Lembaga</p>
+                        <p class="text-base text-gray-900 font-semibold">{{ $lembaga->nama ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Kode Masjid</p>
-                        <span class="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded-md inline-block border border-gray-100">{{ $masjid->kode_masjid ?? '-' }}</span>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Kode Lembaga</p>
+                        <span class="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded-md inline-block border border-gray-100">{{ $lembaga->kode_lembaga ?? '-' }}</span>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telepon Masjid</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->telepon ?? '-' }}</p>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Telepon Lembaga</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->telepon ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email Masjid</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->email ?? '-' }}</p>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Email Lembaga</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->email ?? '-' }}</p>
                     </div>
                     <div class="md:col-span-2 lg:col-span-3">
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Alamat Lengkap</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->alamat_lengkap ?? '-' }}</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->alamat_lengkap ?? '-' }}</p>
                     </div>
-                    @if($masjid->deskripsi)
+                    @if($lembaga->deskripsi)
                     <div class="md:col-span-2 lg:col-span-3">
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Deskripsi</p>
-                        <p class="text-sm text-gray-900 leading-relaxed">{{ $masjid->deskripsi }}</p>
+                        <p class="text-sm text-gray-900 leading-relaxed">{{ $lembaga->deskripsi }}</p>
                     </div>
                     @endif
                 </div>
@@ -238,33 +238,33 @@
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    Sejarah Masjid
+                    Sejarah Lembaga
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Tahun Berdiri</p>
                         <p class="text-sm text-gray-900 font-medium">
-                            {{ $masjid->tahun_berdiri ?? '-' }}
-                            @if($masjid->usia_masjid)
-                                <span class="text-xs text-gray-400 ml-1">({{ $masjid->usia_masjid }} tahun)</span>
+                            {{ $lembaga->tahun_berdiri ?? '-' }}
+                            @if($lembaga->usia_lembaga)
+                                <span class="text-xs text-gray-400 ml-1">({{ $lembaga->usia_lembaga }} tahun)</span>
                             @endif
                         </p>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Pendiri</p>
-                        <p class="text-sm text-gray-900">{{ $masjid->pendiri ?? '-' }}</p>
+                        <p class="text-sm text-gray-900">{{ $lembaga->pendiri ?? '-' }}</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Kapasitas Jamaah</p>
                         <p class="text-sm text-gray-900">
-                            {{ $masjid->kapasitas_jamaah ? number_format($masjid->kapasitas_jamaah, 0, ',', '.') . ' orang' : '-' }}
+                            {{ $lembaga->kapasitas_jamaah ? number_format($lembaga->kapasitas_jamaah, 0, ',', '.') . ' orang' : '-' }}
                         </p>
                     </div>
-                    @if($masjid->sejarah)
+                    @if($lembaga->sejarah)
                     <div class="md:col-span-2 lg:col-span-3">
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Sejarah</p>
                         <div class="text-sm text-gray-900 leading-relaxed bg-gray-50 rounded-xl p-4 border border-gray-100">
-                            {!! nl2br(e($masjid->sejarah)) !!}
+                            {!! nl2br(e($lembaga->sejarah)) !!}
                         </div>
                     </div>
                     @endif

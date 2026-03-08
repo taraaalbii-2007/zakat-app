@@ -112,7 +112,7 @@ class KunjunganMustahikController extends Controller
     public function create()
     {
         $amil      = $this->getAmil();
-        $mustahiks = Mustahik::byMasjid($amil->masjid_id)
+        $mustahiks = Mustahik::byLembaga($amil->lembaga_id)
             ->active()
             ->byStatus('verified')
             ->orderBy('nama_lengkap')
@@ -178,7 +178,7 @@ class KunjunganMustahikController extends Controller
             ->with('mustahik')
             ->firstOrFail();
 
-        $mustahiks = Mustahik::byMasjid($amil->masjid_id)
+        $mustahiks = Mustahik::byLembaga($amil->lembaga_id)
             ->active()
             ->byStatus('verified')
             ->orderBy('nama_lengkap')
@@ -315,7 +315,7 @@ class KunjunganMustahikController extends Controller
     public function searchMustahik(Request $request)
     {
         $amil = $this->getAmil();
-        $mustahiks = Mustahik::byMasjid($amil->masjid_id)
+        $mustahiks = Mustahik::byLembaga($amil->lembaga_id)
             ->active()
             ->byStatus('verified')
             ->search($request->input('q', ''))

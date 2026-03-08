@@ -17,7 +17,7 @@ class TransaksiPenerimaan extends Model
         'no_transaksi',
         'tanggal_transaksi',
         'waktu_transaksi',
-        'masjid_id',
+        'lembaga_id',
         'muzakki_id',
         'diinput_muzakki',
         'jenis_zakat_id',
@@ -131,10 +131,10 @@ class TransaksiPenerimaan extends Model
 
         static::creating(function ($model) {
             if (empty($model->uuid))           $model->uuid = (string) Str::uuid();
-            if (empty($model->no_transaksi))   $model->no_transaksi = self::generateNoTransaksi($model->masjid_id);
+            if (empty($model->no_transaksi))   $model->no_transaksi = self::generateNoTransaksi($model->lembaga_id);
             if (empty($model->tanggal_transaksi)) $model->tanggal_transaksi = now();
             if (empty($model->waktu_transaksi))   $model->waktu_transaksi = now();
-            if (empty($model->no_kwitansi))    $model->no_kwitansi = self::generateNoKwitansi($model->masjid_id);
+            if (empty($model->no_kwitansi))    $model->no_kwitansi = self::generateNoKwitansi($model->lembaga_id);
             
             // Default jumlah_dibayar = jumlah jika tidak diisi
             if (is_null($model->jumlah_dibayar) && !is_null($model->jumlah)) {
@@ -152,10 +152,10 @@ class TransaksiPenerimaan extends Model
     // GENERATE NOMOR
     // ===============================
 
-    public static function generateNoTransaksi($masjidId): string
+    public static function generateNoTransaksi($lembagaId): string
     {
-        $masjid     = Masjid::find($masjidId);
-        $kodeMasjid = $masjid ? $masjid->kode_masjid : 'MSJ001';
+        $lembaga     = Lembaga::find($lembagaId);
+        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ001';
         $year       = date('Y');
         $month      = date('m');
 
@@ -165,13 +165,13 @@ class TransaksiPenerimaan extends Model
             ->first();
 
         $newNumber = $last ? ((int) substr($last->no_transaksi, -4)) + 1 : 1;
-        return 'TRX-' . $kodeMasjid . '-' . $year . $month . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        return 'TRX-' . $kodeLembaga . '-' . $year . $month . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    public static function generateNoKwitansi($masjidId): string
+    public static function generateNoKwitansi($lembagaId): string
     {
-        $masjid     = Masjid::find($masjidId);
-        $kodeMasjid = $masjid ? $masjid->kode_masjid : 'MSJ001';
+        $lembaga     = Lembaga::find($lembagaId);
+        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ001';
         $year       = date('Y');
 
         $last = self::whereYear('created_at', $year)
@@ -180,16 +180,16 @@ class TransaksiPenerimaan extends Model
             ->first();
 
         $newNumber = ($last && $last->no_kwitansi) ? ((int) substr($last->no_kwitansi, -4)) + 1 : 1;
-        return 'KWT-' . $kodeMasjid . '-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        return 'KWT-' . $kodeLembaga . '-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
     // ===============================
     // RELATIONSHIPS
     // ===============================
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
     public function muzakki()
     {
@@ -224,9 +224,9 @@ class TransaksiPenerimaan extends Model
     // SCOPES
     // ===============================
 
-    public function scopeByMasjid($q, $id)
+    public function scopeByLembaga($q, $id)
     {
-        return $q->where('masjid_id', $id);
+        return $q->where('lembaga_id', $id);
     }
     public function scopeByTanggal($q, $tgl)
     {

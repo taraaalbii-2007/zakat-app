@@ -15,7 +15,7 @@ class KasHarianAmil extends Model
     protected $fillable = [
         'uuid',
         'amil_id',
-        'masjid_id',
+        'lembaga_id',
         'tanggal',
         'saldo_awal',
         'total_penerimaan',
@@ -70,17 +70,17 @@ class KasHarianAmil extends Model
         return $this->belongsTo(Amil::class, 'amil_id');
     }
 
-    public function masjid()
+    public function lembaga()
     {
-        return $this->belongsTo(Masjid::class, 'masjid_id');
+        return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
     // ============================================
     // SCOPES
     // ============================================
-    public function scopeByMasjid($query, int $masjidId)
+    public function scopeByLembaga($query, int $lembagaId)
     {
-        return $query->where('masjid_id', $masjidId);
+        return $query->where('lembaga_id', $lembagaId);
     }
 
     public function scopeByAmil($query, int $amilId)
@@ -191,10 +191,10 @@ class KasHarianAmil extends Model
     /**
      * Ambil kas hari ini milik amil tertentu, atau buat baru jika belum ada
      */
-    public static function kasHariIni(int $amilId, int $masjidId): ?self
+    public static function kasHariIni(int $amilId, int $lembagaId): ?self
     {
         return static::where('amil_id', $amilId)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->whereDate('tanggal', today())
             ->first();
     }
@@ -202,10 +202,10 @@ class KasHarianAmil extends Model
     /**
      * Ambil saldo_akhir dari hari sebelumnya sebagai saldo_awal hari ini
      */
-    public static function getSaldoAwalHariIni(int $amilId, int $masjidId): float
+    public static function getSaldoAwalHariIni(int $amilId, int $lembagaId): float
     {
         $kemarin = static::where('amil_id', $amilId)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('tanggal', '<', today())
             ->orderByDesc('tanggal')
             ->first();
