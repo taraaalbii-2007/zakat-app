@@ -3,28 +3,28 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 
 class SuperadminTransaksiPenyaluranController extends Controller
 {
     public function index()
     {
-        $masjids = Masjid::with(['transaksiPenyaluran' => function ($q) {
+        $lembagas = Lembaga::with(['transaksiPenyaluran' => function ($q) {
             $q->with('mustahik')->orderBy('created_at', 'desc');
         }])
         ->orderBy('nama')
         ->get();
 
-        $totalTransaksi  = $masjids->sum(fn($m) => $m->transaksiPenyaluran->count());
-        $totalDraft      = $masjids->sum(fn($m) => $m->transaksiPenyaluran->where('status', 'draft')->count());
-        $totalDisalurkan = $masjids->sum(fn($m) => $m->transaksiPenyaluran->where('status', 'disalurkan')->count());
-        $totalNominal    = $masjids->sum(fn($m) => $m->transaksiPenyaluran->sum('jumlah'));
+        $totalTransaksi  = $lembagas->sum(fn($m) => $m->transaksiPenyaluran->count());
+        $totalDraft      = $lembagas->sum(fn($m) => $m->transaksiPenyaluran->where('status', 'draft')->count());
+        $totalDisalurkan = $lembagas->sum(fn($m) => $m->transaksiPenyaluran->where('status', 'disalurkan')->count());
+        $totalNominal    = $lembagas->sum(fn($m) => $m->transaksiPenyaluran->sum('jumlah'));
 
         $breadcrumbs = [
             'Kelola Penyaluran' => null,
         ];
 
         return view('superadmin.transaksi-penyaluran.index',
-            compact('masjids', 'totalTransaksi', 'totalDraft', 'totalDisalurkan', 'totalNominal', 'breadcrumbs'));
+            compact('lembagas', 'totalTransaksi', 'totalDraft', 'totalDisalurkan', 'totalNominal', 'breadcrumbs'));
     }
 }

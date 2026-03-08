@@ -52,7 +52,7 @@
                             </button>
                             <form method="GET" action="{{ route('pengguna.index') }}" id="search-form"
                                 class="{{ request('q') ? '' : 'hidden' }}">
-                                @foreach(['peran','status','masjid_id'] as $f)
+                                @foreach(['peran','status','lembaga_id'] as $f)
                                     @if(request($f))
                                         <input type="hidden" name="{{ $f }}" value="{{ request($f) }}">
                                     @endif
@@ -76,7 +76,7 @@
 
             {{-- ── Filter Panel ── --}}
             <div id="filter-panel"
-                class="{{ (request('peran') || request('status') || request('masjid_id')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                class="{{ (request('peran') || request('status') || request('lembaga_id')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('pengguna.index') }}" id="filter-form">
                     @if(request('q'))
                         <input type="hidden" name="q" value="{{ request('q') }}">
@@ -90,7 +90,7 @@
                                 onchange="this.form.submit()">
                                 <option value="">Semua Peran</option>
                                 <option value="superadmin"   {{ request('peran') === 'superadmin'   ? 'selected' : '' }}>Super Admin</option>
-                                <option value="admin_masjid" {{ request('peran') === 'admin_masjid' ? 'selected' : '' }}>Admin Masjid</option>
+                                <option value="admin_lembaga" {{ request('peran') === 'admin_lembaga' ? 'selected' : '' }}>Admin Lembaga</option>
                                 <option value="amil"         {{ request('peran') === 'amil'         ? 'selected' : '' }}>Amil</option>
                                 <option value="muzakki"      {{ request('peran') === 'muzakki'      ? 'selected' : '' }}>Muzakki</option>
                             </select>
@@ -106,22 +106,22 @@
                                 <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
-                        {{-- Filter Masjid --}}
+                        {{-- Filter Lembaga --}}
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Masjid</label>
-                            <select name="masjid_id"
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Lembaga</label>
+                            <select name="lembaga_id"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
-                                <option value="">Semua Masjid</option>
-                                @foreach($masjidList as $masjid)
-                                    <option value="{{ $masjid->id }}" {{ request('masjid_id') == $masjid->id ? 'selected' : '' }}>
-                                        {{ $masjid->nama }}
+                                <option value="">Semua Lembaga</option>
+                                @foreach($lembagaList as $lembaga)
+                                    <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
+                                        {{ $lembaga->nama }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    @if(request('peran') || request('status') || request('masjid_id'))
+                    @if(request('peran') || request('status') || request('lembaga_id'))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('pengguna.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
@@ -143,7 +143,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengguna</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peran</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masjid</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembaga</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat</th>
                                 <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
@@ -154,14 +154,14 @@
                                 @php
                                     $peranLabel = match($user->peran) {
                                         'superadmin'   => 'Super Admin',
-                                        'admin_masjid' => 'Admin Masjid',
+                                        'admin_lembaga' => 'Admin Lembaga',
                                         'amil'         => 'Amil',
                                         'muzakki'      => 'Muzakki',
                                         default        => ucfirst($user->peran)
                                     };
                                     $peranColor = match($user->peran) {
                                         'superadmin'   => 'bg-purple-100 text-purple-800',
-                                        'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                        'admin_lembaga' => 'bg-blue-100 text-blue-800',
                                         'amil'         => 'bg-green-100 text-green-800',
                                         'muzakki'      => 'bg-amber-100 text-amber-800',
                                         default        => 'bg-gray-100 text-gray-800'
@@ -200,7 +200,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm text-gray-900">{{ $user->masjid->nama ?? '-' }}</div>
+                                        <div class="text-sm text-gray-900">{{ $user->lembaga->nama ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($user->is_active)
@@ -236,14 +236,14 @@
                         @php
                             $peranLabel = match($user->peran) {
                                 'superadmin'   => 'Super Admin',
-                                'admin_masjid' => 'Admin Masjid',
+                                'admin_lembaga' => 'Admin Lembaga',
                                 'amil'         => 'Amil',
                                 'muzakki'      => 'Muzakki',
                                 default        => ucfirst($user->peran)
                             };
                             $peranColor = match($user->peran) {
                                 'superadmin'   => 'bg-purple-100 text-purple-800',
-                                'admin_masjid' => 'bg-blue-100 text-blue-800',
+                                'admin_lembaga' => 'bg-blue-100 text-blue-800',
                                 'amil'         => 'bg-green-100 text-green-800',
                                 'muzakki'      => 'bg-amber-100 text-amber-800',
                                 default        => 'bg-gray-100 text-gray-800'
@@ -268,8 +268,8 @@
                                                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
                                             @endif
                                         </div>
-                                        @if($user->masjid)
-                                            <p class="text-xs text-gray-500 mt-1.5">{{ $user->masjid->nama }}</p>
+                                        @if($user->lembaga)
+                                            <p class="text-xs text-gray-500 mt-1.5">{{ $user->lembaga->nama }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -303,7 +303,7 @@
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    @if(request('q') || request('peran') || request('status') || request('masjid_id'))
+                    @if(request('q') || request('peran') || request('status') || request('lembaga_id'))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-sm text-gray-500 mb-6">
                             @if(request('q'))

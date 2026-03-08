@@ -67,7 +67,7 @@
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Transaksi Penerimaan Semua Masjid</h2>
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                            Total: {{ $totalTransaksi }} Transaksi dari {{ $masjids->count() }} Masjid
+                            Total: {{ $totalTransaksi }} Transaksi dari {{ $lembagas->count() }} Masjid
                         </p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -91,7 +91,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="search" placeholder="Cari nama masjid..."
+                            <input type="search" placeholder="Cari nama lembaga..."
                                 oninput="filterMasjid(this.value)"
                                 class="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-full sm:w-56">
                         </div>
@@ -111,17 +111,17 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($masjids as $masjid)
+                        @forelse ($lembagas as $lembaga)
                             @php
-                                $transaksiMasjid = $masjid->transaksiPenerimaan ?? collect();
+                                $transaksiMasjid = $lembaga->transaksiPenerimaan ?? collect();
                                 $nominalTotal = $transaksiMasjid->sum('jumlah');
                                 $pendingCount = $transaksiMasjid->where('status', 'pending')->count();
                             @endphp
-                            <tr class="masjid-row cursor-pointer hover:bg-amber-50/50 transition-colors"
-                                data-nama="{{ strtolower($masjid->nama) }}"
-                                onclick="toggleMasjid('trx-penerimaan-{{ $masjid->id }}', this)">
+                            <tr class="lembaga-row cursor-pointer hover:bg-amber-50/50 transition-colors"
+                                data-nama="{{ strtolower($lembaga->nama) }}"
+                                onclick="toggleMasjid('trx-penerimaan-{{ $lembaga->id }}', this)">
                                 <td class="px-4 py-3">
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 masjid-chevron"
+                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 lembaga-chevron"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
@@ -134,7 +134,7 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $masjid->nama }}</div>
+                                            <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat transaksi</div>
                                         </div>
                                     </div>
@@ -159,19 +159,19 @@
                             </tr>
 
                             {{-- Expandable: Tabel Transaksi --}}
-                            <tr id="trx-penerimaan-{{ $masjid->id }}" class="hidden masjid-content-row">
+                            <tr id="trx-penerimaan-{{ $lembaga->id }}" class="hidden lembaga-content-row">
                                 <td colspan="5" class="p-0">
                                     <div class="bg-gradient-to-b from-blue-50/50 to-gray-50 border-y border-blue-200/50 px-6 py-4">
                                         <div class="flex items-center gap-2 mb-3">
                                             <div class="w-1 h-5 bg-blue-500 rounded-full"></div>
                                             <h3 class="text-sm font-semibold text-gray-800">
-                                                Transaksi Penerimaan — {{ $masjid->nama }}
+                                                Transaksi Penerimaan — {{ $lembaga->nama }}
                                             </h3>
                                         </div>
 
                                         @if ($transaksiMasjid->isEmpty())
                                             <div class="text-center py-6 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
-                                                Belum ada transaksi penerimaan untuk masjid ini
+                                                Belum ada transaksi penerimaan untuk lembaga ini
                                             </div>
                                         @else
                                             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
@@ -230,7 +230,7 @@
                         @empty
                             <tr>
                                 <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-400">
-                                    Belum ada data masjid
+                                    Belum ada data lembaga
                                 </td>
                             </tr>
                         @endforelse
@@ -245,26 +245,26 @@
 <script>
     function toggleMasjid(id, row) {
         const content = document.getElementById(id);
-        const chevron = row.querySelector('.masjid-chevron');
+        const chevron = row.querySelector('.lembaga-chevron');
         const isHidden = content.classList.contains('hidden');
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
     }
     function expandAll() {
-        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.remove('hidden'));
-        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.add('rotate-90'));
+        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.add('rotate-90'));
     }
     function collapseAll() {
-        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.remove('rotate-90'));
+        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.remove('rotate-90'));
     }
     function filterMasjid(keyword) {
         const q = keyword.toLowerCase().trim();
-        document.querySelectorAll('.masjid-row').forEach(row => {
+        document.querySelectorAll('.lembaga-row').forEach(row => {
             const show = !q || (row.getAttribute('data-nama') || '').includes(q);
             row.style.display = show ? '' : 'none';
             const next = row.nextElementSibling;
-            if (next && next.classList.contains('masjid-content-row')) {
+            if (next && next.classList.contains('lembaga-content-row')) {
                 next.style.display = show ? '' : 'none';
             }
         });

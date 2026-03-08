@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Amil;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 use App\Models\MailConfig;
 use App\Models\Muzakki;
 use App\Models\Pengguna;
@@ -30,7 +30,7 @@ class PenggunaController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Pengguna::with('masjid')->latest();
+        $query = Pengguna::with('lembaga')->latest();
 
         if ($search = $request->get('q')) {
             $query->search($search);
@@ -41,28 +41,28 @@ class PenggunaController extends Controller
         if ($request->filled('status')) {
             $query->where('is_active', $request->get('status') === 'aktif');
         }
-        if ($masjidId = $request->get('masjid_id')) {
-            $query->where('masjid_id', $masjidId);
+        if ($dId = $request->get('d_id')) {
+            $query->where('d_id', $dId);
         }
 
         $pengguna   = $query->paginate(10);
-        $masjidList = Masjid::orderBy('nama')->get(['id', 'nama']);
+        $lembagaList = Lembaga::orderBy('nama')->get(['id', 'nama']);
 
         $breadcrumbs = [
             'Data Pengguna' => null,
         ];
 
-        return view('superadmin.pengguna.index', compact('pengguna', 'masjidList', 'breadcrumbs'));
+        return view('superadmin.pengguna.index', compact('pengguna', 'lembagaList', 'breadcrumbs'));
     }
 
     // ── Create ────────────────────────────────────────────────────────────────
 
     public function create(): View
     {
-        $masjidList = Masjid::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_masjid']);
+        $lembagaList = Lembaga::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_lembaga']);
         $provinces  = Province::orderBy('name')->get(['code', 'name']);
 
-        return view('superadmin.pengguna.create', compact('masjidList', 'provinces'));
+        return view('superadmin.pengguna.create', compact('lembagaList', 'provinces'));
     }
 
     // ── Store ─────────────────────────────────────────────────────────────────
@@ -71,43 +71,43 @@ class PenggunaController extends Controller
     {
         // ── Validasi Dasar ────────────────────────────────────────────────────
         $rules = [
-            'peran'     => ['required', Rule::in(['superadmin', 'admin_masjid', 'amil', 'muzakki'])],
+            'peran'     => ['required', Rule::in(['superadmin', 'admin_d', 'amil', 'muzakki'])],
             'username'  => ['nullable', 'string', 'max:255', 'unique:pengguna,username'],
             'email'     => ['required', 'email', 'max:255', 'unique:pengguna,email'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
             'is_active' => ['boolean'],
         ];
 
-        // ── Validasi Tambahan: Admin Masjid → Buat Masjid Baru ────────────────
-        if ($request->peran === 'admin_masjid') {
+        // ── Validasi Tambahan: Admin Lembaga → Buat Lembaga Baru ────────────────
+        if ($request->peran === 'admin_d') {
             $rules = array_merge($rules, [
                 'admin_nama'       => ['required', 'string', 'max:255'],
                 'admin_telepon'    => ['required', 'string', 'max:20'],
                 'admin_email'      => ['required', 'email', 'max:255'],
                 'admin_foto'       => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'nama_masjid'      => ['required', 'string', 'max:255'],
+                'nama_d'      => ['required', 'string', 'max:255'],
                 'alamat'           => ['required', 'string'],
                 'provinsi_kode'    => ['required', 'string', 'exists:indonesia_provinces,code'],
                 'kota_kode'        => ['required', 'string', 'exists:indonesia_cities,code'],
                 'kecamatan_kode'   => ['required', 'string', 'exists:indonesia_districts,code'],
                 'kelurahan_kode'   => ['required', 'string', 'exists:indonesia_villages,code'],
                 'kode_pos'         => ['nullable', 'string', 'max:5'],
-                'telepon_masjid'   => ['required', 'string', 'max:20'],
-                'email_masjid'     => ['required', 'email', 'max:255'],
-                'deskripsi_masjid' => ['nullable', 'string'],
+                'telepon_d'   => ['required', 'string', 'max:20'],
+                'email_d'     => ['required', 'email', 'max:255'],
+                'deskripsi_d' => ['nullable', 'string'],
                 'sejarah'          => ['nullable', 'string'],
                 'tahun_berdiri'    => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
                 'pendiri'          => ['nullable', 'string', 'max:255'],
                 'kapasitas_jamaah' => ['nullable', 'integer', 'min:1'],
-                'foto_masjid'      => ['nullable', 'array'],
-                'foto_masjid.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'foto_d'      => ['nullable', 'array'],
+                'foto_d.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
             ]);
         }
 
-        // ── Validasi Tambahan: Amil → Pilih Masjid yang Ada ───────────────────
+        // ── Validasi Tambahan: Amil → Pilih Lembaga yang Ada ───────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'masjid_id'                  => ['required', 'exists:masjid,id'],
+                'd_id'                  => ['required', 'exists:d,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -130,24 +130,24 @@ class PenggunaController extends Controller
                 'muzakki_nik'       => ['nullable', 'string', 'size:16', 'unique:muzakki,nik'],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_masjid_id' => ['nullable', 'exists:masjid,id'],
+                'muzakki_d_id' => ['nullable', 'exists:d,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             ]);
         }
 
         $request->validate($rules, [
-            'masjid_id.required'                => 'Masjid wajib dipilih untuk peran Amil.',
+            'd_id.required'                => 'Lembaga wajib dipilih untuk peran Amil.',
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
-            'nama_masjid.required'              => 'Nama masjid wajib diisi.',
-            'alamat.required'                   => 'Alamat masjid wajib diisi.',
+            'nama_d.required'              => 'Nama d wajib diisi.',
+            'alamat.required'                   => 'Alamat d wajib diisi.',
             'provinsi_kode.required'            => 'Provinsi wajib dipilih.',
             'kota_kode.required'                => 'Kota/Kabupaten wajib dipilih.',
             'kecamatan_kode.required'           => 'Kecamatan wajib dipilih.',
             'kelurahan_kode.required'           => 'Kelurahan wajib dipilih.',
-            'telepon_masjid.required'           => 'Telepon masjid wajib diisi.',
-            'email_masjid.required'             => 'Email masjid wajib diisi.',
+            'telepon_d.required'           => 'Telepon d wajib diisi.',
+            'email_d.required'             => 'Email d wajib diisi.',
             'amil_nama_lengkap.required'        => 'Nama lengkap amil wajib diisi.',
             'amil_jenis_kelamin.required'       => 'Jenis kelamin amil wajib dipilih.',
             'amil_tempat_lahir.required'        => 'Tempat lahir amil wajib diisi.',
@@ -166,13 +166,13 @@ class PenggunaController extends Controller
         DB::beginTransaction();
 
         try {
-            $masjid   = null;
+            $d   = null;
             $namaUser = $request->username ?? $request->email;
 
             // ══════════════════════════════════════════════════════
-            // ADMIN MASJID: Buat Masjid Baru
+            // ADMIN MASJID: Buat Lembaga Baru
             // ══════════════════════════════════════════════════════
-            if ($request->peran === 'admin_masjid') {
+            if ($request->peran === 'admin_d') {
                 $namaUser = $request->admin_nama;
 
                 $adminFotoPath = null;
@@ -180,16 +180,16 @@ class PenggunaController extends Controller
                     $adminFotoPath = $request->file('admin_foto')->store('admin-fotos', 'public');
                 }
 
-                $fotoMasjidArray = [];
-                if ($request->hasFile('foto_masjid')) {
-                    $files = $request->file('foto_masjid');
-                    if (count($files) > Masjid::MAX_FOTO) {
+                $fotoLembagaArray = [];
+                if ($request->hasFile('foto_d')) {
+                    $files = $request->file('foto_d');
+                    if (count($files) > Lembaga::MAX_FOTO) {
                         DB::rollBack();
                         return back()->withInput()
-                            ->with('error', 'Maksimal ' . Masjid::MAX_FOTO . ' foto masjid yang diperbolehkan.');
+                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto d yang diperbolehkan.');
                     }
                     foreach ($files as $foto) {
-                        $fotoMasjidArray[] = $foto->store('masjid-fotos', 'public');
+                        $fotoLembagaArray[] = $foto->store('d-fotos', 'public');
                     }
                 }
 
@@ -208,24 +208,24 @@ class PenggunaController extends Controller
                     $kodePos = $kelurahan->meta['postal_code'] ?? null;
                 }
 
-                if (Masjid::where('nama', $request->nama_masjid)->where('kelurahan_kode', $request->kelurahan_kode)->exists()) {
+                if (Lembaga::where('nama', $request->nama_d)->where('kelurahan_kode', $request->kelurahan_kode)->exists()) {
                     DB::rollBack();
                     return back()->withInput()
-                        ->with('error', 'Masjid dengan nama "' . $request->nama_masjid . '" sudah terdaftar di kelurahan ' . $kelurahan->name . '.');
+                        ->with('error', 'Lembaga dengan nama "' . $request->nama_d . '" sudah terdaftar di kelurahan ' . $kelurahan->name . '.');
                 }
 
-                $masjid = Masjid::create([
+                $d = Lembaga::create([
                     'uuid'             => (string) Str::uuid(),
-                    'kode_masjid'      => $this->generateKodeMasjid(),
+                    'kode_lembaga'      => $this->generateKodeLembaga(),
                     'admin_nama'       => $request->admin_nama,
                     'admin_telepon'    => $request->admin_telepon,
                     'admin_email'      => $request->admin_email,
                     'admin_foto'       => $adminFotoPath,
-                    'nama'             => $request->nama_masjid,
+                    'nama'             => $request->nama_d,
                     'alamat'           => $request->alamat,
-                    'telepon'          => $request->telepon_masjid,
-                    'email'            => $request->email_masjid,
-                    'deskripsi'        => $request->deskripsi_masjid,
+                    'telepon'          => $request->telepon_d,
+                    'email'            => $request->email_d,
+                    'deskripsi'        => $request->deskripsi_d,
                     'provinsi_kode'    => $request->provinsi_kode,
                     'provinsi_nama'    => $provinsi->name,
                     'kota_kode'        => $request->kota_kode,
@@ -239,7 +239,7 @@ class PenggunaController extends Controller
                     'tahun_berdiri'    => $request->tahun_berdiri ?: null,
                     'pendiri'          => $request->pendiri,
                     'kapasitas_jamaah' => $request->kapasitas_jamaah ?: null,
-                    'foto'             => !empty($fotoMasjidArray) ? $fotoMasjidArray : null,
+                    'foto'             => !empty($fotoLembagaArray) ? $fotoLembagaArray : null,
                     'is_active'        => true,
                 ]);
             }
@@ -249,9 +249,9 @@ class PenggunaController extends Controller
             // ══════════════════════════════════════════════════════
             $pengguna = Pengguna::create([
                 'peran'             => $request->peran,
-                'masjid_id'         => match ($request->peran) {
-                    'admin_masjid' => $masjid->id,
-                    'amil'         => $request->masjid_id,
+                'd_id'         => match ($request->peran) {
+                    'admin_d' => $d->id,
+                    'amil'         => $request->d_id,
                     default        => null,
                 },
                 'username'          => $request->username ?: null,
@@ -265,7 +265,7 @@ class PenggunaController extends Controller
             // AMIL: Buat record Amil
             // ══════════════════════════════════════════════════════
             if ($request->peran === 'amil') {
-                $masjid   = Masjid::findOrFail($request->masjid_id);
+                $d   = Lembaga::findOrFail($request->d_id);
                 $namaUser = $request->amil_nama_lengkap;
 
                 $fotoPath = null;
@@ -275,8 +275,8 @@ class PenggunaController extends Controller
 
                 Amil::create([
                     'pengguna_id'           => $pengguna->id,
-                    'masjid_id'             => $request->masjid_id,
-                    'kode_amil'             => $this->generateKodeAmil($request->masjid_id),
+                    'd_id'             => $request->d_id,
+                    'kode_amil'             => $this->generateKodeAmil($request->d_id),
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
                     'tempat_lahir'          => $request->amil_tempat_lahir,
@@ -306,7 +306,7 @@ class PenggunaController extends Controller
 
                 Muzakki::create([
                     'pengguna_id' => $pengguna->id,
-                    'masjid_id'   => $request->muzakki_masjid_id ?: null,
+                    'd_id'   => $request->muzakki_d_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -339,7 +339,7 @@ class PenggunaController extends Controller
                         username: $pengguna->username ?? $pengguna->email,
                         password: $plainPassword,
                         peran: $pengguna->peran,
-                        namaMasjid: $masjid?->nama,
+                        namaLembaga: $d?->nama,
                     ));
 
                 $emailSuccess = true;
@@ -376,7 +376,7 @@ class PenggunaController extends Controller
 
     public function show(string $uuid): View
     {
-        $pengguna = Pengguna::with(['masjid', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
+        $pengguna = Pengguna::with(['lembaga', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
 
         return view('superadmin.pengguna.show', compact('pengguna'));
     }
@@ -385,22 +385,22 @@ class PenggunaController extends Controller
 
     public function edit(string $uuid): View
     {
-        $pengguna   = Pengguna::with(['masjid', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
-        $masjidList = Masjid::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_masjid']);
+        $pengguna   = Pengguna::with(['lembaga', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
+        $lembagaList = Lembaga::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_lembaga']);
         $provinces  = Province::orderBy('name')->get(['code', 'name']);
 
-        return view('superadmin.pengguna.edit', compact('pengguna', 'masjidList', 'provinces'));
+        return view('superadmin.pengguna.edit', compact('pengguna', 'lembagaList', 'provinces'));
     }
 
     // ── Update ────────────────────────────────────────────────────────────────
 
     public function update(Request $request, string $uuid): RedirectResponse
     {
-        $pengguna = Pengguna::with(['masjid', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
+        $pengguna = Pengguna::with(['lembaga', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
 
         // ── Validasi Dasar ────────────────────────────────────────────────────
         $rules = [
-            'peran'     => ['required', Rule::in(['superadmin', 'admin_masjid', 'amil', 'muzakki'])],
+            'peran'     => ['required', Rule::in(['superadmin', 'admin_d', 'amil', 'muzakki'])],
             'username'  => [
                 'nullable', 'string', 'max:255',
                 Rule::unique('pengguna', 'username')->ignore($pengguna->id),
@@ -413,31 +413,31 @@ class PenggunaController extends Controller
             'is_active' => ['boolean'],
         ];
 
-        // ── Validasi Tambahan: Admin Masjid ───────────────────────────────────
-        if ($request->peran === 'admin_masjid') {
+        // ── Validasi Tambahan: Admin Lembaga ───────────────────────────────────
+        if ($request->peran === 'admin_d') {
             $rules = array_merge($rules, [
-                'masjid_id'        => ['required', 'exists:masjid,id'],
+                'd_id'        => ['required', 'exists:d,id'],
                 'admin_nama'       => ['required', 'string', 'max:255'],
                 'admin_telepon'    => ['required', 'string', 'max:20'],
                 'admin_email'      => ['required', 'email', 'max:255'],
                 'admin_foto'       => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'nama_masjid'      => ['required', 'string', 'max:255'],
+                'nama_d'      => ['required', 'string', 'max:255'],
                 'alamat'           => ['required', 'string'],
                 'provinsi_kode'    => ['required', 'string', 'exists:indonesia_provinces,code'],
                 'kota_kode'        => ['required', 'string', 'exists:indonesia_cities,code'],
                 'kecamatan_kode'   => ['required', 'string', 'exists:indonesia_districts,code'],
                 'kelurahan_kode'   => ['required', 'string', 'exists:indonesia_villages,code'],
                 'kode_pos'         => ['nullable', 'string', 'max:5'],
-                'telepon_masjid'   => ['required', 'string', 'max:20'],
-                'email_masjid'     => ['required', 'email', 'max:255'],
-                'deskripsi_masjid' => ['nullable', 'string'],
+                'telepon_d'   => ['required', 'string', 'max:20'],
+                'email_d'     => ['required', 'email', 'max:255'],
+                'deskripsi_d' => ['nullable', 'string'],
                 'sejarah'          => ['nullable', 'string'],
                 'tahun_berdiri'    => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
                 'pendiri'          => ['nullable', 'string', 'max:255'],
                 'kapasitas_jamaah' => ['nullable', 'integer', 'min:1'],
-                'foto_masjid'      => ['nullable', 'array'],
-                'foto_masjid.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'hapus_foto_masjid' => ['nullable', 'array'],
+                'foto_d'      => ['nullable', 'array'],
+                'foto_d.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'hapus_foto_d' => ['nullable', 'array'],
                 'hapus_admin_foto' => ['nullable', 'boolean'],
             ]);
         }
@@ -445,7 +445,7 @@ class PenggunaController extends Controller
         // ── Validasi Tambahan: Amil ───────────────────────────────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'masjid_id'                  => ['required', 'exists:masjid,id'],
+                'd_id'                  => ['required', 'exists:d,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -473,25 +473,25 @@ class PenggunaController extends Controller
                 ],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_masjid_id' => ['nullable', 'exists:masjid,id'],
+                'muzakki_d_id' => ['nullable', 'exists:d,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
                 'hapus_muzakki_foto' => ['nullable', 'boolean'],
             ]);
         }
 
         $request->validate($rules, [
-            'masjid_id.required'                => 'Masjid wajib dipilih.',
+            'd_id.required'                => 'Lembaga wajib dipilih.',
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
-            'nama_masjid.required'              => 'Nama masjid wajib diisi.',
-            'alamat.required'                   => 'Alamat masjid wajib diisi.',
+            'nama_d.required'              => 'Nama d wajib diisi.',
+            'alamat.required'                   => 'Alamat d wajib diisi.',
             'provinsi_kode.required'            => 'Provinsi wajib dipilih.',
             'kota_kode.required'                => 'Kota/Kabupaten wajib dipilih.',
             'kecamatan_kode.required'           => 'Kecamatan wajib dipilih.',
             'kelurahan_kode.required'           => 'Kelurahan wajib dipilih.',
-            'telepon_masjid.required'           => 'Telepon masjid wajib diisi.',
-            'email_masjid.required'             => 'Email masjid wajib diisi.',
+            'telepon_d.required'           => 'Telepon d wajib diisi.',
+            'email_d.required'             => 'Email d wajib diisi.',
             'amil_nama_lengkap.required'        => 'Nama lengkap amil wajib diisi.',
             'amil_jenis_kelamin.required'       => 'Jenis kelamin amil wajib dipilih.',
             'amil_tempat_lahir.required'        => 'Tempat lahir amil wajib diisi.',
@@ -514,9 +514,9 @@ class PenggunaController extends Controller
                 'username'  => $request->username ?: null,
                 'email'     => $request->email,
                 'is_active' => $request->boolean('is_active', true),
-                'masjid_id' => match ($request->peran) {
-                    'admin_masjid' => $request->masjid_id,
-                    'amil'         => $request->masjid_id,
+                'd_id' => match ($request->peran) {
+                    'admin_d' => $request->d_id,
+                    'amil'         => $request->d_id,
                     default        => null,
                 },
             ];
@@ -528,13 +528,13 @@ class PenggunaController extends Controller
             $pengguna->update($penggunaData);
 
             // ══════════════════════════════════════════════════════
-            // ADMIN MASJID: Update data Masjid
+            // ADMIN MASJID: Update data Lembaga
             // ══════════════════════════════════════════════════════
-            if ($request->peran === 'admin_masjid') {
-                $masjid = Masjid::findOrFail($request->masjid_id);
+            if ($request->peran === 'admin_d') {
+                $d = Lembaga::findOrFail($request->d_id);
 
                 // Handle hapus foto admin
-                $adminFotoPath = $masjid->admin_foto;
+                $adminFotoPath = $d->admin_foto;
                 if ($request->boolean('hapus_admin_foto') && $adminFotoPath) {
                     Storage::disk('public')->delete($adminFotoPath);
                     $adminFotoPath = null;
@@ -546,12 +546,12 @@ class PenggunaController extends Controller
                     $adminFotoPath = $request->file('admin_foto')->store('admin-fotos', 'public');
                 }
 
-                // Handle foto masjid
-                $currentFotos = (array) ($masjid->foto ?? []);
+                // Handle foto d
+                $currentFotos = (array) ($d->foto ?? []);
 
                 // Hapus foto yang dicentang untuk dihapus
-                if ($request->filled('hapus_foto_masjid')) {
-                    $hapusIndeks = $request->input('hapus_foto_masjid', []);
+                if ($request->filled('hapus_foto_d')) {
+                    $hapusIndeks = $request->input('hapus_foto_d', []);
                     foreach ($hapusIndeks as $idx) {
                         if (isset($currentFotos[$idx])) {
                             Storage::disk('public')->delete($currentFotos[$idx]);
@@ -562,16 +562,16 @@ class PenggunaController extends Controller
                 }
 
                 // Upload foto baru
-                if ($request->hasFile('foto_masjid')) {
-                    $newFotos = $request->file('foto_masjid');
+                if ($request->hasFile('foto_d')) {
+                    $newFotos = $request->file('foto_d');
                     $totalFotos = count($currentFotos) + count($newFotos);
-                    if ($totalFotos > Masjid::MAX_FOTO) {
+                    if ($totalFotos > Lembaga::MAX_FOTO) {
                         DB::rollBack();
                         return back()->withInput()
-                            ->with('error', 'Maksimal ' . Masjid::MAX_FOTO . ' foto masjid yang diperbolehkan.');
+                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto d yang diperbolehkan.');
                     }
                     foreach ($newFotos as $foto) {
-                        $currentFotos[] = $foto->store('masjid-fotos', 'public');
+                        $currentFotos[] = $foto->store('d-fotos', 'public');
                     }
                 }
 
@@ -591,16 +591,16 @@ class PenggunaController extends Controller
                     $kodePos = $kelurahan->meta['postal_code'] ?? null;
                 }
 
-                $masjid->update([
+                $d->update([
                     'admin_nama'       => $request->admin_nama,
                     'admin_telepon'    => $request->admin_telepon,
                     'admin_email'      => $request->admin_email,
                     'admin_foto'       => $adminFotoPath,
-                    'nama'             => $request->nama_masjid,
+                    'nama'             => $request->nama_d,
                     'alamat'           => $request->alamat,
-                    'telepon'          => $request->telepon_masjid,
-                    'email'            => $request->email_masjid,
-                    'deskripsi'        => $request->deskripsi_masjid,
+                    'telepon'          => $request->telepon_d,
+                    'email'            => $request->email_d,
+                    'deskripsi'        => $request->deskripsi_d,
                     'provinsi_kode'    => $request->provinsi_kode,
                     'provinsi_nama'    => $provinsi->name,
                     'kota_kode'        => $request->kota_kode,
@@ -639,7 +639,7 @@ class PenggunaController extends Controller
 
                 $amilData = [
                     'pengguna_id'           => $pengguna->id,
-                    'masjid_id'             => $request->masjid_id,
+                    'd_id'             => $request->d_id,
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
                     'tempat_lahir'          => $request->amil_tempat_lahir,
@@ -658,7 +658,7 @@ class PenggunaController extends Controller
                 if ($amil) {
                     $amil->update($amilData);
                 } else {
-                    $amilData['kode_amil'] = $this->generateKodeAmil($request->masjid_id);
+                    $amilData['kode_amil'] = $this->generateKodeAmil($request->d_id);
                     Amil::create($amilData);
                 }
             }
@@ -683,7 +683,7 @@ class PenggunaController extends Controller
 
                 $muzakkiData = [
                     'pengguna_id' => $pengguna->id,
-                    'masjid_id'   => $request->muzakki_masjid_id ?: null,
+                    'd_id'   => $request->muzakki_d_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -772,35 +772,35 @@ class PenggunaController extends Controller
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private function generateKodeMasjid(): string
+    private function generateKodeLembaga(): string
     {
         $prefix = 'MSJ';
         $year   = date('Y');
 
         return DB::transaction(function () use ($prefix, $year) {
-            $lastMasjid = Masjid::whereYear('created_at', $year)
+            $lastLembaga = Lembaga::whereYear('created_at', $year)
                 ->lockForUpdate()
                 ->orderBy('id', 'desc')
                 ->first();
 
-            $number     = $lastMasjid ? (int) substr($lastMasjid->kode_masjid, -4) + 1 : 1;
-            $kodeMasjid = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
+            $number     = $lastLembaga ? (int) substr($lastLembaga->kode_lembaga, -4) + 1 : 1;
+            $kodeLembaga = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
 
             $attempts = 0;
-            while (Masjid::where('kode_masjid', $kodeMasjid)->exists() && $attempts < 10) {
+            while (Lembaga::where('kode_lembaga', $kodeLembaga)->exists() && $attempts < 10) {
                 $number++;
-                $kodeMasjid = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
+                $kodeLembaga = $prefix . $year . str_pad($number, 4, '0', STR_PAD_LEFT);
                 $attempts++;
             }
 
-            return $kodeMasjid;
+            return $kodeLembaga;
         });
     }
 
-    private function generateKodeAmil(int $masjidId): string
+    private function generateKodeAmil(int $dId): string
     {
-        $masjid = Masjid::findOrFail($masjidId);
-        $prefix = 'AMIL-' . $masjid->kode_masjid . '-';
+        $d = Lembaga::findOrFail($dId);
+        $prefix = 'AMIL-' . $d->kode_lembaga . '-';
 
         $lastAmil = Amil::where('kode_amil', 'like', $prefix . '%')
             ->orderBy('kode_amil', 'desc')

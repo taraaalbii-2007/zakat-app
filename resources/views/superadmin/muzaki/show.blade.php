@@ -27,7 +27,7 @@
                     </div>
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">{{ $biodata->muzakki_nama }}</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">{{ $masjid->nama }}</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">{{ $lembaga->nama }}</p>
                     </div>
                 </div>
                 <div class="flex gap-2">

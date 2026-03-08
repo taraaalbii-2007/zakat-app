@@ -477,312 +477,218 @@
 @endpush
 
 @push('scripts')
+{{-- Letakkan di dalam @push('scripts') --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
         initForm();
     });
 
+    // ================================
+    // HELPER: Normalisasi response API
+    // ================================
+    function normalizeArray(json) {
+        if (Array.isArray(json)) return json;
+        if (json && Array.isArray(json.data)) return json.data;
+        if (json && Array.isArray(json.cities)) return json.cities;
+        if (json && Array.isArray(json.districts)) return json.districts;
+        if (json && Array.isArray(json.villages)) return json.villages;
+        console.warn('Format response tidak dikenal:', json);
+        return [];
+    }
+
+    // ================================
+    // INIT
+    // ================================
     function initForm() {
-        // Auto-focus pertama
         if (window.innerWidth >= 768) {
             document.getElementById('admin_nama')?.focus();
         }
-
-        // Setup foto admin preview
         setupAdminFotoPreview();
-        
-        // Setup multiple foto preview
         setupMultipleFotoPreview();
-        
-        // Setup wilayah dropdowns
         setupWilayahDropdowns();
-        
-        // Load old values for wilayah jika ada
         loadOldWilayahValues();
     }
 
     // ================================
-    // FUNGSI FOTO ADMIN HANDLING
+    // FOTO ADMIN
     // ================================
     function setupAdminFotoPreview() {
-        const adminFotoInput = document.getElementById('admin_foto');
+        const adminFotoInput   = document.getElementById('admin_foto');
         const adminFotoPreview = document.getElementById('admin-foto-preview');
-        const adminFotoPreviewImage = document.getElementById('admin-foto-preview-image');
-        const removeAdminFotoBtn = document.getElementById('remove-admin-foto');
+        const removeBtn        = document.getElementById('remove-admin-foto');
 
-        if (adminFotoInput) {
-            adminFotoInput.addEventListener('change', handleAdminFotoSelection);
-        }
+        adminFotoInput?.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-        if (removeAdminFotoBtn) {
-            removeAdminFotoBtn.addEventListener('click', function() {
-                adminFotoInput.value = '';
-                adminFotoPreview.classList.add('hidden');
-            });
-        }
-    }
+            if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+                alert('Format file tidak valid. Harap pilih file JPG, JPEG, atau PNG.');
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File terlalu besar. Maksimal 2MB.');
+                event.target.value = '';
+                return;
+            }
 
-    function handleAdminFotoSelection(event) {
-        const file = event.target.files[0];
-        const adminFotoPreview = document.getElementById('admin-foto-preview');
-        const adminFotoPreviewImage = document.getElementById('admin-foto-preview-image');
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('admin-foto-preview-image').src = e.target.result;
+                adminFotoPreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        });
 
-        if (!file) return;
-
-        // Validate file type
-        if (!file.type.match('image/jpeg') && !file.type.match('image/jpg') && !file.type.match('image/png')) {
-            alert('Format file tidak valid. Harap pilih file JPG, JPEG, atau PNG.');
-            event.target.value = '';
-            return;
-        }
-
-        // Validate file size (2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            alert('File terlalu besar. Maksimal 2MB.');
-            event.target.value = '';
-            return;
-        }
-
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            adminFotoPreviewImage.src = e.target.result;
-            adminFotoPreview.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+        removeBtn?.addEventListener('click', function () {
+            adminFotoInput.value = '';
+            adminFotoPreview.classList.add('hidden');
+        });
     }
 
     // ================================
-    // FUNGSI MULTIPLE FOTO HANDLING
+    // MULTIPLE FOTO LEMBAGA
     // ================================
     function setupMultipleFotoPreview() {
-        const fotoInput = document.getElementById('fotos');
-        if (fotoInput) {
-            fotoInput.addEventListener('change', handleFotoSelection);
-        }
+        document.getElementById('fotos')?.addEventListener('change', handleFotoSelection);
     }
 
     function handleFotoSelection(event) {
-        const files = event.target.files;
+        const files          = event.target.files;
         const previewContainer = document.getElementById('foto-preview-container');
-        const counterSpan = document.getElementById('selected-count');
-        const MAX_FOTOS = {{ \App\Models\Lembaga::MAX_FOTO }};
-        
-        // Clear existing previews
+        const counterSpan    = document.getElementById('selected-count');
+        const MAX_FOTOS      = {{ \App\Models\Lembaga::MAX_FOTO }};
+
         previewContainer.innerHTML = '';
-        
-        // Validate file count
+
         if (files.length > MAX_FOTOS) {
             alert(`Maksimal ${MAX_FOTOS} foto yang diizinkan. Silakan pilih ulang.`);
             event.target.value = '';
             counterSpan.textContent = '0';
             return;
         }
-        
-        // Update counter
-        counterSpan.textContent = files.length;
-        
-        // Validate each file
-        let validFiles = [];
+
+        const validFiles = [];
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            
-            // Validate file type
-            if (!file.type.match('image/jpeg') && !file.type.match('image/jpg') && !file.type.match('image/png')) {
-                alert(`File "${file.name}" bukan format gambar yang valid. Format yang diterima: JPG, JPEG, PNG.`);
+            if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+                alert(`File "${file.name}" bukan format gambar yang valid.`);
                 continue;
             }
-            
-            // Validate file size (2MB = 2 * 1024 * 1024 bytes)
             if (file.size > 2 * 1024 * 1024) {
-                alert(`File "${file.name}" terlalu besar. Maksimal 2MB per file.`);
+                alert(`File "${file.name}" terlalu besar. Maksimal 2MB.`);
                 continue;
             }
-            
-            validFiles.push({
-                file: file,
-                index: i
-            });
+            validFiles.push({ file, index: i });
         }
-        
-        // If some files were invalid, update the file input
+
         if (validFiles.length !== files.length) {
-            const dataTransfer = new DataTransfer();
-            validFiles.forEach(validFile => {
-                dataTransfer.items.add(validFile.file);
-            });
-            event.target.files = dataTransfer.files;
-            counterSpan.textContent = validFiles.length;
+            const dt = new DataTransfer();
+            validFiles.forEach(vf => dt.items.add(vf.file));
+            event.target.files = dt.files;
         }
-        
-        // Create previews for valid files
-        validFiles.forEach((validFile, displayIndex) => {
-            createFotoPreview(validFile.file, validFile.index, displayIndex);
-        });
+
+        counterSpan.textContent = validFiles.length;
+        validFiles.forEach((vf, di) => createFotoPreview(vf.file, vf.index, di));
     }
-    
+
     function createFotoPreview(file, originalIndex, displayIndex) {
-        const reader = new FileReader();
         const previewContainer = document.getElementById('foto-preview-container');
-        
-        reader.onload = function(e) {
-            // Create preview item
-            const previewItem = document.createElement('div');
-            previewItem.className = 'foto-preview-item';
-            previewItem.dataset.index = originalIndex;
-            
-            // Create image
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const item = document.createElement('div');
+            item.className = 'foto-preview-item';
+            item.dataset.index = originalIndex;
+
             const img = document.createElement('img');
             img.src = e.target.result;
             img.alt = `Preview foto ${displayIndex + 1}`;
-            
-            // Create remove button
+
             const removeBtn = document.createElement('div');
             removeBtn.className = 'foto-remove-btn';
             removeBtn.innerHTML = '×';
             removeBtn.title = 'Hapus foto ini';
-            removeBtn.addEventListener('click', function() {
-                removeFotoPreview(originalIndex);
-            });
-            
-            // Create file name
-            const fileName = document.createElement('div');
-            fileName.className = 'foto-name';
-            fileName.textContent = file.name.length > 15 ? 
-                file.name.substring(0, 12) + '...' : file.name;
-            
-            // Assemble preview item
-            previewItem.appendChild(img);
-            previewItem.appendChild(removeBtn);
-            previewItem.appendChild(fileName);
-            
-            // Add to container
-            previewContainer.appendChild(previewItem);
+            removeBtn.addEventListener('click', () => removeFotoPreview(originalIndex));
+
+            const nameEl = document.createElement('div');
+            nameEl.className = 'foto-name';
+            nameEl.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+
+            item.appendChild(img);
+            item.appendChild(removeBtn);
+            item.appendChild(nameEl);
+            previewContainer.appendChild(item);
         };
-        
         reader.readAsDataURL(file);
     }
-    
+
     function removeFotoPreview(indexToRemove) {
-        const fotoInput = document.getElementById('fotos');
+        const fotoInput        = document.getElementById('fotos');
         const previewContainer = document.getElementById('foto-preview-container');
-        const counterSpan = document.getElementById('selected-count');
-        
+        const counterSpan      = document.getElementById('selected-count');
         if (!fotoInput || !previewContainer) return;
-        
-        // Remove preview item
-        const previewItem = previewContainer.querySelector(`[data-index="${indexToRemove}"]`);
-        if (previewItem) {
-            previewItem.remove();
-        }
-        
-        // Update files in input
-        const dataTransfer = new DataTransfer();
-        const files = Array.from(fotoInput.files);
-        
-        // Reindex remaining files
-        files.forEach((file, index) => {
-            if (index !== indexToRemove) {
-                dataTransfer.items.add(file);
-            }
+
+        previewContainer.querySelector(`[data-index="${indexToRemove}"]`)?.remove();
+
+        const dt = new DataTransfer();
+        Array.from(fotoInput.files).forEach((file, i) => {
+            if (i !== indexToRemove) dt.items.add(file);
         });
-        
-        fotoInput.files = dataTransfer.files;
-        
-        // Update counter
-        const newCount = files.length - 1;
+        fotoInput.files = dt.files;
+
+        const newCount = fotoInput.files.length;
         counterSpan.textContent = newCount;
-        
-        // Recreate previews with correct indexes
-        if (newCount > 0) {
-            previewContainer.innerHTML = '';
-            Array.from(fotoInput.files).forEach((file, newIndex) => {
-                createFotoPreview(file, newIndex, newIndex);
-            });
-        } else {
-            previewContainer.innerHTML = '';
-        }
+
+        previewContainer.innerHTML = '';
+        Array.from(fotoInput.files).forEach((file, i) => createFotoPreview(file, i, i));
     }
 
     // ================================
-    // FUNGSI WILAYAH DROPDOWNS
+    // WILAYAH DROPDOWNS
     // ================================
     function setupWilayahDropdowns() {
-        const provinsiSelect = document.getElementById('provinsi_kode');
-        const kotaSelect = document.getElementById('kota_kode');
-        const kecamatanSelect = document.getElementById('kecamatan_kode');
-        const kelurahanSelect = document.getElementById('kelurahan_kode');
-
-        if (provinsiSelect) {
-            provinsiSelect.addEventListener('change', handleProvinsiChange);
-        }
-        if (kotaSelect) {
-            kotaSelect.addEventListener('change', handleKotaChange);
-        }
-        if (kecamatanSelect) {
-            kecamatanSelect.addEventListener('change', handleKecamatanChange);
-        }
-        if (kelurahanSelect) {
-            kelurahanSelect.addEventListener('change', handleKelurahanChange);
-        }
+        document.getElementById('provinsi_kode')?.addEventListener('change', handleProvinsiChange);
+        document.getElementById('kota_kode')?.addEventListener('change', handleKotaChange);
+        document.getElementById('kecamatan_kode')?.addEventListener('change', handleKecamatanChange);
+        document.getElementById('kelurahan_kode')?.addEventListener('change', handleKelurahanChange);
     }
 
     async function handleProvinsiChange(event) {
         const provinsiKode = event.target.value;
-        const provinsiNama = event.target.options[event.target.selectedIndex]?.text || '';
-        
-        console.log('Provinsi changed:', provinsiKode, provinsiNama);
-        
-        // Reset dropdown berikutnya
         resetSelect('kota_kode');
         resetSelect('kecamatan_kode');
         resetSelect('kelurahan_kode');
-        
-        // Reset kode pos
         document.getElementById('kode_pos').value = '';
-        
+
         if (provinsiKode) {
             await loadKota(provinsiKode);
-            document.getElementById('kota_kode').disabled = false;
         } else {
-            document.getElementById('kota_kode').disabled = true;
-            document.getElementById('kecamatan_kode').disabled = true;
-            document.getElementById('kelurahan_kode').disabled = true;
+            ['kota_kode', 'kecamatan_kode', 'kelurahan_kode'].forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
         }
     }
 
     async function handleKotaChange(event) {
         const kotaKode = event.target.value;
-        const kotaNama = event.target.options[event.target.selectedIndex]?.text || '';
-        
-        console.log('Kota changed:', kotaKode, kotaNama);
-        
-        // Reset dropdown berikutnya
         resetSelect('kecamatan_kode');
         resetSelect('kelurahan_kode');
-        
+
         if (kotaKode) {
             await loadKecamatan(kotaKode);
-            document.getElementById('kecamatan_kode').disabled = false;
         } else {
-            document.getElementById('kecamatan_kode').disabled = true;
-            document.getElementById('kelurahan_kode').disabled = true;
+            ['kecamatan_kode', 'kelurahan_kode'].forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
         }
     }
 
     async function handleKecamatanChange(event) {
         const kecamatanKode = event.target.value;
-        const kecamatanNama = event.target.options[event.target.selectedIndex]?.text || '';
-        
-        console.log('Kecamatan changed:', kecamatanKode, kecamatanNama);
-        
-        // Reset dropdown berikutnya
         resetSelect('kelurahan_kode');
-        
+
         if (kecamatanKode) {
             await loadKelurahan(kecamatanKode);
-            document.getElementById('kelurahan_kode').disabled = false;
         } else {
             document.getElementById('kelurahan_kode').disabled = true;
         }
@@ -790,208 +696,107 @@
 
     async function handleKelurahanChange(event) {
         const kelurahanKode = event.target.value;
-        const kelurahanNama = event.target.options[event.target.selectedIndex]?.text || '';
-        
-        console.log('Kelurahan changed:', kelurahanKode, kelurahanNama);
-        
-        if (kelurahanKode) {
-            await getKodePos(kelurahanKode);
+        if (kelurahanKode) await getKodePos(kelurahanKode);
+    }
+
+    // ================================
+    // FETCH HELPERS
+    // ================================
+    async function fetchJson(url) {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+        return response.json();
+    }
+
+    async function loadKota(provinsiKode, selectedValue = null) {
+        try {
+            const json = await fetchJson(`${window.location.origin}/api/wilayah/cities/${provinsiKode}`);
+            const data = normalizeArray(json);
+            populateSelect('kota_kode', data, 'Pilih Kota/Kabupaten', selectedValue);
+        } catch (error) {
+            console.error('loadKota error:', error);
+            alert('Gagal memuat data kota. Silakan coba lagi.');
         }
     }
 
-    async function loadKota(provinsiKode, selectedKotaKode = null) {
+    async function loadKecamatan(kotaKode, selectedValue = null) {
         try {
-            console.log('Loading kota for province:', provinsiKode);
-            
-            // Gunakan absolute URL untuk menghindari masalah path
-            const baseUrl = window.location.origin;
-            const response = await fetch(`${baseUrl}/api/cities/${provinsiKode}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Kota data received:', data);
-            
-            const select = document.getElementById('kota_kode');
-            select.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
-            
-            // Tambahkan semua kota
-            data.forEach(kota => {
-                const option = new Option(kota.name, kota.code);
-                select.add(option);
-            });
-            
-            // Set selected value jika ada
-            if (selectedKotaKode) {
-                select.value = selectedKotaKode;
-            }
-            
-            // Enable select
-            select.disabled = false;
-            
-            return data;
+            const json = await fetchJson(`${window.location.origin}/api/wilayah/districts/${kotaKode}`);
+            const data = normalizeArray(json);
+            populateSelect('kecamatan_kode', data, 'Pilih Kecamatan', selectedValue);
         } catch (error) {
-            console.error('Error loading kota:', error);
-            showError('Gagal memuat data kota. Silakan coba lagi atau hubungi administrator.');
-            return [];
+            console.error('loadKecamatan error:', error);
+            alert('Gagal memuat data kecamatan. Silakan coba lagi.');
         }
     }
 
-    async function loadKecamatan(kotaKode, selectedKecamatanKode = null) {
+    async function loadKelurahan(kecamatanKode, selectedValue = null) {
         try {
-            console.log('Loading kecamatan for city:', kotaKode);
-            
-            const baseUrl = window.location.origin;
-            const response = await fetch(`${baseUrl}/api/districts/${kotaKode}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Kecamatan data received:', data);
-            
-            const select = document.getElementById('kecamatan_kode');
-            select.innerHTML = '<option value="">Pilih Kecamatan</option>';
-            
-            data.forEach(kec => {
-                const option = new Option(kec.name, kec.code);
-                select.add(option);
-            });
-            
-            // Set selected value jika ada
-            if (selectedKecamatanKode) {
-                select.value = selectedKecamatanKode;
-            }
-            
-            // Enable select
-            select.disabled = false;
-            
-            return data;
+            const json = await fetchJson(`${window.location.origin}/api/wilayah/villages/${kecamatanKode}`);
+            const data = normalizeArray(json);
+            populateSelect('kelurahan_kode', data, 'Pilih Kelurahan/Desa', selectedValue);
         } catch (error) {
-            console.error('Error loading kecamatan:', error);
-            showError('Gagal memuat data kecamatan. Silakan coba lagi.');
-            return [];
-        }
-    }
-
-    async function loadKelurahan(kecamatanKode, selectedKelurahanKode = null) {
-        try {
-            console.log('Loading kelurahan for district:', kecamatanKode);
-            
-            const baseUrl = window.location.origin;
-            const response = await fetch(`${baseUrl}/api/villages/${kecamatanKode}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Kelurahan data received:', data);
-            
-            const select = document.getElementById('kelurahan_kode');
-            select.innerHTML = '<option value="">Pilih Kelurahan/Desa</option>';
-            
-            data.forEach(kel => {
-                const option = new Option(kel.name, kel.code);
-                select.add(option);
-            });
-            
-            // Set selected value jika ada
-            if (selectedKelurahanKode) {
-                select.value = selectedKelurahanKode;
-            }
-            
-            // Enable select
-            select.disabled = false;
-            
-            return data;
-        } catch (error) {
-            console.error('Error loading kelurahan:', error);
-            showError('Gagal memuat data kelurahan. Silakan coba lagi.');
-            return [];
+            console.error('loadKelurahan error:', error);
+            alert('Gagal memuat data kelurahan. Silakan coba lagi.');
         }
     }
 
     async function getKodePos(kelurahanKode) {
         try {
-            console.log('Getting postal code for village:', kelurahanKode);
-            
-            const baseUrl = window.location.origin;
-            const response = await fetch(`${baseUrl}/api/postal-code/${kelurahanKode}`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Postal code data:', data);
-            
-            if (data.kode_pos) {
-                const kodePosInput = document.getElementById('kode_pos');
-                if (kodePosInput && !kodePosInput.value) {
-                    kodePosInput.value = data.kode_pos;
-                    console.log('Auto-filled kode_pos:', data.kode_pos);
-                }
+            const data = await fetchJson(`${window.location.origin}/api/wilayah/postal-code/${kelurahanKode}`);
+            const kodePosInput = document.getElementById('kode_pos');
+            if (data.kode_pos && kodePosInput && !kodePosInput.value) {
+                kodePosInput.value = data.kode_pos;
             }
         } catch (error) {
-            console.error('Error getting kode pos:', error);
+            // Kode pos gagal diisi — tidak perlu alert
+            console.warn('getKodePos error:', error);
         }
+    }
+
+    // ================================
+    // UTILS
+    // ================================
+    function populateSelect(id, data, placeholder, selectedValue = null) {
+        const select = document.getElementById(id);
+        select.innerHTML = `<option value="">${placeholder}</option>`;
+        data.forEach(item => {
+            const option = new Option(item.name, item.code);
+            select.add(option);
+        });
+        if (selectedValue) select.value = selectedValue;
+        select.disabled = false;
     }
 
     function resetSelect(id) {
         const select = document.getElementById(id);
-        const label = document.querySelector(`label[for="${id}"]`)?.textContent.replace(' *', '').trim() || 'Pilihan';
-        select.innerHTML = `<option value="">Pilih ${label}</option>`;
+        const labelText = document.querySelector(`label[for="${id}"]`)
+            ?.textContent.replace(/\s*\*\s*/g, '').trim() || 'Pilihan';
+        select.innerHTML = `<option value="">Pilih ${labelText}</option>`;
         select.disabled = true;
     }
 
-    function showError(message) {
-        alert(message);
-    }
-
     // ================================
-    // LOAD OLD VALUES
+    // RESTORE OLD VALUES (setelah validasi gagal)
     // ================================
-    function loadOldWilayahValues() {
-        const oldProvinsiKode = '{{ old("provinsi_kode") }}';
-        const oldKotaKode = '{{ old("kota_kode") }}';
-        const oldKecamatanKode = '{{ old("kecamatan_kode") }}';
-        const oldKelurahanKode = '{{ old("kelurahan_kode") }}';
+    async function loadOldWilayahValues() {
+        const oldProvinsi   = '{{ old("provinsi_kode") }}';
+        const oldKota       = '{{ old("kota_kode") }}';
+        const oldKecamatan  = '{{ old("kecamatan_kode") }}';
+        const oldKelurahan  = '{{ old("kelurahan_kode") }}';
 
-        if (oldProvinsiKode) {
-            // Set provinsi value
-            const provinsiSelect = document.getElementById('provinsi_kode');
-            if (provinsiSelect) {
-                provinsiSelect.value = oldProvinsiKode;
-                
-                // Enable kota select
-                document.getElementById('kota_kode').disabled = false;
-                
-                // Auto load kota setelah DOM siap
-                setTimeout(async () => {
-                    await loadKota(oldProvinsiKode, oldKotaKode);
-                    
-                    if (oldKotaKode) {
-                        // Enable kecamatan select
-                        document.getElementById('kecamatan_kode').disabled = false;
-                        
-                        setTimeout(async () => {
-                            await loadKecamatan(oldKotaKode, oldKecamatanKode);
-                            
-                            if (oldKecamatanKode) {
-                                // Enable kelurahan select
-                                document.getElementById('kelurahan_kode').disabled = false;
-                                
-                                setTimeout(async () => {
-                                    await loadKelurahan(oldKecamatanKode, oldKelurahanKode);
-                                }, 300);
-                            }
-                        }, 300);
-                    }
-                }, 300);
+        if (!oldProvinsi) return;
+
+        const provinsiSelect = document.getElementById('provinsi_kode');
+        provinsiSelect.value = oldProvinsi;
+
+        await loadKota(oldProvinsi, oldKota);
+
+        if (oldKota) {
+            await loadKecamatan(oldKota, oldKecamatan);
+
+            if (oldKecamatan) {
+                await loadKelurahan(oldKecamatan, oldKelurahan);
             }
         }
     }

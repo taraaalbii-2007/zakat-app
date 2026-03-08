@@ -111,7 +111,7 @@
                                         @if(isset($peran) && $peran === 'muzakki')
                                             Muzakki
                                         @else
-                                            Admin Masjid
+                                            Admin Lembaga
                                         @endif
                                     </td>
                                 </tr>
@@ -127,7 +127,7 @@
 
                             </table>
 
-                            <!-- ===== DATA MASJID (hanya untuk Admin Masjid) ===== -->
+                            <!-- ===== DATA MASJID (hanya untuk Admin Lembaga) ===== -->
                             @if(!isset($peran) || $peran !== 'muzakki')
 
                             <!-- DIVIDER -->
@@ -138,20 +138,20 @@
                             </table>
 
                             <p style="margin:0 0 16px; color:#374151; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
-                                Data Masjid
+                                Data Lembaga
                             </p>
 
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
                                 <tr>
-                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Masjid</td>
+                                    <td style="padding:7px 0; width:130px; color:#6b7280; font-size:14px; vertical-align:top;">Nama Lembaga</td>
                                     <td style="padding:7px 4px; width:10px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
-                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $nama_masjid }}</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $nama_lembaga }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Masjid</td>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Kode Lembaga</td>
                                     <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
                                     <td style="padding:7px 0; vertical-align:top;">
-                                        <span style="font-family:'Courier New', Courier, monospace; font-size:22px; font-weight:800; color:#2d6936; letter-spacing:4px;">{{ $kode_masjid }}</span>
+                                        <span style="font-family:'Courier New', Courier, monospace; font-size:22px; font-weight:800; color:#2d6936; letter-spacing:4px;">{{ $kode_lembaga }}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -265,9 +265,9 @@
                                         </table>
                                     </td>
                                     <td style="padding-left:14px;">
-                                        <p style="margin:0 0 3px; color:#1a1a1a; font-size:14px; font-weight:600;">Kelola Zakat Masjid</p>
+                                        <p style="margin:0 0 3px; color:#1a1a1a; font-size:14px; font-weight:600;">Kelola Zakat Lembaga</p>
                                         <p style="margin:0; color:#6b7280; font-size:13px; line-height:1.6;">
-                                            Mulai kelola zakat masjid Anda — dari pengumpulan, pencatatan, hingga pelaporan dan distribusi.
+                                            Mulai kelola zakat lembaga Anda — dari pengumpulan, pencatatan, hingga pelaporan dan distribusi.
                                         </p>
                                     </td>
                                 </tr>

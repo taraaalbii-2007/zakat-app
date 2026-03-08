@@ -332,10 +332,10 @@
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 </div>
                 <div class="stat-body">
-                    <p class="stat-val">{{ number_format($stats['total_masjid']) }}</p>
-                    <p class="stat-lbl">Total Masjid</p>
+                    <p class="stat-val">{{ number_format($stats['total_lembaga']) }}</p>
+                    <p class="stat-lbl">Total Lembaga</p>
                 </div>
-                <span class="stat-badge">{{ $stats['masjid_aktif'] }} aktif</span>
+                <span class="stat-badge">{{ $stats['lembaga_aktif'] }} aktif</span>
             </div>
 
             <div class="stat-card">
@@ -346,7 +346,7 @@
                     <p class="stat-val">{{ number_format($stats['total_pengguna']) }}</p>
                     <p class="stat-lbl">Total Pengguna</p>
                 </div>
-                <span class="stat-badge">{{ $stats['total_admin_masjid'] + $stats['total_amil'] }} staf</span>
+                <span class="stat-badge">{{ $stats['total_admin_lembaga'] + $stats['total_amil'] }} staf</span>
             </div>
 
             <div class="stat-card">
@@ -354,10 +354,10 @@
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <div class="stat-body">
-                    <p class="stat-val">{{ number_format($stats['total_admin_masjid']) }}</p>
-                    <p class="stat-lbl">Admin Masjid</p>
+                    <p class="stat-val">{{ number_format($stats['total_admin_lembaga']) }}</p>
+                    <p class="stat-lbl">Admin Lembaga</p>
                 </div>
-                <span class="stat-badge">{{ $stats['total_masjid'] > 0 ? number_format($stats['total_admin_masjid'] / $stats['total_masjid'], 1) : 0 }} / masjid</span>
+                <span class="stat-badge">{{ $stats['total_lembaga'] > 0 ? number_format($stats['total_admin_lembaga'] / $stats['total_lembaga'], 1) : 0 }} / lembaga</span>
             </div>
 
             <div class="stat-card">
@@ -368,7 +368,7 @@
                     <p class="stat-val">{{ number_format($stats['total_amil']) }}</p>
                     <p class="stat-lbl">Total Amil</p>
                 </div>
-                <span class="stat-badge">{{ $stats['total_masjid'] > 0 ? number_format($stats['total_amil'] / $stats['total_masjid'], 1) : 0 }} / masjid</span>
+                <span class="stat-badge">{{ $stats['total_lembaga'] > 0 ? number_format($stats['total_amil'] / $stats['total_lembaga'], 1) : 0 }} / lembaga</span>
             </div>
 
         </div>
@@ -418,24 +418,24 @@
 
             <div class="panel">
                 <div class="panel-head">
-                    <p class="panel-title">Distribusi Masjid per Provinsi</p>
+                    <p class="panel-title">Distribusi Lembaga per Provinsi</p>
                     <span class="panel-tag">Top 5</span>
                 </div>
                 <div class="panel-body">
                     <div style="height:268px; position:relative;">
-                        <canvas id="chartMasjidProvinsi"></canvas>
+                        <canvas id="chartLembagaProvinsi"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="panel">
                 <div class="panel-head">
-                    <p class="panel-title">Trend Registrasi Masjid</p>
+                    <p class="panel-title">Trend Registrasi Lembaga</p>
                     <span class="panel-tag">6 Bulan Terakhir</span>
                 </div>
                 <div class="panel-body">
                     <div style="height:268px; position:relative;">
-                        <canvas id="chartTrendMasjid"></canvas>
+                        <canvas id="chartTrendLembaga"></canvas>
                     </div>
                 </div>
             </div>
@@ -450,32 +450,32 @@
 
             <div class="panel">
                 <div class="panel-head">
-                    <p class="panel-title">Masjid Terbaru Terdaftar</p>
-                    <a href="{{ route('masjid.index') }}" class="panel-tag-link">Lihat Semua →</a>
+                    <p class="panel-title">Lembaga Terbaru Terdaftar</p>
+                    <a href="{{ route('lembaga.index') }}" class="panel-tag-link">Lihat Semua →</a>
                 </div>
-                <table class="dt" id="tbl-masjid">
+                <table class="dt" id="tbl-lembaga">
                     <thead><tr>
-                        <th>Nama Masjid</th>
+                        <th>Nama Lembaga</th>
                         <th>Lokasi</th>
                     </tr></thead>
                     <tbody>
-                        @forelse($masjidTerbaru as $m)
+                        @forelse($lembagaTerbaru as $m)
                         <tr>
                             <td>
                                 <p class="dt-name">{{ $m->nama }}</p>
-                                <p class="dt-sub">{{ $m->kode_masjid }}</p>
+                                <p class="dt-sub">{{ $m->kode_lembaga }}</p>
                             </td>
                             <td class="dt-loc">{{ $m->kota_nama }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="2" class="empty-row">Belum ada data masjid</td></tr>
+                        <tr><td colspan="2" class="empty-row">Belum ada data lembaga</td></tr>
                         @endforelse
                     </tbody>
                 </table>
-                @if($masjidTerbaru->count() > 5)
-                <div class="pag-wrap" id="pag-masjid">
-                    <span class="pag-info" id="pag-masjid-info"></span>
-                    <div class="pag-btns" id="pag-masjid-btns"></div>
+                @if($lembagaTerbaru->count() > 5)
+                <div class="pag-wrap" id="pag-lembaga">
+                    <span class="pag-info" id="pag-lembaga-info"></span>
+                    <div class="pag-btns" id="pag-lembaga-btns"></div>
                 </div>
                 @endif
             </div>
@@ -562,19 +562,19 @@ document.addEventListener('DOMContentLoaded', function () {
         y: { grid: { color: GRID }, ticks: { color: TICK, stepSize: 1 }, beginAtZero: true }
     };
 
-    // Bar: Masjid per Provinsi
+    // Bar: Lembaga per Provinsi
     // ── Bar color: opacity stagger menggunakan primary.600 ──
-    const masjidData = @json($masjidPerProvinsi);
-    if (masjidData.length > 0) {
-        new Chart(document.getElementById('chartMasjidProvinsi'), {
+    const lembagaData = @json($lembagaPerProvinsi);
+    if (lembagaData.length > 0) {
+        new Chart(document.getElementById('chartLembagaProvinsi'), {
             type: 'bar',
             data: {
-                labels: masjidData.map(i => i.nama),
+                labels: lembagaData.map(i => i.nama),
                 datasets: [{
-                    label: 'Jumlah Masjid',
-                    data: masjidData.map(i => i.jumlah),
+                    label: 'Jumlah Lembaga',
+                    data: lembagaData.map(i => i.jumlah),
                     // Stagger opacity dari primary.600
-                    backgroundColor: masjidData.map((_, idx) => `rgba(23,163,74,${.88 - idx * .12})`),
+                    backgroundColor: lembagaData.map((_, idx) => `rgba(23,163,74,${.88 - idx * .12})`),
                     borderRadius: 8,
                     borderSkipped: false,
                     borderWidth: 0,
@@ -590,9 +590,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Line: Trend Registrasi
     // ── Gradient fill: primary.600 → transparent ──
-    const trendData = @json($trendMasjid);
+    const trendData = @json($trendLembaga);
     if (trendData.length > 0) {
-        const ctx  = document.getElementById('chartTrendMasjid').getContext('2d');
+        const ctx  = document.getElementById('chartTrendLembaga').getContext('2d');
         const grad = ctx.createLinearGradient(0, 0, 0, 268);
         grad.addColorStop(0, 'rgba(23,163,74,.18)');   // primary.600
         grad.addColorStop(1, 'rgba(23,163,74,0)');
@@ -666,7 +666,7 @@ document.addEventListener('DOMContentLoaded', function () {
         render(1);
     }
 
-    initPagination('tbl-masjid',   'pag-masjid-info',   'pag-masjid-btns',   5);
+    initPagination('tbl-lembaga',   'pag-lembaga-info',   'pag-lembaga-btns',   5);
     initPagination('tbl-pengguna', 'pag-pengguna-info', 'pag-pengguna-btns', 5);
 });
 </script>

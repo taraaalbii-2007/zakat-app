@@ -153,16 +153,16 @@ class Lembaga extends Model
             ->orderBy('id', 'desc')
             ->first();
 
-        if ($lastLembaga) {
+        if ($lastLembaga && $lastLembaga->kode_lembaga) {
             $lastNumber = (int) substr($lastLembaga->kode_lembaga, -4);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
 
-        return $prefix . $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        return $prefix . '-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // hasil: LMBG-2026-0001
     }
-
 
     public function syncWilayahNames()
     {

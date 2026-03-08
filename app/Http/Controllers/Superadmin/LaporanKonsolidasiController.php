@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 use App\Models\TransaksiPenerimaan;
 use App\Models\TransaksiPenyaluran;
 use App\Models\JenisZakat;
@@ -19,7 +19,7 @@ use App\Exports\LaporanKonsolidasiExport;
 class LaporanKonsolidasiController extends Controller
 {
     // ================================================================
-    // INDEX — Daftar semua masjid dengan ringkasan per periode
+    // INDEX — Daftar semua lembaga dengan ringkasan per periode
     // ================================================================
 
     public function index(Request $request)
@@ -27,104 +27,104 @@ class LaporanKonsolidasiController extends Controller
         $tahun = $request->get('tahun', date('Y'));
         $bulan = $request->get('bulan');
         $search = $request->get('search');
-        $masjidId = $request->get('masjid_id');
+        $lembagaId = $request->get('lembaga_id');
 
-        // Ambil semua masjid (dengan filter search/masjid_id)
-        $masjidQuery = Masjid::query()->orderBy('nama');
+        // Ambil semua lembaga (dengan filter search/lembaga_id)
+        $lembagaQuery = Lembaga::query()->orderBy('nama');
 
         if ($search) {
-            $masjidQuery->where(function ($q) use ($search) {
+            $lembagaQuery->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                    ->orWhere('kode_masjid', 'like', "%{$search}%")
+                    ->orWhere('kode_lembaga', 'like', "%{$search}%")
                     ->orWhere('kota_nama', 'like', "%{$search}%");
             });
         }
 
-        if ($masjidId) {
-            $masjidQuery->where('id', $masjidId);
+        if ($lembagaId) {
+            $lembagaQuery->where('id', $lembagaId);
         }
 
-        $masjids = $masjidQuery->get();
-        $masjidIds = $masjids->pluck('id')->toArray();
+        $lembagas = $lembagaQuery->get();
+        $lembagaIds = $lembagas->pluck('id')->toArray();
 
-        // ── Penerimaan (status=verified) per masjid + periode ──────────────
+        // ── Penerimaan (status=verified) per lembaga + periode ──────────────
         $penerimaanQuery = DB::table('transaksi_penerimaan')
             ->select(
-                'masjid_id',
+                'lembaga_id',
                 DB::raw('YEAR(tanggal_transaksi) as tahun'),
                 DB::raw('MONTH(tanggal_transaksi) as bulan'),
                 DB::raw('SUM(jumlah) as total_penerimaan'),
                 DB::raw('COUNT(DISTINCT muzakki_nama) as jumlah_muzakki')
             )
             ->where('status', 'verified')
-            ->whereIn('masjid_id', $masjidIds)
+            ->whereIn('lembaga_id', $lembagaIds)
             ->where(DB::raw('YEAR(tanggal_transaksi)'), $tahun)
-            ->groupBy('masjid_id', DB::raw('YEAR(tanggal_transaksi)'), DB::raw('MONTH(tanggal_transaksi)'));
+            ->groupBy('lembaga_id', DB::raw('YEAR(tanggal_transaksi)'), DB::raw('MONTH(tanggal_transaksi)'));
 
         if ($bulan) {
             $penerimaanQuery->where(DB::raw('MONTH(tanggal_transaksi)'), $bulan);
         }
 
         $penerimaanData = $penerimaanQuery->get()->groupBy(function ($row) {
-            return $row->masjid_id . '-' . $row->tahun . '-' . $row->bulan;
+            return $row->lembaga_id . '-' . $row->tahun . '-' . $row->bulan;
         });
 
-        // ── Penyaluran (status=disalurkan) per masjid + periode ────────────
+        // ── Penyaluran (status=disalurkan) per lembaga + periode ────────────
         $penyaluranQuery = DB::table('transaksi_penyaluran')
             ->select(
-                'masjid_id',
+                'lembaga_id',
                 DB::raw('YEAR(tanggal_penyaluran) as tahun'),
                 DB::raw('MONTH(tanggal_penyaluran) as bulan'),
                 DB::raw('SUM(CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE COALESCE(jumlah, 0) END) as total_penyaluran'),
                 DB::raw('COUNT(DISTINCT mustahik_id) as jumlah_mustahik')
             )
             ->where('status', 'disalurkan')
-            ->whereIn('masjid_id', $masjidIds)
+            ->whereIn('lembaga_id', $lembagaIds)
             ->where(DB::raw('YEAR(tanggal_penyaluran)'), $tahun)
             ->whereNull('deleted_at')
-            ->groupBy('masjid_id', DB::raw('YEAR(tanggal_penyaluran)'), DB::raw('MONTH(tanggal_penyaluran)'));
+            ->groupBy('lembaga_id', DB::raw('YEAR(tanggal_penyaluran)'), DB::raw('MONTH(tanggal_penyaluran)'));
 
         if ($bulan) {
             $penyaluranQuery->where(DB::raw('MONTH(tanggal_penyaluran)'), $bulan);
         }
 
         $penyaluranData = $penyaluranQuery->get()->groupBy(function ($row) {
-            return $row->masjid_id . '-' . $row->tahun . '-' . $row->bulan;
+            return $row->lembaga_id . '-' . $row->tahun . '-' . $row->bulan;
         });
 
-        // ── Setor Kas (status=diterima) per masjid + periode ───────────────
+        // ── Setor Kas (status=diterima) per lembaga + periode ───────────────
         $setorKasQuery = DB::table('setor_kas')
             ->select(
-                'masjid_id',
+                'lembaga_id',
                 DB::raw('YEAR(tanggal_setor) as tahun'),
                 DB::raw('MONTH(tanggal_setor) as bulan'),
                 DB::raw('SUM(jumlah_disetor) as total_setor_kas')
             )
             ->where('status', 'diterima')
-            ->whereIn('masjid_id', $masjidIds)
+            ->whereIn('lembaga_id', $lembagaIds)
             ->where(DB::raw('YEAR(tanggal_setor)'), $tahun)
-            ->groupBy('masjid_id', DB::raw('YEAR(tanggal_setor)'), DB::raw('MONTH(tanggal_setor)'));
+            ->groupBy('lembaga_id', DB::raw('YEAR(tanggal_setor)'), DB::raw('MONTH(tanggal_setor)'));
 
         if ($bulan) {
             $setorKasQuery->where(DB::raw('MONTH(tanggal_setor)'), $bulan);
         }
 
         $setorKasData = $setorKasQuery->get()->groupBy(function ($row) {
-            return $row->masjid_id . '-' . $row->tahun . '-' . $row->bulan;
+            return $row->lembaga_id . '-' . $row->tahun . '-' . $row->bulan;
         });
 
-        // ── Susun data per masjid ───────────────────────────────────────────
+        // ── Susun data per lembaga ───────────────────────────────────────────
         $bulanList = $bulan ? [$bulan] : range(1, 12);
 
-        $laporanPerMasjid = [];
+        $laporanPerLembaga = [];
 
-        foreach ($masjids as $m) {
+        foreach ($lembagas as $m) {
             $periodes = [];
-            $masjidTotalPenerimaan = 0;
-            $masjidTotalPenyaluran = 0;
-            $masjidTotalSetorKas   = 0;
-            $masjidTotalMuzakki    = 0;
-            $masjidTotalMustahik   = 0;
+            $lembagaTotalPenerimaan = 0;
+            $lembagaTotalPenyaluran = 0;
+            $lembagaTotalSetorKas   = 0;
+            $lembagaTotalMuzakki    = 0;
+            $lembagaTotalMustahik   = 0;
 
             foreach ($bulanList as $bl) {
                 $key = $m->id . '-' . $tahun . '-' . $bl;
@@ -144,11 +144,11 @@ class LaporanKonsolidasiController extends Controller
                     continue;
                 }
 
-                $masjidTotalPenerimaan += $totalPen;
-                $masjidTotalPenyaluran += $totalPeny;
-                $masjidTotalSetorKas   += $totalSetor;
-                $masjidTotalMuzakki    += $jmlMuzakki;
-                $masjidTotalMustahik   += $jmlMustahik;
+                $lembagaTotalPenerimaan += $totalPen;
+                $lembagaTotalPenyaluran += $totalPeny;
+                $lembagaTotalSetorKas   += $totalSetor;
+                $lembagaTotalMuzakki    += $jmlMuzakki;
+                $lembagaTotalMustahik   += $jmlMustahik;
 
                 $periodes[] = [
                     'tahun'            => $tahun,
@@ -163,35 +163,35 @@ class LaporanKonsolidasiController extends Controller
                 ];
             }
 
-            // Skip masjid tanpa data sama sekali
-            if (empty($periodes) && !$search && !$masjidId) {
+            // Skip lembaga tanpa data sama sekali
+            if (empty($periodes) && !$search && !$lembagaId) {
                 continue;
             }
 
-            $laporanPerMasjid[] = [
-                'masjid'             => $m,
+            $laporanPerLembaga[] = [
+                'lembaga'             => $m,
                 'periodes'           => $periodes,
-                'total_penerimaan'   => $masjidTotalPenerimaan,
-                'total_penyaluran'   => $masjidTotalPenyaluran,
-                'total_setor_kas'    => $masjidTotalSetorKas,
-                'jumlah_muzakki'     => $masjidTotalMuzakki,
-                'jumlah_mustahik'    => $masjidTotalMustahik,
-                'saldo_akhir'        => $masjidTotalPenerimaan + $masjidTotalSetorKas - $masjidTotalPenyaluran,
+                'total_penerimaan'   => $lembagaTotalPenerimaan,
+                'total_penyaluran'   => $lembagaTotalPenyaluran,
+                'total_setor_kas'    => $lembagaTotalSetorKas,
+                'jumlah_muzakki'     => $lembagaTotalMuzakki,
+                'jumlah_mustahik'    => $lembagaTotalMustahik,
+                'saldo_akhir'        => $lembagaTotalPenerimaan + $lembagaTotalSetorKas - $lembagaTotalPenyaluran,
             ];
         }
 
         // ── Grand total ─────────────────────────────────────────────────────
         $grandTotal = [
-            'penerimaan'  => collect($laporanPerMasjid)->sum('total_penerimaan'),
-            'penyaluran'  => collect($laporanPerMasjid)->sum('total_penyaluran'),
-            'setor_kas'   => collect($laporanPerMasjid)->sum('total_setor_kas'),
-            'saldo_akhir' => collect($laporanPerMasjid)->sum('saldo_akhir'),
-            'muzakki'     => collect($laporanPerMasjid)->sum('jumlah_muzakki'),
-            'mustahik'    => collect($laporanPerMasjid)->sum('jumlah_mustahik'),
-            'masjid'      => count($laporanPerMasjid),
+            'penerimaan'  => collect($laporanPerLembaga)->sum('total_penerimaan'),
+            'penyaluran'  => collect($laporanPerLembaga)->sum('total_penyaluran'),
+            'setor_kas'   => collect($laporanPerLembaga)->sum('total_setor_kas'),
+            'saldo_akhir' => collect($laporanPerLembaga)->sum('saldo_akhir'),
+            'muzakki'     => collect($laporanPerLembaga)->sum('jumlah_muzakki'),
+            'mustahik'    => collect($laporanPerLembaga)->sum('jumlah_mustahik'),
+            'lembaga'      => count($laporanPerLembaga),
         ];
 
-        $allMasjids    = Masjid::orderBy('nama')->get(['id', 'nama']);
+        $allLembagas    = Lembaga::orderBy('nama')->get(['id', 'nama']);
         $availableYears = $this->getAvailableYears();
 
         $breadcrumbs = [
@@ -199,25 +199,25 @@ class LaporanKonsolidasiController extends Controller
         ];
 
         return view('superadmin.laporan-konsolidasi.index', compact(
-            'laporanPerMasjid',
+            'laporanPerLembaga',
             'grandTotal',
-            'allMasjids',
+            'allLembagas',
             'availableYears',
             'tahun',
             'bulan',
             'search',
-            'masjidId',
+            'lembagaId',
             'breadcrumbs'
         ));
     }
 
     // ================================================================
-    // SHOW — Detail 12 bulan per masjid
+    // SHOW — Detail 12 bulan per lembaga
     // ================================================================
 
-    public function show($masjidId)
+    public function show($lembagaId)
     {
-        $masjid = Masjid::findOrFail($masjidId);
+        $lembaga = Lembaga::findOrFail($lembagaId);
 
         // 12 bulan terakhir
         $end   = Carbon::now();
@@ -231,7 +231,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('SUM(jumlah) as total_penerimaan'),
                 DB::raw('COUNT(DISTINCT muzakki_nama) as jumlah_muzakki')
             )
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('status', 'verified')
             ->whereBetween('tanggal_transaksi', [$start, $end])
             ->groupBy(DB::raw('YEAR(tanggal_transaksi)'), DB::raw('MONTH(tanggal_transaksi)'))
@@ -246,7 +246,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('SUM(CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE COALESCE(jumlah, 0) END) as total_penyaluran'),
                 DB::raw('COUNT(DISTINCT mustahik_id) as jumlah_mustahik')
             )
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('status', 'disalurkan')
             ->whereNull('deleted_at')
             ->whereBetween('tanggal_penyaluran', [$start, $end])
@@ -261,7 +261,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('MONTH(tanggal_setor) as bulan'),
                 DB::raw('SUM(jumlah_disetor) as total_setor_kas')
             )
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('status', 'diterima')
             ->whereBetween('tanggal_setor', [$start, $end])
             ->groupBy(DB::raw('YEAR(tanggal_setor)'), DB::raw('MONTH(tanggal_setor)'))
@@ -324,7 +324,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('SUM(transaksi_penerimaan.jumlah) as total'),
                 DB::raw('COUNT(*) as jumlah_transaksi')
             )
-            ->where('transaksi_penerimaan.masjid_id', $masjidId)
+            ->where('transaksi_penerimaan.lembaga_id', $lembagaId)
             ->where('transaksi_penerimaan.status', 'verified')
             ->whereBetween('transaksi_penerimaan.tanggal_transaksi', [$start, $end])
             ->groupBy('jenis_zakat.id', 'jenis_zakat.nama')
@@ -339,7 +339,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('COUNT(DISTINCT transaksi_penyaluran.mustahik_id) as jumlah_penerima'),
                 DB::raw('SUM(CASE WHEN transaksi_penyaluran.metode_penyaluran = "barang" THEN COALESCE(transaksi_penyaluran.nilai_barang, 0) ELSE COALESCE(transaksi_penyaluran.jumlah, 0) END) as total')
             )
-            ->where('transaksi_penyaluran.masjid_id', $masjidId)
+            ->where('transaksi_penyaluran.lembaga_id', $lembagaId)
             ->where('transaksi_penyaluran.status', 'disalurkan')
             ->whereNull('transaksi_penyaluran.deleted_at')
             ->whereBetween('transaksi_penyaluran.tanggal_penyaluran', [$start, $end])
@@ -348,7 +348,7 @@ class LaporanKonsolidasiController extends Controller
             ->get();
 
         return view('superadmin.laporan-konsolidasi.show', compact(
-            'masjid',
+            'lembaga',
             'laporanBulanan',
             'totalPenerimaan',
             'totalPenyaluran',
@@ -412,19 +412,19 @@ class LaporanKonsolidasiController extends Controller
     /**
      * Export laporan konsolidasi ke PDF/Excel
      */
-    public function export(Request $request, $masjidId)
+    public function export(Request $request, $lembagaId)
     {
-        $masjid = Masjid::findOrFail($masjidId);
+        $lembaga = Lembaga::findOrFail($lembagaId);
         $format = $request->get('format', 'pdf'); // pdf atau excel
         $tahun = $request->get('tahun', date('Y'));
         $bulan = $request->get('bulan');
         $type = $request->get('type', 'konsolidasi'); // konsolidasi, penerimaan, penyaluran
 
         // Ambil data laporan
-        $data = $this->getLaporanData($masjidId, $tahun, $bulan, $type);
+        $data = $this->getLaporanData($lembagaId, $tahun, $bulan, $type);
 
         // Data tambahan untuk view
-        $data['masjid'] = $masjid;
+        $data['lembaga'] = $lembaga;
         $data['tahun'] = $tahun;
         $data['bulan'] = $bulan;
         $data['bulan_nama'] = $bulan ? $this->namaBulan((int)$bulan) : 'Semua Bulan';
@@ -436,7 +436,7 @@ class LaporanKonsolidasiController extends Controller
         if ($format === 'excel') {
             return Excel::download(
                 new LaporanKonsolidasiExport($data),
-                $this->generateFilename($masjid, $tahun, $bulan, 'xlsx')
+                $this->generateFilename($lembaga, $tahun, $bulan, 'xlsx')
             );
         }
 
@@ -449,15 +449,15 @@ class LaporanKonsolidasiController extends Controller
             'isRemoteEnabled' => true
         ]);
 
-        return $pdf->download($this->generateFilename($masjid, $tahun, $bulan, 'pdf'));
+        return $pdf->download($this->generateFilename($lembaga, $tahun, $bulan, 'pdf'));
     }
 
     /**
      * Generate filename untuk export
      */
-    private function generateFilename($masjid, $tahun, $bulan, $extension)
+    private function generateFilename($lembaga, $tahun, $bulan, $extension)
     {
-        $filename = 'laporan-konsolidasi-' . str_replace(' ', '-', $masjid->nama);
+        $filename = 'laporan-konsolidasi-' . str_replace(' ', '-', $lembaga->nama);
         $filename .= $bulan ? '-' . $this->namaBulan((int)$bulan) . '-' . $tahun : '-12-bulan-terakhir';
         $filename .= '.' . $extension;
 
@@ -471,7 +471,7 @@ class LaporanKonsolidasiController extends Controller
      * Ambil data laporan untuk export
      * DIPERBAIKI: Mengganti program_penyaluran menjadi program_zakat
      */
-    private function getLaporanData($masjidId, $tahun, $bulan = null, $type = 'konsolidasi')
+    private function getLaporanData($lembagaId, $tahun, $bulan = null, $type = 'konsolidasi')
     {
         if ($bulan) {
             // Export per bulan tertentu
@@ -502,7 +502,7 @@ class LaporanKonsolidasiController extends Controller
                     'program_zakat.nama_program as program_zakat_nama',
                     DB::raw('COALESCE(pengguna.username, amil.nama_lengkap) as amil_nama')
                 )
-                ->where('transaksi_penerimaan.masjid_id', $masjidId)
+                ->where('transaksi_penerimaan.lembaga_id', $lembagaId)
                 ->where('transaksi_penerimaan.status', 'verified')
                 ->whereBetween('transaksi_penerimaan.tanggal_transaksi', [$start, $end])
                 ->orderBy('transaksi_penerimaan.tanggal_transaksi', 'desc')
@@ -529,7 +529,7 @@ class LaporanKonsolidasiController extends Controller
                     DB::raw('COALESCE(pengguna.username, amil.nama_lengkap) as amil_nama'),
                     'mustahik.nama_lengkap as nama_mustahik' // Ambil nama dari tabel mustahik
                 )
-                ->where('transaksi_penyaluran.masjid_id', $masjidId)
+                ->where('transaksi_penyaluran.lembaga_id', $lembagaId)
                 ->where('transaksi_penyaluran.status', 'disalurkan')
                 ->whereNull('transaksi_penyaluran.deleted_at')
                 ->whereBetween('transaksi_penyaluran.tanggal_penyaluran', [$start, $end])
@@ -545,7 +545,7 @@ class LaporanKonsolidasiController extends Controller
 
         if ($type == 'konsolidasi') {
             // Data Ringkasan Bulanan
-            $data['ringkasan_bulanan'] = $this->getRingkasanBulanan($masjidId, $start, $end);
+            $data['ringkasan_bulanan'] = $this->getRingkasanBulanan($lembagaId, $start, $end);
 
             // Breakdown per jenis zakat
             $data['breakdown_jenis_zakat'] = DB::table('transaksi_penerimaan')
@@ -556,7 +556,7 @@ class LaporanKonsolidasiController extends Controller
                     DB::raw('SUM(jumlah) as total_nominal'),
                     DB::raw('COUNT(DISTINCT muzakki_nama) as jumlah_muzakki')
                 )
-                ->where('transaksi_penerimaan.masjid_id', $masjidId)
+                ->where('transaksi_penerimaan.lembaga_id', $lembagaId)
                 ->where('transaksi_penerimaan.status', 'verified')
                 ->whereBetween('transaksi_penerimaan.tanggal_transaksi', [$start, $end])
                 ->groupBy('jenis_zakat.id', 'jenis_zakat.nama')
@@ -572,7 +572,7 @@ class LaporanKonsolidasiController extends Controller
                     DB::raw('COUNT(DISTINCT mustahik_id) as jumlah_mustahik'),
                     DB::raw('SUM(CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE COALESCE(jumlah, 0) END) as total_nominal')
                 )
-                ->where('transaksi_penyaluran.masjid_id', $masjidId)
+                ->where('transaksi_penyaluran.lembaga_id', $lembagaId)
                 ->where('transaksi_penyaluran.status', 'disalurkan')
                 ->whereNull('transaksi_penyaluran.deleted_at')
                 ->whereBetween('transaksi_penyaluran.tanggal_penyaluran', [$start, $end])
@@ -590,7 +590,7 @@ class LaporanKonsolidasiController extends Controller
     /**
      * Get ringkasan bulanan
      */
-    private function getRingkasanBulanan($masjidId, $start, $end)
+    private function getRingkasanBulanan($lembagaId, $start, $end)
     {
         $penerimaanBulanan = DB::table('transaksi_penerimaan')
             ->select(
@@ -600,7 +600,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('COUNT(*) as jumlah_transaksi_penerimaan'),
                 DB::raw('COUNT(DISTINCT muzakki_nama) as jumlah_muzakki')
             )
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('status', 'verified')
             ->whereBetween('tanggal_transaksi', [$start, $end])
             ->groupBy(DB::raw('YEAR(tanggal_transaksi)'), DB::raw('MONTH(tanggal_transaksi)'))
@@ -615,7 +615,7 @@ class LaporanKonsolidasiController extends Controller
                 DB::raw('COUNT(*) as jumlah_transaksi_penyaluran'),
                 DB::raw('COUNT(DISTINCT mustahik_id) as jumlah_mustahik')
             )
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->where('status', 'disalurkan')
             ->whereNull('deleted_at')
             ->whereBetween('tanggal_penyaluran', [$start, $end])

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Data Mustahik Semua Masjid')
+@section('title', 'Data Mustahik Semua Lembaga')
 
 @section('content')
     <div class="space-y-4 sm:space-y-6">
@@ -8,9 +8,9 @@
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Data Mustahik Semua Masjid</h2>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Data Mustahik Semua Lembaga</h2>
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                            Total: {{ $totalMustahik }} Mustahik dari {{ $masjids->count() }} Masjid
+                            Total: {{ $totalMustahik }} Mustahik dari {{ $lembagas->count() }} Lembaga
                         </p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
@@ -34,8 +34,8 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
-                            <input type="search" placeholder="Cari nama masjid..."
-                                oninput="filterMasjid(this.value)"
+                            <input type="search" placeholder="Cari nama lembaga..."
+                                oninput="filterLembaga(this.value)"
                                 class="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-full sm:w-56">
                         </div>
                     </div>
@@ -47,18 +47,18 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="w-10 px-4 py-3"></th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masjid</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembaga</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Alamat</th>
                             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Mustahik</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($masjids as $masjid)
-                            <tr class="masjid-row cursor-pointer hover:bg-primary/5 transition-colors"
-                                data-nama="{{ strtolower($masjid->nama) }}"
-                                onclick="toggleMasjid('mustahik-masjid-{{ $masjid->id }}', this)">
+                        @forelse ($lembagas as $lembaga)
+                            <tr class="lembaga-row cursor-pointer hover:bg-primary/5 transition-colors"
+                                data-nama="{{ strtolower($lembaga->nama) }}"
+                                onclick="toggleLembaga('mustahik-lembaga-{{ $lembaga->id }}', this)">
                                 <td class="px-4 py-3">
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 masjid-chevron"
+                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 lembaga-chevron"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
@@ -71,35 +71,35 @@
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $masjid->nama }}</div>
+                                            <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat mustahik</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-3 hidden md:table-cell">
-                                    <div class="text-sm text-gray-600">{{ Str::limit($masjid->alamat ?? '-', 50) }}</div>
+                                    <div class="text-sm text-gray-600">{{ Str::limit($lembaga->alamat ?? '-', 50) }}</div>
                                 </td>
                                 <td class="px-6 py-3 text-center">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
-                                        {{ $masjid->mustahiks->count() }} Mustahik
+                                        {{ $lembaga->mustahiks->count() }} Mustahik
                                     </span>
                                 </td>
                             </tr>
 
                             {{-- Expandable Row --}}
-                            <tr id="mustahik-masjid-{{ $masjid->id }}" class="hidden masjid-content-row">
+                            <tr id="mustahik-lembaga-{{ $lembaga->id }}" class="hidden lembaga-content-row">
                                 <td colspan="4" class="p-0">
                                     <div class="bg-gradient-to-b from-green-50/50 to-gray-50 border-y border-green-200/50 px-6 py-4">
                                         <div class="flex items-center gap-2 mb-3">
                                             <div class="w-1 h-5 bg-green-500 rounded-full"></div>
                                             <h3 class="text-sm font-semibold text-gray-800">
-                                                Daftar Mustahik — {{ $masjid->nama }}
+                                                Daftar Mustahik — {{ $lembaga->nama }}
                                             </h3>
                                         </div>
 
-                                        @if ($masjid->mustahiks->isEmpty())
+                                        @if ($lembaga->mustahiks->isEmpty())
                                             <div class="text-center py-6 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
-                                                Belum ada data mustahik untuk masjid ini
+                                                Belum ada data mustahik untuk lembaga ini
                                             </div>
                                         @else
                                             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
@@ -113,7 +113,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="bg-white divide-y divide-gray-100">
-                                                        @foreach ($masjid->mustahiks as $mustahik)
+                                                        @foreach ($lembaga->mustahiks as $mustahik)
                                                             <tr class="hover:bg-gray-50 transition-colors">
                                                                 <td class="px-4 py-3">
                                                                     <div class="text-sm font-medium text-gray-900">{{ $mustahik->no_registrasi }}</div>
@@ -167,7 +167,7 @@
                         @empty
                             <tr>
                                 <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400">
-                                    Belum ada data masjid
+                                    Belum ada data lembaga
                                 </td>
                             </tr>
                         @endforelse
@@ -180,28 +180,28 @@
 
 @push('scripts')
 <script>
-    function toggleMasjid(id, row) {
+    function toggleLembaga(id, row) {
         const content = document.getElementById(id);
-        const chevron = row.querySelector('.masjid-chevron');
+        const chevron = row.querySelector('.lembaga-chevron');
         const isHidden = content.classList.contains('hidden');
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
     }
     function expandAll() {
-        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.remove('hidden'));
-        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.add('rotate-90'));
+        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.remove('hidden'));
+        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.add('rotate-90'));
     }
     function collapseAll() {
-        document.querySelectorAll('.masjid-content-row').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.masjid-chevron').forEach(el => el.classList.remove('rotate-90'));
+        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.remove('rotate-90'));
     }
-    function filterMasjid(keyword) {
+    function filterLembaga(keyword) {
         const q = keyword.toLowerCase().trim();
-        document.querySelectorAll('.masjid-row').forEach(row => {
+        document.querySelectorAll('.lembaga-row').forEach(row => {
             const show = !q || (row.getAttribute('data-nama') || '').includes(q);
             row.style.display = show ? '' : 'none';
             const next = row.nextElementSibling;
-            if (next && next.classList.contains('masjid-content-row')) {
+            if (next && next.classList.contains('lembaga-content-row')) {
                 next.style.display = show ? '' : 'none';
             }
         });

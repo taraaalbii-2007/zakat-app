@@ -3,33 +3,33 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MuzakiController extends Controller
 {
     /**
-     * Display muzakki grouped by masjid (accordion view).
+     * Display muzakki grouped by lembaga (accordion view).
      */
     public function index(Request $request)
     {
-        // Ambil semua masjid aktif
-        $masjids = Masjid::where('is_active', true)
+        // Ambil semua lembaga aktif
+        $lembagas = Lembaga::where('is_active', true)
             ->orderBy('nama')
-            ->get(['id', 'nama', 'kode_masjid', 'alamat']);
+            ->get(['id', 'nama', 'kode_lembaga', 'alamat']);
 
-        // Untuk setiap masjid, ambil daftar muzaki (aggregated)
-        $masjids->each(function ($masjid) {
+        // Untuk setiap lembaga, ambil daftar muzaki (aggregated)
+        $lembagas->each(function ($lembaga) {
             $muzakkis = DB::table('transaksi_penerimaan as tp')
-                ->where('tp.masjid_id', $masjid->id)
+                ->where('tp.lembaga_id', $lembaga->id)
                 ->whereNotNull('tp.muzakki_nama')
                 ->select([
                     'tp.muzakki_nama',
                     'tp.muzakki_telepon',
                     'tp.muzakki_email',
                     'tp.muzakki_nik',
-                    'tp.masjid_id',
+                    'tp.lembaga_id',
                     DB::raw('COUNT(tp.id) as total_transaksi'),
                     DB::raw('SUM(CASE WHEN tp.status = "verified" THEN tp.jumlah ELSE 0 END) as total_nominal'),
                     DB::raw('MAX(tp.tanggal_transaksi) as transaksi_terakhir'),
@@ -42,21 +42,21 @@ class MuzakiController extends Controller
                     'tp.muzakki_telepon',
                     'tp.muzakki_email',
                     'tp.muzakki_nik',
-                    'tp.masjid_id',
+                    'tp.lembaga_id',
                 ])
                 ->orderBy('tp.muzakki_nama')
                 ->get();
 
-            $masjid->muzakkis      = $muzakkis;
-            $masjid->muzakkiCount  = $muzakkis->count();
-            $masjid->totalNominal  = $muzakkis->sum('total_nominal');
+            $lembaga->muzakkis      = $muzakkis;
+            $lembaga->muzakkiCount  = $muzakkis->count();
+            $lembaga->totalNominal  = $muzakkis->sum('total_nominal');
         });
 
         // Summary stats global
         $stats = [
             'total_muzakki_unik' => DB::table('transaksi_penerimaan')
                 ->whereNotNull('muzakki_nama')
-                ->selectRaw('COUNT(DISTINCT CONCAT(muzakki_nama, "-", masjid_id)) as cnt')
+                ->selectRaw('COUNT(DISTINCT CONCAT(muzakki_nama, "-", lembaga_id)) as cnt')
                 ->value('cnt'),
 
             'total_transaksi' => DB::table('transaksi_penerimaan')->count(),
@@ -77,26 +77,26 @@ class MuzakiController extends Controller
                 ->count(),
         ];
 
-        return view('superadmin.muzaki.index', compact('masjids', 'stats'));
+        return view('superadmin.muzaki.index', compact('lembagas', 'stats'));
     }
 
     /**
      * Show riwayat transaksi lengkap seorang muzakki.
-     * Diidentifikasi berdasarkan muzakki_nama + masjid_id dari query string.
+     * Diidentifikasi berdasarkan muzakki_nama + lembaga_id dari query string.
      */
     public function show(Request $request)
     {
         $muzakkiNama = $request->query('nama');
-        $masjidId    = $request->query('masjid_id');
+        $lembagaId    = $request->query('lembaga_id');
 
-        abort_if(!$muzakkiNama || !$masjidId, 404);
+        abort_if(!$muzakkiNama || !$lembagaId, 404);
 
-        $masjid = Masjid::findOrFail($masjidId);
+        $lembaga = Lembaga::findOrFail($lembagaId);
 
         // Biodata ringkas dari transaksi terbaru
         $biodata = DB::table('transaksi_penerimaan')
             ->where('muzakki_nama', $muzakkiNama)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->orderByDesc('tanggal_transaksi')
             ->first(['muzakki_nama', 'muzakki_telepon', 'muzakki_email', 'muzakki_alamat', 'muzakki_nik']);
 
@@ -107,7 +107,7 @@ class MuzakiController extends Controller
             ->leftJoin('jenis_zakat as jz', 'tp.jenis_zakat_id', '=', 'jz.id')
             ->leftJoin('tipe_zakat as tz', 'tp.tipe_zakat_id', '=', 'tz.id')
             ->where('tp.muzakki_nama', $muzakkiNama)
-            ->where('tp.masjid_id', $masjidId)
+            ->where('tp.lembaga_id', $lembagaId)
             ->select([
                 'tp.uuid',
                 'tp.no_transaksi',
@@ -125,7 +125,7 @@ class MuzakiController extends Controller
         // Summary muzakki ini
         $summary = DB::table('transaksi_penerimaan')
             ->where('muzakki_nama', $muzakkiNama)
-            ->where('masjid_id', $masjidId)
+            ->where('lembaga_id', $lembagaId)
             ->selectRaw('
                 COUNT(*) as total_transaksi,
                 SUM(CASE WHEN status = "verified" THEN jumlah ELSE 0 END) as total_nominal,
@@ -141,7 +141,7 @@ class MuzakiController extends Controller
         $breakdownJenis = DB::table('transaksi_penerimaan as tp')
             ->join('jenis_zakat as jz', 'tp.jenis_zakat_id', '=', 'jz.id')
             ->where('tp.muzakki_nama', $muzakkiNama)
-            ->where('tp.masjid_id', $masjidId)
+            ->where('tp.lembaga_id', $lembagaId)
             ->where('tp.status', 'verified')
             ->groupBy('jz.id', 'jz.nama')
             ->select([
@@ -154,7 +154,7 @@ class MuzakiController extends Controller
 
         return view('superadmin.muzaki.show', compact(
             'biodata',
-            'masjid',
+            'lembaga',
             'transaksi',
             'summary',
             'breakdownJenis'

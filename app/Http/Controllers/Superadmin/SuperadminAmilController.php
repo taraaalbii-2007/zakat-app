@@ -3,26 +3,26 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Masjid;
+use App\Models\Lembaga;
 
 class SuperadminAmilController extends Controller
 {
     public function index()
     {
-        $masjids = Masjid::with(['amils' => function ($q) {
+        $lembagas = Lembaga::with(['amils' => function ($q) {
             $q->orderBy('nama_lengkap');
         }])
         ->withCount('amils')
         ->orderBy('nama')
         ->get();
 
-        $totalAmil = $masjids->sum(fn($m) => $m->amils->count());
+        $totalAmil = $lembagas->sum(fn($m) => $m->amils->count());
 
         $breadcrumbs = [
             'Kelola Amil' => null,
         ];
 
 
-        return view('superadmin.amil.index', compact('masjids', 'totalAmil','breadcrumbs'));
+        return view('superadmin.amil.index', compact('lembagas', 'totalAmil','breadcrumbs'));
     }
 }

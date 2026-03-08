@@ -78,7 +78,6 @@ class LembagaController extends Controller
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'deskripsi' => 'nullable|string',
-            'kode_lembaga' => 'required|string|max:50|unique:lembaga,kode_lembaga',
 
             // FOTO LEMBAGA
             'fotos' => 'nullable|array|max:' . Lembaga::MAX_FOTO,

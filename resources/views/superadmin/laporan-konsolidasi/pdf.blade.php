@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Konsolidasi - {{ $masjid->nama }}</title>
+    <title>Laporan Konsolidasi - {{ $lembaga->nama }}</title>
     <style>
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -192,13 +192,13 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ strtoupper($masjid->nama ?? 'LAPORAN KONSOLIDASI ZAKAT') }}</h1>
+        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN KONSOLIDASI ZAKAT') }}</h1>
         <h2>Laporan Konsolidasi {{ $type == 'penerimaan' ? 'Penerimaan' : ($type == 'penyaluran' ? 'Penyaluran' : 'Penerimaan & Penyaluran') }}</h2>
         <div class="subtitle">
-            {{ $masjid->alamat ?? '' }}
-            {{ $masjid->kelurahan_nama ? ', Kel. ' . $masjid->kelurahan_nama : '' }}
-            {{ $masjid->kecamatan_nama ? ', Kec. ' . $masjid->kecamatan_nama : '' }}
-            {{ $masjid->kota_nama ? ', ' . $masjid->kota_nama : '' }}
+            {{ $lembaga->alamat ?? '' }}
+            {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
+            {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
+            {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
         </div>
     </div>
 
@@ -471,7 +471,7 @@
 
     <div class="footer-note">
         <p><strong>Catatan:</strong> Laporan ini dibuat berdasarkan transaksi yang telah terverifikasi. Untuk penerimaan via transfer, nominal sesuai dengan bukti transfer yang diunggah. Penyaluran barang dinilai berdasarkan harga pasar wajar.</p>
-        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $masjid->nama ?? 'Masjid' }}.</p>
+        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $lembaga->nama ?? 'Lembaga' }}.</p>
         <p>Dicetak pada: {{ $tanggalExport }}</p>
     </div>
 </body>

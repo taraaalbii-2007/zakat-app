@@ -18,7 +18,7 @@ class PenggunaRegistrationMail extends Mailable
     public string $password;
     public string $peran;
     public string $peranLabel;
-    public ?string $namaMasjid;
+    public ?string $namaLembaga;
     public string $loginUrl;
 
     public function __construct(
@@ -27,18 +27,18 @@ class PenggunaRegistrationMail extends Mailable
         string  $username,
         string  $password,
         string  $peran,
-        ?string $namaMasjid = null
+        ?string $namaLembaga = null
     ) {
         $this->namaLengkap = $namaLengkap;
         $this->email       = $email;
         $this->username    = $username;
         $this->password    = $password;
         $this->peran       = $peran;
-        $this->namaMasjid  = $namaMasjid;
+        $this->namaLembaga  = $namaLembaga;
         $this->loginUrl    = url('/login');
 
         $this->peranLabel = match ($peran) {
-            'admin_masjid' => 'Admin Masjid',
+            'admin_lembaga' => 'Admin Lembaga',
             'amil'         => 'Amil',
             'superadmin'   => 'Super Admin',
             'muzakki'      => 'Muzakki',

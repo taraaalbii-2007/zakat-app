@@ -101,12 +101,12 @@
                                     <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $peranLabel }}</td>
                                 </tr>
 
-                                <!-- Masjid (jika ada) -->
-                                @if($namaMasjid)
+                                <!-- Lembaga (jika ada) -->
+                                @if($namaLembaga)
                                 <tr>
-                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Masjid</td>
+                                    <td style="padding:7px 0; color:#6b7280; font-size:14px; vertical-align:top;">Lembaga</td>
                                     <td style="padding:7px 4px; color:#6b7280; font-size:14px; vertical-align:top;">:</td>
-                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $namaMasjid }}</td>
+                                    <td style="padding:7px 0; color:#1a1a1a; font-size:14px; font-weight:600; vertical-align:top;">{{ $namaLembaga }}</td>
                                 </tr>
                                 @endif
 
@@ -186,8 +186,8 @@
                                     <td style="padding-left:14px;">
                                         <p style="margin:0 0 3px; color:#1a1a1a; font-size:14px; font-weight:600;">Mulai Kelola Sistem</p>
                                         <p style="margin:0; color:#6b7280; font-size:13px; line-height:1.6;">
-                                            @if($peranLabel === 'Admin Masjid')
-                                                Mulai kelola data zakat masjid — pengumpulan, pencatatan, pelaporan, dan distribusi.
+                                            @if($peranLabel === 'Admin Lembaga')
+                                                Mulai kelola data zakat lembaga — pengumpulan, pencatatan, pelaporan, dan distribusi.
                                             @elseif($peranLabel === 'Amil')
                                                 Mulai jalankan tugas sebagai amil — verifikasi muzakki, penerimaan zakat, dan distribusi.
                                             @else

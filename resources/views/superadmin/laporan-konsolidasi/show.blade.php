@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Laporan - ' . $masjid->nama)
+@section('title', 'Detail Laporan - ' . $lembaga->nama)
 
 @section('content')
 <div class="space-y-4 sm:space-y-6">
@@ -15,7 +15,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Laporan Konsolidasi</h1>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $masjid->nama }} - 12 Bulan Terakhir</p>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1">{{ $lembaga->nama }} - 12 Bulan Terakhir</p>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                     <a href="{{ route('laporan-konsolidasi.index') }}"
@@ -58,7 +58,7 @@
                                 <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                                     Format PDF
                                 </div>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'pdf', 'type' => 'konsolidasi', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'pdf', 'type' => 'konsolidasi', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -66,7 +66,7 @@
                                     </svg>
                                     Konsolidasi (Ringkasan)
                                 </a>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'pdf', 'type' => 'penerimaan', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'pdf', 'type' => 'penerimaan', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -74,7 +74,7 @@
                                     </svg>
                                     Detail Penerimaan
                                 </a>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'pdf', 'type' => 'penyaluran', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'pdf', 'type' => 'penyaluran', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -89,7 +89,7 @@
                                 <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100">
                                     Format Excel
                                 </div>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'excel', 'type' => 'konsolidasi', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'excel', 'type' => 'konsolidasi', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -97,7 +97,7 @@
                                     </svg>
                                     Konsolidasi (Ringkasan)
                                 </a>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'excel', 'type' => 'penerimaan', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'excel', 'type' => 'penerimaan', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +105,7 @@
                                     </svg>
                                     Detail Penerimaan
                                 </a>
-                                <a href="{{ route('laporan-konsolidasi.export', ['masjidId' => $masjid->id, 'format' => 'excel', 'type' => 'penyaluran', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
+                                <a href="{{ route('laporan-konsolidasi.export', ['lembagaId' => $lembaga->id, 'format' => 'excel', 'type' => 'penyaluran', 'tahun' => request('tahun', date('Y')), 'bulan' => request('bulan')]) }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -124,12 +124,12 @@
         {{-- Content Body --}}
         <div class="p-4 sm:p-6 space-y-6 sm:space-y-8">
 
-            {{-- Info Masjid --}}
+            {{-- Info Lembaga --}}
             <div>
                 <div class="flex items-start gap-4">
                     <div class="flex-1">
-                        <h2 class="text-xl font-bold text-gray-900">{{ $masjid->nama }}</h2>
-                        <p class="text-sm text-gray-600 mt-1">{{ $masjid->kode_masjid }}</p>
+                        <h2 class="text-xl font-bold text-gray-900">{{ $lembaga->nama }}</h2>
+                        <p class="text-sm text-gray-600 mt-1">{{ $lembaga->kode_lembaga }}</p>
                         <p class="text-sm text-gray-500 mt-1 flex items-start">
                             <svg class="w-4 h-4 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -138,7 +138,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            {{ $masjid->alamat_lengkap }}
+                            {{ $lembaga->alamat_lengkap }}
                         </p>
                     </div>
                 </div>
