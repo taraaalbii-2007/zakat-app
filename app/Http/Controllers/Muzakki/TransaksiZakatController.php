@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 
 class TransaksiZakatController extends Controller
 {
@@ -66,7 +67,10 @@ class TransaksiZakatController extends Controller
     public function index(Request $request)
     {
         $query = TransaksiPenerimaan::with([
-            'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna',
+            'jenisZakat',
+            'tipeZakat',
+            'programZakat',
+            'amil.pengguna',
         ])->where('muzakki_id', $this->muzakki->id);
 
         if ($request->filled('q')) {
@@ -206,7 +210,7 @@ class TransaksiZakatController extends Controller
             if ($jumlahZakat > 0 && $jumlahDibayar < $jumlahZakat) {
                 return redirect()->back()->withInput()->withErrors([
                     'jumlah_dibayar' => 'Jumlah dibayar (Rp ' . number_format($jumlahDibayar, 0, ',', '.') .
-                                        ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').',
+                        ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').',
                 ]);
             }
         }
@@ -248,7 +252,7 @@ class TransaksiZakatController extends Controller
                 'muzakki_id'    => $this->muzakki->id,
                 'metode'        => $metode,
                 'jumlah'        => $transaksi->jumlah,
-                'jumlah_dibayar'=> $transaksi->jumlah_dibayar,
+                'jumlah_dibayar' => $transaksi->jumlah_dibayar,
                 'jumlah_infaq'  => $transaksi->jumlah_infaq,
             ]);
 
@@ -261,7 +265,6 @@ class TransaksiZakatController extends Controller
                 : 'Transaksi zakat berhasil dikirim: ' . $transaksi->no_transaksi . $infaqNote . '. Menunggu konfirmasi dari amil.';
 
             return redirect()->route('transaksi-daring-muzakki.index')->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Muzakki store error', [
@@ -280,7 +283,12 @@ class TransaksiZakatController extends Controller
     public function show(string $uuid)
     {
         $transaksi = TransaksiPenerimaan::with([
-            'lembaga', 'jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna', 'verifiedBy',
+            'lembaga',
+            'jenisZakat',
+            'tipeZakat',
+            'programZakat',
+            'amil.pengguna',
+            'verifiedBy',
         ])
             ->where('uuid', $uuid)
             ->where('muzakki_id', $this->muzakki->id)
@@ -433,7 +441,6 @@ class TransaksiZakatController extends Controller
             $jumlah = (int) $request->jumlah_jiwa * (float) $request->nominal_per_jiwa;
             $transaksi->jumlah_jiwa      = (int) $request->jumlah_jiwa;
             $transaksi->nominal_per_jiwa = (float) $request->nominal_per_jiwa;
-
         } elseif ($isMal) {
             if (!$request->filled('nilai_harta')) {
                 throw new \Exception('Nilai harta wajib diisi untuk zakat mal.');
@@ -446,7 +453,6 @@ class TransaksiZakatController extends Controller
             $transaksi->nisab_saat_ini     = $request->filled('nisab_saat_ini') ? (float) $request->nisab_saat_ini : null;
             $transaksi->sudah_haul         = $request->boolean('sudah_haul', false);
             $transaksi->tanggal_mulai_haul = $request->tanggal_mulai_haul ?: null;
-
         } else {
             // Jenis lain — gunakan jumlah_dibayar sebagai acuan
             $jumlah = (float) $request->jumlah_dibayar;
@@ -492,7 +498,7 @@ class TransaksiZakatController extends Controller
         if ($jumlahDibayar < $jumlahZakat) {
             throw new \Exception(
                 'Jumlah dibayar (Rp ' . number_format($jumlahDibayar, 0, ',', '.') .
-                ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').'
+                    ') tidak boleh kurang dari jumlah zakat (Rp ' . number_format($jumlahZakat, 0, ',', '.') . ').'
             );
         }
 
@@ -507,14 +513,17 @@ class TransaksiZakatController extends Controller
 
         // ── Simpan bukti ──
         if ($request->hasFile('bukti_transfer')) {
-            $path = $request->file('bukti_transfer')->store('bukti-transfer', 'public');
-            $transaksi->bukti_transfer = $path;
+            $transaksi->bukti_transfer = $this->simpanBuktiTerkompresi(
+                $request->file('bukti_transfer'),
+                'bukti-transfer'
+            );
         }
 
         if ($request->hasFile('bukti_qris')) {
-            $path = $request->file('bukti_qris')->store('bukti-qris', 'public');
-            // Simpan ke kolom yang sama (bukti_transfer) atau buat kolom bukti_qris tersendiri
-            $transaksi->bukti_transfer = $path;
+            $transaksi->bukti_transfer = $this->simpanBuktiTerkompresi(
+                $request->file('bukti_qris'),
+                'bukti-qris'
+            );
         }
     }
 
@@ -544,5 +553,19 @@ class TransaksiZakatController extends Controller
             'no_transaksi' => $transaksi->no_transaksi,
             'jumlah_jiwa'  => count($namaJiwaBersih),
         ]);
+    }
+
+    private function simpanBuktiTerkompresi(\Illuminate\Http\UploadedFile $file, string $folder): string
+    {
+        $filename = uniqid() . '.webp';
+        $savePath = storage_path("app/public/{$folder}/{$filename}");
+
+        \Intervention\Image\ImageManager::gd()
+            ->read($file->getPathname())
+            ->scaleDown(1280, 1280)
+            ->toWebp(82)
+            ->save($savePath);
+
+        return "{$folder}/{$filename}";
     }
 }

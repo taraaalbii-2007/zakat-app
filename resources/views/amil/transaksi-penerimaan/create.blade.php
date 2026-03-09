@@ -212,30 +212,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap <span class="text-red-500">*</span></label>
                                 <textarea name="muzakki_alamat" rows="2" placeholder="Jl. ... RT/RW, Kelurahan, Kecamatan"
                                     class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500 resize-none">{{ old('muzakki_alamat', $muzakkiData['alamat'] ?? '') }}</textarea>
-                                <div id="wrapKoordinat" class="mt-3 {{ $defaultMode === 'dijemput' ? '' : 'hidden' }}">
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Latitude <span class="text-red-500">*</span></label>
-                                            <input type="text" name="latitude" id="latitude"
-                                                value="{{ old('latitude') }}" placeholder="-6.2088"
-                                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-medium text-gray-600 mb-1">Longitude <span class="text-red-500">*</span></label>
-                                            <input type="text" name="longitude" id="longitude"
-                                                value="{{ old('longitude') }}" placeholder="106.8456"
-                                                class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
-                                        </div>
-                                    </div>
-                                    <button type="button" id="btnGps"
-                                        class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        Gunakan Lokasi Saat Ini
-                                    </button>
-                                </div>
                             </div>
                             <div id="wrapAmil" class="{{ $defaultMode === 'dijemput' ? '' : 'hidden' }}">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Amil Penjemput <span class="text-red-500">*</span></label>
@@ -935,9 +911,6 @@ function validateStep(step) {
             return false;
         }
         if (currentMode === 'dijemput') {
-            if (!document.getElementById('latitude')?.value.trim() || !document.getElementById('longitude')?.value.trim()) {
-                alert('Koordinat lokasi wajib diisi.'); return false;
-            }
             if (!document.getElementById('amilId')?.value) {
                 alert('Pilih amil penjemput.'); return false;
             }
@@ -1046,28 +1019,6 @@ document.querySelectorAll('input[name="__mode"]').forEach(r => {
     });
 });
 @endif
-
-// ══════════════════════════════════════════════════════════════
-// GPS
-// ══════════════════════════════════════════════════════════════
-document.getElementById('btnGps')?.addEventListener('click', function () {
-    if (!navigator.geolocation) { alert('Browser tidak mendukung geolocation.'); return; }
-    spinBtn(this, 'Mengambil...');
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            document.getElementById('latitude').value  = pos.coords.latitude.toFixed(7);
-            document.getElementById('longitude').value = pos.coords.longitude.toFixed(7);
-            this.disabled = false;
-            this.innerHTML = 'Berhasil';
-            setTimeout(() => { this.innerHTML = 'Gunakan Lokasi Saat Ini'; }, 2500);
-        },
-        err => {
-            this.disabled = false;
-            this.innerHTML = 'Gunakan Lokasi Saat Ini';
-            alert('Gagal mendapatkan lokasi: ' + err.message);
-        }
-    );
-});
 
 // ══════════════════════════════════════════════════════════════
 // DAFTAR NAMA JIWA

@@ -585,8 +585,6 @@ class TransaksiPenerimaanController extends Controller
                 'muzakki_alamat'      => 'required|string',
                 'muzakki_nik'         => 'nullable|string|size:16',
                 'amil_id'             => 'required|exists:amil,id',
-                'latitude'            => 'required|numeric',
-                'longitude'           => 'required|numeric',
                 'tanggal_penjemputan' => 'nullable|date',
                 'metode_pembayaran'   => 'nullable|in:tunai,transfer,qris,beras,makanan_matang,bahan_mentah',
                 'jumlah_dibayar'      => 'nullable|numeric|min:0',
@@ -624,8 +622,6 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->muzakki_nik        = $request->muzakki_nik;
             $transaksi->metode_penerimaan  = 'dijemput';
             $transaksi->amil_id            = $request->amil_id;
-            $transaksi->latitude           = $request->latitude;
-            $transaksi->longitude          = $request->longitude;
             $transaksi->status_penjemputan = 'menunggu';
             $transaksi->waktu_request      = now();
             $transaksi->jumlah             = 0;

@@ -147,6 +147,23 @@
             </div>
 
             @if ($mustahiks->count() > 0)
+                {{-- Info Filter Aktif --}}
+                @if(request('q'))
+                    <div class="px-4 sm:px-6 py-2 bg-blue-50 border-b border-blue-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-wrap gap-2">
+                                <span class="text-xs font-medium text-blue-800">Filter Aktif:</span>
+                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                    Pencarian: "{{ request('q') }}"
+                                    <button type="button" onclick="removeFilter('q')" class="ml-1.5 text-blue-600 hover:text-blue-800">
+                                        ×
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 {{-- Desktop Table --}}
                 <div class="hidden md:block overflow-x-auto" id="table-container">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -255,7 +272,7 @@
                                     <div class="flex-1 min-w-0">
                                         <h3 class="text-sm font-semibold text-gray-900 mb-0.5">{{ $item->nama_lengkap }}</h3>
                                         <p class="text-xs text-gray-500 mb-2">{{ $item->no_registrasi }}</p>
-                                        
+
                                         <div class="flex flex-wrap gap-1.5 mb-2">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 {{ $item->kategoriMustahik->nama }}
@@ -268,7 +285,7 @@
                                             @if($item->nik)
                                                 <div class="flex items-center text-xs text-gray-600">
                                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
                                                     </svg>
                                                     NIK: {{ $item->nik }}
@@ -277,7 +294,7 @@
                                             @if($item->telepon)
                                                 <div class="flex items-center text-xs text-gray-600">
                                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                                     </svg>
                                                     {{ $item->telepon }}
@@ -388,7 +405,6 @@
                     Edit
                 </a>
 
-                {{-- Tombol Verifikasi hanya untuk Admin & status pending --}}
                 <button type="button" id="dropdown-verify-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -397,7 +413,6 @@
                     Verifikasi
                 </button>
 
-                {{-- Tombol Tolak hanya untuk Admin & status pending --}}
                 <button type="button" id="dropdown-reject-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -406,7 +421,6 @@
                     Tolak
                 </button>
 
-                {{-- Tombol Aktif/Nonaktif hanya untuk Admin --}}
                 <button type="button" id="dropdown-toggle-active-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -450,10 +464,14 @@
                     class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                     Batal
                 </button>
-                <button type="button" id="confirm-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                    Hapus
-                </button>
+                <form id="delete-form" method="POST" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" id="confirm-delete-btn"
+                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        Hapus
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -474,7 +492,7 @@
                 Tolak verifikasi mustahik
                 "<span id="modal-reject-mustahik-name" class="font-semibold text-gray-700"></span>"?
             </p>
-            
+
             <div class="mt-4">
                 <label for="alasan_penolakan" class="block text-sm font-medium text-gray-700 mb-2">
                     Alasan Penolakan <span class="text-red-500">*</span>
@@ -484,7 +502,7 @@
                     class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     required></textarea>
             </div>
-            
+
             <div class="flex justify-center gap-2 sm:gap-3 mt-6">
                 <button type="button" id="cancel-reject-btn"
                     class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
@@ -506,278 +524,209 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
-            const viewLink = document.getElementById('dropdown-view-link');
-            const editLink = document.getElementById('dropdown-edit-link');
-            const deleteBtn = document.getElementById('dropdown-delete-btn');
-            const verifyBtn = document.getElementById('dropdown-verify-btn');
-            const rejectBtn = document.getElementById('dropdown-reject-btn');
-            const toggleActiveBtn = document.getElementById('dropdown-toggle-active-btn');
-            const tableContainer = document.getElementById('table-container');
-            
-            // Dropdown toggle
+            const viewLink          = document.getElementById('dropdown-view-link');
+            const editLink          = document.getElementById('dropdown-edit-link');
+            const deleteBtn         = document.getElementById('dropdown-delete-btn');
+            const verifyBtn         = document.getElementById('dropdown-verify-btn');
+            const rejectBtn         = document.getElementById('dropdown-reject-btn');
+            const toggleActiveBtn   = document.getElementById('dropdown-toggle-active-btn');
+            const tableContainer    = document.getElementById('table-container');
+
+            // ── Dropdown open/close ─────────────────────────────
             document.addEventListener('click', function(e) {
                 const toggle = e.target.closest('.dropdown-toggle');
+
                 if (toggle) {
                     e.stopPropagation();
+
                     const dropdownUuid = toggle.getAttribute('data-dropdown-toggle');
                     const mustahikName = toggle.getAttribute('data-nama');
-                    const actions = JSON.parse(toggle.getAttribute('data-actions') || '{}');
-                    const status = toggle.getAttribute('data-status');
-                    const isActive = toggle.getAttribute('data-is-active') === '1';
-                    const userRole = toggle.getAttribute('data-user-role');
-                    
+                    const actions      = JSON.parse(toggle.getAttribute('data-actions') || '{}');
+                    const status       = toggle.getAttribute('data-status');
+                    const isActive     = toggle.getAttribute('data-is-active') === '1';
+                    const userRole     = toggle.getAttribute('data-user-role');
+
+                    // Toggle close jika klik tombol yang sama
                     if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
                         !dropdownContainer.classList.contains('hidden')) {
                         dropdownContainer.classList.add('hidden');
                         dropdownContainer.removeAttribute('data-current-uuid');
                         return;
                     }
-                    
+
                     currentMustahikUuid = dropdownUuid;
-                    currentDropdownData = {
-                        uuid: dropdownUuid,
-                        name: mustahikName,
-                        actions: actions,
-                        status: status,
-                        isActive: isActive,
-                        userRole: userRole
-                    };
-                    
+                    currentDropdownData = { uuid: dropdownUuid, name: mustahikName, actions, status, isActive, userRole };
+
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
-                    const rect = toggle.getBoundingClientRect();
-                    
-                    let top = rect.bottom;
-                    let left = rect.left;
-                    
+
+                    // Hitung posisi dropdown
+                    const rect          = toggle.getBoundingClientRect();
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
                     const dropdownHeight = 200;
-                    
-                    if (left + dropdownWidth > window.innerWidth) {
-                        left = window.innerWidth - dropdownWidth - 10;
-                    }
-                    
-                    if (top + dropdownHeight > window.innerHeight) {
-                        top = rect.top - dropdownHeight;
-                    }
-                    
-                    dropdownContainer.style.top = top + 'px';
+
+                    let top  = rect.bottom;
+                    let left = rect.left;
+
+                    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 10;
+                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight;
+
+                    dropdownContainer.style.top  = top  + 'px';
                     dropdownContainer.style.left = left + 'px';
+
+                    // Set link
                     viewLink.href = `/mustahik/${dropdownUuid}`;
-                    
-                    // Show/hide edit button based on permissions
+
+                    // Edit
                     if (actions.can_edit) {
                         editLink.href = `/mustahik/${dropdownUuid}/edit`;
                         editLink.classList.remove('hidden');
                     } else {
                         editLink.classList.add('hidden');
                     }
-                    
-                    // Show/hide verify button
-                    if (actions.can_verify) {
-                        verifyBtn.classList.remove('hidden');
-                    } else {
-                        verifyBtn.classList.add('hidden');
-                    }
-                    
-                    // Show/hide reject button
-                    if (actions.can_reject) {
-                        rejectBtn.classList.remove('hidden');
-                    } else {
-                        rejectBtn.classList.add('hidden');
-                    }
-                    
-                    // Show/hide toggle active button
+
+                    // Verifikasi
+                    verifyBtn.classList.toggle('hidden', !actions.can_verify);
+
+                    // Tolak
+                    rejectBtn.classList.toggle('hidden', !actions.can_reject);
+
+                    // Toggle aktif
                     if (actions.can_toggle_active) {
                         toggleActiveBtn.classList.remove('hidden');
-                        const toggleText = document.getElementById('toggle-active-text');
-                        toggleText.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
+                        document.getElementById('toggle-active-text').textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
                     } else {
                         toggleActiveBtn.classList.add('hidden');
                     }
-                    
-                    // Show/hide delete button
-                    if (actions.can_delete) {
-                        deleteBtn.classList.remove('hidden');
-                    } else {
-                        deleteBtn.classList.add('hidden');
-                    }
-                    
+
+                    // Hapus
+                    deleteBtn.classList.toggle('hidden', !actions.can_delete);
+
                     dropdownContainer.classList.remove('hidden');
-                } else {
-                    if (!dropdownContainer.contains(e.target)) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                    }
+
+                } else if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.add('hidden');
+                    dropdownContainer.removeAttribute('data-current-uuid');
                 }
             });
-            
-            // Delete button click
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (!currentDropdownData) return;
-                    
-                    dropdownContainer.classList.add('hidden');
-                    dropdownContainer.removeAttribute('data-current-uuid');
-                    
-                    const modal = document.getElementById('delete-modal');
-                    const modalName = document.getElementById('modal-mustahik-name');
-                    modalName.textContent = currentDropdownData.name;
-                    modal.classList.remove('hidden');
-                });
-            }
-            
-            // Verify button click
-            if (verifyBtn) {
-                verifyBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (!currentMustahikUuid) return;
-                    
-                    if (confirm('Verifikasi mustahik ini?')) {
-                        verifyMustahik(currentMustahikUuid);
-                    }
-                    dropdownContainer.classList.add('hidden');
-                });
-            }
-            
-            // Reject button click
-            if (rejectBtn) {
-                rejectBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (!currentDropdownData) return;
-                    
-                    dropdownContainer.classList.add('hidden');
-                    dropdownContainer.removeAttribute('data-current-uuid');
-                    
-                    const modal = document.getElementById('reject-modal');
-                    const modalName = document.getElementById('modal-reject-mustahik-name');
-                    modalName.textContent = currentDropdownData.name;
-                    modal.classList.remove('hidden');
-                });
-            }
-            
-            // Toggle active button click
-            if (toggleActiveBtn) {
-                toggleActiveBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (!currentMustahikUuid) return;
-                    
-                    const actionText = currentDropdownData.isActive ? 'Nonaktifkan' : 'Aktifkan';
-                    if (confirm(`${actionText} mustahik ini?`)) {
-                        toggleActiveMustahik(currentMustahikUuid, currentDropdownData.isActive);
-                    }
-                    dropdownContainer.classList.add('hidden');
-                });
-            }
-            
-            // Delete modal actions
-            document.getElementById('confirm-delete-btn').addEventListener('click', function() {
-                if (!currentMustahikUuid) return;
-                
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/mustahik/${currentMustahikUuid}`;
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                
-                const methodField = document.createElement('input');
-                methodField.type = 'hidden';
-                methodField.name = '_method';
-                methodField.value = 'DELETE';
-                
-                form.appendChild(csrfToken);
-                form.appendChild(methodField);
-                document.body.appendChild(form);
-                form.submit();
+
+            // ── Hapus ───────────────────────────────────────────
+            deleteBtn.addEventListener('click', function() {
+                if (!currentDropdownData) return;
+                dropdownContainer.classList.add('hidden');
+                dropdownContainer.removeAttribute('data-current-uuid');
+
+                document.getElementById('modal-mustahik-name').textContent = currentDropdownData.name;
+                document.getElementById('delete-form').action = `/mustahik/${currentMustahikUuid}`;
+                document.getElementById('delete-modal').classList.remove('hidden');
             });
-            
+
             document.getElementById('cancel-delete-btn').addEventListener('click', function() {
                 document.getElementById('delete-modal').classList.add('hidden');
             });
-            
+
             document.getElementById('delete-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
+                if (e.target === this) this.classList.add('hidden');
+            });
+
+            // ── Verifikasi ──────────────────────────────────────
+            verifyBtn.addEventListener('click', function() {
+                if (!currentMustahikUuid) return;
+                dropdownContainer.classList.add('hidden');
+                dropdownContainer.removeAttribute('data-current-uuid');
+
+                if (confirm('Verifikasi mustahik ini?')) {
+                    verifyMustahik(currentMustahikUuid);
                 }
             });
-            
-            // Reject modal actions
+
+            // ── Tolak ───────────────────────────────────────────
+            rejectBtn.addEventListener('click', function() {
+                if (!currentDropdownData) return;
+                dropdownContainer.classList.add('hidden');
+                dropdownContainer.removeAttribute('data-current-uuid');
+
+                document.getElementById('modal-reject-mustahik-name').textContent = currentDropdownData.name;
+                document.getElementById('alasan_penolakan').value = '';
+                document.getElementById('reject-modal').classList.remove('hidden');
+            });
+
             document.getElementById('confirm-reject-btn').addEventListener('click', function() {
                 if (!currentMustahikUuid) return;
-                
-                const alasan = document.getElementById('alasan_penolakan').value;
-                if (!alasan.trim()) {
-                    alert('Harap masukkan alasan penolakan');
+                const alasan = document.getElementById('alasan_penolakan').value.trim();
+                if (!alasan) {
+                    ToastNotification.show('Harap masukkan alasan penolakan', 'warning');
                     return;
                 }
-                
                 rejectMustahik(currentMustahikUuid, alasan);
             });
-            
+
             document.getElementById('cancel-reject-btn').addEventListener('click', function() {
                 document.getElementById('reject-modal').classList.add('hidden');
             });
-            
+
             document.getElementById('reject-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
+                if (e.target === this) this.classList.add('hidden');
+            });
+
+            // ── Toggle Aktif ────────────────────────────────────
+            toggleActiveBtn.addEventListener('click', function() {
+                if (!currentMustahikUuid) return;
+                dropdownContainer.classList.add('hidden');
+                dropdownContainer.removeAttribute('data-current-uuid');
+
+                const actionText = currentDropdownData.isActive ? 'Nonaktifkan' : 'Aktifkan';
+                if (confirm(`${actionText} mustahik ini?`)) {
+                    toggleActiveMustahik(currentMustahikUuid);
                 }
             });
-            
-            window.addEventListener('scroll', function() {
+
+            // ── Tutup dropdown saat scroll / resize ─────────────
+            const hideDropdown = () => {
                 if (!dropdownContainer.classList.contains('hidden')) {
                     dropdownContainer.classList.add('hidden');
                     dropdownContainer.removeAttribute('data-current-uuid');
                 }
-            }, true);
-            
-            if (tableContainer) {
-                tableContainer.addEventListener('scroll', function() {
-                    if (!dropdownContainer.classList.contains('hidden')) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                    }
-                }, true);
-            }
-            
-            window.addEventListener('resize', function() {
-                if (!dropdownContainer.classList.contains('hidden')) {
-                    dropdownContainer.classList.add('hidden');
-                    dropdownContainer.removeAttribute('data-current-uuid');
-                }
-            });
+            };
+
+            window.addEventListener('scroll', hideDropdown, true);
+            window.addEventListener('resize', hideDropdown);
+            if (tableContainer) tableContainer.addEventListener('scroll', hideDropdown, true);
         });
-        
+
+        // ── Search toggle ───────────────────────────────────────
         function toggleSearch() {
-            const searchButton = document.getElementById('search-button');
-            const searchForm = document.getElementById('search-form');
-            const searchInput = document.getElementById('search-input');
+            const searchButton    = document.getElementById('search-button');
+            const searchForm      = document.getElementById('search-form');
+            const searchInput     = document.getElementById('search-input');
             const searchContainer = document.getElementById('search-container');
-            
+
             if (searchForm.classList.contains('hidden')) {
                 searchButton.classList.add('hidden');
                 searchForm.classList.remove('hidden');
                 searchContainer.style.minWidth = '280px';
                 setTimeout(() => searchInput.focus(), 50);
             } else {
-                const hasQuery = '{{ request('q') }}' !== '';
-                if (!hasQuery) {
-                    searchInput.value = '';
-                }
+                if (!'{{ request('q') }}') searchInput.value = '';
                 searchForm.classList.add('hidden');
                 searchButton.classList.remove('hidden');
                 searchContainer.style.minWidth = 'auto';
             }
         }
 
+        // ── Filter panel toggle ─────────────────────────────────
         function toggleFilter() {
-            const filterPanel = document.getElementById('filter-panel');
-            filterPanel.classList.toggle('hidden');
+            document.getElementById('filter-panel').classList.toggle('hidden');
         }
 
+        // ── Remove filter dari URL ──────────────────────────────
+        function removeFilter(filterName) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete(filterName);
+            url.searchParams.set('page', '1');
+            window.location.href = url.toString();
+        }
+
+        // ── API: Verifikasi ─────────────────────────────────────
         function verifyMustahik(uuid) {
             fetch(`/mustahik/${uuid}/verify`, {
                 method: 'PATCH',
@@ -787,21 +736,15 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                if (data.success) {
-                    showToast(data.message, 'success');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message, 'error');
-                }
+                ToastNotification.show(data.message, data.success ? 'success' : 'error');
+                if (data.success) setTimeout(() => location.reload(), 1500);
             })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan saat memverifikasi', 'error');
-            });
+            .catch(() => ToastNotification.show('Terjadi kesalahan saat memverifikasi', 'error'));
         }
 
+        // ── API: Tolak ──────────────────────────────────────────
         function rejectMustahik(uuid, alasan) {
             fetch(`/mustahik/${uuid}/reject`, {
                 method: 'PATCH',
@@ -812,23 +755,19 @@
                 },
                 body: JSON.stringify({ alasan_penolakan: alasan })
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
+                ToastNotification.show(data.message, data.success ? 'success' : 'error');
                 if (data.success) {
-                    showToast(data.message, 'success');
                     document.getElementById('reject-modal').classList.add('hidden');
                     setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message, 'error');
                 }
             })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan saat menolak', 'error');
-            });
+            .catch(() => ToastNotification.show('Terjadi kesalahan saat menolak', 'error'));
         }
 
-        function toggleActiveMustahik(uuid, isCurrentlyActive) {
+        // ── API: Toggle Aktif ───────────────────────────────────
+        function toggleActiveMustahik(uuid) {
             fetch(`/mustahik/${uuid}/toggle-active`, {
                 method: 'PATCH',
                 headers: {
@@ -837,45 +776,12 @@
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                if (data.success) {
-                    showToast(data.message, 'success');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    showToast(data.message, 'error');
-                }
+                ToastNotification.show(data.message, data.success ? 'success' : 'error');
+                if (data.success) setTimeout(() => location.reload(), 1500);
             })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan saat mengubah status', 'error');
-            });
-        }
-
-        function showToast(message, type = 'success') {
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500'
-            };
-            
-            const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 ${colors[type]} text-white px-4 py-2 rounded-lg shadow-lg z-50 animate-slide-in-right`;
-            toast.innerHTML = `
-                <div class="flex items-center">
-                    ${type === 'success' ? 
-                        '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' :
-                        '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-                    }
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            .catch(() => ToastNotification.show('Terjadi kesalahan saat mengubah status', 'error'));
         }
     </script>
 @endpush

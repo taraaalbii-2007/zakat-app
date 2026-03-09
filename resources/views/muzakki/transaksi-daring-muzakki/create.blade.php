@@ -9,7 +9,8 @@
             <div class="px-4 sm:px-6 py-4 bg-primary-50 border-b border-primary-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-primary-100 border border-primary-200 flex items-center justify-center flex-shrink-0">
                             <svg class="w-5 h-5 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -23,7 +24,8 @@
                     <a href="{{ route('transaksi-daring-muzakki.index') }}"
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all self-start sm:self-auto">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         Kembali
                     </a>
@@ -57,7 +59,8 @@
                     {{-- Card Daring --}}
                     <button type="button" onclick="pilihMetode('daring')"
                         class="metode-card group flex flex-col items-center gap-3 p-6 rounded-2xl border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 cursor-pointer transition-all text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-primary-100 group-hover:bg-primary-200 flex items-center justify-center transition-colors">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-primary-100 group-hover:bg-primary-200 flex items-center justify-center transition-colors">
                             <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -65,15 +68,18 @@
                         </div>
                         <div>
                             <p class="text-base font-bold text-gray-900">Daring (Online)</p>
-                            <p class="text-xs text-gray-500 mt-1">Bayar via Transfer Bank atau QRIS. Bukti dikirim ke amil untuk dikonfirmasi.</p>
+                            <p class="text-xs text-gray-500 mt-1">Bayar via Transfer Bank atau QRIS. Bukti dikirim ke amil
+                                untuk dikonfirmasi.</p>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">Direkomendasikan</span>
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">Direkomendasikan</span>
                     </button>
 
                     {{-- Card Dijemput --}}
                     <button type="button" onclick="pilihMetode('dijemput')"
                         class="metode-card group flex flex-col items-center gap-3 p-6 rounded-2xl border-2 border-gray-200 hover:border-primary-400 hover:bg-primary-50/50 cursor-pointer transition-all text-center">
-                        <div class="w-16 h-16 rounded-2xl bg-primary-100 group-hover:bg-primary-200 flex items-center justify-center transition-colors">
+                        <div
+                            class="w-16 h-16 rounded-2xl bg-primary-100 group-hover:bg-primary-200 flex items-center justify-center transition-colors">
                             <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -83,9 +89,11 @@
                         </div>
                         <div>
                             <p class="text-base font-bold text-gray-900">Dijemput Amil</p>
-                            <p class="text-xs text-gray-500 mt-1">Amil datang ke lokasi Anda. Zakat bisa dibayar tunai, transfer, atau beras.</p>
+                            <p class="text-xs text-gray-500 mt-1">Amil datang ke lokasi Anda. Zakat bisa dibayar tunai,
+                                transfer, atau beras.</p>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">Amil ke lokasi Anda</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700">Amil ke
+                            lokasi Anda</span>
                     </button>
                 </div>
             </div>
@@ -117,7 +125,8 @@
                             <button type="button" onclick="tutupModalNiat()"
                                 class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all ml-3 flex-shrink-0">
                                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
@@ -128,10 +137,13 @@
                             {{-- Ayat QS. At-Taubah: 103 --}}
                             <div class="text-center py-2">
                                 <p class="text-right text-xl leading-loose text-gray-800 font-arabic mb-3 px-2">
-                                    خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ ۖ إِنَّ صَلَاتَكَ سَكَنٌ لَّهُمْ ۗ وَاللَّهُ سَمِيعٌ عَلِيمٌ
+                                    خُذْ مِنْ أَمْوَالِهِمْ صَدَقَةً تُطَهِّرُهُمْ وَتُزَكِّيهِم بِهَا وَصَلِّ عَلَيْهِمْ ۖ
+                                    إِنَّ صَلَاتَكَ سَكَنٌ لَّهُمْ ۗ وَاللَّهُ سَمِيعٌ عَلِيمٌ
                                 </p>
                                 <p class="text-xs text-gray-500 italic leading-relaxed">
-                                    "Ambillah zakat dari sebagian harta mereka, dengan zakat itu kamu membersihkan dan mensucikan mereka, dan berdoalah untuk mereka. Sesungguhnya doa kamu itu menjadi ketenteraman jiwa bagi mereka. Allah Maha Mendengar lagi Maha Mengetahui."
+                                    "Ambillah zakat dari sebagian harta mereka, dengan zakat itu kamu membersihkan dan
+                                    mensucikan mereka, dan berdoalah untuk mereka. Sesungguhnya doa kamu itu menjadi
+                                    ketenteraman jiwa bagi mereka. Allah Maha Mendengar lagi Maha Mengetahui."
                                 </p>
                                 <p class="text-xs font-semibold text-primary-600 mt-1.5">(QS. At-Taubah: 103)</p>
                             </div>
@@ -140,7 +152,8 @@
 
                             {{-- Niat Zakat Fitrah untuk Diri Sendiri --}}
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Fitrah — Diri Sendiri</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat
+                                    Fitrah — Diri Sendiri</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
                                     ﻧَﻮَﻳْﺖُ أَﻥْ أُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻔِﻄْﺮِ ﻋَﻦْ ﻧَﻔْسيْ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
@@ -148,7 +161,8 @@
                                     "Nawaitu an ukhrija zakaatal fithri 'an nafsii fardhan lillaahi ta'aalaa."
                                 </p>
                                 <p class="text-xs text-gray-400 mt-1">
-                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku sendiri, fardu karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku sendiri, fardu karena
+                                        Allah Ta'ala."</em>
                                 </p>
                             </div>
 
@@ -156,15 +170,19 @@
 
                             {{-- Niat Zakat Fitrah untuk Seluruh Keluarga --}}
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Fitrah — Seluruh Keluarga</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat
+                                    Fitrah — Seluruh Keluarga</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
-                                    ﻧَﻮَﻳْﺖُ ﺃَﻥْ ﺃُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻔِﻄْﺮِ ﻋَنِّيْ ﻭَﻋَﻦْ ﺟَﻤِﻴْﻊِ ﻣَﺎ ﻳَﻠْﺰَﻣُنِيْ ﻧَﻔَﻘَﺎﺗُﻬُﻢْ ﺷَﺮْﻋًﺎ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
+                                    ﻧَﻮَﻳْﺖُ ﺃَﻥْ ﺃُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻔِﻄْﺮِ ﻋَنِّيْ ﻭَﻋَﻦْ ﺟَﻤِﻴْﻊِ ﻣَﺎ ﻳَﻠْﺰَﻣُنِيْ
+                                    ﻧَﻔَﻘَﺎﺗُﻬُﻢْ ﺷَﺮْﻋًﺎ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
                                 <p class="text-xs text-gray-500 italic">
-                                    "Nawaitu an ukhrija zakaata al-fithri 'anni wa 'an jami'i ma ya'lunihi fardhan lillahi ta'ala."
+                                    "Nawaitu an ukhrija zakaata al-fithri 'anni wa 'an jami'i ma ya'lunihi fardhan lillahi
+                                    ta'ala."
                                 </p>
                                 <p class="text-xs text-gray-400 mt-1">
-                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang
+                                        nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
                                 </p>
                             </div>
 
@@ -172,7 +190,8 @@
 
                             {{-- Niat Zakat Mal — Diri Sendiri --}}
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Mal — Diri Sendiri</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Mal
+                                    — Diri Sendiri</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
                                     ﻧَﻮَﻳْﺖُ أَﻥْ أُﺧْﺮِﺝَ ﺯَﻛَﺎﺓَ ﺍﻟْﻤَﺎﻝِ ﻓَﺮْﺿًﺎ ﻟﻠﻪِ ﺗَﻌَﺎﻟَﻰ
                                 </p>
@@ -180,7 +199,8 @@
                                     "Nawaitu an ukhrija zakaata maali fardhan lillaahi ta'aala."
                                 </p>
                                 <p class="text-xs text-gray-400 mt-1">
-                                    Artinya: <em>"Saya niat mengeluarkan zakat harta dari diri sendiri karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Saya niat mengeluarkan zakat harta dari diri sendiri karena Allah
+                                        Ta'ala."</em>
                                 </p>
                             </div>
 
@@ -188,15 +208,19 @@
 
                             {{-- Niat Zakat Mal — Diri Sendiri & Keluarga --}}
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Mal — Diri Sendiri & Keluarga</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Niat Zakat Mal
+                                    — Diri Sendiri & Keluarga</h4>
                                 <p class="text-right text-lg leading-loose text-gray-800 font-arabic mb-2">
-                                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي عَنِّيْ وَعَنْ جَمِيْعِ مَا يَلْزَمُنِيْ نَفَقَاتُهُمْ فَرْضًا لِلَّهِ تَعَالَى
+                                    نَوَيْتُ أَنْ أُخْرِجَ زَكَاةَ مَالِي عَنِّيْ وَعَنْ جَمِيْعِ مَا يَلْزَمُنِيْ
+                                    نَفَقَاتُهُمْ فَرْضًا لِلَّهِ تَعَالَى
                                 </p>
                                 <p class="text-xs text-gray-500 italic">
-                                    "Nawaitu an ukhrija zakaata maali 'anni wa 'an jami'i ma ya'lunihi fardhan lillaahi ta'aala."
+                                    "Nawaitu an ukhrija zakaata maali 'anni wa 'an jami'i ma ya'lunihi fardhan lillaahi
+                                    ta'aala."
                                 </p>
                                 <p class="text-xs text-gray-400 mt-1">
-                                    Artinya: <em>"Aku niat mengeluarkan zakat harta dari diriku dan seluruh orang yang nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
+                                    Artinya: <em>"Aku niat mengeluarkan zakat harta dari diriku dan seluruh orang yang
+                                        nafkahnya menjadi tanggunganku, fardu karena Allah Ta'ala."</em>
                                 </p>
                             </div>
 
@@ -204,11 +228,15 @@
 
                             {{-- Keutamaan Zakat --}}
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-2">Keutamaan Berzakat</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-2">Keutamaan
+                                    Berzakat</h4>
                                 <div class="space-y-1.5 text-xs text-gray-600">
-                                    <p>• <strong>Membersihkan harta</strong> — Zakat mensucikan harta dari hal-hal yang syubhat</p>
-                                    <p>• <strong>Mendapat keberkahan</strong> — Allah melipatgandakan pahala orang yang berzakat</p>
-                                    <p>• <strong>Menghapus dosa</strong> — Zakat dapat menjadi kafarat (penghapus) dosa-dosa kecil</p>
+                                    <p>• <strong>Membersihkan harta</strong> — Zakat mensucikan harta dari hal-hal yang
+                                        syubhat</p>
+                                    <p>• <strong>Mendapat keberkahan</strong> — Allah melipatgandakan pahala orang yang
+                                        berzakat</p>
+                                    <p>• <strong>Menghapus dosa</strong> — Zakat dapat menjadi kafarat (penghapus) dosa-dosa
+                                        kecil</p>
                                     <p>• <strong>Menolong sesama</strong> — Membantu saudara yang membutuhkan</p>
                                 </div>
                             </div>
@@ -222,14 +250,16 @@
                                 <input type="checkbox" id="chkSudahBaca"
                                     class="w-4 h-4 text-primary-600 border-gray-300 rounded mt-0.5 cursor-pointer">
                                 <label for="chkSudahBaca" class="text-xs text-gray-700 cursor-pointer leading-relaxed">
-                                    Saya telah membaca niat zakat di atas dan berniat menunaikan kewajiban zakat dengan ikhlas karena Allah Ta'ala.
+                                    Saya telah membaca niat zakat di atas dan berniat menunaikan kewajiban zakat dengan
+                                    ikhlas karena Allah Ta'ala.
                                 </label>
                             </div>
                             <button type="button" id="btnSudahBaca" disabled onclick="konfirmasiSudahBaca()"
                                 class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all bg-gray-300 cursor-not-allowed opacity-60">
                                 Sudah Membaca — Lanjut Isi Form
                             </button>
-                            <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan tombol</p>
+                            <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan
+                                tombol</p>
                         </div>
                     </div>
                 </div>
@@ -239,7 +269,8 @@
                 ====================================================== --}}
                 <div id="modalDoaSetelahZakat"
                     class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[10000] hidden items-center justify-center p-4">
-                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
+                    <div
+                        class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden">
 
                         {{-- Header --}}
                         <div class="px-6 py-4 bg-primary text-white flex-shrink-0 flex items-center justify-between">
@@ -249,8 +280,10 @@
                             </div>
                             <button type="button" onclick="tutupModalDoaSetelah()"
                                 class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all ml-3 flex-shrink-0">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
@@ -259,7 +292,8 @@
                         <div class="overflow-y-auto flex-1 px-6 py-5 space-y-5">
 
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Doa Setelah Berzakat</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Doa Setelah
+                                    Berzakat</h4>
                                 <p class="text-right text-xl leading-loose text-gray-800 font-arabic mb-3">
                                     اَللَّهُمَّ اجْعَلْهَا مَغْنَمًا وَلاَ تَجْعَلْهَا مَغْرَمًا
                                 </p>
@@ -267,14 +301,16 @@
                                     "Allahummaj'alhaa maghnamaw walaa taj'alhaa maghraman."
                                 </p>
                                 <p class="text-xs text-gray-400 text-center">
-                                    Artinya: <em>"Ya Allah, jadikanlah ini sebagai keuntungan dan jangan jadikan kerugian."</em>
+                                    Artinya: <em>"Ya Allah, jadikanlah ini sebagai keuntungan dan jangan jadikan
+                                        kerugian."</em>
                                 </p>
                             </div>
 
                             <hr class="border-gray-100">
 
                             <div>
-                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Doa dari Amil kepada Muzakki</h4>
+                                <h4 class="text-xs font-bold text-primary-700 uppercase tracking-wider mb-3">Doa dari Amil
+                                    kepada Muzakki</h4>
                                 <p class="text-right text-xl leading-loose text-gray-800 font-arabic mb-3">
                                     آجَرَكَ اللهُ فِيمَا أَعْطَيْتَ وَبَارَكَ فِيمَا أَبْقَيْتَ وَجَعَلَهُ لَكَ طَهُورًا
                                 </p>
@@ -282,14 +318,16 @@
                                     "Aajaraka Allaahu fiimaa a'thayta wa baaraka fiimaa abqayta wa ja'alahu laka thahuuran."
                                 </p>
                                 <p class="text-xs text-gray-400 text-center">
-                                    Artinya: <em>"Semoga Allah memberimu pahala atas apa yang engkau berikan, memberkahi apa yang masih tersisa, dan menjadikannya sebagai penyuci bagimu."</em>
+                                    Artinya: <em>"Semoga Allah memberimu pahala atas apa yang engkau berikan, memberkahi apa
+                                        yang masih tersisa, dan menjadikannya sebagai penyuci bagimu."</em>
                                 </p>
                             </div>
 
                             <hr class="border-gray-100">
 
                             <p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
-                                📌 Transaksi zakat Anda akan segera diproses. Amil akan menghubungi Anda untuk konfirmasi pembayaran.
+                                📌 Transaksi zakat Anda akan segera diproses. Amil akan menghubungi Anda untuk konfirmasi
+                                pembayaran.
                             </p>
                         </div>
 
@@ -302,11 +340,13 @@
                                     Saya telah membaca doa setelah zakat di atas dengan ikhlas karena Allah Ta'ala.
                                 </label>
                             </div>
-                            <button type="button" id="btnKonfirmasiDanSimpan" disabled onclick="konfirmasiDoaLaluSimpan()"
+                            <button type="button" id="btnKonfirmasiDanSimpan" disabled
+                                onclick="konfirmasiDoaLaluSimpan()"
                                 class="w-full py-3 rounded-xl text-sm font-bold text-white transition-all bg-gray-300 cursor-not-allowed opacity-60">
                                 <span id="btnKonfirmasiText">Simpan Transaksi Zakat</span>
                             </button>
-                            <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan tombol simpan</p>
+                            <p class="text-xs text-gray-400 text-center mt-2">Centang kotak di atas untuk mengaktifkan
+                                tombol simpan</p>
                         </div>
                     </div>
                 </div>
@@ -347,15 +387,18 @@
 
                     {{-- ===== STEP D1: Detail Zakat ===== --}}
                     <div id="dStep1" class="dstep-panel">
-                        <h3 class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-                            <span class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">1</span>
+                        <h3
+                            class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                            <span
+                                class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">1</span>
                             Pilih Jenis Zakat
                         </h3>
 
                         {{-- DATA MUZAKKI — CLEAN --}}
                         <div class="mb-5">
                             <p class="text-xs font-bold text-gray-700 mb-1 flex items-center gap-1.5">
-                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -370,11 +413,13 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-500 mb-1">Email</label>
-                                    <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}" readonly
+                                    <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}"
+                                        readonly
                                         class="w-full px-3 py-2 text-sm border border-gray-200 bg-gray-50 rounded-lg cursor-not-allowed text-gray-500">
                                 </div>
                                 <div>
-                                    <label class="block text-xs text-gray-500 mb-1">Telepon / WA <span class="text-red-500">*</span></label>
+                                    <label class="block text-xs text-gray-500 mb-1">Telepon / WA <span
+                                            class="text-red-500">*</span></label>
                                     <input type="text" name="muzakki_telepon" id="d1Telepon"
                                         value="{{ old('muzakki_telepon', $muzakkiData['telepon']) }}"
                                         oninput="checkStep1Required()"
@@ -389,9 +434,9 @@
                                         placeholder="16 digit NIK" maxlength="16">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label class="block text-xs text-gray-500 mb-1">Alamat Lengkap <span class="text-red-500">*</span></label>
-                                    <textarea name="muzakki_alamat" id="d1Alamat" rows="2"
-                                        oninput="checkStep1Required()"
+                                    <label class="block text-xs text-gray-500 mb-1">Alamat Lengkap <span
+                                            class="text-red-500">*</span></label>
+                                    <textarea name="muzakki_alamat" id="d1Alamat" rows="2" oninput="checkStep1Required()"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-primary-500 transition-all resize-none"
                                         placeholder="Masukkan alamat lengkap">{{ old('muzakki_alamat', $muzakkiData['alamat']) }}</textarea>
                                 </div>
@@ -401,15 +446,16 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Zakat <span class="text-red-500">*</span></label>
-                                    <select name="jenis_zakat_id" id="dJenisId"
-                                        onchange="checkStep1Required()"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Zakat <span
+                                            class="text-red-500">*</span></label>
+                                    <select name="jenis_zakat_id" id="dJenisId" onchange="checkStep1Required()"
                                         class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                         <option value="">-- Pilih Jenis --</option>
                                         @foreach ($jenisZakatList as $jz)
                                             @php $isFidyah = stripos($jz->nama, 'fidyah') !== false; @endphp
                                             @if (!$isFidyah)
-                                                <option value="{{ $jz->id }}" data-nama="{{ strtolower($jz->nama) }}">{{ $jz->nama }}</option>
+                                                <option value="{{ $jz->id }}"
+                                                    data-nama="{{ strtolower($jz->nama) }}">{{ $jz->nama }}</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -418,9 +464,9 @@
                                     </p>
                                 </div>
                                 <div id="dWrapTipe" class="hidden">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Tipe Spesifik <span class="text-red-500">*</span></label>
-                                    <select name="tipe_zakat_id" id="dTipeId"
-                                        onchange="checkStep1Required()"
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Tipe Spesifik <span
+                                            class="text-red-500">*</span></label>
+                                    <select name="tipe_zakat_id" id="dTipeId" onchange="checkStep1Required()"
                                         class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                         <option value="">-- Pilih Tipe --</option>
                                     </select>
@@ -431,7 +477,8 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Program Zakat <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Program Zakat <span
+                                        class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                                 <select name="program_zakat_id"
                                     class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                     <option value="">-- Tidak memilih program tertentu --</option>
@@ -445,33 +492,39 @@
                             <div id="dPanelFitrahTunai" class="hidden space-y-4">
                                 <div class="flex gap-4">
                                     <div class="text-center">
-                                        <p class="font-bold text-primary-700 text-sm">{{ $zakatFitrahInfo['beras_kg'] }} kg</p>
+                                        <p class="font-bold text-primary-700 text-sm">{{ $zakatFitrahInfo['beras_kg'] }}
+                                            kg</p>
                                         <p class="text-xs text-gray-400">per jiwa</p>
                                     </div>
                                     <div class="text-center">
-                                        <p class="font-bold text-primary-700 text-sm">{{ $zakatFitrahInfo['beras_liter'] }} ltr</p>
+                                        <p class="font-bold text-primary-700 text-sm">
+                                            {{ $zakatFitrahInfo['beras_liter'] }} ltr</p>
                                         <p class="text-xs text-gray-400">per jiwa</p>
                                     </div>
                                     <div class="text-center">
-                                        <p class="font-bold text-primary-700 text-sm">Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'], 0, ',', '.') }}</p>
+                                        <p class="font-bold text-primary-700 text-sm">Rp
+                                            {{ number_format($zakatFitrahInfo['nominal_per_jiwa'], 0, ',', '.') }}</p>
                                         <p class="text-xs text-gray-400">BAZNAS</p>
                                     </div>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Jumlah Jiwa <span class="text-red-500">*</span></label>
-                                        <input type="number" name="jumlah_jiwa" id="dJiwa" value="1" min="1" step="1"
-                                            oninput="checkStep1Required()"
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Jumlah Jiwa <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="number" name="jumlah_jiwa" id="dJiwa" value="1"
+                                            min="1" step="1" oninput="checkStep1Required()"
                                             class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nominal/Jiwa (Rp) <span class="text-red-500">*</span></label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nominal/Jiwa (Rp)
+                                            <span class="text-red-500">*</span></label>
                                         <div class="relative">
-                                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                            <span
+                                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
                                             <input type="number" name="nominal_per_jiwa" id="dNominalJiwa"
-                                                value="{{ $zakatFitrahInfo['nominal_per_jiwa'] }}" min="1000" step="1000"
-                                                oninput="checkStep1Required()"
+                                                value="{{ $zakatFitrahInfo['nominal_per_jiwa'] }}" min="1000"
+                                                step="1000" oninput="checkStep1Required()"
                                                 class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                         </div>
                                     </div>
@@ -481,7 +534,8 @@
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
                                         <p class="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-                                            <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
@@ -492,7 +546,9 @@
                                     <div class="space-y-2">
                                         <div id="dDaftarNama">
                                             <div class="flex items-center gap-2 nama-jiwa-row" data-index="0">
-                                                <div class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center nama-jiwa-num">1</div>
+                                                <div
+                                                    class="flex-shrink-0 w-7 h-7 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center nama-jiwa-num">
+                                                    1</div>
                                                 <input type="text" name="nama_jiwa[]"
                                                     value="{{ $muzakkiData['nama'] }}" placeholder="Nama jiwa ke-1"
                                                     class="flex-1 px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-primary-400 transition-all">
@@ -501,12 +557,15 @@
                                         </div>
                                         <button type="button" id="btnTambahNama" onclick="tambahNamaJiwa()"
                                             class="w-full py-2 border-2 border-dashed border-gray-200 rounded-lg text-xs font-medium text-gray-500 hover:text-primary-600 hover:border-primary-300 transition-all flex items-center justify-center gap-1.5">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
                                             Tambah Nama Jiwa
                                         </button>
-                                        <p class="text-xs text-gray-400 italic">Jumlah baris nama akan otomatis menyesuaikan dengan jumlah jiwa di atas.</p>
+                                        <p class="text-xs text-gray-400 italic">Jumlah baris nama akan otomatis
+                                            menyesuaikan dengan jumlah jiwa di atas.</p>
                                     </div>
                                 </div>
 
@@ -520,27 +579,33 @@
                             {{-- Panel Mal --}}
                             <div id="dPanelMal" class="hidden space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Total Nilai Harta (Rp) <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Total Nilai Harta (Rp)
+                                        <span class="text-red-500">*</span></label>
                                     <div class="relative">
-                                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                                        <input type="number" name="nilai_harta" id="dHarta" min="0" step="1000"
-                                            placeholder="Total harta yang wajib dizakatkan"
+                                        <span
+                                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                        <input type="number" name="nilai_harta" id="dHarta" min="0"
+                                            step="1000" placeholder="Total harta yang wajib dizakatkan"
                                             oninput="checkStep1Required()"
                                             class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nisab (Rp) <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nisab (Rp) <span
+                                                class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                                         <div class="relative">
-                                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                            <span
+                                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
                                             <input type="number" name="nisab_saat_ini" min="0" step="1000"
                                                 class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                         </div>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Persentase Zakat (%)</label>
-                                        <input type="number" name="persentase_zakat" id="dPersen" value="2.5" min="0" max="100" step="0.1"
+                                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Persentase Zakat
+                                            (%)</label>
+                                        <input type="number" name="persentase_zakat" id="dPersen" value="2.5"
+                                            min="0" max="100" step="0.1"
                                             class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                     </div>
                                 </div>
@@ -557,7 +622,8 @@
                                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-nz transition-all hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
                                 Selanjutnya
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
                                 </svg>
                             </button>
                         </div>
@@ -565,15 +631,19 @@
 
                     {{-- ===== STEP D2: Pembayaran ===== --}}
                     <div id="dStep2" class="dstep-panel hidden">
-                        <h3 class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-                            <span class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">2</span>
+                        <h3
+                            class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                            <span
+                                class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">2</span>
                             Metode Pembayaran
                         </h3>
                         <div class="space-y-5">
-                            <p class="text-xs text-gray-500">Pilih metode pembayaran. Bukti transfer akan dikonfirmasi oleh amil.</p>
+                            <p class="text-xs text-gray-500">Pilih metode pembayaran. Bukti transfer akan dikonfirmasi oleh
+                                amil.</p>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Metode Pembayaran <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Metode Pembayaran <span
+                                        class="text-red-500">*</span></label>
                                 <select name="metode_pembayaran" id="dMetodePembayaran"
                                     onchange="onMetodePembayaranChange(); checkStep2Required()"
                                     class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
@@ -587,10 +657,12 @@
                             <div id="dInfoTransfer" class="hidden space-y-3">
                                 @if ($rekeningLembagaList->isNotEmpty())
                                     @foreach ($rekeningLembagaList as $rek)
-                                        <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                                        <div
+                                            class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                                             <div>
                                                 <p class="text-xs font-bold text-gray-700">{{ $rek->nama_bank }}</p>
-                                                <p class="text-sm font-mono font-bold text-gray-900 tracking-wider mt-0.5">{{ $rek->nomor_rekening }}</p>
+                                                <p class="text-sm font-mono font-bold text-gray-900 tracking-wider mt-0.5">
+                                                    {{ $rek->nomor_rekening }}</p>
                                                 <p class="text-xs text-gray-400">a.n. {{ $rek->nama_pemilik }}</p>
                                             </div>
                                             <button type="button" onclick="salin('{{ $rek->nomor_rekening }}')"
@@ -598,25 +670,30 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <p class="text-xs text-gray-400 italic">Belum ada rekening aktif. Hubungi pengurus lembaga.</p>
+                                    <p class="text-xs text-gray-400 italic">Belum ada rekening aktif. Hubungi pengurus
+                                        lembaga.</p>
                                 @endif
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti Pembayaran <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti
+                                        Pembayaran <span class="text-red-500">*</span></label>
+                                    {{-- ✅ FIX: box lebih tinggi h-48, gambar tidak mepet --}}
                                     <div id="dPrvTransfer"
-                                        class="h-32 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-primary-400 transition-all"
+                                        class="h-48 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-primary-400 transition-all"
                                         onclick="document.getElementById('dInpTransfer').click()">
                                         <div class="text-center pointer-events-none">
-                                            <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                             <p class="text-xs text-gray-400">Klik untuk upload bukti transfer</p>
                                         </div>
                                     </div>
-                                    <input type="file" name="bukti_transfer" id="dInpTransfer" accept="image/*" class="hidden"
-                                        onchange="prvBuktiD(this,'dPrvTransfer'); checkStep2Required()">
-                                    <p id="errBuktiTransfer" class="text-xs text-red-500 hidden mt-1">Bukti pembayaran wajib diupload.</p>
+                                    <input type="file" name="bukti_transfer" id="dInpTransfer" accept="image/*"
+                                        class="hidden" onchange="prvBuktiD(this,'dPrvTransfer'); checkStep2Required()">
+                                    <p id="errBuktiTransfer" class="text-xs text-red-500 hidden mt-1">Bukti pembayaran
+                                        wajib diupload.</p>
                                 </div>
                             </div>
 
@@ -624,31 +701,39 @@
                             <div id="dInfoQris" class="hidden space-y-3">
                                 @if ($konfigurasiQris && !empty($konfigurasiQris->qris_image_path))
                                     <div class="flex justify-center">
-                                        <div class="bg-white p-4 rounded-2xl border-2 border-primary-200 shadow-sm w-72 sm:w-80">
-                                            <img src="{{ $konfigurasiQris->qris_image_url }}" class="w-full object-contain rounded-lg" alt="QRIS Lembaga">
-                                            <p class="text-center text-xs text-primary-600 font-semibold mt-3">Scan untuk Membayar Zakat</p>
+                                        <div
+                                            class="bg-white p-4 rounded-2xl border-2 border-primary-200 shadow-sm w-72 sm:w-80">
+                                            <img src="{{ $konfigurasiQris->qris_image_url }}"
+                                                class="w-full object-contain rounded-lg" alt="QRIS Lembaga">
+                                            <p class="text-center text-xs text-primary-600 font-semibold mt-3">Scan untuk
+                                                Membayar Zakat</p>
                                         </div>
                                     </div>
                                 @else
-                                    <p class="text-xs text-gray-400 italic">Hubungi pengurus lembaga untuk mendapatkan kode QRIS.</p>
+                                    <p class="text-xs text-gray-400 italic">Hubungi pengurus lembaga untuk mendapatkan kode
+                                        QRIS.</p>
                                 @endif
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti Pembayaran <span class="text-red-500">*</span></label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Screenshot Bukti
+                                        Pembayaran <span class="text-red-500">*</span></label>
+                                    {{-- ✅ FIX: box lebih tinggi h-48, gambar tidak mepet --}}
                                     <div id="dPrvQris"
-                                        class="h-32 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-primary-400 transition-all"
+                                        class="h-48 rounded-xl bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center mb-2 overflow-hidden cursor-pointer hover:border-primary-400 transition-all"
                                         onclick="document.getElementById('dInpQris').click()">
                                         <div class="text-center pointer-events-none">
-                                            <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                             <p class="text-xs text-gray-400">Klik untuk upload bukti QRIS</p>
                                         </div>
                                     </div>
-                                    <input type="file" name="bukti_qris" id="dInpQris" accept="image/*" class="hidden"
-                                        onchange="prvBuktiD(this,'dPrvQris'); checkStep2Required()">
-                                    <p id="errBuktiQris" class="text-xs text-red-500 hidden mt-1">Bukti pembayaran wajib diupload.</p>
+                                    <input type="file" name="bukti_qris" id="dInpQris" accept="image/*"
+                                        class="hidden" onchange="prvBuktiD(this,'dPrvQris'); checkStep2Required()">
+                                    <p id="errBuktiQris" class="text-xs text-red-500 hidden mt-1">Bukti pembayaran wajib
+                                        diupload.</p>
                                 </div>
                             </div>
 
@@ -657,34 +742,41 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
                                         Jumlah Dibayar (Rp) <span class="text-red-500">*</span>
-                                        <span class="text-xs text-gray-400 font-normal ml-1">— minimal = jumlah zakat</span>
+                                        <span class="text-xs text-gray-400 font-normal ml-1">— minimal = jumlah
+                                            zakat</span>
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                                        <input type="number" name="jumlah_dibayar" id="dJmlDibayar" min="0" step="1000"
+                                        <span
+                                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                        {{-- ✅ FIX: type="text" + inputmode="numeric" + format titik ribuan --}}
+                                        <input type="text" inputmode="numeric" name="jumlah_dibayar" id="dJmlDibayar"
                                             placeholder="Masukkan jumlah yang Anda bayarkan"
-                                            oninput="hitungInfaq(); checkStep2Required()"
+                                            oninput="formatJumlahDibayar(this); hitungInfaq(); checkStep2Required()"
                                             class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all">
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Jumlah zakat: <strong id="infoJumlahZakatStep2">Rp 0</strong></p>
+                                    <p class="text-xs text-gray-400 mt-1">Jumlah zakat: <strong
+                                            id="infoJumlahZakatStep2">Rp 0</strong></p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1.5">
                                         Jumlah Infaq
-                                        <span class="text-xs text-gray-400 font-normal ml-1">— otomatis dihitung (kelebihan bayar)</span>
+                                        <span class="text-xs text-gray-400 font-normal ml-1">— otomatis dihitung (kelebihan
+                                            bayar)</span>
                                     </label>
                                     <div class="relative">
-                                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                                        <input type="number" id="dJmlInfaqDisplay" readonly
-                                            value="0"
+                                        <span
+                                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                        <input type="number" id="dJmlInfaqDisplay" readonly value="0"
                                             class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 bg-gray-50 rounded-xl cursor-not-allowed text-gray-500">
                                     </div>
-                                    <p class="text-xs text-gray-400 mt-1">Bayar lebih dari zakat → kelebihan otomatis dicatat sebagai <strong>infaq</strong></p>
+                                    <p class="text-xs text-gray-400 mt-1">Bayar lebih dari zakat → kelebihan otomatis
+                                        dicatat sebagai <strong>infaq</strong></p>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Keterangan <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1.5">Keterangan <span
+                                        class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                                 <textarea name="keterangan" rows="2" placeholder="Untuk program tertentu, atas nama keluarga, dll."
                                     class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-500 transition-all resize-none"></textarea>
                             </div>
@@ -694,7 +786,8 @@
                             <button type="button" onclick="dGoStep(1)"
                                 class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-50 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Kembali
                             </button>
@@ -702,7 +795,8 @@
                                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-nz transition-all hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none">
                                 Selanjutnya
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
                                 </svg>
                             </button>
                         </div>
@@ -710,13 +804,16 @@
 
                     {{-- ===== STEP D3: Konfirmasi & Simpan ===== --}}
                     <div id="dStep3" class="dstep-panel hidden">
-                        <h3 class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-                            <span class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">3</span>
+                        <h3
+                            class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+                            <span
+                                class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold">3</span>
                             Konfirmasi Transaksi
                         </h3>
                         <div class="space-y-4">
                             <div>
-                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Ringkasan Pembayaran</p>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Ringkasan
+                                    Pembayaran</p>
                                 <table class="w-full text-sm">
                                     <tr class="border-b border-gray-100">
                                         <td class="text-gray-500 py-2 w-1/2">Jenis Zakat</td>
@@ -754,21 +851,24 @@
                                 <ul id="dRingNamaList" class="space-y-1 text-sm text-gray-700"></ul>
                             </div>
 
-                            <p class="text-xs text-gray-400">Amil akan mendapat notifikasi dan segera memverifikasi pembayaran Anda.</p>
+                            <p class="text-xs text-gray-400">Amil akan mendapat notifikasi dan segera memverifikasi
+                                pembayaran Anda.</p>
                         </div>
 
                         <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
                             <button type="button" onclick="dGoStep(2)"
                                 class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-50 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 19l-7-7 7-7" />
                                 </svg>
                                 Kembali
                             </button>
                             <button type="button" id="btnSimpanDaring" onclick="bukaTampilDoaSetelahZakat()"
                                 class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-nz hover:shadow-nz-lg hover:bg-primary-600 transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                                 Kirim Transaksi Zakat
                             </button>
@@ -786,16 +886,16 @@
                     @csrf
                     <input type="hidden" name="metode_penerimaan" value="dijemput">
                     <input type="hidden" name="tanggal_transaksi" value="{{ now()->format('Y-m-d') }}">
-                    <input type="hidden" name="latitude" id="djLat" value="">
-                    <input type="hidden" name="longitude" id="djLng" value="">
 
-                    <p class="text-xs text-gray-500 mb-5"><strong>Metode Dijemput:</strong> Amil akan datang ke lokasi Anda untuk mengambil zakat. Detail jenis dan jumlah zakat akan dilengkapi oleh amil saat menjemput.</p>
+                    <p class="text-xs text-gray-500 mb-5"><strong>Metode Dijemput:</strong> Amil akan datang ke lokasi Anda
+                        untuk mengambil zakat. Detail jenis dan jumlah zakat akan dilengkapi oleh amil saat menjemput.</p>
 
                     <div class="space-y-5">
                         {{-- Data diri --}}
                         <div>
                             <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
@@ -803,17 +903,21 @@
                             </h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                                    <input type="text" name="muzakki_nama" value="{{ $muzakkiData['nama'] }}" readonly
+                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Nama Lengkap <span
+                                            class="text-red-500">*</span></label>
+                                    <input type="text" name="muzakki_nama" value="{{ $muzakkiData['nama'] }}"
+                                        readonly
                                         class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-50 rounded-xl cursor-not-allowed text-gray-500">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1.5">Email</label>
-                                    <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}" readonly
+                                    <input type="email" name="muzakki_email" value="{{ $muzakkiData['email'] }}"
+                                        readonly
                                         class="w-full px-4 py-2.5 text-sm border border-gray-200 bg-gray-50 rounded-xl cursor-not-allowed text-gray-500">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Telepon / WA <span class="text-red-500">*</span></label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Telepon / WA <span
+                                            class="text-red-500">*</span></label>
                                     <input type="text" name="muzakki_telepon"
                                         value="{{ old('muzakki_telepon', $muzakkiData['telepon']) }}"
                                         class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-400 transition-all"
@@ -827,7 +931,8 @@
                                         placeholder="16 digit NIK" maxlength="16">
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Alamat Lengkap Penjemputan <span class="text-red-500">*</span></label>
+                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Alamat Lengkap
+                                        Penjemputan <span class="text-red-500">*</span></label>
                                     <textarea name="muzakki_alamat" id="djAlamat" rows="2"
                                         class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-400 transition-all resize-none"
                                         placeholder="Masukkan alamat lengkap untuk penjemputan">{{ old('muzakki_alamat', $muzakkiData['alamat']) }}</textarea>
@@ -838,7 +943,8 @@
                         {{-- Pilih Amil --}}
                         <div>
                             <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
@@ -847,15 +953,20 @@
                             @if ($amilList->isNotEmpty())
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     @foreach ($amilList as $amil)
-                                        <label class="amil-card flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all border-gray-200 hover:border-primary-400 hover:bg-primary-50/50">
+                                        <label
+                                            class="amil-card flex items-center gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all border-gray-200 hover:border-primary-400 hover:bg-primary-50/50">
                                             <input type="radio" name="amil_id" value="{{ $amil->id }}"
                                                 class="w-4 h-4 text-primary-500 border-gray-300 amil-radio">
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm font-semibold text-gray-900">{{ $amil->pengguna->username ?? 'Amil' }}</p>
-                                                <p class="text-xs text-gray-500 truncate">{{ $amil->pengguna->email ?? '' }}</p>
+                                                <p class="text-sm font-semibold text-gray-900">
+                                                    {{ $amil->pengguna->username ?? 'Amil' }}</p>
+                                                <p class="text-xs text-gray-500 truncate">
+                                                    {{ $amil->pengguna->email ?? '' }}</p>
                                             </div>
-                                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                                                <span class="text-sm font-bold text-primary-700">{{ strtoupper(substr($amil->pengguna->username ?? 'A', 0, 1)) }}</span>
+                                            <div
+                                                class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                                                <span
+                                                    class="text-sm font-bold text-primary-700">{{ strtoupper(substr($amil->pengguna->username ?? 'A', 0, 1)) }}</span>
                                             </div>
                                         </label>
                                     @endforeach
@@ -865,37 +976,10 @@
                             @endif
                         </div>
 
-                        {{-- Lokasi GPS --}}
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Lokasi Penjemputan
-                            </h4>
-                            <button type="button" onclick="getGPS()"
-                                class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-100 hover:bg-primary-200 text-primary-800 text-sm font-medium rounded-xl transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Dapatkan Lokasi GPS Saya
-                            </button>
-                            <div id="gpsStatus" class="mt-2 text-xs text-gray-500"></div>
-                            <div id="gpsResult" class="hidden mt-2">
-                                <p class="text-xs font-medium text-primary-700">✓ Lokasi berhasil didapatkan</p>
-                                <p class="text-xs text-gray-500 mt-0.5" id="gpsCoord"></p>
-                            </div>
-                        </div>
-
                         {{-- Keterangan --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Keterangan <span class="text-xs text-gray-400 font-normal">(opsional)</span></label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Keterangan <span
+                                    class="text-xs text-gray-400 font-normal">(opsional)</span></label>
                             <textarea name="keterangan" rows="2" placeholder="Patokan lokasi, waktu yang tersedia, dll."
                                 class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary-400 transition-all resize-none"></textarea>
                         </div>
@@ -905,14 +989,16 @@
                         <button type="button" onclick="kembaliPilihMetode()"
                             class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 hover:bg-gray-50 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
                             </svg>
                             Kembali
                         </button>
                         <button type="submit" id="btnSimpanDijemput"
                             class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-nz hover:shadow-nz-lg hover:bg-primary-600 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
                             </svg>
                             Request Penjemputan
                         </button>
@@ -939,11 +1025,23 @@
             return new Intl.NumberFormat('id-ID').format(Math.round(n || 0));
         }
 
+        // ── Helper: baca nilai dJmlDibayar (strip titik) ──
+        function getJmlDibayarRaw() {
+            return parseFloat(document.getElementById('dJmlDibayar').value.replace(/\./g, '')) || 0;
+        }
+
+        // ── Format titik ribuan untuk input Jumlah Dibayar ──
+        function formatJumlahDibayar(el) {
+            let raw = el.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+            el.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+        }
+
         // ── Buka/tutup modal niat ──
         function pilihMetode(metode) {
             document.getElementById('panelPilihMetode').classList.add('hidden');
             if (metode === 'daring') {
                 document.getElementById('panelDaring').classList.remove('hidden');
+                document.getElementById('formDaring').classList.add('hidden');
                 const modal = document.getElementById('modalNiatDoa');
                 modal.classList.remove('hidden');
                 modal.style.display = 'flex';
@@ -954,11 +1052,7 @@
         }
 
         function tutupModalNiat() {
-            // Tutup modal dan langsung lanjut ke form (anggap sudah baca jika tutup paksa)
-            const modal = document.getElementById('modalNiatDoa');
-            modal.style.display = 'none';
-            modal.classList.add('hidden');
-            document.body.style.overflow = '';
+            window.location.href = "{{ route('transaksi-daring-muzakki.index') }}";
         }
 
         function tutupModalDoaSetelah() {
@@ -1017,7 +1111,11 @@
                 dResetPanelZakat();
                 infoFitrah.classList.add('hidden');
 
-                if (!jenisId) { wrapTipe.classList.add('hidden'); checkStep1Required(); return; }
+                if (!jenisId) {
+                    wrapTipe.classList.add('hidden');
+                    checkStep1Required();
+                    return;
+                }
 
                 const list = TIPE_DATA[jenisId] || [];
                 if (list.length > 0) {
@@ -1049,26 +1147,33 @@
 
             document.getElementById('dTipeId').addEventListener('change', function() {
                 const jenisEl = document.getElementById('dJenisId');
-                const namaJenis = (jenisEl.options[jenisEl.selectedIndex]?.dataset.nama || '').toLowerCase();
+                const namaJenis = (jenisEl.options[jenisEl.selectedIndex]?.dataset.nama || '')
+            .toLowerCase();
                 dResetPanelZakat();
-                if (!this.value) { checkStep1Required(); return; }
+                if (!this.value) {
+                    checkStep1Required();
+                    return;
+                }
                 if (namaJenis.includes('fitrah')) dTampilFitrah();
                 else if (namaJenis.includes('mal')) dTampilMal(this.options[this.selectedIndex]);
                 checkStep1Required();
             });
 
             document.getElementById('dJiwa')?.addEventListener('input', function() {
-                hitungFitrahD(); sinkronisasiNamaJiwa(); checkStep1Required();
+                hitungFitrahD();
+                sinkronisasiNamaJiwa();
+                checkStep1Required();
             });
             document.getElementById('dNominalJiwa')?.addEventListener('input', function() {
-                hitungFitrahD(); checkStep1Required();
+                hitungFitrahD();
+                checkStep1Required();
             });
             document.getElementById('dHarta')?.addEventListener('input', function() {
-                hitungMalD(); checkStep1Required();
+                hitungMalD();
+                checkStep1Required();
             });
             document.getElementById('dPersen')?.addEventListener('input', hitungMalD);
 
-            // Init step 1 check
             checkStep1Required();
         });
 
@@ -1077,30 +1182,62 @@
             modal.style.display = 'none';
             modal.classList.add('hidden');
             document.body.style.overflow = '';
+            document.getElementById('formDaring').classList.remove('hidden');
         }
 
         function bukaTampilDoaSetelahZakat() {
             const telepon = document.querySelector('#formDaring [name="muzakki_telepon"]').value.trim();
             const alamat = document.querySelector('#formDaring [name="muzakki_alamat"]').value.trim();
-            if (!telepon) { alert('Nomor telepon wajib diisi.'); dGoStep(1); return; }
-            if (!alamat) { alert('Alamat wajib diisi.'); dGoStep(1); return; }
-            if (!document.getElementById('dJenisId').value) { alert('Pilih jenis zakat.'); dGoStep(1); return; }
-            if (!document.getElementById('dTipeId').value) { alert('Pilih tipe zakat.'); dGoStep(1); return; }
-            if (getJumlahZakatD() <= 0) { alert('Jumlah zakat tidak valid.'); dGoStep(1); return; }
-            if (!document.getElementById('dMetodePembayaran').value) { alert('Pilih metode pembayaran.'); dGoStep(2); return; }
+            if (!telepon) {
+                alert('Nomor telepon wajib diisi.');
+                dGoStep(1);
+                return;
+            }
+            if (!alamat) {
+                alert('Alamat wajib diisi.');
+                dGoStep(1);
+                return;
+            }
+            if (!document.getElementById('dJenisId').value) {
+                alert('Pilih jenis zakat.');
+                dGoStep(1);
+                return;
+            }
+            if (!document.getElementById('dTipeId').value) {
+                alert('Pilih tipe zakat.');
+                dGoStep(1);
+                return;
+            }
+            if (getJumlahZakatD() <= 0) {
+                alert('Jumlah zakat tidak valid.');
+                dGoStep(1);
+                return;
+            }
+            if (!document.getElementById('dMetodePembayaran').value) {
+                alert('Pilih metode pembayaran.');
+                dGoStep(2);
+                return;
+            }
 
-            // Cek bukti bayar
             const metode = document.getElementById('dMetodePembayaran').value;
             if (metode === 'transfer' && !document.getElementById('dInpTransfer').files.length) {
-                alert('Upload bukti transfer terlebih dahulu.'); dGoStep(2); return;
+                alert('Upload bukti transfer terlebih dahulu.');
+                dGoStep(2);
+                return;
             }
             if (metode === 'qris' && !document.getElementById('dInpQris').files.length) {
-                alert('Upload bukti QRIS terlebih dahulu.'); dGoStep(2); return;
+                alert('Upload bukti QRIS terlebih dahulu.');
+                dGoStep(2);
+                return;
             }
 
-            // Cek jumlah dibayar
-            const jmlDibayar = parseFloat(document.getElementById('dJmlDibayar').value) || 0;
-            if (jmlDibayar <= 0) { alert('Jumlah dibayar wajib diisi.'); dGoStep(2); return; }
+            // ✅ FIX: pakai helper strip titik
+            const jmlDibayar = getJmlDibayarRaw();
+            if (jmlDibayar <= 0) {
+                alert('Jumlah dibayar wajib diisi.');
+                dGoStep(2);
+                return;
+            }
 
             const chkDoa = document.getElementById('chkSudahBacaDoa');
             const btnDoa = document.getElementById('btnKonfirmasiDanSimpan');
@@ -1121,8 +1258,13 @@
             modal.classList.add('hidden');
             document.body.style.overflow = '';
 
+            // ✅ FIX: strip titik sebelum submit agar server terima angka murni
+            const jmlEl = document.getElementById('dJmlDibayar');
+            jmlEl.value = jmlEl.value.replace(/\./g, '');
+
             const btnText = document.getElementById('btnKonfirmasiText');
-            if (btnText) btnText.innerHTML = '<svg class="animate-spin w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
+            if (btnText) btnText.innerHTML =
+                '<svg class="animate-spin w-4 h-4 inline mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
 
             document.getElementById('formDaring').submit();
         }
@@ -1137,7 +1279,8 @@
         function dTampilFitrah() {
             dActivePanelZ = 'fitrah';
             document.getElementById('dPanelFitrahTunai').classList.remove('hidden');
-            hitungFitrahD(); sinkronisasiNamaJiwa();
+            hitungFitrahD();
+            sinkronisasiNamaJiwa();
         }
 
         function dTampilMal(tipeOpt) {
@@ -1171,7 +1314,6 @@
             return 0;
         }
 
-        // ── Update info jumlah zakat di step 2 ──
         function updateInfoZakatStep2() {
             const jumlah = getJumlahZakatD();
             const el = document.getElementById('infoJumlahZakatStep2');
@@ -1179,16 +1321,15 @@
             hitungInfaq();
         }
 
-        // ── Hitung infaq otomatis ──
+        // ✅ FIX: pakai getJmlDibayarRaw() di semua fungsi yang baca dJmlDibayar
         function hitungInfaq() {
             const jumlahZakat = getJumlahZakatD();
-            const dibayar = parseFloat(document.getElementById('dJmlDibayar').value) || 0;
+            const dibayar = getJmlDibayarRaw();
             const infaq = Math.max(0, dibayar - jumlahZakat);
             document.getElementById('dJmlInfaqDisplay').value = Math.round(infaq);
             checkStep2Required();
         }
 
-        // ── Metode pembayaran change ──
         function onMetodePembayaranChange() {
             const val = document.getElementById('dMetodePembayaran').value;
             document.getElementById('dInfoTransfer').classList.add('hidden');
@@ -1197,9 +1338,6 @@
             if (val === 'qris') document.getElementById('dInfoQris').classList.remove('hidden');
         }
 
-        // ══════════════════════════════════════════
-        // VALIDASI REALTIME STEP 1
-        // ══════════════════════════════════════════
         function checkStep1Required() {
             const telepon = document.getElementById('d1Telepon')?.value.trim() || '';
             const alamat = document.getElementById('d1Alamat')?.value.trim() || '';
@@ -1214,30 +1352,26 @@
             } else if (dActivePanelZ === 'mal') {
                 const harta = parseFloat(document.getElementById('dHarta').value) || 0;
                 panelOk = harta > 0;
-            } else {
-                panelOk = false;
             }
 
             const valid = telepon && alamat && jenisId && tipeId && panelOk;
             const btn = document.getElementById('btnStep1Next');
-            if (btn) {
-                btn.disabled = !valid;
-            }
+            if (btn) btn.disabled = !valid;
         }
 
-        // ══════════════════════════════════════════
-        // VALIDASI REALTIME STEP 2
-        // ══════════════════════════════════════════
         function checkStep2Required() {
             const metode = document.getElementById('dMetodePembayaran').value;
-            if (!metode) { setStep2Btn(false); return; }
+            if (!metode) {
+                setStep2Btn(false);
+                return;
+            }
 
             let buktiOk = false;
             if (metode === 'transfer') buktiOk = document.getElementById('dInpTransfer').files.length > 0;
             if (metode === 'qris') buktiOk = document.getElementById('dInpQris').files.length > 0;
 
-            const jmlDibayar = parseFloat(document.getElementById('dJmlDibayar').value) || 0;
-
+            // ✅ FIX: pakai helper
+            const jmlDibayar = getJmlDibayarRaw();
             setStep2Btn(buktiOk && jmlDibayar > 0);
         }
 
@@ -1246,7 +1380,6 @@
             if (btn) btn.disabled = !valid;
         }
 
-        // ── Tambah/hapus nama jiwa ──
         function tambahNamaJiwa() {
             const container = document.getElementById('dDaftarNama');
             const rows = container.querySelectorAll('.nama-jiwa-row');
@@ -1279,7 +1412,10 @@
             const row = btn.closest('.nama-jiwa-row');
             const container = document.getElementById('dDaftarNama');
             const rows = container.querySelectorAll('.nama-jiwa-row');
-            if (rows.length <= 1) { alert('Minimal harus ada 1 jiwa.'); return; }
+            if (rows.length <= 1) {
+                alert('Minimal harus ada 1 jiwa.');
+                return;
+            }
             row.remove();
             const remaining = container.querySelectorAll('.nama-jiwa-row');
             remaining.forEach((r, i) => {
@@ -1321,7 +1457,6 @@
             }
         }
 
-        // ── Step navigation ──
         function dGoStep(n) {
             if (n > dActiveStep) {
                 if (!dValidateStep(dActiveStep)) return;
@@ -1330,9 +1465,15 @@
             document.getElementById('dStep' + n).classList.remove('hidden');
             dActiveStep = n;
             dRefreshDots(n);
-            if (n === 2) { updateInfoZakatStep2(); checkStep2Required(); }
+            if (n === 2) {
+                updateInfoZakatStep2();
+                checkStep2Required();
+            }
             if (n === 3) dUpdateRingkasan();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
 
         function dRefreshDots(active) {
@@ -1362,24 +1503,48 @@
             if (step === 1) {
                 const telepon = document.getElementById('d1Telepon')?.value.trim();
                 const alamat = document.getElementById('d1Alamat')?.value.trim();
-                if (!telepon) { alert('Nomor telepon wajib diisi.'); return false; }
-                if (!alamat) { alert('Alamat wajib diisi.'); return false; }
-                if (!document.getElementById('dJenisId').value) { alert('Pilih jenis zakat terlebih dahulu.'); return false; }
-                if (!document.getElementById('dTipeId').value) { alert('Pilih tipe zakat terlebih dahulu.'); return false; }
-                if (getJumlahZakatD() <= 0) { alert('Jumlah zakat tidak valid.'); return false; }
+                if (!telepon) {
+                    alert('Nomor telepon wajib diisi.');
+                    return false;
+                }
+                if (!alamat) {
+                    alert('Alamat wajib diisi.');
+                    return false;
+                }
+                if (!document.getElementById('dJenisId').value) {
+                    alert('Pilih jenis zakat terlebih dahulu.');
+                    return false;
+                }
+                if (!document.getElementById('dTipeId').value) {
+                    alert('Pilih tipe zakat terlebih dahulu.');
+                    return false;
+                }
+                if (getJumlahZakatD() <= 0) {
+                    alert('Jumlah zakat tidak valid.');
+                    return false;
+                }
                 return true;
             }
             if (step === 2) {
                 const metode = document.getElementById('dMetodePembayaran').value;
-                if (!metode) { alert('Pilih metode pembayaran (Transfer atau QRIS).'); return false; }
+                if (!metode) {
+                    alert('Pilih metode pembayaran (Transfer atau QRIS).');
+                    return false;
+                }
                 if (metode === 'transfer' && !document.getElementById('dInpTransfer').files.length) {
-                    alert('Upload bukti transfer terlebih dahulu.'); return false;
+                    alert('Upload bukti transfer terlebih dahulu.');
+                    return false;
                 }
                 if (metode === 'qris' && !document.getElementById('dInpQris').files.length) {
-                    alert('Upload bukti QRIS terlebih dahulu.'); return false;
+                    alert('Upload bukti QRIS terlebih dahulu.');
+                    return false;
                 }
-                const jmlDibayar = parseFloat(document.getElementById('dJmlDibayar').value) || 0;
-                if (jmlDibayar <= 0) { alert('Jumlah dibayar wajib diisi.'); return false; }
+                // ✅ FIX: pakai helper
+                const jmlDibayar = getJmlDibayarRaw();
+                if (jmlDibayar <= 0) {
+                    alert('Jumlah dibayar wajib diisi.');
+                    return false;
+                }
                 return true;
             }
             return true;
@@ -1389,7 +1554,8 @@
             const jenisEl = document.getElementById('dJenisId');
             const jenis = jenisEl.options[jenisEl.selectedIndex]?.text || '-';
             const jumlah = getJumlahZakatD();
-            const jmlDibayar = parseFloat(document.getElementById('dJmlDibayar').value) || jumlah;
+            // ✅ FIX: pakai helper
+            const jmlDibayar = getJmlDibayarRaw() || jumlah;
             const infaq = Math.max(0, jmlDibayar - jumlah);
             const metode = document.getElementById('dMetodePembayaran').value || '-';
             const jiwa = document.getElementById('dJiwa')?.value || '-';
@@ -1397,9 +1563,9 @@
             document.getElementById('dRingJenis').textContent = jenis;
             document.getElementById('dRingJumlah').textContent = 'Rp ' + fmt(jumlah);
             document.getElementById('dRingDibayar').textContent = 'Rp ' + fmt(jmlDibayar);
-            document.getElementById('dRingMetode').textContent = metode === 'transfer' ? 'Transfer Bank' : (metode === 'qris' ? 'QRIS' : '-');
+            document.getElementById('dRingMetode').textContent = metode === 'transfer' ? 'Transfer Bank' : (metode ===
+                'qris' ? 'QRIS' : '-');
 
-            // Infaq row
             const infaqRow = document.getElementById('dRingInfaqRow');
             if (infaq > 0) {
                 document.getElementById('dRingInfaq').textContent = 'Rp ' + fmt(infaq);
@@ -1416,7 +1582,6 @@
                 jiwaRow.style.display = 'none';
             }
 
-            // Nama jiwa
             const namaWrap = document.getElementById('dRingNamaWrap');
             const namaList = document.getElementById('dRingNamaList');
             if (dActivePanelZ === 'fitrah') {
@@ -1435,55 +1600,114 @@
             }
         }
 
-        // ── GPS ──
-        function getGPS() {
-            const status = document.getElementById('gpsStatus');
-            const result = document.getElementById('gpsResult');
-            status.textContent = 'Mendapatkan lokasi...';
-            if (!navigator.geolocation) { status.textContent = 'Browser tidak mendukung GPS.'; return; }
-            navigator.geolocation.getCurrentPosition(
-                pos => {
-                    document.getElementById('djLat').value = pos.coords.latitude;
-                    document.getElementById('djLng').value = pos.coords.longitude;
-                    status.textContent = '';
-                    result.classList.remove('hidden');
-                    document.getElementById('gpsCoord').textContent = `Lat: ${pos.coords.latitude.toFixed(6)}, Lng: ${pos.coords.longitude.toFixed(6)}`;
-                },
-                err => { status.textContent = 'Gagal: ' + err.message; }
-            );
-        }
-
         document.getElementById('formDijemput')?.addEventListener('submit', function(e) {
             const nama = this.querySelector('[name="muzakki_nama"]').value.trim();
             const telepon = this.querySelector('[name="muzakki_telepon"]').value.trim();
             const alamat = this.querySelector('[name="muzakki_alamat"]').value.trim();
-            const lat = document.getElementById('djLat').value;
             const amil = document.querySelector('.amil-radio:checked');
-            if (!nama) { e.preventDefault(); alert('Nama wajib diisi.'); return; }
-            if (!telepon) { e.preventDefault(); alert('Nomor telepon wajib diisi.'); return; }
-            if (!alamat) { e.preventDefault(); alert('Alamat penjemputan wajib diisi.'); return; }
-            if (!lat) { e.preventDefault(); alert('Lokasi GPS wajib dideteksi.'); return; }
-            if (!amil) { e.preventDefault(); alert('Pilih amil penjemput terlebih dahulu.'); return; }
+            if (!nama) {
+                e.preventDefault();
+                alert('Nama wajib diisi.');
+                return;
+            }
+            if (!telepon) {
+                e.preventDefault();
+                alert('Nomor telepon wajib diisi.');
+                return;
+            }
+            if (!alamat) {
+                e.preventDefault();
+                alert('Alamat penjemputan wajib diisi.');
+                return;
+            }
+            if (!amil) {
+                e.preventDefault();
+                alert('Pilih amil penjemput terlebih dahulu.');
+                return;
+            }
             const btn = document.getElementById('btnSimpanDijemput');
             btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
+            btn.innerHTML =
+                '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...';
         });
 
+        // ✅ FIX: preview gambar tidak mepet — padding + object-contain + tinggi kotak h-48
         function prvBuktiD(input, previewId) {
             const el = document.getElementById(previewId);
-            if (input.files?.[0]) {
-                if (input.files[0].size > 2097152) { alert('Ukuran file maks 2MB.'); input.value = ''; return; }
-                const r = new FileReader();
-                r.onload = e => { el.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-contain">`; };
-                r.readAsDataURL(input.files[0]);
+            const file = input.files?.[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran file maks 5MB.');
+                input.value = '';
+                return;
             }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 1280;
+                    let w = img.width,
+                        h = img.height;
+                    if (w > MAX_SIZE || h > MAX_SIZE) {
+                        if (w > h) {
+                            h = Math.round(h * MAX_SIZE / w);
+                            w = MAX_SIZE;
+                        } else {
+                            w = Math.round(w * MAX_SIZE / h);
+                            h = MAX_SIZE;
+                        }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+                    const originalKb = Math.round(file.size / 1024);
+
+                    canvas.toBlob(function(blob) {
+                        const compressedKb = Math.round(blob.size / 1024);
+
+                        const compressedFile = new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), {
+                            type: 'image/webp'
+                        });
+                        const dt = new DataTransfer();
+                        dt.items.add(compressedFile);
+                        input.files = dt.files;
+
+                        // ✅ Preview: gambar centered, ada padding, tidak mepet tepi
+                        const url = URL.createObjectURL(blob);
+                        el.innerHTML =
+                            `<img src="${url}" style="max-height:160px; max-width:100%; object-fit:contain; display:block; margin:0 auto; padding:12px;">`;
+
+                        // Info kompresi
+                        const infoId = previewId + 'Info';
+                        let infoEl = document.getElementById(infoId);
+                        if (!infoEl) {
+                            infoEl = document.createElement('p');
+                            infoEl.id = infoId;
+                            infoEl.className =
+                                'text-xs font-semibold text-green-600 mt-1 flex items-center gap-1';
+                            el.closest('div').parentElement.appendChild(infoEl);
+                        }
+                        infoEl.innerHTML =
+                            `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Dikompresi: ${originalKb}KB → ${compressedKb}KB (WebP)`;
+
+                        checkStep2Required();
+                    }, 'image/webp', 0.82);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function salin(teks) {
             navigator.clipboard.writeText(teks).then(() => {
                 const el = document.createElement('div');
                 el.textContent = teks + ' disalin!';
-                el.className = 'fixed bottom-5 right-5 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl z-50';
+                el.className =
+                    'fixed bottom-5 right-5 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-xl z-50';
                 document.body.appendChild(el);
                 setTimeout(() => el.remove(), 2000);
             });

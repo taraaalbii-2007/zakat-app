@@ -181,94 +181,13 @@
             </div>
         </div>
 
+
         {{-- ══════════════════════════════════════════════════════════
-             SEKSI 2: LOKASI PENJEMPUTAN
+             SEKSI 2: PENUGASAN AMIL
         ══════════════════════════════════════════════════════════ --}}
         <div>
             <h3 class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
                 <span class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold flex-shrink-0">2</span>
-                Lokasi Penjemputan
-            </h3>
-
-            <div class="space-y-4">
-                {{-- Alamat --}}
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                        Alamat Lengkap <span class="text-red-500">*</span>
-                    </label>
-                    <textarea name="muzakki_alamat" rows="3"
-                        placeholder="Jl. Contoh No. 12, RT 03/RW 05, Kelurahan, Kecamatan, Kota/Kabupaten"
-                        class="w-full px-4 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-none @error('muzakki_alamat') border-red-500 bg-red-50 @enderror">{{ old('muzakki_alamat') }}</textarea>
-                    @error('muzakki_alamat')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                {{-- Koordinat GPS --}}
-                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <p class="text-sm font-medium text-gray-700">
-                            Koordinat Lokasi <span class="text-red-500">*</span>
-                        </p>
-                        <button type="button" id="btnGps"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-primary hover:text-primary transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            Gunakan Lokasi Saat Ini
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                Latitude <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="latitude" id="latitude"
-                                value="{{ old('latitude') }}" placeholder="-6.2088"
-                                class="w-full px-3.5 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-mono @error('latitude') border-red-500 bg-red-50 @enderror">
-                            @error('latitude')
-                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                                Longitude <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="longitude" id="longitude"
-                                value="{{ old('longitude') }}" placeholder="106.8456"
-                                class="w-full px-3.5 py-2.5 text-sm border border-gray-300 bg-white rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-mono @error('longitude') border-red-500 bg-red-50 @enderror">
-                            @error('longitude')
-                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <p class="text-xs text-gray-400 mt-2">
-                        💡 Klik "Gunakan Lokasi Saat Ini" atau isi manual dari Google Maps.
-                    </p>
-
-                    {{-- Preview peta mini (status GPS) --}}
-                    <div id="gpsStatus" class="mt-2 hidden">
-                        <div class="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span id="gpsStatusText" class="text-xs text-green-800 font-medium">Lokasi berhasil didapatkan</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- ══════════════════════════════════════════════════════════
-             SEKSI 3: PENUGASAN AMIL
-        ══════════════════════════════════════════════════════════ --}}
-        <div>
-            <h3 class="text-sm font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-                <span class="inline-flex w-6 h-6 rounded-full bg-primary text-white text-xs items-center justify-center font-bold flex-shrink-0">3</span>
                 Penugasan Amil Penjemput
             </h3>
 
@@ -408,53 +327,7 @@ const amilData = {
     @endforeach
 };
 
-// ── GPS ──────────────────────────────────────────────────────
-document.getElementById('btnGps').addEventListener('click', function () {
-    if (!navigator.geolocation) {
-        alert('Browser Anda tidak mendukung geolocation.');
-        return;
-    }
-    const btn = this;
-    const orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = `<svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-    </svg> Mengambil...`;
 
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            const lat = pos.coords.latitude.toFixed(7);
-            const lon = pos.coords.longitude.toFixed(7);
-            document.getElementById('latitude').value  = lat;
-            document.getElementById('longitude').value = lon;
-
-            // Tampilkan status
-            document.getElementById('gpsStatus').classList.remove('hidden');
-            document.getElementById('gpsStatusText').textContent =
-                `Lokasi: ${lat}, ${lon} (akurasi ±${Math.round(pos.coords.accuracy)}m)`;
-
-            btn.disabled = false;
-            btn.innerHTML = `<svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg> Berhasil`;
-
-            setTimeout(() => { btn.innerHTML = orig; }, 3000);
-            refreshRingkasan();
-        },
-        err => {
-            btn.disabled = false;
-            btn.innerHTML = orig;
-            const pesan = {
-                1: 'Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.',
-                2: 'Posisi tidak tersedia. Coba lagi atau isi manual.',
-                3: 'Timeout. Coba lagi.'
-            };
-            alert(pesan[err.code] || 'Gagal mendapatkan lokasi: ' + err.message);
-        },
-        { timeout: 15000, enableHighAccuracy: true }
-    );
-});
 
 // ── INFO AMIL TERPILIH ────────────────────────────────────────
 document.getElementById('amilId').addEventListener('change', function () {
@@ -476,8 +349,6 @@ document.getElementById('muzakkiNama').addEventListener('input', refreshRingkasa
 function refreshRingkasan() {
     const nama  = document.getElementById('muzakkiNama').value.trim();
     const amil  = document.getElementById('amilId').value;
-    const lat   = document.getElementById('latitude').value.trim();
-    const lon   = document.getElementById('longitude').value.trim();
 
     if (nama || amil) {
         document.getElementById('boxRingkasan').classList.remove('hidden');
@@ -491,20 +362,12 @@ function refreshRingkasan() {
 // ── FORM SUBMIT ───────────────────────────────────────────────
 document.getElementById('formDijemput').addEventListener('submit', function (e) {
     const nama  = document.getElementById('muzakkiNama').value.trim();
-    const lat   = document.getElementById('latitude').value.trim();
-    const lon   = document.getElementById('longitude').value.trim();
     const amil  = document.getElementById('amilId').value;
 
     if (!nama) {
         e.preventDefault();
         alert('Nama muzakki wajib diisi.');
         document.getElementById('muzakkiNama').focus();
-        return;
-    }
-    if (!lat || !lon) {
-        e.preventDefault();
-        alert('Koordinat lokasi wajib diisi. Gunakan tombol "Gunakan Lokasi Saat Ini" atau isi manual.');
-        document.getElementById('latitude').focus();
         return;
     }
     if (!amil) {
