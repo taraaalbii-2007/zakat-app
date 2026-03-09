@@ -907,6 +907,24 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->save();
             DB::commit();
 
+            // Kirim email kwitansi jika ada alamat email muzakki
+            if ($transaksi->muzakki_email && $transaksi->status === 'verified') {
+                try {
+                    $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                        'kwitansi.download',
+                        now()->addDays(3),
+                        ['uuid' => $transaksi->uuid]
+                    );
+
+                    \Illuminate\Support\Facades\Mail::to($transaksi->muzakki_email)
+                        ->send(new \App\Mail\KwitansiTransaksiMail($transaksi, $signedUrl));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('Gagal kirim email kwitansi: ' . $e->getMessage(), [
+                        'no_transaksi' => $transaksi->no_transaksi,
+                    ]);
+                }
+            }
+
             Log::info('Transaksi datang langsung saved', [
                 'no'          => $transaksi->no_transaksi,
                 'is_fidyah'   => $isFidyah,
@@ -1066,7 +1084,7 @@ class TransaksiPenerimaanController extends Controller
         if ($isFidyah) {
             $rules['fidyah_jumlah_hari'] = 'required|integer|min:1';
             $rules['fidyah_tipe'] = 'required|in:mentah,matang,tunai';
-            
+
             // Untuk fidyah tunai, metode pembayaran required
             if ($request->fidyah_tipe == 'tunai' && !$isPembayaranBeras) {
                 $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
@@ -1084,7 +1102,7 @@ class TransaksiPenerimaanController extends Controller
         DB::beginTransaction();
         try {
             $this->isiDetailZakat($transaksi, $request, $isPembayaranBeras);
-            
+
             // PERBAIKAN: Handle fidyah secara spesifik
             if ($isFidyah) {
                 // Set tipe zakat untuk fidyah
@@ -1092,17 +1110,17 @@ class TransaksiPenerimaanController extends Controller
                 $transaksi->jenis_zakat_id = $request->jenis_zakat_id;
                 $transaksi->tipe_zakat_id = $tipeZakat->id;
                 $transaksi->program_zakat_id = $request->program_zakat_id;
-                
+
                 // Isi data fidyah
                 $this->isiDataFidyah($transaksi, $request);
-                
+
                 if ($request->fidyah_tipe == 'tunai') {
                     // Untuk fidyah tunai, gunakan metode pembayaran biasa
                     $this->isiMetodePembayaranPickup($transaksi, $request, $isPembayaranBeras);
                 } else {
                     // Untuk fidyah mentah/matang
-                    $transaksi->metode_pembayaran = $request->fidyah_tipe === 'mentah' 
-                        ? 'bahan_mentah' 
+                    $transaksi->metode_pembayaran = $request->fidyah_tipe === 'mentah'
+                        ? 'bahan_mentah'
                         : 'makanan_matang';
                     $transaksi->jumlah_dibayar = 0;
                     $transaksi->jumlah_infaq = 0;
@@ -1115,7 +1133,7 @@ class TransaksiPenerimaanController extends Controller
                 // Untuk non-fidyah, gunakan metode biasa
                 $this->isiMetodePembayaranPickup($transaksi, $request, $isPembayaranBeras);
             }
-            
+
             $transaksi->save();
 
             DB::commit();
@@ -1528,7 +1546,7 @@ class TransaksiPenerimaanController extends Controller
                     // PERBAIKAN: Tambahkan rules untuk fidyah
                     $rules['fidyah_jumlah_hari'] = 'required|integer|min:1';
                     $rules['fidyah_tipe'] = 'required|in:mentah,matang,tunai';
-                    
+
                     // Untuk fidyah tunai, metode pembayaran required
                     if ($request->fidyah_tipe == 'tunai') {
                         $rules['metode_pembayaran'] = 'required|in:tunai,transfer,qris';
@@ -2324,4 +2342,34 @@ class TransaksiPenerimaanController extends Controller
         $transaksi->verified_by = $this->user->id;
         $transaksi->verified_at = now();
     }
+
+    // ================================================================
+    // DOWNLOAD KWITANSI VIA SIGNED URL (GUEST)
+    // ================================================================
+public function downloadKwitansi(Request $request, $uuid)
+{
+    if (!$request->hasValidSignature()) {
+        abort(403, 'Link kwitansi tidak valid atau sudah kadaluarsa.');
+    }
+
+    $transaksi = TransaksiPenerimaan::with([
+        'lembaga',
+        'jenisZakat',
+        'tipeZakat',
+        'programZakat',
+        'amil',          // ← cukup ini, tanda_tangan ada di model Amil langsung
+        'verifiedBy',
+    ])->where('uuid', $uuid)->firstOrFail();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        'amil.transaksi-penerimaan.kwitansi-pdf',
+        compact('transaksi')
+    );
+
+    $pdf->setPaper('A4', 'portrait');
+    $pdf->set_option('isHtml5ParserEnabled', true);
+    $pdf->set_option('isRemoteEnabled', false); // false karena kita pakai base64
+
+    return $pdf->download('kwitansi-' . $transaksi->no_transaksi . '.pdf');
+}
 }

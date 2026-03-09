@@ -41,6 +41,10 @@ Route::get('/artikel/{bulletin:slug}', [LandingController::class, 'artikelShow']
 Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');
 Route::post('/kontak', [KontakController::class, 'store'])->name('kontak.store');
 
+Route::get('/kwitansi/{uuid}/download', [\App\Http\Controllers\Amil\TransaksiPenerimaanController::class, 'downloadKwitansi'])
+    ->name('kwitansi.download')
+    ->middleware('signed');
+
 
 // ============================================
 // AUTHENTICATION ROUTES (PUBLIC)
