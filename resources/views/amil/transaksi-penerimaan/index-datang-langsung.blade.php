@@ -157,15 +157,15 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                                 onchange="this.form.submit()">
                                 <option value="">Semua</option>
-                                <option value="tunai"
-                                    {{ request('metode_pembayaran') == 'tunai' ? 'selected' : '' }}>Tunai</option>
+                                <option value="tunai" {{ request('metode_pembayaran') == 'tunai' ? 'selected' : '' }}>
+                                    Tunai</option>
                                 <option value="transfer"
                                     {{ request('metode_pembayaran') == 'transfer' ? 'selected' : '' }}>Transfer Bank
                                 </option>
-                                <option value="qris"
-                                    {{ request('metode_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS</option>
-                                <option value="beras"
-                                    {{ request('metode_pembayaran') == 'beras' ? 'selected' : '' }}>Beras</option>
+                                <option value="qris" {{ request('metode_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS
+                                </option>
+                                <option value="beras" {{ request('metode_pembayaran') == 'beras' ? 'selected' : '' }}>
+                                    Beras</option>
                                 <option value="makanan_matang"
                                     {{ request('metode_pembayaran') == 'makanan_matang' ? 'selected' : '' }}>Makanan Siap
                                     Santap</option>
@@ -583,7 +583,8 @@
                                                                         @if ($trx->fidyah_jumlah_box)
                                                                             <p class="text-xs text-amber-700">Jumlah:
                                                                                 <strong>{{ $trx->fidyah_jumlah_box }}
-                                                                                    box</strong></p>
+                                                                                    box</strong>
+                                                                            </p>
                                                                         @endif
                                                                         @if ($trx->fidyah_menu_makanan)
                                                                             <p class="text-xs text-amber-700">Menu:
@@ -631,7 +632,8 @@
                                                                             <p class="text-xs text-gray-500">Nama Jiwa
                                                                                 <span
                                                                                     class="text-gray-400">({{ count($namaJiwaList) }}
-                                                                                    orang)</span></p>
+                                                                                    orang)</span>
+                                                                            </p>
                                                                             <div class="flex flex-wrap gap-1 mt-1">
                                                                                 @foreach ($namaJiwaList as $idx => $nama)
                                                                                     @if ($nama && trim($nama) !== '')
@@ -708,7 +710,7 @@
                                                                 @endif
 
                                                                 {{-- Beras --}}
-                                                                @if ($trx->jumlah_beras_kg > 0)
+                                                                @if ($trx->jumlah_beras_kg > 0 && $trx->metode_pembayaran !== 'tunai')
                                                                     <div class="flex items-start gap-2 text-sm">
                                                                         <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"
                                                                             fill="none" stroke="currentColor"
@@ -1050,16 +1052,19 @@
                                             @if ($trx->fidyah_tipe === 'mentah')
                                                 @if ($trx->fidyah_nama_bahan)
                                                     <p class="text-xs text-amber-700">Bahan:
-                                                        <strong>{{ $trx->fidyah_nama_bahan }}</strong></p>
+                                                        <strong>{{ $trx->fidyah_nama_bahan }}</strong>
+                                                    </p>
                                                 @endif
                                                 @if ($trx->fidyah_total_berat_kg > 0)
                                                     <p class="text-xs text-amber-700">Total:
-                                                        <strong>{{ $trx->fidyah_total_berat_kg }} kg</strong></p>
+                                                        <strong>{{ $trx->fidyah_total_berat_kg }} kg</strong>
+                                                    </p>
                                                 @endif
                                             @elseif($trx->fidyah_tipe === 'matang')
                                                 @if ($trx->fidyah_jumlah_box)
                                                     <p class="text-xs text-amber-700">
-                                                        <strong>{{ $trx->fidyah_jumlah_box }} box</strong></p>
+                                                        <strong>{{ $trx->fidyah_jumlah_box }} box</strong>
+                                                    </p>
                                                 @endif
                                                 @if ($trx->fidyah_menu_makanan)
                                                     <p class="text-xs text-amber-700">{{ $trx->fidyah_menu_makanan }}</p>
@@ -1100,7 +1105,7 @@
                                                 </div>
                                             </div>
                                         @endif
-                                        @if ($trx->jumlah_beras_kg > 0)
+                                        @if ($trx->jumlah_beras_kg > 0 && $trx->metode_pembayaran !== 'tunai')
                                             <div class="flex items-start gap-2 text-sm">
                                                 <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -1123,7 +1128,8 @@
                                                 </svg>
                                                 <div>
                                                     <p class="text-xs text-gray-500">Nama Jiwa
-                                                        ({{ count($namaJiwaList) }} orang)</p>
+                                                        ({{ count($namaJiwaList) }} orang)
+                                                    </p>
                                                     <div class="text-xs text-gray-700 mt-1 space-y-0.5">
                                                         @foreach ($namaJiwaList as $idx => $nama)
                                                             @if ($nama && trim($nama) !== '')
