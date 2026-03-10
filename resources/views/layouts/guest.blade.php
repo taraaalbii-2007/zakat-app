@@ -20,30 +20,26 @@
         * {
             font-family: 'Poppins', system-ui, -apple-system, sans-serif;
         }
-
         html {
             scroll-behavior: smooth;
         }
     </style>
 
-    {{-- Styles tambahan per halaman --}}
     @yield('styles')
 </head>
 
 <body class="bg-white text-neutral-900 antialiased">
+
     @include('partials.splash-screen')
 
     {{-- Navbar --}}
     @include('partials.landing.navbar')
 
-    {{-- Konten utama: default landing, bisa di-override --}}
+    {{-- Konten utama --}}
     @hasSection('content')
         @yield('content')
     @else
-        {{-- Hero Section --}}
         @include('partials.landing.hero')
-
-        {{-- Isi Halaman (Fitur, Statistik, Cara Kerja, Testimoni) --}}
         @include('partials.landing.content')
     @endif
 
@@ -61,7 +57,7 @@
     </button>
 
     <script>
-        // Back to top visibility
+        // ---- Back to top ----
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 400) {
@@ -73,29 +69,15 @@
             }
         });
 
-        // Mobile menu toggle
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        // Navbar scroll effect
-        const navbar = document.getElementById('mainNavbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.classList.add('shadow-soft-lg', 'bg-white');
-                navbar.classList.remove('bg-transparent');
-            } else {
-                navbar.classList.remove('shadow-soft-lg', 'bg-white');
-                navbar.classList.add('bg-transparent');
-            }
-        });
+        // ---- Splash screen → hero reveal ----
+        // Fungsi ini dipanggil dari splash-screen.blade.php saat splash selesai
+        // Tambahkan ke splash screen: document.dispatchEvent(new Event('splashDone'))
+        // Fallback otomatis sudah ada di hero.blade.php
+        window.onSplashDone = function () {
+            document.dispatchEvent(new Event('splashDone'));
+        };
     </script>
 
-    {{-- Scripts tambahan per halaman --}}
     @yield('scripts')
 </body>
 
