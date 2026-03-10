@@ -1,8 +1,6 @@
 <aside id="sidebar"
     class="fixed inset-y-0 left-0 z-50 w-64 bg-white text-gray-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col"
-    style="border-right: 1px solid #eef0f2; box-shadow: 8px 0 32px rgba(0,0,0,0.07);">
-
-    <!-- Logo & Brand -->
+    style="border-right: 1px solid #eef0f2;" <!-- Logo & Brand -->
     <div class="px-5 pt-6 pb-5" style="border-bottom: 1px solid #f3f4f6;">
         <div class="flex items-center space-x-3.5">
             @if (!empty($appConfig->logo_aplikasi))
@@ -11,8 +9,8 @@
                     style="box-shadow: 0 4px 14px rgba(23,163,74,0.3);">
             @else
                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
-                    style="background: linear-gradient(135deg, #17a34a 0%, #22c55e 100%); box-shadow: 0 4px 14px rgba(23,163,74,0.35);">
-                    <span class="text-sm font-bold text-white tracking-wide">
+                    style="background: linear-gradient(135deg, #17a34a 0%, #22c55e 100%);"> <span
+                        class="text-sm font-bold text-white tracking-wide">
                         {{ strtoupper(substr($appConfig->nama_aplikasi ?? 'App', 0, 2)) }}
                     </span>
                 </div>

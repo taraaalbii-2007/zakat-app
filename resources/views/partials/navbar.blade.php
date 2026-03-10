@@ -451,8 +451,7 @@
                         style="border: 1px solid #e8f0e8; box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);">
 
                         {{-- Header --}}
-                        <div class="px-4 py-4" style="border-bottom: 1px solid #f0f7f0; background: #fafcfa;">
-                            <div class="flex items-center space-x-3">
+<div class="px-4 py-3" style="border-bottom: 1px solid #f0f7f0; background: #fafcfa;">                            <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style="background: #2d6a2d;">
                                     @if ($avatarUrl)
                                         <img src="{{ $avatarUrl }}" alt="{{ $authUser->username }}" class="w-full h-full object-cover">
@@ -476,7 +475,7 @@
                         <div class="py-1.5">
                             @if ($isSuperadmin)
                                 <a href="{{ route('superadmin.profil.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -485,7 +484,7 @@
                                     <span>Profil Saya</span>
                                 </a>
                                 <a href="{{ route('konfigurasi-global.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-global.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-global.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -495,7 +494,7 @@
                                     <span>Konfigurasi Global</span>
                                 </a>
                                 <a href="{{ route('superadmin.kontak.index') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.kontak.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.kontak.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
@@ -512,7 +511,7 @@
 
                             @if ($isAdminLembaga)
                                 <a href="{{ route('admin-lembaga.profil.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('admin-lembaga.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('admin-lembaga.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -521,7 +520,7 @@
                                     <span>Profil Saya</span>
                                 </a>
                                 <a href="{{ route('konfigurasi-integrasi.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-integrasi.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-integrasi.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -534,7 +533,7 @@
 
                             @if ($isAmil)
                                 <a href="{{ route('profil.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -546,7 +545,7 @@
 
                             @if ($isMuzakki)
                                 <a href="{{ route('muzakki.profil.show') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('muzakki.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('muzakki.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -555,7 +554,7 @@
                                     <span>Profil Saya</span>
                                 </a>
                                 <a href="{{ route('transaksi-daring-muzakki.create') }}"
-                                    class="flex items-center space-x-3 px-4 py-2.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('transaksi-daring-muzakki.create') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
+                                    class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('transaksi-daring-muzakki.create') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
                                     <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: #f3f4f6;">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
