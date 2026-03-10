@@ -566,9 +566,9 @@
                         </div>
 
                         {{-- Logout --}}
-                        <div class="px-3 py-2.5" style="border-top: 1px solid #f0f7f0;">
-                            <button type="button" onclick="openLogoutModal()"
-                                class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-[12.5px] font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group">
+<div class="px-3 py-2" style="border-top: 1px solid #f0f7f0;">
+                                <button type="button" onclick="openLogoutModal()"
+                                class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-[12.5px] font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group">
                                 <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-50 group-hover:bg-red-100 transition-colors">
                                     <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
