@@ -417,12 +417,6 @@
 </section>
 
 
-{{-- ============================================================
-<<<<<<< HEAD
-     SECTION 4 — TESTIMONI (DYNAMIC dari DB, approved oleh superadmin)
-     Letakkan di: resources/views/partials/landing/content.blade.php
-     Gantikan section id="testimoni" yang lama sepenuhnya
-     ============================================================ --}}
 <section id="testimoni" class="relative py-20 bg-white overflow-hidden">
     <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
         {{-- Horizontal line grid --}}
