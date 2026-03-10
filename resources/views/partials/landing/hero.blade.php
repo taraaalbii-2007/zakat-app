@@ -222,11 +222,11 @@
 
     /* Kelas yang ditambahkan JS setelah splash selesai */
     .curved-line-path.curve-animate {
-        animation: draw-curve-soft 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-                   wave-shimmer-soft 5s ease-in-out 3.0s infinite;
+        animation: draw-curve-soft 5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                   wave-shimmer-soft 7s ease-in-out 5.5s infinite;
     }
     .curved-line-path-2.curve-animate {
-        animation: draw-curve-soft 3.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        animation: draw-curve-soft 6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
     }
 
     @keyframes draw-curve-soft {
