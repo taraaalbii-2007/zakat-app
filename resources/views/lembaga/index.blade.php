@@ -12,6 +12,8 @@
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $lembagas->total() }} Lembaga</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+
+                        {{-- Tambah --}}
                         <a href="{{ route('lembaga.create') }}"
                             class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,27 +24,19 @@
                                 Tambah
                             </span>
                         </a>
-                        
-                        {{-- Filter Wilayah --}}
-                        @if(isset($provinces) && $provinces->count() > 0)
-                        <div class="relative">
-                            <select name="provinsi_kode" id="filter-provinsi" onchange="filterByProvinsi(this)"
-                                class="block w-full sm:w-auto pl-3 pr-8 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none">
-                                <option value="">Semua Provinsi</option>
-                                @foreach($provinces as $province)
-                                    <option value="{{ $province->code }}" {{ request('provinsi_kode') == $province->code ? 'selected' : '' }}>
-                                        {{ $province->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        @endif
-                        
+
+                        {{-- Filter --}}
+                        <button type="button" onclick="toggleFilter()"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
+                            {{ request()->hasAny(['provinsi_kode', 'status']) ? 'ring-2 ring-primary' : '' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
+                        </button>
+
+                        {{-- Search --}}
                         <div id="search-container" class="transition-all duration-300"
                             style="{{ request('q') ? 'min-width: 280px;' : '' }}">
                             <button type="button" onclick="toggleSearch()" id="search-button"
@@ -58,6 +52,11 @@
                             </button>
                             <form method="GET" action="{{ route('lembaga.index') }}" id="search-form"
                                 class="{{ request('q') ? '' : 'hidden' }}">
+                                @foreach (['provinsi_kode', 'status'] as $filter)
+                                    @if (request($filter))
+                                        <input type="hidden" name="{{ $filter }}" value="{{ request($filter) }}">
+                                    @endif
+                                @endforeach
                                 <div class="flex items-center gap-2">
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -71,8 +70,8 @@
                                             placeholder="Cari lembaga..."
                                             class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                     </div>
-                                    @if(request('q') || request('provinsi_kode') || request('kota_kode') || request('status'))
-                                        <a href="{{ route('lembaga.index') }}" 
+                                    @if (request()->hasAny(['q', 'provinsi_kode', 'kota_kode', 'status']))
+                                        <a href="{{ route('lembaga.index') }}"
                                             class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
                                             Reset
                                         </a>
@@ -80,8 +79,62 @@
                                 </div>
                             </form>
                         </div>
+
                     </div>
                 </div>
+            </div>
+
+            {{-- Filter Panel --}}
+            <div id="filter-panel"
+                class="{{ request()->hasAny(['provinsi_kode', 'status']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                <form method="GET" action="{{ route('lembaga.index') }}" id="filter-form">
+                    @if (request('q'))
+                        <input type="hidden" name="q" value="{{ request('q') }}">
+                    @endif
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+
+                        @if(isset($provinces) && $provinces->count() > 0)
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Provinsi</label>
+                            <select name="provinsi_kode"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua Provinsi</option>
+                                @foreach($provinces as $province)
+                                    <option value="{{ $province->code }}" {{ request('provinsi_kode') == $province->code ? 'selected' : '' }}>
+                                        {{ $province->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @endif
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                            <select name="status"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua Status</option>
+                                <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    @if (request()->hasAny(['provinsi_kode', 'status']))
+                        <div class="mt-3 flex justify-end">
+                            <a href="{{ route('lembaga.index', request('q') ? ['q' => request('q')] : []) }}"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Reset Filter
+                            </a>
+                        </div>
+                    @endif
+                </form>
             </div>
 
             @if ($lembagas->count() > 0)
@@ -102,11 +155,11 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($lembagas as $lembaga)
                                 {{-- Parent Row --}}
-                                <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row" 
+                                <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
                                     data-target="detail-{{ $lembaga->uuid }}">
                                     <td class="px-4 py-4">
                                         <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
-                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon" 
+                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                             </svg>
@@ -154,7 +207,7 @@
                                                                 </div>
                                                             </div>
                                                             @endif
-                                                            
+
                                                             @if($lembaga->admin_telepon)
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +219,7 @@
                                                                 </div>
                                                             </div>
                                                             @endif
-                                                            
+
                                                             @if($lembaga->admin_email)
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +233,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {{-- Kolom Kanan: Lokasi & Status --}}
                                                     <div>
                                                         <h4 class="text-sm font-medium text-gray-900 mb-3">Lokasi & Status</h4>
@@ -195,7 +248,7 @@
                                                                     <p class="text-sm font-medium text-gray-900">{{ $lembaga->alamat_lengkap }}</p>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
@@ -205,7 +258,7 @@
                                                                     <p class="text-sm font-medium text-gray-900">{{ $lembaga->kode_lembaga }}</p>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div class="flex items-start">
                                                                 <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -226,7 +279,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                                 {{-- Tombol Detail di Expandable Content --}}
                                                 <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
                                                     <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
@@ -282,14 +335,14 @@
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                             </svg>
                                         </button>
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile" 
+                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {{-- Mobile Expandable Content --}}
                             <div id="detail-mobile-{{ $lembaga->uuid }}" class="hidden expandable-content-mobile">
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
@@ -306,7 +359,7 @@
                                                     <span class="text-gray-900">{{ $lembaga->admin_nama }}</span>
                                                 </div>
                                                 @endif
-                                                
+
                                                 @if($lembaga->admin_telepon)
                                                 <div class="flex items-center text-sm">
                                                     <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -317,7 +370,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        
+
                                         {{-- Lokasi --}}
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 mb-2">Lokasi</h4>
@@ -329,7 +382,7 @@
                                                 <span class="text-gray-900">{{ $lembaga->alamat }}, {{ $lembaga->kota_nama }}</span>
                                             </div>
                                         </div>
-                                        
+
                                         {{-- Tombol Detail --}}
                                         <div class="pt-3 border-t border-gray-200">
                                             <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
@@ -357,34 +410,16 @@
                 @endif
             @else
                 <div class="p-8 sm:p-12 text-center">
-                    {{-- Icon untuk data kosong --}}
                     <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
                         <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
-                    
-                    @if(request('q') || request('provinsi_kode'))
-                        {{-- Jika ada pencarian/filter tapi tidak ada hasil --}}
-                        @if(request('q') && request('provinsi_kode'))
-                            <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                            <p class="text-sm text-gray-500 mb-6">
-                                Tidak ada lembaga yang cocok dengan pencarian "{{ request('q') }}" di provinsi yang dipilih.
-                            </p>
-                        @elseif(request('q'))
-                            <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                            <p class="text-sm text-gray-500 mb-6">
-                                Tidak ada lembaga yang cocok dengan pencarian "{{ request('q') }}".
-                            </p>
-                        @else
-                            <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                            <p class="text-sm text-gray-500 mb-6">
-                                Tidak ada lembaga di provinsi yang dipilih.
-                            </p>
-                        @endif
-                        
-                        {{-- Tombol Reset Filter --}}
+
+                    @if(request('q') || request('provinsi_kode') || request('status'))
+                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
+                        <p class="text-sm text-gray-500 mb-6">Tidak ada lembaga yang sesuai dengan filter yang dipilih.</p>
                         <a href="{{ route('lembaga.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,11 +429,8 @@
                             Reset Filter
                         </a>
                     @else
-                        {{-- Jika benar-benar data kosong (tidak ada data sama sekali) --}}
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Lembaga</h3>
                         <p class="text-sm text-gray-500 mb-6">Mulai tambahkan data lembaga untuk mengelola informasi lembaga.</p>
-                        
-                        {{-- Tombol Tambah Lembaga untuk data kosong --}}
                         <a href="{{ route('lembaga.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,93 +513,66 @@
 @push('scripts')
     <script>
         let currentDropdownData = null;
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
             const showLink = document.getElementById('dropdown-show-link');
             const editLink = document.getElementById('dropdown-edit-link');
             const deleteBtn = document.getElementById('dropdown-delete-btn');
-            const tableContainer = document.getElementById('table-container');
-            
-            // Desktop Expandable Rows
+
+            // ── Desktop Expandable Rows ───────────────────────────────────
             document.querySelectorAll('.expandable-row').forEach(row => {
                 row.addEventListener('click', function(e) {
                     if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    
-                    const targetId = this.getAttribute('data-target');
-                    const targetRow = document.getElementById(targetId);
+                    const targetRow = document.getElementById(this.getAttribute('data-target'));
                     const icon = this.querySelector('.expand-icon');
-                    
-                    if (targetRow.classList.contains('hidden')) {
-                        targetRow.classList.remove('hidden');
-                        icon.classList.add('rotate-90');
-                    } else {
-                        targetRow.classList.add('hidden');
-                        icon.classList.remove('rotate-90');
-                    }
+                    targetRow.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-90');
                 });
             });
 
-            // Mobile Expandable Cards
+            // ── Mobile Expandable Cards ───────────────────────────────────
             document.querySelectorAll('.expandable-row-mobile').forEach(row => {
                 row.addEventListener('click', function(e) {
                     if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    
-                    const targetId = this.getAttribute('data-target');
-                    const targetContent = document.getElementById(targetId);
+                    const targetContent = document.getElementById(this.getAttribute('data-target'));
                     const icon = this.querySelector('.expand-icon-mobile');
-                    
-                    if (targetContent.classList.contains('hidden')) {
-                        targetContent.classList.remove('hidden');
-                        icon.classList.add('rotate-180');
-                    } else {
-                        targetContent.classList.add('hidden');
-                        icon.classList.remove('rotate-180');
-                    }
+                    targetContent.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
                 });
             });
-            
+
+            // ── Dropdown ──────────────────────────────────────────────────
             document.addEventListener('click', function(e) {
                 const toggle = e.target.closest('.dropdown-toggle');
                 if (toggle) {
                     e.stopPropagation();
                     const dropdownUuid = toggle.getAttribute('data-uuid');
                     const lembagaName = toggle.getAttribute('data-nama');
-                    
+
                     if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
                         !dropdownContainer.classList.contains('hidden')) {
                         dropdownContainer.classList.add('hidden');
                         dropdownContainer.removeAttribute('data-current-uuid');
                         return;
                     }
-                    
+
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
-                    
-                    let top = rect.bottom + 4;
-                    let left = rect.left;
-                    
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
                     const dropdownHeight = 132;
-                    
-                    if (left + dropdownWidth > window.innerWidth) {
-                        left = window.innerWidth - dropdownWidth - 10;
-                    }
-                    
-                    if (top + dropdownHeight > window.innerHeight) {
-                        top = rect.top - dropdownHeight - 4;
-                    }
-                    
+
+                    let top = rect.bottom + 4;
+                    let left = rect.left;
+
+                    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 10;
+                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+
                     dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
                     showLink.href = `/lembaga/${dropdownUuid}`;
                     editLink.href = `/lembaga/${dropdownUuid}/edit`;
-                    
-                    currentDropdownData = {
-                        uuid: dropdownUuid,
-                        name: lembagaName
-                    };
-                    
+                    currentDropdownData = { uuid: dropdownUuid, name: lembagaName };
                     dropdownContainer.classList.remove('hidden');
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
@@ -576,97 +581,85 @@
                     }
                 }
             });
-            
+
+            // ── Delete ────────────────────────────────────────────────────
             deleteBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 if (!currentDropdownData) return;
-                
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
-                
-                const modal = document.getElementById('delete-modal');
-                const modalName = document.getElementById('modal-lembaga-name');
-                modalName.textContent = currentDropdownData.name;
-                modal.classList.remove('hidden');
+                document.getElementById('modal-lembaga-name').textContent = currentDropdownData.name;
+                document.getElementById('delete-modal').classList.remove('hidden');
             });
-            
+
             document.getElementById('confirm-delete-btn').addEventListener('click', function() {
                 if (!currentDropdownData) return;
-                
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = `/lembaga/${currentDropdownData.uuid}`;
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                
-                const methodField = document.createElement('input');
-                methodField.type = 'hidden';
-                methodField.name = '_method';
-                methodField.value = 'DELETE';
-                
-                form.appendChild(csrfToken);
-                form.appendChild(methodField);
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden'; method.name = '_method'; method.value = 'DELETE';
+                form.appendChild(csrf);
+                form.appendChild(method);
                 document.body.appendChild(form);
                 form.submit();
             });
-            
+
             document.getElementById('cancel-delete-btn').addEventListener('click', function() {
-                const modal = document.getElementById('delete-modal');
-                modal.classList.add('hidden');
+                document.getElementById('delete-modal').classList.add('hidden');
             });
-            
+
             document.getElementById('delete-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
+                if (e.target === this) this.classList.add('hidden');
             });
-            
+
             window.addEventListener('scroll', function() {
                 dropdownContainer.classList.add('hidden');
             }, true);
-            
+
             window.addEventListener('resize', function() {
                 dropdownContainer.classList.add('hidden');
             });
         });
-        
+
+        // ── Toggle Search ─────────────────────────────────────────────────
         function toggleSearch() {
-            const searchButton = document.getElementById('search-button');
-            const searchForm = document.getElementById('search-form');
-            const searchInput = document.getElementById('search-input');
-            const searchContainer = document.getElementById('search-container');
-            
-            if (searchForm.classList.contains('hidden')) {
-                searchButton.classList.add('hidden');
-                searchForm.classList.remove('hidden');
-                searchContainer.style.minWidth = '280px';
-                setTimeout(() => searchInput.focus(), 50);
+            var btn = document.getElementById('search-button');
+            var form = document.getElementById('search-form');
+            var input = document.getElementById('search-input');
+            var container = document.getElementById('search-container');
+            if (form.classList.contains('hidden')) {
+                btn.classList.add('hidden');
+                form.classList.remove('hidden');
+                container.style.minWidth = '280px';
+                setTimeout(function() { input.focus(); }, 50);
             } else {
-                const hasQuery = '{{ request('q') }}' !== '';
-                if (!hasQuery) {
-                    searchInput.value = '';
+                form.classList.add('hidden');
+                btn.classList.remove('hidden');
+                container.style.minWidth = '';
+            }
+        }
+
+        // ── Toggle Filter Panel ───────────────────────────────────────────
+        function toggleFilter() {
+            document.getElementById('filter-panel').classList.toggle('hidden');
+        }
+
+        // ── ESC menutup search form ───────────────────────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var form = document.getElementById('search-form');
+                var btn = document.getElementById('search-button');
+                var container = document.getElementById('search-container');
+                if (!form.classList.contains('hidden')) {
+                    form.classList.add('hidden');
+                    btn.classList.remove('hidden');
+                    container.style.minWidth = '';
                 }
-                searchForm.classList.add('hidden');
-                searchButton.classList.remove('hidden');
-                searchContainer.style.minWidth = 'auto';
+                document.getElementById('delete-modal').classList.add('hidden');
             }
-        }
-        
-        function filterByProvinsi(select) {
-            const url = new URL(window.location.href);
-            const provinsiKode = select.value;
-            
-            if (provinsiKode) {
-                url.searchParams.set('provinsi_kode', provinsiKode);
-            } else {
-                url.searchParams.delete('provinsi_kode');
-            }
-            
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
-        }
+        });
     </script>
 @endpush

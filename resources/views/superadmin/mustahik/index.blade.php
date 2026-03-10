@@ -5,6 +5,8 @@
 @section('content')
     <div class="space-y-4 sm:space-y-6">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+
+            {{-- Header --}}
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div>
@@ -14,34 +16,140 @@
                         </p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <button type="button" onclick="expandAll()"
-                            class="inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+
+                        {{-- Filter --}}
+                        <button type="button" onclick="toggleFilter()"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
+                            {{ request()->hasAny(['status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']) ? 'ring-2 ring-primary' : '' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            Buka Semua
+                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
                         </button>
-                        <button type="button" onclick="collapseAll()"
-                            class="inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                            </svg>
-                            Tutup Semua
-                        </button>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+
+                        {{-- Search --}}
+                        <div id="search-container" class="transition-all duration-300"
+                            style="{{ request('q') ? 'min-width: 280px;' : '' }}">
+                            <button type="button" onclick="toggleSearch()" id="search-button"
+                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                            </div>
-                            <input type="search" placeholder="Cari nama lembaga..."
-                                oninput="filterLembaga(this.value)"
-                                class="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all w-full sm:w-56">
+                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
+                            </button>
+                            <form method="GET" action="{{ route('mustahik.index') }}" id="search-form"
+                                class="{{ request('q') ? '' : 'hidden' }}">
+                                @foreach (['status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id'] as $filter)
+                                    @if (request($filter))
+                                        <input type="hidden" name="{{ $filter }}" value="{{ request($filter) }}">
+                                    @endif
+                                @endforeach
+                                <div class="flex items-center gap-2">
+                                    <div class="relative flex-1">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                        </div>
+                                        <input type="search" name="q" value="{{ request('q') }}"
+                                            id="search-input" placeholder="Cari nama lembaga / mustahik..."
+                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                    </div>
+                                    @if (request()->hasAny(['q', 'status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']))
+                                        <a href="{{ route('mustahik.index') }}"
+                                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                                            Reset
+                                        </a>
+                                    @endif
+                                </div>
+                            </form>
                         </div>
+
                     </div>
                 </div>
             </div>
 
+            {{-- Filter Panel --}}
+            <div id="filter-panel"
+                class="{{ request()->hasAny(['status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                <form method="GET" action="{{ route('mustahik.index') }}" id="filter-form">
+                    @if (request('q'))
+                        <input type="hidden" name="q" value="{{ request('q') }}">
+                    @endif
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Lembaga</label>
+                            <select name="lembaga_id"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua Lembaga</option>
+                                @foreach ($lembagas as $lembaga)
+                                    <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
+                                        {{ $lembaga->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Verifikasi</label>
+                            <select name="status_verifikasi"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua Status</option>
+                                <option value="verified" {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>Verified</option>
+                                <option value="pending" {{ request('status_verifikasi') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="rejected" {{ request('status_verifikasi') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Keaktifan</label>
+                            <select name="is_active"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua</option>
+                                <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
+                                <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
+                            </select>
+                        </div>
+
+                        @if (isset($kategoriList))
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Kategori</label>
+                                <select name="kategori_id"
+                                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                    onchange="this.form.submit()">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach ($kategoriList as $kategori)
+                                        <option value="{{ $kategori->id }}" {{ request('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                                            {{ $kategori->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+                    </div>
+
+                    @if (request()->hasAny(['status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']))
+                        <div class="mt-3 flex justify-end">
+                            <a href="{{ route('mustahik.index', request('q') ? ['q' => request('q')] : []) }}"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Reset Filter
+                            </a>
+                        </div>
+                    @endif
+                </form>
+            </div>
+
+            {{-- Table --}}
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -67,7 +175,8 @@
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
                                             <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                             </svg>
                                         </div>
                                         <div>
@@ -174,12 +283,14 @@
                     </tbody>
                 </table>
             </div>
+
         </div>
     </div>
 @endsection
 
 @push('scripts')
 <script>
+    // ── Expandable lembaga rows ────────────────────────────────────────────
     function toggleLembaga(id, row) {
         const content = document.getElementById(id);
         const chevron = row.querySelector('.lembaga-chevron');
@@ -187,24 +298,42 @@
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
     }
-    function expandAll() {
-        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.remove('hidden'));
-        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.add('rotate-90'));
+
+    // ── Toggle Search ─────────────────────────────────────────────────────
+    function toggleSearch() {
+        var btn = document.getElementById('search-button');
+        var form = document.getElementById('search-form');
+        var input = document.getElementById('search-input');
+        var container = document.getElementById('search-container');
+        if (form.classList.contains('hidden')) {
+            btn.classList.add('hidden');
+            form.classList.remove('hidden');
+            container.style.minWidth = '280px';
+            setTimeout(function() { input.focus(); }, 50);
+        } else {
+            form.classList.add('hidden');
+            btn.classList.remove('hidden');
+            container.style.minWidth = '';
+        }
     }
-    function collapseAll() {
-        document.querySelectorAll('.lembaga-content-row').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.lembaga-chevron').forEach(el => el.classList.remove('rotate-90'));
+
+    // ── Toggle Filter Panel ───────────────────────────────────────────────
+    function toggleFilter() {
+        document.getElementById('filter-panel').classList.toggle('hidden');
     }
-    function filterLembaga(keyword) {
-        const q = keyword.toLowerCase().trim();
-        document.querySelectorAll('.lembaga-row').forEach(row => {
-            const show = !q || (row.getAttribute('data-nama') || '').includes(q);
-            row.style.display = show ? '' : 'none';
-            const next = row.nextElementSibling;
-            if (next && next.classList.contains('lembaga-content-row')) {
-                next.style.display = show ? '' : 'none';
+
+    // ── ESC menutup search form ───────────────────────────────────────────
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var form = document.getElementById('search-form');
+            var btn = document.getElementById('search-button');
+            var container = document.getElementById('search-container');
+            if (!form.classList.contains('hidden')) {
+                form.classList.add('hidden');
+                btn.classList.remove('hidden');
+                container.style.minWidth = '';
             }
-        });
-    }
+        }
+    });
 </script>
 @endpush

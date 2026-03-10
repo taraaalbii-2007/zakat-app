@@ -8,17 +8,17 @@
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             font-size: 11px;
-            line-height: 1.4;
+            line-height: 1.3;
             color: #2d3436;
-            margin: 12px 20px;
+            margin: 6px 20px;
         }
 
         /* Header */
         .header {
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 6px;
             border-bottom: 2.5px solid #2d3436;
-            padding-bottom: 8px;
+            padding-bottom: 5px;
         }
         .header h1 {
             margin: 0;
@@ -41,7 +41,7 @@
 
         /* Info section */
         .info-section {
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             display: table;
             width: 100%;
             border-collapse: collapse;
@@ -64,7 +64,7 @@
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             font-size: 9.5px;
             table-layout: fixed;
         }
@@ -74,24 +74,20 @@
             font-weight: bold;
             text-align: center;
             border: 1px solid #155d38;
-            padding: 8px 4px;
+            padding: 5px 4px;
             text-transform: uppercase;
         }
         table.data-table td {
             border: 1px solid #dee2e6;
-            padding: 6px 4px;
+            padding: 4px 4px;
             word-wrap: break-word;
         }
-        table.data-table tr:nth-child(even) td {
-            background-color: #f8f9fa;
-        }
+        table.data-table tr:nth-child(even) td { background-color: #f8f9fa; }
         table.data-table tr { page-break-inside: avoid; }
 
         .text-left   { text-align: left; }
         .text-right  { text-align: right; }
         .text-center { text-align: center; }
-
-        /* Status — no color, plain text */
 
         /* Summary row */
         .summary-row td {
@@ -108,24 +104,59 @@
             border-top: none;
         }
 
-        /* Footer */
+        /* ── Tanda Tangan (konsisten dengan laporan tahunan) ── */
         .footer-container {
             margin-top: 10px;
             width: 100%;
             page-break-inside: avoid;
         }
-        .signature-table { width: 100%; border: none; }
-        .signature-table td { border: none !important; padding: 0; vertical-align: top; }
-        .signature-wrapper { width: 200px; text-align: center; }
-        .signature-space   { height: 35px; }
-        .signature-name    { font-weight: bold; text-decoration: underline; }
+        .footer-container:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .signature-wrapper {
+            float: right;
+            width: 250px;
+            text-align: center;
+        }
+        .signature-space {
+            height: 45px;
+        }
+        .signature-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .signature-line-table {
+            width: 210px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .signature-line-table td {
+            border: none;
+            padding: 0;
+            border-bottom: 1px solid #2d3436;
+            line-height: 1.4;
+        }
+        .paren-left  { text-align: left;   width: 10px; }
+        .paren-mid   { text-align: center; }
+        .paren-right { text-align: right;  width: 10px; }
+
+        /* Footer Note */
         .footer-note {
             clear: both;
-            padding-top: 6px;
+            padding-top: 8px;
             text-align: center;
             font-size: 8px;
             color: #b2bec3;
             border-top: 1px dashed #dfe6e9;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 15mm;
         }
     </style>
 </head>
@@ -242,7 +273,6 @@
                         'dibatalkan' => 'Dibatalkan',
                         default      => $transaksi->status,
                     };
-                    $statusClass = '';
 
                     $metodeText = match($transaksi->metode_penyaluran) {
                         'tunai'    => 'Tunai',
@@ -280,19 +310,17 @@
                     </td>
                 </tr>
 
-                {{-- Rincian tambahan bila ada detail barang / keterangan --}}
                 @php
-                    $adaRincian = $transaksi->detail_barang || $transaksi->keterangan;
+                    $adaRincian  = $transaksi->detail_barang || $transaksi->keterangan;
                     $rincianParts = [];
                     if ($transaksi->detail_barang) $rincianParts[] = 'Barang: ' . $transaksi->detail_barang;
-                    if ($transaksi->keterangan)    $rincianParts[] = 'Ket: ' . $transaksi->keterangan;
+                    if ($transaksi->keterangan)    $rincianParts[] = 'Ket: '    . $transaksi->keterangan;
                     $rincianText = implode(' | ', $rincianParts);
                 @endphp
                 @if($adaRincian)
                 <tr class="rincian-row">
                     <td colspan="11" style="padding: 3px 8px; border-top: none;">
-                        <strong style="color:#2d3436;">Rincian:</strong>
-                        {{ $rincianText }}
+                        <strong style="color:#2d3436;">Rincian:</strong> {{ $rincianText }}
                     </td>
                 </tr>
                 @endif
@@ -304,7 +332,6 @@
                 </tr>
             @endforelse
 
-            {{-- Total --}}
             @if($transaksis->count() > 0)
             <tr class="summary-row">
                 <td colspan="7" class="text-right" style="padding: 6px 4px;">
@@ -317,25 +344,26 @@
         </tbody>
     </table>
 
-    {{-- ── Tanda Tangan ── --}}
+    {{-- ══════════════════ TANDA TANGAN (konsisten dengan laporan tahunan) ══════════════════ --}}
     <div class="footer-container">
-        <table class="signature-table">
-            <tr>
-                <td style="width: 70%;"></td>
-                <td style="width: 30%;">
-                    <div class="signature-wrapper">
-                        <div style="margin-bottom:5px;">
-                            {{ $lembaga->kota_nama ?? 'Kota' }},
-                            {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}
-                        </div>
-                        <div>Mengetahui,</div>
-                        <div style="margin-bottom:10px;"><strong>Admin Lembaga</strong></div>
-                        <div class="signature-space"></div>
-                        <div class="signature-name">{{ $lembaga->admin_nama ?? '_____________________' }}</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="signature-wrapper">
+            <div>{{ $lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
+            <div style="margin-top: 8px;">Yang Membuat Laporan,</div>
+            <div class="signature-title">Admin Lembaga</div>
+            <div class="signature-space"></div>
+            <table class="signature-line-table">
+                <tr>
+                    <td colspan="3" style="border: none; text-align: center; font-weight: bold; padding: 0; line-height: 1.3;">
+                        {{ $namaAdmin ?? ($lembaga->admin_nama ?? '') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="paren-left">(</td>
+                    <td class="paren-mid">&nbsp;</td>
+                    <td class="paren-right">)</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
     <div class="footer-note">

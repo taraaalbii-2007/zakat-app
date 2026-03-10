@@ -98,54 +98,54 @@
             page-break-inside: avoid;
         }
 
-        .text-left {
-            text-align: left;
-        }
+        .text-left   { text-align: left; }
+        .text-right  { text-align: right; }
+        .text-center { text-align: center; }
 
-        .text-right {
-            text-align: right;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* Footer & Signature */
+        /* ── Footer & Signature (sama persis dengan laporan tahunan) ── */
         .footer-container {
             margin-top: 30px;
             width: 100%;
             page-break-inside: avoid;
         }
-
-        .signature-table {
-            width: 100%;
-            border: none;
+        .footer-container:after {
+            content: "";
+            display: table;
+            clear: both;
         }
-
-        .signature-table td {
-            border: none !important;
-            padding: 0;
-            vertical-align: top;
-        }
-
         .signature-wrapper {
-            width: 200px;
+            float: right;
+            width: 250px;
             text-align: center;
         }
-
         .signature-space {
-            height: 60px;
+            height: 70px;
         }
-
-        .signature-name {
+        .signature-title {
             font-weight: bold;
-            text-decoration: underline;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
+        .signature-line-table {
+            width: 210px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .signature-line-table td {
+            border: none;
+            padding: 0;
+            border-bottom: 1px solid #2d3436;
+            line-height: 1.4;
+        }
+        .paren-left  { text-align: left;   width: 10px; }
+        .paren-mid   { text-align: center; }
+        .paren-right { text-align: right;  width: 10px; }
 
+        /* Footer Note */
         .footer-note {
             clear: both;
-            padding-top: 40px;
+            padding-top: 20px;
             text-align: center;
             font-size: 8px;
             color: #b2bec3;
@@ -160,7 +160,6 @@
             font-size: 8px;
             margin-top: 2px;
         }
-
         .fidyah-badge {
             background-color: #ff9800;
             color: white;
@@ -168,6 +167,11 @@
             border-radius: 2px;
             font-size: 8px;
             font-weight: bold;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 15mm;
         }
     </style>
 </head>
@@ -196,11 +200,9 @@
             <div class="info-value">:
                 @php
                     $appliedFilters = [];
-
                     if (!empty($filters['q'])) {
                         $appliedFilters[] = "Pencarian: '" . $filters['q'] . "'";
                     }
-
                     if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
                         $appliedFilters[] =
                             'Periode: ' .
@@ -208,47 +210,41 @@
                             ' - ' .
                             \Carbon\Carbon::parse($filters['end_date'])->format('d/m/Y');
                     }
-
                     if (!empty($filters['jenis_zakat_id'])) {
                         $jenis = $jenisZakatList->firstWhere('id', $filters['jenis_zakat_id']);
                         $appliedFilters[] = 'Jenis: ' . ($jenis->nama ?? 'Zakat');
                     }
-
                     if (!empty($filters['metode_pembayaran'])) {
                         $appliedFilters[] = 'Metode Bayar: ' . ucfirst($filters['metode_pembayaran']);
                     }
-
                     if (!empty($filters['status'])) {
                         $statusText = match ($filters['status']) {
                             'verified' => 'Terverifikasi',
-                            'pending' => 'Menunggu',
+                            'pending'  => 'Menunggu',
                             'rejected' => 'Ditolak',
-                            default => $filters['status'],
+                            default    => $filters['status'],
                         };
                         $appliedFilters[] = 'Status: ' . $statusText;
                     }
-
                     if (!empty($filters['metode_penerimaan'])) {
                         $penerimaanText = match($filters['metode_penerimaan']) {
                             'datang_langsung' => 'Datang Langsung',
-                            'dijemput' => 'Dijemput',
-                            'daring' => 'Daring',
-                            default => $filters['metode_penerimaan'],
+                            'dijemput'        => 'Dijemput',
+                            'daring'          => 'Daring',
+                            default           => $filters['metode_penerimaan'],
                         };
                         $appliedFilters[] = 'Penerimaan: ' . $penerimaanText;
                     }
-
                     if (!empty($filters['fidyah_tipe'])) {
                         $fidyahText = match($filters['fidyah_tipe']) {
                             'mentah' => 'Fidyah Bahan Mentah',
                             'matang' => 'Fidyah Makanan Matang',
-                            'tunai' => 'Fidyah Tunai',
-                            default => 'Fidyah',
+                            'tunai'  => 'Fidyah Tunai',
+                            default  => 'Fidyah',
                         };
                         $appliedFilters[] = $fidyahText;
                     }
                 @endphp
-
                 @if (count($appliedFilters) > 0)
                     {{ implode(' | ', $appliedFilters) }}
                 @else
@@ -304,36 +300,28 @@
                 @php
                     $statusText = match ($transaksi->status) {
                         'verified' => 'Verified',
-                        'pending' => 'Pending',
+                        'pending'  => 'Pending',
                         'rejected' => 'Rejected',
-                        default => strtoupper($transaksi->status),
+                        default    => strtoupper($transaksi->status),
                     };
-
                     $konfirmasiStatusText = match ($transaksi->konfirmasi_status) {
-                        'dikonfirmasi' => 'Dikonfirmasi',
+                        'dikonfirmasi'        => 'Dikonfirmasi',
                         'menunggu_konfirmasi' => 'Menunggu',
-                        'ditolak' => 'Ditolak',
-                        default => '-',
+                        'ditolak'             => 'Ditolak',
+                        default               => '-',
                     };
-
-                    // Deteksi apakah ini transaksi fidyah
                     $isFidyah = $transaksi->fidyah_jumlah_hari > 0 && $transaksi->jenisZakat && stripos($transaksi->jenisZakat->nama, 'fidyah') !== false;
-
-                    // Bangun teks untuk kolom Jumlah Jiwa / Fidyah
                     $detailText = '-';
-
                     if ($isFidyah) {
                         $fidyahTipe = $transaksi->fidyah_tipe ?? '-';
                         $jumlahHari = $transaksi->fidyah_jumlah_hari ?? 0;
-
                         $detailText = "FIDYAH: {$jumlahHari} hari";
-
                         if ($fidyahTipe == 'mentah') {
                             $beratKg = $transaksi->fidyah_total_berat_kg ?? 0;
-                            $bahan = $transaksi->fidyah_nama_bahan ?? 'Bahan Pokok';
+                            $bahan   = $transaksi->fidyah_nama_bahan ?? 'Bahan Pokok';
                             $detailText .= "\n{$bahan}: {$beratKg} kg";
                         } elseif ($fidyahTipe == 'matang') {
-                            $box = $transaksi->fidyah_jumlah_box ?? $jumlahHari;
+                            $box  = $transaksi->fidyah_jumlah_box ?? $jumlahHari;
                             $menu = $transaksi->fidyah_menu_makanan ?: 'Makanan';
                             $detailText .= "\n{$menu}: {$box} box";
                         } elseif ($fidyahTipe == 'tunai') {
@@ -341,19 +329,15 @@
                             $detailText .= "\nRp " . number_format($total, 0, ',', '.');
                         }
                     } elseif ($transaksi->jumlah_beras_kg > 0) {
-                        // Zakat fitrah beras
                         $detailText = $transaksi->jumlah_beras_kg . ' kg';
                         if ($transaksi->jumlah_jiwa > 0) {
                             $detailText .= ' (' . $transaksi->jumlah_jiwa . ' jiwa)';
                         }
                     } elseif ($transaksi->jumlah_jiwa > 0) {
-                        // Zakat fitrah uang — tampilkan jumlah jiwa + nama-nama
-                        $namaJiwa = $transaksi->nama_jiwa_json; // sudah di-cast array otomatis
-
+                        $namaJiwa = $transaksi->nama_jiwa_json;
                         if (!empty($namaJiwa) && is_array($namaJiwa)) {
-                            // Ada nama jiwa tersimpan
                             $detailText = $transaksi->jumlah_jiwa . ' jiwa:' . "\n";
-                            $limit = min(count($namaJiwa), 3); // Tampilkan maksimal 3 nama
+                            $limit = min(count($namaJiwa), 3);
                             for ($i = 0; $i < $limit; $i++) {
                                 $detailText .= ($i + 1) . '. ' . $namaJiwa[$i] . "\n";
                             }
@@ -361,12 +345,9 @@
                                 $detailText .= '...dan ' . (count($namaJiwa) - 3) . ' lainnya';
                             }
                         } else {
-                            // Tidak ada nama jiwa, tampilkan jumlah saja
                             $detailText = $transaksi->jumlah_jiwa . ' jiwa';
                         }
                     }
-
-                    // Format total dibayar
                     $totalDibayarText = '-';
                     if ($transaksi->jumlah_dibayar > 0) {
                         $totalDibayarText = number_format($transaksi->jumlah_dibayar, 0, ',', '.');
@@ -390,9 +371,7 @@
                             <span style="color: #27ae60; font-size: 7px;">(Online)</span>
                         @endif
                     </td>
-                    <td class="text-left">
-                        {{ $transaksi->jenisZakat->nama ?? '-' }}
-                    </td>
+                    <td class="text-left">{{ $transaksi->jenisZakat->nama ?? '-' }}</td>
                     <td class="text-left">{{ $transaksi->tipeZakat->nama ?? '-' }}</td>
                     <td class="text-left" style="font-size: 8px;">
                         {{ \Illuminate\Support\Str::limit($transaksi->programZakat->nama_program ?? '-', 20) }}
@@ -405,9 +384,9 @@
                         @php
                             $metode = $transaksi->metode_pembayaran;
                             $metodeText = match($metode) {
-                                'bahan_mentah' => 'Bahan Mentah',
+                                'bahan_mentah'   => 'Bahan Mentah',
                                 'makanan_matang' => 'Makanan Matang',
-                                default => $metode ? ucfirst($metode) : '-',
+                                default          => $metode ? ucfirst($metode) : '-',
                             };
                         @endphp
                         {{ $metodeText }}
@@ -432,31 +411,28 @@
         </tbody>
     </table>
 
+    {{-- ══════════════════ TANDA TANGAN (konsisten dengan laporan tahunan) ══════════════════ --}}
     <div class="footer-container">
-        <table class="signature-table">
-            <tr>
-                <td style="width: 70%;"></td>
-                <td style="width: 30%;">
-                    <div class="signature-wrapper">
-                        <div style="margin-bottom: 5px;">{{ $lembaga->kota_nama ?? 'Bandung' }},
-                            {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
-                        <div>Mengetahui,</div>
-                        <div style="margin-bottom: 10px;"><strong>Admin Lembaga</strong></div>
-                        <div class="signature-space"></div>
-                        <div class="signature-name">{{ $lembaga->admin_nama ?? '_____________________' }}</div>
-                    </div>
-                </td>
-            </tr>
-        </table>
+        <div class="signature-wrapper">
+            <div>{{ $lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
+            <div style="margin-top: 15px;">Yang Membuat Laporan,</div>
+            <div class="signature-title">Admin Lembaga</div>
+            <div class="signature-space"></div>
+            <table class="signature-line-table">
+                <tr>
+                    <td colspan="3" style="border: none; text-align: center; font-weight: bold; padding: 0; line-height: 1.3;">
+                        {{ $namaAdmin ?? ($lembaga->admin_nama ?? '') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="paren-left">(</td>
+                    <td class="paren-mid">&nbsp;</td>
+                    <td class="paren-right">)</td>
+                </tr>
+            </table>
+        </div>
     </div>
 
-    <div class="footer-note">
-        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $lembaga->nama ?? 'Lembaga' }}.</p>
-        <p>*Zakat Fitrah: Rp {{ number_format($zakatFitrahInfo['nominal_per_jiwa'] ?? 50000, 0, ',', '.') }}/jiwa atau {{ ($zakatFitrahInfo['beras_kg'] ?? 2.5) }} kg ({{ ($zakatFitrahInfo['beras_liter'] ?? 3.5) }} liter) beras.</p>
-        <p>*Fidyah: 1 mud = {{ ($fidyahInfo['berat_per_hari_gram'] ?? 675) }} gram bahan pokok per hari, atau makanan siap santap, atau uang senilai makanan.</p>
-        <p>Pembayaran melalui transfer atau QRIS dilakukan langsung ke rekening resmi lembaga. Muzzaki mengunggah bukti transfer untuk dikonfirmasi oleh amil. Tidak ada potongan biaya admin/pajak dari sistem.</p>
-        <p>Dicetak pada: {{ $tanggalExport }}</p>
-    </div>
 </body>
 
 </html>
