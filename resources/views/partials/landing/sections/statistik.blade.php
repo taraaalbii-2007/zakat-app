@@ -281,7 +281,7 @@
                 <canvas id="statsDonutChart" width="320" height="320"></canvas>
                 <div class="stat-donut-label">
                     <p class="text-5xl font-black text-green-600 leading-none stat-center-num" id="mainDonutNum">{{ $statLembaga }}</p>
-                    <p class="text-xs text-neutral-400 font-medium mt-2 tracking-wide stat-center-label" id="mainDonutLabel">Masjid Terdaftar</p>
+                    <p class="text-xs text-neutral-400 font-medium mt-2 tracking-wide stat-center-label" id="mainDonutLabel">Lembaga Terdaftar</p>
                 </div>
             </div>
 
