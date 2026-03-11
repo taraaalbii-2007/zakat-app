@@ -1,5 +1,5 @@
 {{-- ============================================================
-     PARTIAL: Testimoni Card Modern
+     PARTIAL: Testimoni Card – Niat Zakat
      resources/views/partials/landing/partials/testimoni-card.blade.php
      Variable: $t (object Testimoni), $i (index 0-based)
      ============================================================ --}}
@@ -8,347 +8,288 @@
 use Illuminate\Support\Str;
 $initial = strtoupper(Str::substr($t->nama_pengirim, 0, 1));
 
-// Warna-warna modern untuk avatar gradient (Tailwind-inspired)
 $avatarColors = [
-    ['from' => '#4f46e5', 'to' => '#7c3aed'], // indigo-600 to violet-600
-    ['from' => '#db2777', 'to' => '#e11d48'], // pink-600 to rose-600
-    ['from' => '#0d9488', 'to' => '#059669'], // teal-600 to emerald-600
-    ['from' => '#d97706', 'to' => '#dc2626'], // amber-600 to red-600
-    ['from' => '#2563eb', 'to' => '#7c3aed'], // blue-600 to violet-600
-    ['from' => '#9333ea', 'to' => '#c026d3'], // purple-600 to fuchsia-600
+    ['from' => '#16a34a', 'to' => '#0d9488'],
+    ['from' => '#d97706', 'to' => '#16a34a'],
+    ['from' => '#7c3aed', 'to' => '#2563eb'],
+    ['from' => '#0d9488', 'to' => '#059669'],
+    ['from' => '#db2777', 'to' => '#e11d48'],
+    ['from' => '#2563eb', 'to' => '#0d9488'],
 ];
 $avatarColor = $avatarColors[$i % count($avatarColors)];
+
+$dateLabel = isset($t->created_at)
+    ? \Carbon\Carbon::parse($t->created_at)->locale('id')->translatedFormat('M Y')
+    : null;
 @endphp
 
 <div class="swiper-slide h-auto">
-    <div class="testimonial-card group">
-        {{-- Decorative elements --}}
-        <div class="testimonial-card__dots"></div>
-        <div class="testimonial-card__glow"></div>
-        
-        {{-- Quote icon - Pojok Kanan Atas --}}
-        <svg class="testimonial-card__quote-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 11H6C5.44772 11 5 10.5523 5 10V7C5 6.44772 5.44772 6 6 6H9C9.55228 6 10 6.44772 10 7V11ZM10 11V15C10 16.1046 9.10457 17 8 17H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M19 11H15C14.4477 11 14 10.5523 14 10V7C14 6.44772 14.4477 6 15 6H18C18.5523 6 19 6.44772 19 7V11ZM19 11V15C19 16.1046 18.1046 17 17 17H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
+    <div class="tc" tabindex="0" role="article">
 
-        {{-- Konten utama --}}
-        <div class="testimonial-card__content">
-            <p class="testimonial-card__text">{{ Str::limit($t->isi_testimoni, 140) }}</p>
+        {{-- Body --}}
+        <div class="tc__body">
 
-            {{-- Rating bintang diperbesar --}}
-            <div class="testimonial-card__stars" aria-label="Rating {{ $t->rating }} dari 5">
+            {{-- Quote dekoratif --}}
+            <div class="tc__quote" aria-hidden="true">
+                <svg width="28" height="22" viewBox="0 0 32 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 24V14.4C0 10.56 0.96 7.28 2.88 4.56C4.88 1.84 7.76 0.16 11.52 0L13.44 2.88C10.72 3.52 8.72 4.72 7.44 6.48C6.24 8.16 5.68 9.92 5.76 11.76H11.52V24H0ZM18.48 24V14.4C18.48 10.56 19.44 7.28 21.36 4.56C23.36 1.84 26.24 0.16 30 0L31.92 2.88C29.2 3.52 27.2 4.72 25.92 6.48C24.72 8.16 24.16 9.92 24.24 11.76H30V24H18.48Z" fill="currentColor"/>
+                </svg>
+            </div>
+
+            {{-- Teks --}}
+            <p class="tc__text">{{ Str::limit($t->isi_testimoni, 150) }}</p>
+
+            {{-- Stars --}}
+            <div class="tc__stars" aria-label="Rating {{ $t->rating }} dari 5">
                 @for($s = 1; $s <= 5; $s++)
-                    <svg class="testimonial-card__star {{ $s <= $t->rating ? 'testimonial-card__star--filled' : 'testimonial-card__star--empty' }}" 
-                         viewBox="0 0 20 20" fill="currentColor">
+                    <svg class="tc__star {{ $s <= $t->rating ? 'tc__star--filled' : 'tc__star--empty' }}"
+                         viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
                 @endfor
             </div>
         </div>
 
-        {{-- Footer: Avatar + Info --}}
-        <div class="testimonial-card__footer">
-            {{-- Avatar modern dengan gradient --}}
-            <div class="testimonial-card__avatar" 
+        {{-- Divider --}}
+        <div class="tc__divider"></div>
+
+        {{-- Footer --}}
+        <div class="tc__footer">
+            <div class="tc__avatar"
                  style="background: linear-gradient(135deg, {{ $avatarColor['from'] }}, {{ $avatarColor['to'] }})">
-                <span class="testimonial-card__avatar-text">{{ $initial }}</span>
+                <span class="tc__avatar-text">{{ $initial }}</span>
             </div>
-            
-            <div class="testimonial-card__info">
-                <span class="testimonial-card__name">{{ $t->nama_pengirim }}</span>
+
+            <div class="tc__info">
+                <span class="tc__name">{{ $t->nama_pengirim }}</span>
                 @if($t->pekerjaan)
-                    <span class="testimonial-card__job">{{ $t->pekerjaan }}</span>
+                    <span class="tc__job">{{ $t->pekerjaan }}</span>
                 @endif
-                <span class="testimonial-card__date">
-                    {{ $t->created_at ? $t->created_at->translatedFormat('d M Y') : '' }}
-                </span>
             </div>
+
+            @if($dateLabel)
+                <span class="tc__date">{{ $dateLabel }}</span>
+            @endif
         </div>
     </div>
 </div>
 
 @once
 <style>
-.testimonial-card {
+.tc {
+    --g:          #16a34a;
+    --g2:         #0d9488;
+    --gold:       #f59e0b;
+    --text-h:     #0f172a;
+    --text-b:     #475569;
+    --text-m:     #94a3b8;
+    --bg:         #ffffff;
+    --r:          24px;
+
+    /* shadow states */
+    --sh-base:
+        0 1px 2px  rgba(0,0,0,0.04),
+        0 4px 20px -4px rgba(0,0,0,0.07),
+        0 0 0 1px  rgba(15,23,42,0.055);
+    --sh-hover:
+        0 4px 6px  rgba(0,0,0,0.04),
+        0 18px 40px -10px rgba(22,163,74,0.13),
+        0 0 0 1px  rgba(22,163,74,0.10);
+    --sh-active:
+        0 2px 8px  rgba(0,0,0,0.05),
+        0 10px 30px -8px rgba(22,163,74,0.18),
+        0 0 0 2.5px rgba(22,163,74,0.55);
+}
+
+/* ── Base card ── */
+.tc {
     position: relative;
-    background: #ffffff;
-    border-radius: 28px;
-    padding: 32px;
-    height: 100%;
-    min-height: 300px;
+    background: var(--bg);
+    border-radius: var(--r);
     display: flex;
     flex-direction: column;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    box-shadow: 
-        0 4px 20px -2px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(0, 0, 0, 0.02);
     overflow: hidden;
-}
-
-.testimonial-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 
-        0 25px 35px -12px rgba(79, 70, 229, 0.15),
-        0 0 0 1px rgba(79, 70, 229, 0.15);
-}
-
-/* Decorative dots pattern */
-.testimonial-card__dots {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 140px;
-    height: 140px;
-    background-image: radial-gradient(circle at 20px 20px, rgba(79, 70, 229, 0.04) 2px, transparent 2px);
-    background-size: 24px 24px;
-    opacity: 0.6;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Glow effect on hover */
-.testimonial-card__glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     height: 100%;
-    background: radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.03), transparent 60%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    z-index: 0;
+    min-height: 255px;
+    box-shadow: var(--sh-base);
+    outline: none;
+    cursor: pointer;
+    transition:
+        transform  0.4s cubic-bezier(0.22,1,0.36,1),
+        box-shadow 0.4s cubic-bezier(0.22,1,0.36,1);
 }
 
-.testimonial-card:hover .testimonial-card__glow {
-    opacity: 1;
+.tc:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--sh-hover);
 }
 
-/* Quote icon - Pojok Kanan Atas */
-.testimonial-card__quote-icon {
-    position: absolute;
-    top: 20px;
-    right: 24px;
-    width: 48px;
-    height: 48px;
-    color: rgba(79, 70, 229, 0.08);
-    transition: all 0.3s ease;
-    z-index: 0;
+/* Border hijau muncul saat diklik */
+.tc:active,
+.tc.tc--active,
+.tc:focus-visible {
+    transform: translateY(-4px) scale(0.995);
+    box-shadow: var(--sh-active);
 }
 
-.testimonial-card:hover .testimonial-card__quote-icon {
-    color: rgba(79, 70, 229, 0.15);
-    transform: scale(1.1) rotate(-3deg);
-}
-
-/* Content */
-.testimonial-card__content {
-    position: relative;
-    z-index: 1;
-    flex: 1;
+/* ── Body ── */
+.tc__body {
+    padding: 28px 26px 20px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding-right: 20px; /* Space for quote icon */
+    gap: 14px;
+    flex: 1;
 }
 
-.testimonial-card__text {
+/* ── Quote icon ── */
+.tc__quote {
+    color: var(--g);
+    opacity: 0.11;
+    line-height: 1;
+    transition: opacity 0.3s;
+}
+.tc:hover .tc__quote,
+.tc.tc--active .tc__quote { opacity: 0.2; }
+
+/* ── Text ── */
+.tc__text {
     font-size: 0.9375rem;
-    line-height: 1.7;
-    color: #334155;
+    line-height: 1.8;
+    color: var(--text-b);
     font-weight: 400;
     margin: 0;
     flex: 1;
 }
 
-/* Stars - Diperbesar */
-.testimonial-card__stars {
+/* ── Stars ── */
+.tc__stars {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     margin-top: auto;
+    padding-top: 4px;
 }
-
-.testimonial-card__star {
-    width: 22px;
-    height: 22px;
-    transition: all 0.2s ease;
+.tc__star { width: 16px; height: 16px; }
+.tc__star--filled {
+    color: var(--gold);
+    filter: drop-shadow(0 1px 2px rgba(245,158,11,0.2));
 }
+.tc__star--empty { color: #e2e8f0; }
 
-.testimonial-card__star--filled {
-    color: #f59e0b; /* amber-500 */
-    filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.25));
-}
-
-.testimonial-card__star--empty {
-    color: #e2e8f0; /* slate-200 */
-}
-
-/* Footer */
-.testimonial-card__footer {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    margin-top: 24px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-/* Modern avatar */
-.testimonial-card__avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 15px -6px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+/* ── Divider ── */
+.tc__divider {
+    height: 1px;
+    margin: 0 26px;
+    background: #f1f5f9;
     flex-shrink: 0;
 }
 
-.testimonial-card:hover .testimonial-card__avatar {
-    transform: scale(1.05) rotate(2deg);
-    border-radius: 16px;
-    box-shadow: 0 10px 20px -8px {{ $avatarColor['from'] }}80;
+/* ── Footer ── */
+.tc__footer {
+    padding: 18px 26px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
 }
 
-.testimonial-card__avatar::after {
+/* ── Avatar ── */
+.tc__avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px -4px rgba(0,0,0,0.22);
+    transition:
+        border-radius 0.35s cubic-bezier(0.22,1,0.36,1),
+        transform     0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.tc:hover .tc__avatar,
+.tc.tc--active .tc__avatar {
+    border-radius: 50%;
+    transform: scale(1.07);
+}
+.tc__avatar::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+    inset: 0;
+    background: linear-gradient(145deg,rgba(255,255,255,0.2) 0%,transparent 60%);
     pointer-events: none;
 }
-
-.testimonial-card__avatar-text {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.tc__avatar-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.12);
     position: relative;
     z-index: 1;
 }
 
-/* Info section - Pekerjaan di bawah nama */
-.testimonial-card__info {
+/* ── Info ── */
+.tc__info {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-width: 0;
+    gap: 2px;
 }
-
-.testimonial-card__name {
-    font-size: 1rem;
+.tc__name {
+    font-size: 0.9375rem;
     font-weight: 700;
-    color: #0f172a; /* slate-900 */
+    color: var(--text-h);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.4;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
 }
-
-.testimonial-card__job {
-    font-size: 0.8125rem;
+.tc__job {
+    font-size: 0.8rem;
     font-weight: 500;
-    color: #64748b; /* slate-500 */
+    color: var(--text-m);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 2px;
+    line-height: 1.5;
 }
 
-.testimonial-card__date {
-    font-size: 0.75rem;
-    color: #94a3b8; /* slate-400 */
-    font-weight: 400;
-    display: inline-flex;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.02);
-    padding: 2px 8px;
-    border-radius: 30px;
-    width: fit-content;
-    border: 1px solid rgba(0, 0, 0, 0.02);
+/* ── Date ── */
+.tc__date {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-m);
+    flex-shrink: 0;
+    align-self: flex-end;
+    margin-bottom: 1px;
 }
 
-/* Responsive adjustments */
+/* ── Responsive ── */
 @media (max-width: 640px) {
-    .testimonial-card {
-        padding: 24px;
-    }
-    
-    .testimonial-card__quote-icon {
-        width: 40px;
-        height: 40px;
-        top: 16px;
-        right: 20px;
-    }
-    
-    .testimonial-card__content {
-        padding-right: 16px;
-    }
-    
-    .testimonial-card__text {
-        font-size: 0.875rem;
-    }
-    
-    .testimonial-card__star {
-        width: 20px;
-        height: 20px;
-    }
-    
-    .testimonial-card__avatar {
-        width: 52px;
-        height: 52px;
-    }
-    
-    .testimonial-card__stars {
-        gap: 6px;
-    }
-}
-
-/* Dark mode support jika diperlukan */
-@media (prefers-color-scheme: dark) {
-    .testimonial-card {
-        background: #1e293b;
-        border-color: rgba(255, 255, 255, 0.03);
-    }
-    
-    .testimonial-card__text {
-        color: #e2e8f0;
-    }
-    
-    .testimonial-card__name {
-        color: #f1f5f9;
-    }
-    
-    .testimonial-card__job {
-        color: #94a3b8;
-    }
-    
-    .testimonial-card__date {
-        color: #64748b;
-        background: rgba(255, 255, 255, 0.02);
-        border-color: rgba(255, 255, 255, 0.02);
-    }
-    
-    .testimonial-card__footer {
-        border-top-color: rgba(255, 255, 255, 0.05);
-    }
-    
-    .testimonial-card__star--empty {
-        color: #334155;
-    }
+    .tc__body    { padding: 22px 20px 16px; }
+    .tc__footer  { padding: 14px 20px 20px; }
+    .tc__divider { margin: 0 20px; }
+    .tc__text    { font-size: 0.9rem; }
+    .tc__avatar  { width: 40px; height: 40px; border-radius: 12px; }
+    .tc__name    { font-size: 0.875rem; }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tc').forEach(card => {
+        card.addEventListener('click', () => {
+            const isActive = card.classList.contains('tc--active');
+            // Hapus semua active dulu
+            document.querySelectorAll('.tc').forEach(c => c.classList.remove('tc--active'));
+            // Toggle card yang diklik
+            if (!isActive) card.classList.add('tc--active');
+        });
+    });
+});
+</script>
 @endonce

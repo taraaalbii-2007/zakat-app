@@ -27,30 +27,6 @@
     50%      { transform: rotate(-14deg) translateY(-6px); }
 }
 
-/* Karakter animasi */
-@keyframes ckBlink {
-    0%,90%,100% { transform: scaleY(1); }
-    95%          { transform: scaleY(0.1); }
-}
-@keyframes ckBounceChar {
-    0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-6px); }
-}
-@keyframes ckWave {
-    0%,100% { transform: rotate(0deg); }
-    25%      { transform: rotate(20deg); }
-    75%      { transform: rotate(-10deg); }
-}
-@keyframes ckSpin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-}
-@keyframes ckPop {
-    0%   { transform: scale(0) rotate(-20deg); opacity:0; }
-    60%  { transform: scale(1.2) rotate(5deg);  opacity:1; }
-    100% { transform: scale(1) rotate(0deg);    opacity:1; }
-}
-
 /* Underline draw */
 .ck-underline-path {
     fill: none;
@@ -128,6 +104,24 @@
     background: radial-gradient(ellipse 80% 60% at 20% 20%, rgba(255,255,255,0.13) 0%, transparent 70%);
     pointer-events: none;
     border-radius: inherit;
+    z-index: 0;
+}
+
+/* ── Dekorasi garis lengkung di dalam card ── */
+.step-card-deco {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    overflow: hidden;
+    z-index: 1;
+}
+.step-card-deco svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* Icon box (sama dengan fitur) */
@@ -183,29 +177,6 @@
 .step-card-line    { height:3px; border-radius:99px; background:rgba(255,255,255,0.5); }
 .step-card-line-sm { height:3px; border-radius:99px; background:rgba(255,255,255,0.25); }
 
-/* Karakter di pojok kanan bawah card */
-.ck-char-wrap {
-    position: absolute;
-    bottom: 0;
-    right: 10px;
-    width: 96px;
-    height: 108px;
-    pointer-events: none;
-    z-index: 3;
-    animation: ckBounceChar 3s ease-in-out infinite;
-}
-.ck-char-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 54px;
-    height: 8px;
-    background: rgba(0,0,0,0.15);
-    border-radius: 50%;
-    filter: blur(5px);
-}
 </style>
 
 <section id="cara-kerja" class="relative py-20 bg-white overflow-hidden">
@@ -256,7 +227,27 @@
                 </div>
 
                 {{-- Card 1 — Daftar & Verifikasi --}}
-                <div class="step-card ck-slide-right" style="padding-right: 116px; width: 55%; min-width: 320px;">
+                <div class="step-card ck-slide-right" style="width: 55%; min-width: 320px;">
+
+                    {{-- Dekorasi garis lengkung unik: step 1 — kurva besar kanan bawah + lingkaran & arc halus --}}
+                    <div class="step-card-deco" aria-hidden="true">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Busur besar kanan bawah -->
+                            <path d="M380,200 Q500,120 500,-10" stroke="rgba(255,255,255,0.10)" stroke-width="2.5" fill="none"/>
+                            <!-- Kurva menengah kanan -->
+                            <path d="M300,200 Q460,100 480,0" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" fill="none"/>
+                            <!-- Lengkungan lembut dari kiri bawah ke kanan -->
+                            <path d="M-10,170 Q160,110 340,190" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>
+                            <!-- Garis putus-putus tipis melengkung -->
+                            <path d="M-10,140 Q200,80 500,130" stroke="rgba(255,255,255,0.07)" stroke-width="1" fill="none" stroke-dasharray="5 10"/>
+                            <!-- Lingkaran dekoratif pojok kanan atas -->
+                            <circle cx="460" cy="30" r="55" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" fill="none"/>
+                            <circle cx="460" cy="30" r="35" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/>
+                            <!-- Arc kecil kiri bawah -->
+                            <path d="M0,200 Q60,150 100,200" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+
                     {{-- Icon box --}}
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -270,47 +261,6 @@
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
                         <div class="step-card-line-sm" style="width:14px;"></div>
-                    </div>
-
-                    {{-- Karakter 1: Perempuan berhijab di depan monitor --}}
-                    <div class="ck-char-wrap">
-                        <svg viewBox="0 0 96 108" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Monitor -->
-                            <rect x="8" y="46" width="58" height="38" rx="4" fill="rgba(255,255,255,0.25)"/>
-                            <rect x="12" y="50" width="50" height="30" rx="2" fill="rgba(255,255,255,0.85)"/>
-                            <!-- Screen: form rows -->
-                            <rect x="16" y="54" width="22" height="3" rx="1.5" fill="#16a34a" opacity="0.4"/>
-                            <rect x="16" y="60" width="30" height="3" rx="1.5" fill="#16a34a" opacity="0.3"/>
-                            <rect x="16" y="66" width="18" height="3" rx="1.5" fill="#16a34a" opacity="0.3"/>
-                            <!-- Centang pop -->
-                            <g style="animation: ckPop 0.7s cubic-bezier(0.34,1.56,0.64,1) 1.2s both; transform-origin:50px 62px;">
-                                <circle cx="50" cy="62" r="8" fill="#16a34a"/>
-                                <path d="M46 62l3 3 5-5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </g>
-                            <!-- Stand -->
-                            <rect x="30" y="84" width="14" height="5" rx="1" fill="rgba(255,255,255,0.2)"/>
-                            <rect x="24" y="89" width="26" height="4" rx="2" fill="rgba(255,255,255,0.2)"/>
-
-                            <!-- Body -->
-                            <path d="M22 100 Q38 88 54 100 L56 108 Q38 104 20 108Z" fill="rgba(255,255,255,0.3)"/>
-                            <!-- Arms -->
-                            <line x1="22" y1="94" x2="13" y2="80" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-                            <line x1="54" y1="94" x2="64" y2="82" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-
-                            <!-- Head -->
-                            <ellipse cx="38" cy="52" rx="13" ry="14" fill="#fbbf24"/>
-                            <!-- Hijab -->
-                            <path d="M25 54 Q38 34 51 54 Q51 44 38 38 Q25 44 25 54Z" fill="rgba(255,255,255,0.4)"/>
-                            <path d="M24 56 Q38 66 52 56 Q52 51 38 46 Q24 51 24 56Z" fill="rgba(255,255,255,0.3)"/>
-                            <ellipse cx="38" cy="66" rx="16" ry="8" fill="rgba(255,255,255,0.25)"/>
-                            <!-- Eyes -->
-                            <g style="animation: ckBlink 4s ease-in-out infinite;">
-                                <ellipse cx="33" cy="53" rx="2" ry="2.2" fill="#1c1917"/>
-                                <ellipse cx="43" cy="53" rx="2" ry="2.2" fill="#1c1917"/>
-                            </g>
-                            <!-- Smile -->
-                            <path d="M33 59 Q38 64 43 59" stroke="#92400e" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                        </svg>
                     </div>
                 </div>
             </div>
@@ -331,7 +281,28 @@
                 </div>
 
                 {{-- Card 2 — Setup & Konfigurasi --}}
-                <div class="step-card ck-slide-left" style="padding-right: 116px; width: 55%; min-width: 320px;">
+                <div class="step-card ck-slide-left" style="width: 55%; min-width: 320px;">
+
+                    {{-- Dekorasi garis lengkung unik: step 2 — gelombang S + lingkaran tersebar --}}
+                    <div class="step-card-deco" aria-hidden="true">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Gelombang S besar dari kiri ke kanan -->
+                            <path d="M-10,60 Q120,10 250,80 Q380,150 510,60" stroke="rgba(255,255,255,0.09)" stroke-width="2" fill="none"/>
+                            <!-- Gelombang S kecil sejajar di bawah -->
+                            <path d="M-10,110 Q120,65 250,120 Q380,175 510,110" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none" stroke-dasharray="6 9"/>
+                            <!-- Busur melingkar pojok kanan bawah -->
+                            <path d="M420,200 Q510,140 510,30" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
+                            <!-- Lingkaran besar transparan kanan -->
+                            <circle cx="480" cy="160" r="70" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>
+                            <!-- Lingkaran kecil kiri atas -->
+                            <circle cx="30" cy="25" r="22" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
+                            <!-- Titik dekoratif -->
+                            <circle cx="80" cy="175" r="4" fill="rgba(255,255,255,0.10)"/>
+                            <circle cx="110" cy="165" r="2.5" fill="rgba(255,255,255,0.07)"/>
+                            <circle cx="60" cy="185" r="2" fill="rgba(255,255,255,0.07)"/>
+                        </svg>
+                    </div>
+
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/>
@@ -345,51 +316,6 @@
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
                         <div class="step-card-line-sm" style="width:14px;"></div>
-                    </div>
-
-                    {{-- Karakter 2: Pria berkopiah memegang kunci pas, gear berputar --}}
-                    <div class="ck-char-wrap" style="animation-delay:0.4s;">
-                        <svg viewBox="0 0 96 108" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Gear besar berputar di belakang -->
-                            <g style="transform-origin:48px 80px; animation: ckSpin 7s linear infinite;">
-                                <circle cx="48" cy="80" r="16" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3"/>
-                                <circle cx="48" cy="80" r="5"  fill="rgba(255,255,255,0.25)"/>
-                                <rect x="46.5" y="63" width="3" height="6"  rx="1.5" fill="rgba(255,255,255,0.25)"/>
-                                <rect x="46.5" y="91" width="3" height="6"  rx="1.5" fill="rgba(255,255,255,0.25)"/>
-                                <rect x="31"   y="78.5" width="6" height="3" rx="1.5" fill="rgba(255,255,255,0.25)"/>
-                                <rect x="59"   y="78.5" width="6" height="3" rx="1.5" fill="rgba(255,255,255,0.25)"/>
-                                <rect x="35" y="67" width="3" height="6" rx="1.5" fill="rgba(255,255,255,0.2)" transform="rotate(45 36.5 70)"/>
-                                <rect x="58" y="65" width="3" height="6" rx="1.5" fill="rgba(255,255,255,0.2)" transform="rotate(-45 59.5 68)"/>
-                                <rect x="35" y="80" width="3" height="6" rx="1.5" fill="rgba(255,255,255,0.2)" transform="rotate(-45 36.5 83)"/>
-                                <rect x="58" y="80" width="3" height="6" rx="1.5" fill="rgba(255,255,255,0.2)" transform="rotate(45 59.5 83)"/>
-                            </g>
-
-                            <!-- Body -->
-                            <path d="M22 98 Q38 86 54 98 L56 108 Q38 104 20 108Z" fill="rgba(255,255,255,0.3)"/>
-                            <!-- Lengan kiri pegang kunci pas -->
-                            <line x1="22" y1="93" x2="10" y2="78" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-                            <!-- Kunci pas -->
-                            <rect x="4" y="73" width="10" height="4" rx="2" fill="rgba(255,255,255,0.5)" transform="rotate(30 9 75)"/>
-                            <circle cx="5" cy="78" r="4" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.2"/>
-                            <!-- Lengan kanan -->
-                            <g style="transform-origin: 54px 92px; animation: ckWave 2.5s ease-in-out infinite;">
-                                <line x1="54" y1="92" x2="66" y2="80" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-                            </g>
-
-                            <!-- Head -->
-                            <ellipse cx="38" cy="50" rx="13" ry="14" fill="#fbbf24"/>
-                            <!-- Kopiah -->
-                            <path d="M25 48 Q38 30 51 48Z" fill="rgba(255,255,255,0.5)"/>
-                            <rect x="24" y="47" width="28" height="5" rx="0" fill="rgba(255,255,255,0.5)"/>
-                            <rect x="22" y="50" width="32" height="3" rx="1.5" fill="rgba(255,255,255,0.35)"/>
-                            <!-- Eyes -->
-                            <g style="animation: ckBlink 3.8s ease-in-out 0.5s infinite;">
-                                <ellipse cx="33" cy="53" rx="2" ry="2.2" fill="#1c1917"/>
-                                <ellipse cx="43" cy="53" rx="2" ry="2.2" fill="#1c1917"/>
-                            </g>
-                            <!-- Focused smile -->
-                            <path d="M34 59 Q38 62 42 59" stroke="#92400e" stroke-width="1.6" stroke-linecap="round" fill="none"/>
-                        </svg>
                     </div>
                 </div>
             </div>
@@ -410,7 +336,31 @@
                 </div>
 
                 {{-- Card 3 — Kelola & Laporkan --}}
-                <div class="step-card ck-slide-right" style="padding-right: 116px; width: 55%; min-width: 320px;">
+                <div class="step-card ck-slide-right" style="width: 55%; min-width: 320px;">
+
+                    {{-- Dekorasi garis lengkung unik: step 3 — garis diagonal melengkung + grid dots --}}
+                    <div class="step-card-deco" aria-hidden="true">
+                        <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Kurva diagonal lebar dari kiri atas ke kanan bawah -->
+                            <path d="M-10,0 Q200,80 510,150" stroke="rgba(255,255,255,0.09)" stroke-width="2.5" fill="none"/>
+                            <!-- Kurva paralel sedikit di bawahnya -->
+                            <path d="M-10,30 Q200,110 510,180" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none" stroke-dasharray="7 8"/>
+                            <!-- Arc melingkar pojok kiri bawah -->
+                            <path d="M0,120 Q-10,200 80,200" stroke="rgba(255,255,255,0.08)" stroke-width="2" fill="none"/>
+                            <!-- Lingkaran besar transparan kiri -->
+                            <circle cx="40" cy="170" r="65" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>
+                            <!-- Busur kecil pojok kanan atas -->
+                            <path d="M430,0 Q510,0 510,70" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+                            <path d="M460,0 Q510,0 510,40" stroke="rgba(255,255,255,0.06)" stroke-width="1" fill="none"/>
+                            <!-- Titik dekoratif kanan atas -->
+                            <circle cx="420" cy="20" r="4" fill="rgba(255,255,255,0.10)"/>
+                            <circle cx="440" cy="35" r="2.5" fill="rgba(255,255,255,0.07)"/>
+                            <circle cx="405" cy="38" r="2" fill="rgba(255,255,255,0.07)"/>
+                            <!-- Garis pendek melengkung kanan bawah -->
+                            <path d="M400,200 Q460,170 510,190" stroke="rgba(255,255,255,0.07)" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
@@ -423,52 +373,6 @@
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
                         <div class="step-card-line-sm" style="width:14px;"></div>
-                    </div>
-
-                    {{-- Karakter 3: Figur mengangkat dokumen laporan dengan bar chart --}}
-                    <div class="ck-char-wrap" style="animation-delay:0.8s;">
-                        <svg viewBox="0 0 96 108" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Dokumen laporan -->
-                            <rect x="14" y="40" width="50" height="62" rx="5" fill="rgba(255,255,255,0.25)"/>
-                            <rect x="14" y="40" width="50" height="14" rx="5" fill="rgba(255,255,255,0.35)"/>
-                            <rect x="14" y="47" width="50" height="7" fill="rgba(255,255,255,0.35)"/>
-                            <!-- Header line -->
-                            <rect x="19" y="44" width="22" height="2.5" rx="1.2" fill="rgba(255,255,255,0.6)"/>
-                            <!-- Bar chart -->
-                            <rect x="19" y="80" width="7"  height="10" rx="1.2" fill="rgba(255,255,255,0.25)"/>
-                            <rect x="28" y="74" width="7"  height="16" rx="1.2" fill="rgba(255,255,255,0.35)"/>
-                            <rect x="37" y="66" width="7"  height="24" rx="1.2" fill="rgba(255,255,255,0.50)"/>
-                            <rect x="46" y="58" width="7"  height="32" rx="1.2" fill="rgba(255,255,255,0.70)"/>
-                            <!-- Trend line -->
-                            <polyline points="22,78 31,72 40,64 49,56" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                            <!-- Arrow tip -->
-                            <polyline points="46,54 49,56 52,53" stroke="rgba(255,255,255,0.7)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-                            <!-- Bottom lines -->
-                            <rect x="19" y="93" width="28" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
-                            <rect x="19" y="97" width="18" height="2" rx="1" fill="rgba(255,255,255,0.2)"/>
-
-                            <!-- Body -->
-                            <path d="M20 102 Q38 90 56 102 L58 108 Q38 106 18 108Z" fill="rgba(255,255,255,0.3)"/>
-                            <!-- Lengan kiri pegang dokumen -->
-                            <line x1="20" y1="96" x2="10" y2="78" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-                            <!-- Lengan kanan wave -->
-                            <g style="transform-origin: 56px 96px; animation: ckWave 2.2s ease-in-out infinite;">
-                                <line x1="56" y1="96" x2="70" y2="80" stroke="rgba(255,255,255,0.5)" stroke-width="6" stroke-linecap="round"/>
-                            </g>
-
-                            <!-- Head -->
-                            <ellipse cx="38" cy="48" rx="13" ry="14" fill="#fbbf24"/>
-                            <!-- Rambut -->
-                            <path d="M25 46 Q38 28 51 46 Q51 36 38 30 Q25 36 25 46Z" fill="rgba(255,255,255,0.5)"/>
-                            <!-- Happy squint eyes -->
-                            <path d="M33 50 Q35.5 48 38 50" stroke="#1c1917" stroke-width="2" stroke-linecap="round" fill="none"/>
-                            <path d="M38 50 Q40.5 48 43 50" stroke="#1c1917" stroke-width="2" stroke-linecap="round" fill="none"/>
-                            <!-- Big smile -->
-                            <path d="M32 55 Q38 62 44 55" stroke="#92400e" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-                            <!-- Blush -->
-                            <ellipse cx="30" cy="54" rx="3.5" ry="2.5" fill="#fca5a5" opacity="0.4"/>
-                            <ellipse cx="46" cy="54" rx="3.5" ry="2.5" fill="#fca5a5" opacity="0.4"/>
-                        </svg>
                     </div>
                 </div>
             </div>
