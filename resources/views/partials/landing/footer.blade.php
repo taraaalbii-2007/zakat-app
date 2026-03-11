@@ -3,6 +3,11 @@
     $config = \App\Models\KonfigurasiAplikasi::getConfig();
 @endphp
 
+{{-- Font Awesome CDN --}}
+@once
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+@endonce
+
 {{-- SEPARATOR: cekung ke dalam, tipis --}}
 <div style="line-height:0; display:block; overflow:hidden;">
     <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
@@ -99,17 +104,17 @@
                 <ul class="space-y-2.5 w-full">
                     @foreach ([
                         ['href' => '/', 'label' => 'Beranda'],
-                        ['href' => '', 'label' => 'Hitung Zakat'],
-                        ['href' => '', 'label' => 'Panduan Zakat'],
-                        ['href' => '', 'label' => 'Artikel / Buletin'],
-                        ['href' => '#kontak', 'label' => 'Kontak'],
+                        ['href' => 'hitung-zakat', 'label' => 'Hitung Zakat'],
+                        ['href' => 'panduan-zakat', 'label' => 'Panduan Zakat'],
+                        ['href' => 'artikel', 'label' => 'Artikel / Buletin'],
+                        ['href' => 'kontak', 'label' => 'Kontak'],
                         ['href' => route('login'), 'label' => 'Masuk'],
                         ['href' => route('register'), 'label' => 'Daftar Gratis'],
                     ] as $item)
                         <li>
                             <a href="{{ $item['href'] }}"
                                 class="nz-menu-link text-sm transition-all duration-150"
-                                style="color:rgba(220,252,231,0.90);">
+                                style="color:rgba(220,252,231,0.90); text-decoration:none; position:relative; display:inline-block;">
                                 {{ $item['label'] }}
                             </a>
                         </li>
@@ -123,36 +128,56 @@
                     style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:52px;">Hubungi Kami</h4>
                 <ul class="space-y-3 w-full">
                     @if ($config->email_admin)
-                        <li>
-                            <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Email</p>
-                            <a href="mailto:{{ $config->email_admin }}"
-                                class="nz-menu-link text-sm text-white transition-all duration-150">
-                                {{ $config->email_admin }}
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-envelope" style="color:#fff; font-size:14px;"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Email</p>
+                                <a href="mailto:{{ $config->email_admin }}"
+                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    {{ $config->email_admin }}
+                                </a>
+                            </div>
                         </li>
                     @endif
                     @if ($config->telepon_admin)
-                        <li>
-                            <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Telepon</p>
-                            <a href="tel:{{ $config->telepon_formatted }}"
-                                class="nz-menu-link text-sm text-white transition-all duration-150">
-                                {{ $config->telepon_admin }}
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-phone" style="color:#fff; font-size:14px;"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Telepon</p>
+                                <a href="tel:{{ $config->telepon_formatted }}"
+                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    {{ $config->telepon_admin }}
+                                </a>
+                            </div>
                         </li>
                     @endif
                     @if ($config->whatsapp_support)
-                        <li>
-                            <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">WhatsApp</p>
-                            <a href="{{ $config->whatsapp_link }}" target="_blank" rel="noopener"
-                                class="nz-menu-link text-sm text-white transition-all duration-150">
-                                {{ $config->whatsapp_support }}
-                            </a>
+                        <li class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-brands fa-whatsapp" style="color:#fff; font-size:16px;"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">WhatsApp</p>
+                                <a href="{{ $config->whatsapp_link }}" target="_blank" rel="noopener"
+                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    {{ $config->whatsapp_support }}
+                                </a>
+                            </div>
                         </li>
                     @endif
                     @if ($config->alamat_kantor)
-                        <li>
-                            <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Alamat</p>
-                            <p class="text-sm text-white leading-relaxed">{{ $config->alamat_kantor }}</p>
+                        <li class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-location-dot" style="color:#fff; font-size:15px;"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Alamat</p>
+                                <p class="text-sm text-white leading-relaxed">{{ $config->alamat_kantor }}</p>
+                            </div>
                         </li>
                     @endif
                 </ul>
@@ -190,13 +215,40 @@
         background: rgba(255, 255, 255, 0.28) !important;
         transform: translateY(-2px);
     }
+    .nz-menu-link {
+        position: relative;
+        display: inline-block;
+        text-decoration: none !important;
+    }
+    .nz-menu-link::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #ffffff;
+        border-radius: 2px;
+        transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     .nz-menu-link:hover {
         color: #ffffff !important;
         opacity: 1;
     }
+    .nz-menu-link:hover::after {
+        width: 100%;
+    }
+    .nz-menu-link.nz-active {
+        color: #ffffff !important;
+    }
+    .nz-menu-link.nz-active::after {
+        width: 100%;
+        background: rgba(255,255,255,0.9);
+    }
 </style>
 
 <script>
+    (function() {
     (function() {
         function showAll() {
             document.querySelectorAll('.nz-footer-reveal').forEach(function(el) {
@@ -219,5 +271,16 @@
                     el.classList.add('nz-footer-visible');
             });
         }, 150);
+
+        // Active underline saat menu diklik
+        document.querySelectorAll('.nz-menu-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.nz-menu-link').forEach(function(l) {
+                    l.classList.remove('nz-active');
+                });
+                link.classList.add('nz-active');
+            });
+        });
+    })();
     })();
 </script>
