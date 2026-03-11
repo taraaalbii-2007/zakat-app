@@ -21,7 +21,7 @@
     }
 
     /* ── UNDERLINE ANIMASI NIAT ZAKAT — sekali saat scroll ── */
-    .nz-underline-svg {
+    .nz-underline-svg { 
         display: block;
         width: 100%;
         height: 10px;
