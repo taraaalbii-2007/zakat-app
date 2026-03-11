@@ -7,6 +7,7 @@ use App\Models\HargaEmasPerak;
 use App\Models\JenisZakat;
 use App\Models\Mustahik;
 use App\Models\Bulletin;
+use App\Models\Lembaga;
 use App\Models\KategoriBulletin;
 use App\Models\ProgramZakat;
 use App\Models\TransaksiPenyaluran;
@@ -35,6 +36,8 @@ class LandingController extends Controller
 
         $totalProgram = ProgramZakat::count();
 
+        $totalLembaga = Lembaga::where('is_active', true)->count();
+
         // ── TAMBAHAN: Testimoni yang sudah diapprove superadmin ──
         $testimonis = Testimoni::where('is_approved', true)
             ->orderBy('approved_at', 'desc')
@@ -48,6 +51,7 @@ class LandingController extends Controller
             'totalMustahik',
             'totalDana',
             'totalProgram',
+            'totalLembaga',
             'testimonis', // ← tambahkan ini
         ));
     }
