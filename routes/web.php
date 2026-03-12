@@ -29,6 +29,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\Superadmin\KontakSuperadminController;
 use App\Http\Controllers\Muzakki\ProfilMuzakkiController;
+use App\Http\Controllers\Admin_lembaga\BulletinAdminLembagaController;
 
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -151,15 +152,15 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
 
 
     Route::resource('lembaga', LembagaController::class)->parameters([ // Ubah dari 'lembaga'
-    'lembaga' => 'lembaga:uuid' // Ubah parameter
-]);
+        'lembaga' => 'lembaga:uuid' // Ubah parameter
+    ]);
 
     Route::post('/lembaga/{lembaga}/fotos', [LembagaController::class, 'uploadFoto']) // Ubah dari lembaga
-    ->name('lembaga.fotos.upload'); // Ubah nama route
+        ->name('lembaga.fotos.upload'); // Ubah nama route
 
-Route::delete('/lembaga/{lembaga}/fotos/{index}', [LembagaController::class, 'deleteFoto']) // Ubah dari lembaga
-    ->name('lembaga.fotos.delete'); // Ubah nama route
-    
+    Route::delete('/lembaga/{lembaga}/fotos/{index}', [LembagaController::class, 'deleteFoto']) // Ubah dari lembaga
+        ->name('lembaga.fotos.delete'); // Ubah nama route
+
     // Master Data Jenis Zakat (superadmin only)
     Route::prefix('jenis-zakat')->name('jenis-zakat.')->group(function () {
         Route::get('/', [JenisZakatController::class, 'index'])->name('index');
@@ -281,6 +282,28 @@ Route::delete('/lembaga/{lembaga}/fotos/{index}', [LembagaController::class, 'de
         Route::post('/{testimoni}/reject',       [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'reject'])->name('reject');
         Route::delete('/{testimoni}',            [\App\Http\Controllers\Superadmin\TestimoniSuperadminController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('bulletin')->name('superadmin.bulletin.')->group(function () {
+        Route::get('/',                      [BulletinController::class, 'index'])->name('index');
+        Route::get('/create',                [BulletinController::class, 'create'])->name('create');
+        Route::post('/',                     [BulletinController::class, 'store'])->name('store');
+        Route::get('/{bulletin:uuid}',       [BulletinController::class, 'show'])->name('show');
+        Route::get('/{bulletin:uuid}/edit',  [BulletinController::class, 'edit'])->name('edit');
+        Route::put('/{bulletin:uuid}',       [BulletinController::class, 'update'])->name('update');
+        Route::delete('/{bulletin:uuid}',    [BulletinController::class, 'destroy'])->name('destroy');
+
+        // Hapus thumbnail saja
+        Route::delete('/{bulletin:uuid}/thumbnail', [BulletinController::class, 'deleteThumbnail'])
+            ->name('delete-thumbnail');
+
+        // === APPROVAL (BARU) ===
+        Route::post('/{bulletin:uuid}/approve', [BulletinController::class, 'approve'])->name('approve');
+        Route::post('/{bulletin:uuid}/reject',  [BulletinController::class, 'reject'])->name('reject');
+
+        // API
+        Route::get('/api/kategori-list', [BulletinController::class, 'apiKategoriList'])
+            ->name('api.kategori-list');
+    });
 });
 
 // ============================================
@@ -298,7 +321,7 @@ Route::middleware(['auth', 'active.user', 'admin.lembaga', 'complete.profile'])-
         Route::get('/', [App\Http\Controllers\Admin_lembaga\AdminLembagaMuzakiController::class, 'index'])->name('index'); // Ubah controller
         Route::get('/amil/{amilId}/muzaki', [App\Http\Controllers\Admin_lembaga\AdminLembagaMuzakiController::class, 'getMuzakiByAmil'])->name('amil.muzaki'); // Ubah controller
     });
-    
+
     Route::prefix('konfigurasi-integrasi')->name('konfigurasi-integrasi.')->group(function () {
         // GET - Tampilkan konfigurasi (status WhatsApp & QRIS)
         Route::get('/', [App\Http\Controllers\Admin_lembaga\KonfigurasiIntegrasiController::class, 'show'])
@@ -406,6 +429,20 @@ Route::middleware(['auth', 'active.user', 'admin.lembaga', 'complete.profile'])-
         Route::get('/ubah-password', [ProfilAdminLembagaController::class, 'editPassword'])->name('password.edit');
         Route::put('/ubah-password', [ProfilAdminLembagaController::class, 'updatePassword'])->name('password.update');
     });
+
+    Route::prefix('bulletin-saya')->name('admin-lembaga.bulletin.')->group(function () {
+        Route::get('/',                         [BulletinAdminLembagaController::class, 'index'])->name('index');
+        Route::get('/create',                   [BulletinAdminLembagaController::class, 'create'])->name('create');
+        Route::post('/',                        [BulletinAdminLembagaController::class, 'store'])->name('store');
+        Route::get('/{bulletin:uuid}',          [BulletinAdminLembagaController::class, 'show'])->name('show');
+        Route::get('/{bulletin:uuid}/edit',     [BulletinAdminLembagaController::class, 'edit'])->name('edit');
+        Route::put('/{bulletin:uuid}',          [BulletinAdminLembagaController::class, 'update'])->name('update');
+        Route::delete('/{bulletin:uuid}',       [BulletinAdminLembagaController::class, 'destroy'])->name('destroy');
+        Route::post('/{bulletin:uuid}/submit',  [BulletinAdminLembagaController::class, 'submit'])->name('submit');
+        Route::delete('/{bulletin:uuid}/thumbnail', [BulletinAdminLembagaController::class, 'deleteThumbnail'])
+            ->name('delete-thumbnail');
+    });
+
 
 
     // NOTE: Tambahkan route untuk:
@@ -835,7 +872,8 @@ Route::middleware(['auth', 'active.user'])->group(function () {
     // Mark notifikasi sebagai sudah dibaca (update session)
     Route::post('/notif/mark-read', [\App\Http\Controllers\NotifController::class, 'markRead'])
         ->name('notif.mark-read');
-    Route::get('/testimoni-saya/check-popup',
+    Route::get(
+        '/testimoni-saya/check-popup',
         [\App\Http\Controllers\Muzakki\TestimoniMuzakkiController::class, 'checkPopup']
     )->name('muzakki.testimoni.check-popup');
 });

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class LandingController extends Controller
 {
-  public function index()
+    public function index()
     {
         $hargaTerbaru = HargaEmasPerak::where('is_active', true)
             ->orderBy('tanggal', 'desc')
@@ -38,10 +38,16 @@ class LandingController extends Controller
 
         $totalLembaga = Lembaga::where('is_active', true)->count();
 
-        // ── TAMBAHAN: Testimoni yang sudah diapprove superadmin ──
         $testimonis = Testimoni::where('is_approved', true)
             ->orderBy('approved_at', 'desc')
-            ->limit(6) // maksimal 6 tampil di landing
+            ->limit(6)
+            ->get();
+
+        // Ambil beberapa bulletin terbaru untuk ditampilkan di landing page
+        $bulletinTerbaru = Bulletin::with(['kategoriBulletin'])
+            ->published()
+            ->latest('published_at')
+            ->limit(3)
             ->get();
 
         return view('layouts.guest', compact(
@@ -52,18 +58,17 @@ class LandingController extends Controller
             'totalDana',
             'totalProgram',
             'totalLembaga',
-            'testimonis', // ← tambahkan ini
+            'testimonis',
+            'bulletinTerbaru',
         ));
     }
 
-   public function hitungZakat()
+    public function hitungZakat()
     {
         $hargaTerbaru = HargaEmasPerak::where('is_active', true)
             ->orderBy('tanggal', 'desc')
             ->first();
 
-        // Kolom DB: harga_emas_pergram (BUKAN harga_emas_per_gram)
-        // Fallback 1.900.000 jika belum ada data di tabel
         $hargaEmasPerGram = ($hargaTerbaru && $hargaTerbaru->harga_emas_pergram > 0)
             ? (int) $hargaTerbaru->harga_emas_pergram
             : 1900000;
@@ -87,7 +92,7 @@ class LandingController extends Controller
     public function artikel(Request $request)
     {
         $query = Bulletin::with(['kategoriBulletin', 'author'])
-            ->published()
+            ->published()   // scope sudah include status = approved
             ->latest('published_at');
 
         if ($request->filled('q')) {
@@ -104,12 +109,17 @@ class LandingController extends Controller
         return view('pages.bulletin', compact('bulletins', 'kategoriList'));
     }
 
-    public function artikelShow(Bulletin $bulletin)
+    public function artikelShow($slug)
     {
-        $bulletin->load(['kategoriBulletin', 'author']);
+        // Cari berdasarkan slug, pastikan hanya yang approved yang bisa diakses publik
+        $bulletin = Bulletin::with(['kategoriBulletin', 'author'])
+            ->where('slug', $slug)
+            ->where('status', 'approved')
+            ->firstOrFail();
+
         $bulletin->incrementViewCount();
 
-        // Prioritas: sekategori dulu
+        // Artikel terkait: sekategori dulu
         $related = Bulletin::with(['kategoriBulletin', 'author'])
             ->published()
             ->where('id', '!=', $bulletin->id)
@@ -118,7 +128,7 @@ class LandingController extends Controller
             ->limit(3)
             ->get();
 
-        // Kalau kurang dari 3, tambal dengan artikel lain (beda kategori)
+        // Tambal ke 3 jika kurang
         if ($related->count() < 3) {
             $existingIds = $related->pluck('id')->push($bulletin->id);
 

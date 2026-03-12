@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Superadmin;
+namespace App\Http\Controllers\Admin_lembaga;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bulletin;
@@ -11,52 +11,59 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
-class BulletinController extends Controller
+class BulletinAdminLembagaController extends Controller
 {
+    /**
+     * Ambil lembaga_id dari user yang sedang login.
+     * User admin-lembaga menyimpan lembaga_id langsung di tabel pengguna.
+     */
+    private function getLembagaId(): int
+    {
+        $lembagaId = Auth::user()->lembaga_id;
+
+        if (!$lembagaId) {
+            abort(403, 'Akun Anda tidak terhubung ke lembaga manapun.');
+        }
+
+        return $lembagaId;
+    }
+
     // ============================================
     // INDEX
     // ============================================
     public function index(Request $request)
     {
-        $query = Bulletin::with(['author', 'kategoriBulletin', 'lembaga'])
+        $lembagaId = $this->getLembagaId();
+
+        $query = Bulletin::with(['kategoriBulletin'])
+            ->where('lembaga_id', $lembagaId)
             ->latest('created_at');
 
         if ($request->filled('q')) {
             $query->search($request->q);
         }
 
-        if ($request->filled('kategori')) {
-            $query->byKategori($request->kategori);
-        }
-
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // Filter: superadmin punya (lembaga_id null) atau semua
-        if ($request->filled('sumber')) {
-            if ($request->sumber === 'superadmin') {
-                $query->whereNull('lembaga_id');
-            } elseif ($request->sumber === 'lembaga') {
-                $query->whereNotNull('lembaga_id');
-            }
+        if ($request->filled('kategori')) {
+            $query->byKategori($request->kategori);
         }
 
-        $bulletins    = $query->paginate(10);
+        $bulletins    = $query->paginate(10)->withQueryString();
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
 
-        // Count pending untuk badge notifikasi
-        $pendingCount = Bulletin::whereNotNull('lembaga_id')->where('status', 'pending')->count();
-
+        // Hitung per-status untuk badge
         $counts = [
-            'pending'  => Bulletin::whereNotNull('lembaga_id')->where('status', 'pending')->count(),
-            'approved' => Bulletin::where('status', 'approved')->count(),
-            'rejected' => Bulletin::whereNotNull('lembaga_id')->where('status', 'rejected')->count(),
+            'all'      => Bulletin::where('lembaga_id', $lembagaId)->count(),
+            'draft'    => Bulletin::where('lembaga_id', $lembagaId)->where('status', 'draft')->count(),
+            'pending'  => Bulletin::where('lembaga_id', $lembagaId)->where('status', 'pending')->count(),
+            'approved' => Bulletin::where('lembaga_id', $lembagaId)->where('status', 'approved')->count(),
+            'rejected' => Bulletin::where('lembaga_id', $lembagaId)->where('status', 'rejected')->count(),
         ];
 
-        return view('superadmin.bulletin.index', compact(
-            'bulletins', 'kategoriList', 'pendingCount', 'counts'
-        ));
+        return view('admin-lembaga.bulletin.index', compact('bulletins', 'kategoriList', 'counts'));
     }
 
     // ============================================
@@ -66,11 +73,11 @@ class BulletinController extends Controller
     {
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
 
-        return view('superadmin.bulletin.create', compact('kategoriList'));
+        return view('admin-lembaga.bulletin.create', compact('kategoriList'));
     }
 
     // ============================================
-    // STORE (Superadmin langsung approved)
+    // STORE
     // ============================================
     public function store(Request $request)
     {
@@ -91,6 +98,7 @@ class BulletinController extends Controller
             'thumbnail.max'   => 'Ukuran gambar maksimal 2MB.',
         ]);
 
+        // Buat kategori baru jika dipilih
         $kategoriId = $request->kategori_bulletin_id;
         if ($request->filled('kategori_baru') && empty($kategoriId)) {
             $kategori   = KategoriBulletin::create(['nama_kategori' => $request->kategori_baru]);
@@ -102,14 +110,18 @@ class BulletinController extends Controller
                 ->withErrors(['kategori_bulletin_id' => 'Pilih atau buat kategori terlebih dahulu.']);
         }
 
+        // Upload thumbnail
         $thumbnailPath = null;
         if ($request->hasFile('thumbnail')) {
             $thumbnailPath = $this->uploadAndCompress($request->file('thumbnail'));
         }
 
+        // Tentukan action: simpan sebagai draft atau langsung submit
+        $status = $request->input('action') === 'submit' ? 'pending' : 'draft';
+
         Bulletin::create([
             'created_by'           => Auth::id(),
-            'lembaga_id'           => null, // superadmin tidak terikat lembaga
+            'lembaga_id'           => $this->getLembagaId(),
             'kategori_bulletin_id' => $kategoriId,
             'judul'                => $request->judul,
             'slug'                 => Bulletin::generateSlug($request->judul),
@@ -118,13 +130,14 @@ class BulletinController extends Controller
             'thumbnail'            => $thumbnailPath,
             'image_caption'        => $request->image_caption,
             'published_at'         => $request->published_at ?? now(),
-            'status'               => 'approved', // superadmin langsung approved
-            'reviewed_by'          => Auth::id(),
-            'reviewed_at'          => now(),
+            'status'               => $status,
         ]);
 
-        return redirect()->route('superadmin.bulletin.index')
-            ->with('success', 'Bulletin berhasil dibuat.');
+        $message = $status === 'pending'
+            ? 'Bulletin berhasil dikirim untuk persetujuan superadmin.'
+            : 'Bulletin berhasil disimpan sebagai draft.';
+
+        return redirect()->route('admin-lembaga.bulletin.index')->with('success', $message);
     }
 
     // ============================================
@@ -132,10 +145,10 @@ class BulletinController extends Controller
     // ============================================
     public function show(Bulletin $bulletin)
     {
-        $bulletin->load(['author', 'kategoriBulletin', 'lembaga', 'reviewer']);
-        $bulletin->incrementViewCount();
+        $this->authorizeOwnership($bulletin);
+        $bulletin->load(['kategoriBulletin']);
 
-        return view('superadmin.bulletin.show', compact('bulletin'));
+        return view('admin-lembaga.bulletin.show', compact('bulletin'));
     }
 
     // ============================================
@@ -143,9 +156,16 @@ class BulletinController extends Controller
     // ============================================
     public function edit(Bulletin $bulletin)
     {
+        $this->authorizeOwnership($bulletin);
+
+        if (!$bulletin->isEditable()) {
+            return redirect()->route('admin-lembaga.bulletin.show', $bulletin->uuid)
+                ->with('error', 'Bulletin yang sedang menunggu persetujuan atau sudah disetujui tidak dapat diedit.');
+        }
+
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
 
-        return view('superadmin.bulletin.edit', compact('bulletin', 'kategoriList'));
+        return view('admin-lembaga.bulletin.edit', compact('bulletin', 'kategoriList'));
     }
 
     // ============================================
@@ -153,6 +173,13 @@ class BulletinController extends Controller
     // ============================================
     public function update(Request $request, Bulletin $bulletin)
     {
+        $this->authorizeOwnership($bulletin);
+
+        if (!$bulletin->isEditable()) {
+            return redirect()->route('admin-lembaga.bulletin.show', $bulletin->uuid)
+                ->with('error', 'Bulletin ini tidak dapat diedit.');
+        }
+
         $request->validate([
             'kategori_bulletin_id' => 'nullable|exists:kategori_bulletin,id',
             'kategori_baru'        => 'nullable|string|max:100',
@@ -188,6 +215,9 @@ class BulletinController extends Controller
             $slug = Bulletin::generateSlug($request->judul);
         }
 
+        // Tentukan action
+        $status = $request->input('action') === 'submit' ? 'pending' : 'draft';
+
         $bulletin->update([
             'kategori_bulletin_id' => $kategoriId,
             'judul'                => $request->judul,
@@ -197,10 +227,35 @@ class BulletinController extends Controller
             'thumbnail'            => $thumbnailPath,
             'image_caption'        => $request->image_caption,
             'published_at'         => $request->published_at ?? $bulletin->published_at,
+            'status'               => $status,
+            'rejection_reason'     => null, // reset jika diedit ulang
         ]);
 
-        return redirect()->route('superadmin.bulletin.show', $bulletin->uuid)
-            ->with('success', 'Bulletin berhasil diperbarui.');
+        $message = $status === 'pending'
+            ? 'Bulletin berhasil dikirim untuk persetujuan.'
+            : 'Bulletin berhasil diperbarui sebagai draft.';
+
+        return redirect()->route('admin-lembaga.bulletin.index')->with('success', $message);
+    }
+
+    // ============================================
+    // SUBMIT (Draft → Pending)
+    // ============================================
+    public function submit(Bulletin $bulletin)
+    {
+        $this->authorizeOwnership($bulletin);
+
+        if (!$bulletin->isDraft() && !$bulletin->isRejected()) {
+            return back()->with('error', 'Hanya bulletin draft atau yang ditolak yang bisa diajukan ulang.');
+        }
+
+        $bulletin->update([
+            'status'           => 'pending',
+            'rejection_reason' => null,
+        ]);
+
+        return redirect()->route('admin-lembaga.bulletin.show', $bulletin->uuid)
+            ->with('success', 'Bulletin berhasil dikirim untuk persetujuan superadmin.');
     }
 
     // ============================================
@@ -208,12 +263,19 @@ class BulletinController extends Controller
     // ============================================
     public function destroy(Bulletin $bulletin)
     {
+        $this->authorizeOwnership($bulletin);
+
+        if ($bulletin->isApproved()) {
+            return back()->with('error', 'Bulletin yang sudah disetujui tidak dapat dihapus. Hubungi superadmin.');
+        }
+
         if ($bulletin->thumbnail) {
             Storage::disk('public')->delete($bulletin->thumbnail);
         }
+
         $bulletin->delete();
 
-        return redirect()->route('superadmin.bulletin.index')
+        return redirect()->route('admin-lembaga.bulletin.index')
             ->with('success', 'Bulletin berhasil dihapus.');
     }
 
@@ -222,74 +284,27 @@ class BulletinController extends Controller
     // ============================================
     public function deleteThumbnail(Bulletin $bulletin)
     {
+        $this->authorizeOwnership($bulletin);
+
         if ($bulletin->thumbnail) {
             Storage::disk('public')->delete($bulletin->thumbnail);
             $bulletin->update(['thumbnail' => null, 'image_caption' => null]);
         }
 
-        return redirect()->route('superadmin.bulletin.edit', $bulletin->uuid)
+        return redirect()->route('admin-lembaga.bulletin.edit', $bulletin->uuid)
             ->with('success', 'Thumbnail berhasil dihapus.');
     }
 
     // ============================================
-    // APPROVE
+    // PRIVATE HELPERS
     // ============================================
-    public function approve(Bulletin $bulletin)
+    private function authorizeOwnership(Bulletin $bulletin): void
     {
-        if (!$bulletin->isPending()) {
-            return back()->with('error', 'Hanya bulletin berstatus pending yang bisa disetujui.');
+        if ($bulletin->lembaga_id !== $this->getLembagaId()) {
+            abort(403, 'Anda tidak memiliki akses ke bulletin ini.');
         }
-
-        $bulletin->update([
-            'status'      => 'approved',
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-            'rejection_reason' => null,
-        ]);
-
-        return redirect()->route('superadmin.bulletin.show', $bulletin->uuid)
-            ->with('success', 'Bulletin berhasil disetujui dan akan tampil di landing page.');
     }
 
-    // ============================================
-    // REJECT
-    // ============================================
-    public function reject(Request $request, Bulletin $bulletin)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500',
-        ], [
-            'rejection_reason.required' => 'Alasan penolakan wajib diisi.',
-        ]);
-
-        if (!$bulletin->isPending()) {
-            return back()->with('error', 'Hanya bulletin berstatus pending yang bisa ditolak.');
-        }
-
-        $bulletin->update([
-            'status'           => 'rejected',
-            'rejection_reason' => $request->rejection_reason,
-            'reviewed_by'      => Auth::id(),
-            'reviewed_at'      => now(),
-        ]);
-
-        return redirect()->route('superadmin.bulletin.show', $bulletin->uuid)
-            ->with('success', 'Bulletin telah ditolak.');
-    }
-
-    // ============================================
-    // API - GET KATEGORI LIST
-    // ============================================
-    public function apiKategoriList()
-    {
-        $list = KategoriBulletin::orderBy('nama_kategori')->get(['id', 'nama_kategori']);
-
-        return response()->json($list);
-    }
-
-    // ============================================
-    // PRIVATE - UPLOAD & COMPRESS THUMBNAIL
-    // ============================================
     private function uploadAndCompress($file): string
     {
         $directory = 'bulletins/thumbnails';
