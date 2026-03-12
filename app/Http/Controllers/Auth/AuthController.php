@@ -1138,6 +1138,7 @@ class AuthController extends Controller
             // Data Admin Lembaga
             'admin_nama' => 'required|string|max:255',
             'admin_telepon' => 'required|string|max:20',
+            'admin_jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'admin_email' => 'required|email|max:255',
             'admin_foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
 
@@ -1264,6 +1265,7 @@ class AuthController extends Controller
 
                 // Data Admin Lembaga
                 'admin_nama' => $request->admin_nama,
+                'admin_jenis_kelamin' => $request->admin_jenis_kelamin,
                 'admin_telepon' => $request->admin_telepon,
                 'admin_email' => $request->admin_email ?? $pengguna->email,
                 'admin_foto' => $adminFotoPath,
@@ -1421,7 +1423,16 @@ class AuthController extends Controller
         $rules = [
             'nama'            => 'required|string|max:255',
             'telepon'         => 'required|string|max:20',
-            'lembaga_id'       => 'required|exists:lembaga,id',
+            'jenis_kelamin'   => 'required|in:laki-laki,perempuan',   // ← BARU
+            'nik'             => [                                      // ← BARU
+                'nullable',
+                'string',
+                'size:16',
+                'regex:/^\d{16}$/',
+                'unique:muzakki,nik',
+            ],
+            'alamat'          => 'nullable|string|max:500',            // ← BARU
+            'lembaga_id'      => 'required|exists:lembaga,id',
             'username'        => $isGoogleUser ? 'nullable' : [
                 'required',
                 'string',
@@ -1436,17 +1447,22 @@ class AuthController extends Controller
         ];
 
         $messages = [
-            'nama.required'      => 'Nama lengkap wajib diisi',
-            'telepon.required'   => 'Nomor telepon wajib diisi',
-            'lembaga_id.required' => 'Pilih lembaga terlebih dahulu',
-            'lembaga_id.exists'   => 'Lembaga tidak ditemukan',
-            'username.required'  => 'Username wajib diisi',
-            'username.min'       => 'Username minimal 6 karakter',
-            'username.regex'     => 'Username hanya boleh huruf, angka, dan underscore',
-            'username.unique'    => 'Username sudah digunakan',
-            'password.required'  => 'Password wajib diisi',
-            'password.min'       => 'Password minimal 8 karakter',
-            'password.confirmed' => 'Konfirmasi password tidak cocok',
+            'nama.required'           => 'Nama lengkap wajib diisi',
+            'telepon.required'        => 'Nomor telepon wajib diisi',
+            'jenis_kelamin.required'  => 'Jenis kelamin wajib dipilih',
+            'jenis_kelamin.in'        => 'Jenis kelamin tidak valid',
+            'nik.size'                => 'NIK harus 16 digit',
+            'nik.regex'               => 'NIK hanya boleh berisi angka',
+            'nik.unique'              => 'NIK sudah terdaftar',
+            'lembaga_id.required'     => 'Pilih lembaga terlebih dahulu',
+            'lembaga_id.exists'       => 'Lembaga tidak ditemukan',
+            'username.required'       => 'Username wajib diisi',
+            'username.min'            => 'Username minimal 6 karakter',
+            'username.regex'          => 'Username hanya boleh huruf, angka, dan underscore',
+            'username.unique'         => 'Username sudah digunakan',
+            'password.required'       => 'Password wajib diisi',
+            'password.min'            => 'Password minimal 8 karakter',
+            'password.confirmed'      => 'Konfirmasi password tidak cocok',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -1482,22 +1498,29 @@ class AuthController extends Controller
                 $fotoPath = $this->uploadAndCompressGeneral($request->file('foto'), 'muzakki-fotos');
             }
 
-            // STEP 3: Buat record muzakki
+            // STEP 3: Buat record muzakki — semua field baru disertakan
             \App\Models\Muzakki::create([
-                'uuid'        => (string) Str::uuid(),
-                'pengguna_id' => $pengguna->id,
-                'lembaga_id'   => $request->lembaga_id,
-                'nama'        => $request->nama,
-                'telepon'     => $request->telepon,
-                'email'       => $pengguna->email,
-                'foto'        => $fotoPath,
-                'is_active'   => true,
+                'uuid'          => (string) Str::uuid(),
+                'pengguna_id'   => $pengguna->id,
+                'lembaga_id'    => $request->lembaga_id,
+                'nama'          => $request->nama,
+                'jenis_kelamin' => $request->jenis_kelamin,           // ← BARU
+                'telepon'       => $request->telepon,
+                'email'         => $pengguna->email,
+                'alamat'        => $request->alamat ?: null,          // ← BARU
+                'nik'           => $request->nik ?: null,             // ← BARU
+                'foto'          => $fotoPath,
+                'is_active'     => true,
+            ]);
+
+            $pengguna->update([
+                'lembaga_id' => $request->lembaga_id,
             ]);
 
             // STEP 4: Cleanup cache
             $this->cleanupRegistrationCache($pengguna->email, $token);
 
-            // STEP 5: Kirim email (silent fail)
+            // STEP 5: Email sukses (silent fail)
             try {
                 $this->loadMailConfig();
                 Mail::send('emails.registration-success', [
@@ -1507,8 +1530,8 @@ class AuthController extends Controller
                     'isGoogleUser' => $isGoogleUser,
                     'password'     => $isGoogleUser ? null : $request->password,
                     'peran'        => 'muzakki',
-                    'nama_lembaga'  => null,
-                    'kode_lembaga'  => null,
+                    'nama_lembaga' => null,
+                    'kode_lembaga' => null,
                 ], function ($message) use ($pengguna) {
                     $message->to($pengguna->email)
                         ->subject('Registrasi Berhasil - Niat Zakat');
@@ -1520,9 +1543,10 @@ class AuthController extends Controller
             DB::commit();
 
             $this->logRegistrasi('Registrasi muzakki berhasil', [
-                'username'  => $penggunaData['username'],
-                'nama'      => $request->nama,
-                'lembaga_id' => $request->lembaga_id,
+                'username'      => $penggunaData['username'],
+                'nama'          => $request->nama,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'lembaga_id'    => $request->lembaga_id,
             ], $pengguna->id);
 
             return redirect()->route('login')
@@ -1536,6 +1560,8 @@ class AuthController extends Controller
                 ->withInput();
         }
     }
+
+
 
     private function uploadAndCompressGeneral($file, string $directory): string
     {

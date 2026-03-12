@@ -13,6 +13,10 @@
          → mencegah "An invalid form control is not focusable"
     10. [FIX] syncFidyahHiddenFields pakai tipeMap eksplisit (cegah kasus huruf besar)
     11. [FIX] syncFidyahHiddenFields dipanggil paling awal di submit handler
+    12. [UPDATE] Dot step selesai tampil ikon centang (bukan polosan hijau)
+    13. [UPDATE] Info total jumlah dibayar untuk zakat fitrah tunai
+    14. [UPDATE] Format angka ribuan dengan titik di semua display nominal
+    15. [UPDATE] Daftar nama jiwa ada tombol hapus per baris
 --}}
 
 @extends('layouts.app')
@@ -452,6 +456,17 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- [UPDATE] Info total jumlah yang harus dibayar --}}
+                            <div id="infoTotalFitrahTunai" class="hidden bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <p class="text-sm font-medium text-blue-800" id="teksInfoFitrahTunai"></p>
+                                </div>
+                            </div>
+
                             <div id="wrapNamaTunaiJiwa" class="hidden">
                                 <div class="border border-gray-200 rounded-lg overflow-hidden">
                                     <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
@@ -701,11 +716,6 @@
                                         <div class="relative">
                                             <span
                                                 class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                                            {{--
-                                                FIX: min diubah dari "1000" → "0" agar browser tidak memvalidasi
-                                                elemen yang tersembunyi (display:none). Validasi nilai > 0
-                                                dilakukan secara manual di JavaScript.
-                                            --}}
                                             <input type="number" id="fidyahHargaPerHari" name="_fidyah_harga_per_hari"
                                                 value="{{ old('_fidyah_harga_per_hari', 0) }}" min="0"
                                                 step="1000"
@@ -839,13 +849,15 @@
                                             class="text-xs font-semibold text-blue-600 hover:underline">Isi Sesuai
                                             Zakat</button>
                                     </div>
+                                    {{-- [UPDATE] Input jumlah dibayar pakai type=text untuk format ribuan --}}
                                     <div class="relative">
-                                        <span
-                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
-                                        <input type="number" name="jumlah_dibayar" id="jmlDibayar"
-                                            value="{{ old('jumlah_dibayar') }}" min="0" step="1000"
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
+                                        <input type="text" id="jmlDibayarDisplay"
+                                            value="{{ old('jumlah_dibayar') ? number_format(old('jumlah_dibayar'), 0, ',', '.') : '' }}"
                                             placeholder="Kosongkan = bayar pas sesuai zakat wajib"
+                                            inputmode="numeric"
                                             class="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
+                                        <input type="hidden" name="jumlah_dibayar" id="jmlDibayar" value="{{ old('jumlah_dibayar') }}">
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">Jika membayar <strong>lebih</strong>, kelebihan
                                         otomatis dicatat sebagai <strong>infaq sukarela</strong>.</p>
@@ -984,8 +996,19 @@
             return new Intl.NumberFormat('id-ID').format(Math.round(n || 0));
         }
 
+        // [UPDATE] Format angka untuk input display (hapus non-digit, tambah titik ribuan)
+        function fmtRibuan(str) {
+            const raw = String(str).replace(/\D/g, '');
+            if (!raw) return '';
+            return new Intl.NumberFormat('id-ID').format(parseInt(raw));
+        }
+
+        function rawFromRibuan(str) {
+            return parseInt(String(str).replace(/\./g, '').replace(/,/g, '')) || 0;
+        }
+
         // ══════════════════════════════════════════════════════════════
-        // VALIDASI REALTIME TOMBOL STEP 1
+        // [UPDATE] VALIDASI REALTIME TOMBOL STEP 1
         // ══════════════════════════════════════════════════════════════
         function checkStep1Valid() {
             const nama = (document.getElementById('muzakkiNama')?.value || '').trim();
@@ -1024,7 +1047,6 @@
                 const jiwa = parseInt(document.getElementById('berasJiwa')?.value) || 1;
                 valid = kg > 0;
 
-                // Cek nama jiwa wajib jika jiwa >= 2
                 if (valid && jiwa >= 2) {
                     const inputs = document.querySelectorAll('#listNamaBeras input[type="text"]');
                     const allFilled = inputs.length >= 2 && [...inputs].every(i => i.value.trim() !== '');
@@ -1035,7 +1057,6 @@
                 const nominal = parseFloat(document.getElementById('tunaiNominal')?.value) || 0;
                 valid = jiwa > 0 && nominal > 0;
 
-                // Cek nama jiwa wajib jika jiwa >= 2
                 if (valid && jiwa >= 2) {
                     const inputs = document.querySelectorAll('#listNamaTunai input[type="text"]');
                     const allFilled = inputs.length >= 2 && [...inputs].every(i => i.value.trim() !== '');
@@ -1058,7 +1079,6 @@
                 valid = hari > 0 && harga > 0;
             }
 
-            // Tombol Next (tunaiF, mal, fidyahTunai)
             const btnNext = document.getElementById('btnS2Next');
             if (btnNext && !btnNext.classList.contains('hidden')) {
                 btnNext.disabled = !valid;
@@ -1066,7 +1086,6 @@
                 btnNext.classList.toggle('cursor-not-allowed', !valid);
             }
 
-            // Tombol Save (beras, fidyahMentah, fidyahMatang)
             const btnSave = document.getElementById('btnS2Save');
             if (btnSave && !btnSave.classList.contains('hidden')) {
                 btnSave.disabled = !valid;
@@ -1101,26 +1120,29 @@
             document.getElementById('step' + n).classList.remove('hidden');
             activeStep = n;
             refreshDots(n);
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             if (n === 2) checkStep2Valid();
         }
 
+        // [UPDATE] refreshDots — step selesai tampilkan ikon centang
         function refreshDots(active) {
+            const CENTANG_SVG = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>`;
+
             [1, 2, 3].forEach(i => {
                 const d = document.getElementById('dot' + i);
                 if (!d) return;
                 d.classList.remove('bg-blue-600', 'text-white', 'bg-green-600', 'bg-gray-200', 'text-gray-500');
                 if (i < active) {
+                    // Step selesai: ijo + ikon centang
                     d.classList.add('bg-green-600', 'text-white');
-                    d.textContent = '';
+                    d.innerHTML = CENTANG_SVG;
                 } else if (i === active) {
+                    // Step aktif: biru + nomor
                     d.classList.add('bg-blue-600', 'text-white');
                     d.textContent = i;
                 } else {
+                    // Step belum: abu + nomor
                     d.classList.add('bg-gray-200', 'text-gray-500');
                     d.textContent = i;
                 }
@@ -1169,7 +1191,6 @@
                         alert('Jumlah beras harus lebih dari 0.');
                         return false;
                     }
-                    // Validasi nama jiwa jika >= 2
                     const jiwa = parseInt(document.getElementById('berasJiwa').value) || 1;
                     if (jiwa >= 2) {
                         const inputs = document.querySelectorAll('#listNamaBeras input[type="text"]');
@@ -1184,7 +1205,6 @@
                         alert('Jumlah zakat tidak valid.');
                         return false;
                     }
-                    // Validasi nama jiwa jika >= 2
                     const jiwa = parseInt(document.getElementById('tunaiJiwa').value) || 1;
                     if (jiwa >= 2) {
                         const inputs = document.querySelectorAll('#listNamaTunai input[type="text"]');
@@ -1240,8 +1260,7 @@
         function getJumlahZakat() {
             if (activePanelZ === 'tunaiF') return parseFloat(document.getElementById('hdnJumlahTunai').value) || 0;
             if (activePanelZ === 'mal') return parseFloat(document.getElementById('hdnJumlahMal').value) || 0;
-            if (activePanelZ === 'fidyahTunai') return parseFloat(document.getElementById('hdnJumlahFidyahTunai').value) ||
-                0;
+            if (activePanelZ === 'fidyahTunai') return parseFloat(document.getElementById('hdnJumlahFidyahTunai').value) || 0;
             return 0;
         }
 
@@ -1303,13 +1322,12 @@
         @endif
 
         // ══════════════════════════════════════════════════════════════
-        // DAFTAR NAMA JIWA
+        // [UPDATE] DAFTAR NAMA JIWA — dengan tombol hapus per baris
         // ══════════════════════════════════════════════════════════════
         function renderNamaJiwa(listId, counterId, wrapId, jumlah) {
             const wrap = document.getElementById(wrapId);
             const listEl = document.getElementById(listId);
 
-            // Selalu tampilkan jika jiwa >= 2, sembunyikan jika jiwa == 1
             if (jumlah <= 1) {
                 wrap.classList.add('hidden');
                 listEl.innerHTML = '';
@@ -1323,38 +1341,78 @@
             listEl.innerHTML = '';
 
             for (let i = 0; i < jumlah; i++) {
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3';
-                row.innerHTML = `
-            <div class="flex-shrink-0 w-6 text-xs font-medium text-gray-400">${i + 1}.</div>
-            <input type="text" name="nama_jiwa_json[]"
-                value="${existing[i] ? existing[i].replace(/"/g, '&quot;') : ''}"
-                placeholder="Nama jiwa ke-${i + 1} (wajib)" maxlength="100" autocomplete="off"
-                required
-                class="flex-1 px-3 py-2 text-sm border border-gray-200 bg-white rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all">
-        `;
-                listEl.appendChild(row);
+                buatBariNamaJiwa(listEl, listId, counterId, i, jumlah, existing[i] || '');
             }
 
-            // Label wajib
             const headerEl = wrap.querySelector('.px-4.py-3 span.text-sm');
             if (headerEl) {
                 headerEl.innerHTML = 'Daftar Nama per Jiwa <span class="text-red-500 ml-1">*</span>';
             }
 
             updateNamaCounter(listId, counterId, jumlah);
-            listEl.querySelectorAll('input').forEach(inp => {
-                inp.addEventListener('input', () => {
-                    updateNamaCounter(listId, counterId, jumlah);
-                    checkStep2Valid();
-                });
-            });
-
             checkStep2Valid();
         }
 
+        // [UPDATE] Buat satu baris nama jiwa dengan tombol hapus
+        function buatBariNamaJiwa(listEl, listId, counterId, index, total, nilaiAwal) {
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 nama-jiwa-row';
+            row.innerHTML = `
+                <div class="flex-shrink-0 w-6 text-xs font-medium text-gray-400 text-right row-number">${index + 1}.</div>
+                <input type="text" name="nama_jiwa_json[]"
+                    value="${nilaiAwal.replace(/"/g, '&quot;')}"
+                    placeholder="Nama jiwa ke-${index + 1} (wajib)" maxlength="100" autocomplete="off"
+                    class="flex-1 px-3 py-2 text-sm border border-gray-200 bg-white rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all">
+                <button type="button"
+                    class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all hapus-nama-btn"
+                    title="Hapus baris ini">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+
+            // Event input untuk counter
+            row.querySelector('input').addEventListener('input', () => {
+                const total = listEl.querySelectorAll('.nama-jiwa-row').length;
+                updateNamaCounter(listId, counterId, total);
+                checkStep2Valid();
+            });
+
+            // Event hapus
+            row.querySelector('.hapus-nama-btn').addEventListener('click', () => {
+                // Minimal harus ada 2 baris (karena jiwa >= 2)
+                const semuaBaris = listEl.querySelectorAll('.nama-jiwa-row');
+                if (semuaBaris.length <= 2) {
+                    // Jangan hapus, kosongkan saja
+                    row.querySelector('input').value = '';
+                    updateNamaCounter(listId, counterId, semuaBaris.length);
+                    checkStep2Valid();
+                    return;
+                }
+                row.remove();
+                // Renomor semua baris
+                renomorBaris(listEl);
+                const sisaBaris = listEl.querySelectorAll('.nama-jiwa-row').length;
+                updateNamaCounter(listId, counterId, sisaBaris);
+                checkStep2Valid();
+            });
+
+            listEl.appendChild(row);
+        }
+
+        // [UPDATE] Renomor ulang semua baris setelah hapus
+        function renomorBaris(listEl) {
+            listEl.querySelectorAll('.nama-jiwa-row').forEach((row, idx) => {
+                const numEl = row.querySelector('.row-number');
+                if (numEl) numEl.textContent = (idx + 1) + '.';
+                const input = row.querySelector('input');
+                if (input) input.placeholder = `Nama jiwa ke-${idx + 1} (wajib)`;
+            });
+        }
+
         function updateNamaCounter(listId, counterId, total) {
-            const filled = [...document.getElementById(listId).querySelectorAll('input')]
+            const filled = [...document.getElementById(listId).querySelectorAll('input[type="text"]')]
                 .filter(i => i.value.trim() !== '').length;
             const el = document.getElementById(counterId);
             if (el) {
@@ -1411,8 +1469,7 @@
 
             if (isFidyah) {
                 if (namaTipe.includes('mentah') || namaTipe.includes('bahan pokok')) tampilPanelFidyah('mentah');
-                else if (namaTipe.includes('matang') || namaTipe.includes('siap santap') || namaTipe.includes(
-                        'makanan')) tampilPanelFidyah('matang');
+                else if (namaTipe.includes('matang') || namaTipe.includes('siap santap') || namaTipe.includes('makanan')) tampilPanelFidyah('matang');
                 else tampilPanelFidyah('tunai');
             } else if (isFitrah && isBeras) {
                 tampilPanelBeras();
@@ -1447,15 +1504,12 @@
             document.getElementById('btnS2Next').classList.add('hidden');
             document.getElementById('btnS2Save').classList.remove('hidden');
             document.getElementById('lblS2Save').textContent = 'Simpan Transaksi Beras';
-            renderNamaJiwa('listNamaBeras', 'counterNamaBeras', 'wrapNamaBerasJiwa', parseInt(document.getElementById(
-                'berasJiwa').value) || 1);
+            renderNamaJiwa('listNamaBeras', 'counterNamaBeras', 'wrapNamaBerasJiwa', parseInt(document.getElementById('berasJiwa').value) || 1);
             checkStep2Valid();
         }
 
         document.getElementById('berasJiwa')?.addEventListener('input', function() {
-            const kg = parseFloat(document.getElementById('berasKg').value) || 0;
             const jiwa = parseInt(this.value) || 1;
-            // Auto hitung total beras
             document.getElementById('berasKg').value = (jiwa * BAZNAS.berasKg).toFixed(1);
             renderNamaJiwa('listNamaBeras', 'counterNamaBeras', 'wrapNamaBerasJiwa', jiwa);
             checkStep2Valid();
@@ -1468,8 +1522,7 @@
             document.getElementById('btnS2Next').classList.remove('hidden');
             document.getElementById('btnS2Save').classList.add('hidden');
             hitungFitrahTunai();
-            renderNamaJiwa('listNamaTunai', 'counterNamaTunai', 'wrapNamaTunaiJiwa', parseInt(document.getElementById(
-                'tunaiJiwa').value) || 1);
+            renderNamaJiwa('listNamaTunai', 'counterNamaTunai', 'wrapNamaTunaiJiwa', parseInt(document.getElementById('tunaiJiwa').value) || 1);
             checkStep2Valid();
         }
 
@@ -1483,10 +1536,22 @@
             checkStep2Valid();
         });
 
+        // [UPDATE] hitungFitrahTunai — tampilkan info total
         function hitungFitrahTunai() {
             const jiwa = parseFloat(document.getElementById('tunaiJiwa').value) || 0;
             const nominal = parseFloat(document.getElementById('tunaiNominal').value) || 0;
-            document.getElementById('hdnJumlahTunai').value = Math.round(jiwa * nominal);
+            const total = Math.round(jiwa * nominal);
+            document.getElementById('hdnJumlahTunai').value = total;
+
+            // Tampilkan info ringkasan
+            const infoEl = document.getElementById('infoTotalFitrahTunai');
+            const teksEl = document.getElementById('teksInfoFitrahTunai');
+            if (jiwa > 0 && nominal > 0 && infoEl && teksEl) {
+                teksEl.textContent = `${jiwa} jiwa × Rp ${fmt(nominal)} = Rp ${fmt(total)}`;
+                infoEl.classList.remove('hidden');
+            } else {
+                infoEl?.classList.add('hidden');
+            }
         }
 
         // ── Panel Mal ────────────────────────────────────────────────
@@ -1498,8 +1563,7 @@
             document.getElementById('malPersen').value = tipeOpt.dataset.persentase || 2.5;
             let nisabHtml = '';
             if (tipeOpt.dataset.nisabEmas > 0) nisabHtml += `<p>Nisab emas: ${tipeOpt.dataset.nisabEmas} gram</p>`;
-            if (tipeOpt.dataset.requireHaul === '1') nisabHtml +=
-                `<p><strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
+            if (tipeOpt.dataset.requireHaul === '1') nisabHtml += `<p><strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
             const nisabBox = document.getElementById('nisabBox');
             if (nisabHtml) {
                 document.getElementById('nisabIsi').innerHTML = nisabHtml;
@@ -1654,13 +1718,16 @@
                 );
                 document.getElementById('wrapJmlDibayar').classList.remove('hidden');
                 if (val === 'tunai') document.getElementById('infoTunaiSec')?.classList.remove('hidden');
-                else if (val === 'transfer') document.getElementById('infoTransferSec')?.classList.remove(
-                    'hidden');
+                else if (val === 'transfer') document.getElementById('infoTransferSec')?.classList.remove('hidden');
                 else if (val === 'qris') document.getElementById('infoQrisSec')?.classList.remove('hidden');
 
-                const jd = document.getElementById('jmlDibayar');
                 const jz = getJumlahZakat();
-                if ((!jd.value || parseFloat(jd.value) === 0) && jz > 0) jd.value = jz;
+                const dispEl = document.getElementById('jmlDibayarDisplay');
+                const hidEl  = document.getElementById('jmlDibayar');
+                if ((!hidEl.value || parseFloat(hidEl.value) === 0) && jz > 0) {
+                    hidEl.value = jz;
+                    dispEl.value = fmtRibuan(jz);
+                }
                 hitungKalkulasiInfaq();
 
                 const btn = document.getElementById('btnFinalSave');
@@ -1670,11 +1737,23 @@
         });
 
         document.getElementById('btnBayarPas')?.addEventListener('click', () => {
-            document.getElementById('jmlDibayar').value = getJumlahZakat();
+            const jz = getJumlahZakat();
+            document.getElementById('jmlDibayar').value = jz;
+            document.getElementById('jmlDibayarDisplay').value = fmtRibuan(jz);
             hitungKalkulasiInfaq();
         });
 
-        document.getElementById('jmlDibayar')?.addEventListener('input', hitungKalkulasiInfaq);
+        // [UPDATE] Input jumlah dibayar dengan format ribuan realtime
+        document.getElementById('jmlDibayarDisplay')?.addEventListener('input', function() {
+            const raw = rawFromRibuan(this.value);
+            // Format saat mengetik
+            const caret = this.selectionStart;
+            const sebelum = this.value.length;
+            this.value = raw > 0 ? fmtRibuan(raw) : '';
+            // Simpan ke hidden
+            document.getElementById('jmlDibayar').value = raw > 0 ? raw : '';
+            hitungKalkulasiInfaq();
+        });
 
         function hitungKalkulasiInfaq() {
             const jz = getJumlahZakat();
@@ -1687,12 +1766,10 @@
             }
             const infaq = Math.max(0, jd - jz);
             const kurang = Math.max(0, jz - jd);
-            box.classList.remove('hidden', 'bg-amber-50', 'border-amber-200', 'bg-red-50', 'border-red-200', 'bg-green-50',
-                'border-green-200');
+            box.classList.remove('hidden', 'bg-amber-50', 'border-amber-200', 'bg-red-50', 'border-red-200', 'bg-green-50', 'border-green-200');
             if (infaq > 0) {
                 box.classList.add('bg-amber-50', 'border-amber-200');
-                teks.innerHTML =
-                    `Kelebihan <strong>Rp ${fmt(infaq)}</strong> otomatis dicatat sebagai <strong>infaq sukarela</strong>.`;
+                teks.innerHTML = `Kelebihan <strong>Rp ${fmt(infaq)}</strong> otomatis dicatat sebagai <strong>infaq sukarela</strong>.`;
             } else if (kurang > 0) {
                 box.classList.add('bg-red-50', 'border-red-200');
                 teks.innerHTML = `Kurang <strong>Rp ${fmt(kurang)}</strong> dari zakat wajib (Rp ${fmt(jz)}).`;
@@ -1845,8 +1922,7 @@
             navigator.clipboard.writeText(teks).then(() => {
                 const el = document.createElement('div');
                 el.textContent = teks + ' disalin!';
-                el.className =
-                    'fixed bottom-5 right-5 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl z-50';
+                el.className = 'fixed bottom-5 right-5 bg-gray-900 text-white text-xs px-4 py-2.5 rounded-lg shadow-xl z-50';
                 document.body.appendChild(el);
                 setTimeout(() => el.remove(), 2000);
             });
@@ -1872,8 +1948,7 @@
                     document.getElementById('jenisId').dispatchEvent(new Event('change'));
                     setTimeout(() => {
                         @if (old('tipe_zakat_id'))
-                            document.getElementById('tipeId').value =
-                            '{{ old('tipe_zakat_id') }}';
+                            document.getElementById('tipeId').value = '{{ old('tipe_zakat_id') }}';
                             document.getElementById('tipeId').dispatchEvent(new Event('change'));
                         @endif
                         goStep({{ old('metode_penerimaan') === 'dijemput' ? 1 : 2 }});
@@ -1883,8 +1958,7 @@
 
             @if (old('metode_pembayaran'))
                 setTimeout(() => {
-                    const r = document.querySelector(
-                    '.pay-radio[value="{{ old('metode_pembayaran') }}"]');
+                    const r = document.querySelector('.pay-radio[value="{{ old('metode_pembayaran') }}"]');
                     if (r) r.dispatchEvent(new Event('change'));
                 }, 300);
             @endif
