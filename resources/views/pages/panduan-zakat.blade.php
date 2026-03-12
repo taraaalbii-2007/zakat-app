@@ -1175,7 +1175,7 @@
                     </div>
                     <p class="text-gray-500 leading-relaxed mb-5 text-sm anim-ready" data-delay="100">
                         Allah SWT menetapkan dalam QS. At-Taubah: 60 bahwa zakat hanya boleh disalurkan kepada delapan golongan berikut.
-                        Masjid mendistribusikan zakat sesuai program penyaluran yang aktif.
+                        Lembaga mendistribusikan zakat sesuai program penyaluran yang aktif.
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         @php
