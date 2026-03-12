@@ -28,7 +28,54 @@
     $kategoriId   = $bulletin->kategoriBulletin->id ?? null;
     $shareUrl     = url()->current();
     $shareText    = urlencode($bulletin->judul . ' - ' . $shareUrl);
+    $kontenRaw    = trim($bulletin->konten ?? '');
+    $kontenRaw    = preg_replace('/^<p[^>]*>/i', '', $kontenRaw);   // hapus <p> pembuka
+    $kontenRaw    = preg_replace('/<\/p>$/i', '', $kontenRaw);      // hapus </p> penutup terakhir
 @endphp
+
+<style>
+    .artikel-konten p {
+        text-align: justify;
+        font-size: 0.9375rem; /* 15px */
+        line-height: 1.75;
+        color: #374151;
+        margin-bottom: 1rem;
+    }
+    .artikel-konten strong {
+        color: #111827;
+        font-weight: 700;
+    }
+    .artikel-konten h1, .artikel-konten h2, .artikel-konten h3,
+    .artikel-konten h4, .artikel-konten h5, .artikel-konten h6 {
+        font-weight: 700;
+        color: #111827;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .artikel-konten a {
+        color: #16a34a;
+        text-decoration: none;
+    }
+    .artikel-konten a:hover { text-decoration: underline; }
+    .artikel-konten ul, .artikel-konten ol {
+        color: #374151;
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .artikel-konten li { margin-bottom: 0.25rem; }
+    .artikel-konten img {
+        border-radius: 0.5rem;
+        margin: 1.5rem 0;
+        max-width: 100%;
+    }
+    .artikel-konten blockquote {
+        border-left: 4px solid #d1d5db;
+        padding-left: 1rem;
+        font-style: italic;
+        color: #6b7280;
+        margin: 1rem 0;
+    }
+</style>
 
 <div class="bg-white" style="padding-top: 0.75rem;">
     <div class="container mx-auto px-4 sm:px-10 lg:px-20 py-6 pb-8 sm:pb-12 lg:pb-16">
@@ -149,16 +196,10 @@
                                 @endif
 
                                 {{-- Konten Artikel --}}
-                                <div class="prose prose-lg max-w-none
-                                    prose-headings:font-bold prose-headings:text-gray-900
-                                    prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-                                    prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline
-                                    prose-strong:text-gray-900 prose-strong:font-bold
-                                    prose-ul:text-gray-700 prose-ol:text-gray-700
-                                    prose-img:rounded-lg prose-img:my-6
-                                    prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600">
-                                    <p><strong>{{ $bulletin->lokasi ? $bulletin->lokasi . ', ' : 'Jakarta, Indonesia, ' }}{{ config('app.name') }} -- </strong>{!! $bulletin->konten !!}</p>
+                                <div class="artikel-konten">
+                                    <p><strong>{{ $bulletin->lokasi ? $bulletin->lokasi . ', ' : 'Jakarta, Indonesia, ' }}{{ config('app.name') }} -- </strong>{!! $kontenRaw !!}</p>
                                 </div>
+
                             </article>
                         </td>
 
@@ -277,15 +318,8 @@
                     @endif
 
                     {{-- Konten --}}
-                    <div class="prose prose-lg max-w-none
-                        prose-headings:font-bold prose-headings:text-gray-900
-                        prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
-                        prose-a:text-green-600 prose-a:no-underline hover:prose-a:underline
-                        prose-strong:text-gray-900 prose-strong:font-bold
-                        prose-ul:text-gray-700 prose-ol:text-gray-700
-                        prose-img:rounded-lg prose-img:my-6
-                        prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600">
-                        <p><strong>{{ $bulletin->lokasi ? $bulletin->lokasi . ', ' : 'Jakarta, Indonesia, ' }}{{ config('app.name') }} -- </strong>{!! $bulletin->konten !!}</p>
+                    <div class="artikel-konten">
+                        <p><strong>{{ $bulletin->lokasi ? $bulletin->lokasi . ', ' : 'Jakarta, Indonesia, ' }}{{ config('app.name') }} -- </strong>{!! $kontenRaw !!}</p>
                     </div>
 
                     {{-- Lokasi --}}

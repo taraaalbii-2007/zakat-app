@@ -18,6 +18,7 @@ class Muzakki extends Model
         'pengguna_id',
         'lembaga_id',
         'nama',
+        'jenis_kelamin',   // ← BARU
         'telepon',
         'email',
         'alamat',
@@ -49,25 +50,16 @@ class Muzakki extends Model
     // RELATIONSHIPS
     // ============================================================
 
-    /**
-     * Relasi ke tabel pengguna (akun login)
-     */
     public function pengguna()
     {
         return $this->belongsTo(Pengguna::class, 'pengguna_id');
     }
 
-    /**
-     * Relasi ke tabel lembaga
-     */
     public function lembaga()
     {
         return $this->belongsTo(Lembaga::class, 'lembaga_id');
     }
 
-    /**
-     * Relasi ke transaksi penerimaan (riwayat zakat)
-     */
     public function transaksiPenerimaan()
     {
         return $this->hasMany(TransaksiPenerimaan::class, 'muzakki_id');
@@ -77,28 +69,24 @@ class Muzakki extends Model
     // ACCESSORS
     // ============================================================
 
-    /**
-     * URL foto profil (dengan fallback ke placeholder)
-     */
     public function getFotoUrlAttribute(): string
     {
         if ($this->foto && Storage::disk('public')->exists($this->foto)) {
             return asset('storage/' . $this->foto);
         }
 
-        // Placeholder dengan inisial nama
         $initials = collect(explode(' ', $this->nama))
             ->take(2)
             ->map(fn($word) => strtoupper($word[0]))
             ->join('');
 
+        // Warna berbeda berdasar jenis kelamin
+        $bg = $this->jenis_kelamin === 'perempuan' ? 'c2185b' : '1565c0';
+
         return 'https://ui-avatars.com/api/?name=' . urlencode($initials)
-            . '&background=1565c0&color=ffffff&size=128&bold=true';
+            . '&background=' . $bg . '&color=ffffff&size=128&bold=true';
     }
 
-    /**
-     * Nama singkat (untuk tampilan terbatas)
-     */
     public function getNamaSingkatAttribute(): string
     {
         $parts = explode(' ', $this->nama);
@@ -107,9 +95,6 @@ class Muzakki extends Model
             : $this->nama;
     }
 
-    /**
-     * Telepon ter-mask untuk keamanan (0812****5678)
-     */
     public function getTeleponMaskAttribute(): string
     {
         if (strlen($this->telepon) < 8) {
@@ -121,37 +106,37 @@ class Muzakki extends Model
             . substr($this->telepon, -4);
     }
 
+    /**
+     * Label jenis kelamin yang mudah dibaca
+     */
+    public function getJenisKelaminLabelAttribute(): string
+    {
+        return match ($this->jenis_kelamin) {
+            'laki-laki'  => 'Laki-laki',
+            'perempuan'  => 'Perempuan',
+            default      => '-',
+        };
+    }
+
     // ============================================================
     // SCOPES
     // ============================================================
 
-    /**
-     * Hanya muzakki yang aktif
-     */
     public function scopeAktif($query)
     {
         return $query->where('is_active', true);
     }
 
-    /**
-     * Filter berdasarkan lembaga
-     */
     public function scopeByLembaga($query, int $lembagaId)
     {
         return $query->where('lembaga_id', $lembagaId);
     }
 
-    /**
-     * Muzakki yang punya akun (terhubung ke pengguna)
-     */
     public function scopeBerakun($query)
     {
         return $query->whereNotNull('pengguna_id');
     }
 
-    /**
-     * Search by nama, telepon, atau email
-     */
     public function scopeSearch($query, string $keyword)
     {
         return $query->where(function ($q) use ($keyword) {
@@ -166,17 +151,11 @@ class Muzakki extends Model
     // HELPERS
     // ============================================================
 
-    /**
-     * Cek apakah muzakki punya akun login
-     */
     public function hasAkun(): bool
     {
         return !is_null($this->pengguna_id);
     }
 
-    /**
-     * Total nominal zakat yang pernah dibayar
-     */
     public function totalZakat(): int
     {
         return $this->transaksiPenerimaan()
@@ -184,17 +163,11 @@ class Muzakki extends Model
             ->sum('jumlah_bayar');
     }
 
-    /**
-     * Jumlah transaksi zakat
-     */
     public function jumlahTransaksi(): int
     {
         return $this->transaksiPenerimaan()->count();
     }
 
-    /**
-     * Transaksi zakat terakhir
-     */
     public function transaksiTerakhir()
     {
         return $this->transaksiPenerimaan()

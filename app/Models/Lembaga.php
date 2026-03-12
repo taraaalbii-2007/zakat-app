@@ -27,6 +27,7 @@ class Lembaga extends Model
 
         // DATA ADMIN MASJID - TAMBAHKAN INI
         'admin_nama',
+        'admin_jenis_kelamin',
         'admin_telepon',
         'admin_email',
         'admin_foto',
@@ -481,5 +482,14 @@ class Lembaga extends Model
     public function transaksiPenyaluran()
     {
         return $this->hasMany(\App\Models\TransaksiPenyaluran::class, 'lembaga_id');
+    }
+
+    public function getAdminJenisKelaminLabelAttribute(): string
+    {
+        return match ($this->admin_jenis_kelamin) {
+            'laki-laki' => 'Laki-laki',
+            'perempuan' => 'Perempuan',
+            default     => '-',
+        };
     }
 }

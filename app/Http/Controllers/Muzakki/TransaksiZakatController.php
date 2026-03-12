@@ -318,8 +318,6 @@ class TransaksiZakatController extends Controller
         ];
 
         if ($isDijemput) {
-            $rules['latitude']  = 'required|numeric|between:-90,90';
-            $rules['longitude'] = 'required|numeric|between:-180,180';
             $rules['amil_id']   = 'nullable|exists:amil,id';
         }
 
@@ -365,8 +363,6 @@ class TransaksiZakatController extends Controller
             'jumlah_dibayar.required'  => 'Jumlah dibayar wajib diisi.',
             'jumlah_dibayar.min'       => 'Jumlah dibayar harus lebih dari 0.',
             'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
-            'latitude.required'        => 'Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".',
-            'longitude.required'       => 'Lokasi GPS wajib dideteksi. Klik tombol "Dapatkan Lokasi GPS Saya".',
         ];
     }
 
@@ -399,8 +395,6 @@ class TransaksiZakatController extends Controller
      */
     private function isiDataDijemput(TransaksiPenerimaan $transaksi, Request $request): void
     {
-        $transaksi->latitude           = $request->latitude;
-        $transaksi->longitude          = $request->longitude;
         $transaksi->amil_id            = $request->amil_id ?: null;
         $transaksi->status             = 'pending';
         $transaksi->status_penjemputan = 'menunggu';

@@ -60,15 +60,9 @@
         font-size: .65rem; font-weight: 700;
         flex-shrink: 0;
     }
-    .cp-step.done  .cp-step-dot {
-        background: #f0fdf4; border-color: #86efac; color: #16a34a;
-    }
-    .cp-step.active .cp-step-dot {
-        background: #16a34a; border-color: #16a34a; color: #fff;
-    }
-    .cp-step-line {
-        flex: 1; height: 2px; background: #e5e7eb; margin: 0 .4rem;
-    }
+    .cp-step.done  .cp-step-dot { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+    .cp-step.active .cp-step-dot { background: #16a34a; border-color: #16a34a; color: #fff; }
+    .cp-step-line { flex: 1; height: 2px; background: #e5e7eb; margin: 0 .4rem; }
     .cp-step-line.done { background: #86efac; }
 
     /* ══════════════════════════════════
@@ -154,18 +148,14 @@
     }
     .lg-input.err { border-color: #f43f5e; }
     .lg-input.err:focus { box-shadow: 0 0 0 3px rgba(244,63,94,.1); }
-
     .lg-input:-webkit-autofill,
     .lg-input:-webkit-autofill:hover,
     .lg-input:-webkit-autofill:focus {
         -webkit-box-shadow: 0 0 0 999px #ffffff inset !important;
         -webkit-text-fill-color: #111827 !important;
-        transition: background-color 9999s ease 0s;
     }
 
-    /* ══════════════════════════════════
-       SELECT — samakan dengan input biasa
-    ══════════════════════════════════ */
+    /* SELECT */
     select.lg-input {
         background-color: #ffffff !important;
         color: #111827 !important;
@@ -177,22 +167,62 @@
         cursor: pointer;
     }
     select.lg-input:hover { border-color: #d1d5db; }
-    select.lg-input:focus {
-        border-color: #16a34a;
-        box-shadow: 0 0 0 3px rgba(22,163,74,.1);
-    }
-    /* Placeholder option */
+    select.lg-input:focus { border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.1); }
     select.lg-input option[value=""] { color: #c4cad4; }
-    select.lg-input option            { color: #111827; background: #ffffff; }
+    select.lg-input option { color: #111827; background: #ffffff; }
+
+    /* TEXTAREA */
+    textarea.lg-input {
+        height: auto;
+        min-height: 80px;
+        padding-top: .65rem;
+        padding-bottom: .65rem;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    /* GENDER TOGGLE */
+    .gender-toggle {
+        display: flex;
+        gap: .6rem;
+    }
+    .gender-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        height: 44px;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 10px;
+        background: #ffffff;
+        font-family: 'Inter', sans-serif;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all .2s;
+        user-select: none;
+    }
+    .gender-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .gender-btn:hover { border-color: #d1d5db; background: #f9fafb; }
+    .gender-btn.active-laki {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #1d4ed8;
+    }
+    .gender-btn.active-perempuan {
+        background: #fdf2f8;
+        border-color: #ec4899;
+        color: #be185d;
+    }
 
     /* PASSWORD TOGGLE */
     .lg-input.has-toggle { padding-right: 3rem; }
     .pw-btn {
-        position: absolute;
-        right: .75rem; top: 50%;
+        position: absolute; right: .75rem; top: 50%;
         transform: translateY(-50%);
-        background: none; border: none;
-        padding: .3rem; color: #9ca3af;
+        background: none; border: none; padding: .3rem; color: #9ca3af;
         cursor: pointer; border-radius: 6px;
         display: flex; align-items: center; justify-content: center;
         transition: color .2s; line-height: 1;
@@ -209,26 +239,15 @@
     }
     .lg-err svg { width: 12px; height: 12px; flex-shrink: 0; }
 
-    .lg-hint {
-        font-size: .7rem; color: #9ca3af; margin-top: .3rem;
-    }
+    .lg-hint { font-size: .7rem; color: #9ca3af; margin-top: .3rem; }
     .lg-hint.success { color: #16a34a; font-weight: 600; }
     .lg-hint.error   { color: #f43f5e; font-weight: 600; }
     .lg-hint.checking{ color: #f59e0b; }
 
-    /* ══════════════════════════════════
-       PASSWORD STRENGTH
-    ══════════════════════════════════ */
+    /* PASSWORD STRENGTH */
     .pw-strength { margin-top: .4rem; }
-    .pw-strength-bar {
-        height: 4px; border-radius: 2px;
-        background: #f3f4f6; margin-bottom: .25rem; overflow: hidden;
-    }
-    .pw-strength-fill {
-        height: 100%; width: 0%;
-        border-radius: 2px;
-        transition: width .3s, background .3s;
-    }
+    .pw-strength-bar { height: 4px; border-radius: 2px; background: #f3f4f6; margin-bottom: .25rem; overflow: hidden; }
+    .pw-strength-fill { height: 100%; width: 0%; border-radius: 2px; transition: width .3s, background .3s; }
 
     /* ══════════════════════════════════
        2-COLUMN GRID
@@ -239,9 +258,7 @@
         gap: .85rem;
         margin-bottom: .9rem;
     }
-    @media (max-width: 520px) {
-        .cp-row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 520px) { .cp-row { grid-template-columns: 1fr; } }
 
     /* ══════════════════════════════════
        FILE UPLOAD
@@ -266,12 +283,7 @@
     .cp-file-label input[type="file"] { display: none; }
 
     /* FOTO PREVIEW */
-    .cp-foto-wrap {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-top: .6rem;
-    }
+    .cp-foto-wrap { display: flex; align-items: center; gap: 1rem; margin-top: .6rem; }
     .cp-foto-thumb {
         width: 60px; height: 60px;
         border-radius: 50%;
@@ -285,43 +297,29 @@
     .cp-foto-thumb svg { width: 22px; height: 22px; color: #d1d5db; }
     .cp-foto-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* ══════════════════════════════════
-       COMPRESS INFO — mirip gambar referensi
-    ══════════════════════════════════ */
+    /* COMPRESS INFO */
     .cp-compress-info {
         display: none;
-        align-items: center;
-        gap: .3rem;
-        font-size: .72rem;
-        font-weight: 700;
-        color: #16a34a;
+        align-items: center; gap: .3rem;
+        font-size: .72rem; font-weight: 700; color: #16a34a;
         margin-top: .4rem;
     }
     .cp-compress-info.show { display: flex; }
     .cp-compress-info svg { width: 13px; height: 13px; flex-shrink: 0; }
 
-    /* ══════════════════════════════════
-       LEMBAGA ZAKAT INFO CARD
-    ══════════════════════════════════ */
+    /* LEMBAGA INFO */
     .cp-lembaga-info {
         display: none;
-        align-items: center;
-        gap: .4rem;
+        align-items: center; gap: .4rem;
         margin-top: .4rem;
         padding: .5rem .75rem;
-        background: #f0fdf4;
-        border: 1.5px solid #bbf7d0;
-        border-radius: 8px;
-        font-size: .72rem;
-        color: #15803d;
-        font-weight: 500;
+        background: #f0fdf4; border: 1.5px solid #bbf7d0;
+        border-radius: 8px; font-size: .72rem; color: #15803d; font-weight: 500;
     }
     .cp-lembaga-info.show { display: flex; }
     .cp-lembaga-info svg { width: 13px; height: 13px; flex-shrink: 0; }
 
-    /* ══════════════════════════════════
-       ALERT BOX
-    ══════════════════════════════════ */
+    /* ALERT */
     .cp-alert {
         display: flex; align-items: flex-start; gap: .5rem;
         background: #fff1f2; border: 1.5px solid #fecdd3;
@@ -334,16 +332,10 @@
     .cp-alert ul { margin: 0; padding-left: 1rem; }
     .cp-alert li { margin-bottom: .15rem; }
 
-    /* ══════════════════════════════════
-       DIVIDER
-    ══════════════════════════════════ */
-    .cp-divider {
-        height: 1px; background: #f3f4f6; margin: 1.25rem 0;
-    }
+    /* DIVIDER */
+    .cp-divider { height: 1px; background: #f3f4f6; margin: 1.25rem 0; }
 
-    /* ══════════════════════════════════
-       BUTTON SUBMIT
-    ══════════════════════════════════ */
+    /* SUBMIT BUTTON */
     .btn-masuk {
         display: flex; align-items: center; justify-content: center; gap: .5rem;
         width: 100%; height: 48px; padding: 0 1.25rem;
@@ -352,17 +344,12 @@
         font-family: 'Inter', sans-serif;
         font-size: .88rem; font-weight: 700;
         border: none; border-radius: 10px; cursor: pointer;
-        white-space: nowrap;
         box-shadow: 0 4px 14px rgba(22,163,74,.35);
         transition: transform .18s, box-shadow .18s;
-        -webkit-appearance: none;
         margin-top: 1.25rem;
     }
-    .btn-masuk svg { width: 18px; height: 18px; flex-shrink: 0; display: block; }
-    .btn-masuk:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px rgba(22,163,74,.42);
-    }
+    .btn-masuk svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .btn-masuk:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(22,163,74,.42); }
     .btn-masuk:active { transform: translateY(0); }
     .btn-masuk:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
@@ -378,9 +365,7 @@
     .btn-masuk.loading .btn-label   { display: none; }
     .btn-label { display: flex; align-items: center; gap: .5rem; line-height: 1; }
 
-    /* ══════════════════════════════════
-       LOADING OVERLAY
-    ══════════════════════════════════ */
+    /* LOADING OVERLAY */
     .cp-overlay {
         position: fixed; inset: 0;
         background: rgba(0,0,0,.4);
@@ -396,15 +381,13 @@
     }
     .cp-overlay-spinner {
         width: 36px; height: 36px;
-        border: 3px solid #dcfce7;
-        border-top-color: #16a34a; border-radius: 50%;
-        animation: spin .6s linear infinite;
-        margin: 0 auto .75rem;
+        border: 3px solid #dcfce7; border-top-color: #16a34a; border-radius: 50%;
+        animation: spin .6s linear infinite; margin: 0 auto .75rem;
     }
-    .cp-overlay-box p {
-        font-size: .78rem; color: #6b7280; margin: 0;
-        font-family: 'Inter', sans-serif;
-    }
+    .cp-overlay-box p { font-size: .78rem; color: #6b7280; margin: 0; font-family: 'Inter', sans-serif; }
+
+    /* NIK INPUT — monospace */
+    #nik { font-family: 'Courier New', monospace; letter-spacing: .05em; }
 </style>
 @endpush
 
@@ -456,9 +439,9 @@
         <input type="hidden" name="recaptcha_token" id="recaptcha_token">
     @endif
 
-    {{-- ════════════════════════════
+    {{-- ════════════════════════════════════
          SECTION 1 — DATA AKUN
-    ════════════════════════════ --}}
+    ════════════════════════════════════ --}}
     <div class="cp-section">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -485,9 +468,7 @@
 
         {{-- Username --}}
         <div class="lg-group">
-            <label for="username" class="lg-label">
-                Username <span class="req">*</span>
-            </label>
+            <label for="username" class="lg-label">Username <span class="req">*</span></label>
             @if($isGoogleUser)
                 <div class="lg-wrap">
                     <span class="lg-icon">
@@ -603,9 +584,9 @@
 
     <div class="cp-divider"></div>
 
-    {{-- ════════════════════════════
+    {{-- ════════════════════════════════════
          SECTION 2 — DATA DIRI
-    ════════════════════════════ --}}
+    ════════════════════════════════════ --}}
     <div class="cp-section">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -666,21 +647,35 @@
         </div>
     </div>
 
-    {{-- Foto Profil --}}
+    {{-- Jenis Kelamin --}}
     <div class="lg-group">
-        <label class="lg-label">
-            Foto Profil <span class="opt">(Opsional)</span>
-        </label>
-        <label class="cp-file-label" for="foto">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span id="fileName">Klik untuk pilih foto profil…</span>
-            <input type="file" name="foto" id="foto"
-                   accept="image/jpeg,image/jpg,image/png">
-        </label>
-        @error('foto')
+        <label class="lg-label">Jenis Kelamin <span class="req">*</span></label>
+        <input type="hidden" name="jenis_kelamin" id="jenis_kelamin_input" value="{{ old('jenis_kelamin', '') }}">
+        <div class="gender-toggle">
+            {{-- Laki-laki --}}
+            <button type="button" class="gender-btn" id="btnLaki"
+                    onclick="setGender('laki-laki')">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="10" cy="7" r="4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M10 11c-5 0-7 2-7 4v1h14v-1c0-2-2-4-7-4z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 3l4 4m0 0l-4 4m4-4H14"/>
+                </svg>
+                Laki-laki
+            </button>
+            {{-- Perempuan --}}
+            <button type="button" class="gender-btn" id="btnPerempuan"
+                    onclick="setGender('perempuan')">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 12c-5 0-7 2-7 4v1h14v-1c0-2-2-4-7-4z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v5m-2-2h4"/>
+                </svg>
+                Perempuan
+            </button>
+        </div>
+        @error('jenis_kelamin')
             <div class="lg-err">
                 <svg fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -688,38 +683,119 @@
                 {{ $message }}
             </div>
         @enderror
+        <span class="lg-hint" id="genderHint">Pilih salah satu</span>
+    </div>
 
-        <span class="lg-hint">Maks. 1 foto · JPG, PNG · Maks. 2MB per foto</span>
-
-        {{-- Info kompresi — muncul setelah foto dipilih --}}
-        <div class="cp-compress-info" id="compressInfo">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            <span id="compressText"></span>
-        </div>
-
-        <div class="cp-foto-wrap">
-            <div class="cp-foto-thumb" id="fotoThumb">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+    <div class="cp-row">
+        {{-- NIK --}}
+        <div class="lg-group">
+            <label for="nik" class="lg-label">
+                NIK <span class="opt">(Opsional)</span>
+            </label>
+            <div class="lg-wrap">
+                <span class="lg-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                    </svg>
+                </span>
+                <input type="text" name="nik" id="nik"
+                       class="lg-input {{ $errors->has('nik') ? 'err' : '' }}"
+                       value="{{ old('nik') }}"
+                       maxlength="16" pattern="[0-9]{16}"
+                       inputmode="numeric"
+                       placeholder="16 digit NIK KTP">
             </div>
-            <span class="lg-hint" id="fotoSlotText">0 dari 1 slot terisi</span>
+            @error('nik')
+                <div class="lg-err">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ $message }}
+                </div>
+            @enderror
+            <span class="lg-hint" id="nikHelp">16 digit angka sesuai KTP</span>
         </div>
+
+        {{-- Foto Profil (pindah ke grid kanan) --}}
+        <div class="lg-group">
+            <label class="lg-label">
+                Foto Profil <span class="opt">(Opsional)</span>
+            </label>
+            <label class="cp-file-label" for="foto">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <span id="fileName">Pilih foto…</span>
+                <input type="file" name="foto" id="foto"
+                       accept="image/jpeg,image/jpg,image/png">
+            </label>
+            @error('foto')
+                <div class="lg-err">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ $message }}
+                </div>
+            @enderror
+            <span class="lg-hint">JPG/PNG · Maks. 2MB</span>
+            <div class="cp-compress-info" id="compressInfo">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <span id="compressText"></span>
+            </div>
+            <div class="cp-foto-wrap">
+                <div class="cp-foto-thumb" id="fotoThumb">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <span class="lg-hint" id="fotoSlotText">Belum ada foto</span>
+            </div>
+        </div>
+    </div>
+
+    {{-- Alamat --}}
+    <div class="lg-group">
+        <label for="alamat" class="lg-label">
+            Alamat <span class="opt">(Opsional)</span>
+        </label>
+        <div class="lg-wrap">
+            <span class="lg-icon" style="top: 1rem; transform: none;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </span>
+            <textarea name="alamat" id="alamat"
+                      class="lg-input {{ $errors->has('alamat') ? 'err' : '' }}"
+                      maxlength="500" rows="3"
+                      placeholder="Jl. Contoh No. 1, RT 01/RW 02, Kelurahan, Kecamatan, Kota">{{ old('alamat') }}</textarea>
+        </div>
+        @error('alamat')
+            <div class="lg-err">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+                {{ $message }}
+            </div>
+        @enderror
+        <span class="lg-hint">Alamat lengkap tempat tinggal Anda</span>
     </div>
 
     <div class="cp-divider"></div>
 
-    {{-- ════════════════════════════
+    {{-- ════════════════════════════════════
          SECTION 3 — PILIH LEMBAGA ZAKAT
-    ════════════════════════════ --}}
+    ════════════════════════════════════ --}}
     <div class="cp-section">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
         </svg>
         Pilih Lembaga Zakat
     </div>
@@ -782,7 +858,7 @@
 <div class="cp-overlay" id="loadingOverlay">
     <div class="cp-overlay-box">
         <div class="cp-overlay-spinner"></div>
-        <p>Menyimpan &amp; mengompresi foto…</p>
+        <p>Menyimpan data…</p>
     </div>
 </div>
 
@@ -801,13 +877,54 @@
 document.addEventListener('DOMContentLoaded', function () {
     const isGoogleUser = {{ $isGoogleUser ? 'true' : 'false' }};
 
-    /* ── PLACEHOLDER SVG ── */
-    const FOTO_ICON_SVG = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round"
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-    </svg>`;
+    /* ─── GENDER TOGGLE ─── */
+    const genderInput  = document.getElementById('jenis_kelamin_input');
+    const btnLaki      = document.getElementById('btnLaki');
+    const btnPerempuan = document.getElementById('btnPerempuan');
+    const genderHint   = document.getElementById('genderHint');
 
-    /* ── PASSWORD TOGGLE ── */
+    window.setGender = function(val) {
+        genderInput.value = val;
+
+        btnLaki.classList.remove('active-laki', 'active-perempuan');
+        btnPerempuan.classList.remove('active-laki', 'active-perempuan');
+
+        if (val === 'laki-laki') {
+            btnLaki.classList.add('active-laki');
+            genderHint.className   = 'lg-hint success';
+            genderHint.textContent = '✓ Laki-laki dipilih';
+        } else {
+            btnPerempuan.classList.add('active-perempuan');
+            genderHint.className   = 'lg-hint success';
+            genderHint.textContent = '✓ Perempuan dipilih';
+        }
+    };
+
+    // Restore old value on validation error
+    const oldGender = '{{ old('jenis_kelamin', '') }}';
+    if (oldGender) setGender(oldGender);
+
+    /* ─── NIK — only digits ─── */
+    const nikInput = document.getElementById('nik');
+    const nikHelp  = document.getElementById('nikHelp');
+    if (nikInput) {
+        nikInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 16);
+            const len  = this.value.length;
+            if (len === 0) {
+                nikHelp.className   = 'lg-hint';
+                nikHelp.textContent = '16 digit angka sesuai KTP';
+            } else if (len < 16) {
+                nikHelp.className   = 'lg-hint error';
+                nikHelp.textContent = `${len}/16 digit`;
+            } else {
+                nikHelp.className   = 'lg-hint success';
+                nikHelp.textContent = '✓ NIK valid (16 digit)';
+            }
+        });
+    }
+
+    /* ─── PASSWORD TOGGLE ─── */
     window.togglePw = function(inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon  = document.getElementById(iconId);
@@ -818,7 +935,7 @@ document.addEventListener('DOMContentLoaded', function () {
             : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
     };
 
-    /* ── USERNAME CHECK ── */
+    /* ─── USERNAME CHECK ─── */
     const usernameInput = document.getElementById('username');
     if (usernameInput && !isGoogleUser) {
         let timer;
@@ -852,12 +969,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ── PASSWORD STRENGTH ── */
+    /* ─── PASSWORD STRENGTH ─── */
     const passwordInput = document.getElementById('password');
     if (passwordInput && !isGoogleUser) {
         const fill = document.getElementById('strengthFill');
         const text = document.getElementById('strengthText');
-
         passwordInput.addEventListener('input', function () {
             const pw = this.value;
             let s = 0;
@@ -878,23 +994,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const matchText    = document.getElementById('passwordMatchText');
         function checkMatch() {
             if (!confirmInput.value) { matchText.textContent = ''; confirmInput.setCustomValidity(''); return; }
-            if (confirmInput.value !== passwordInput.value) {
-                matchText.className = 'lg-hint error';
-                matchText.textContent = '✗ Password tidak cocok';
-                confirmInput.setCustomValidity('tidak cocok');
-            } else {
-                matchText.className = 'lg-hint success';
-                matchText.textContent = '✓ Password cocok';
-                confirmInput.setCustomValidity('');
-            }
+            const match = confirmInput.value === passwordInput.value;
+            matchText.className = match ? 'lg-hint success' : 'lg-hint error';
+            matchText.textContent = match ? '✓ Password cocok' : '✗ Password tidak cocok';
+            confirmInput.setCustomValidity(match ? '' : 'tidak cocok');
         }
         confirmInput.addEventListener('input', checkMatch);
         passwordInput.addEventListener('input', () => { if (confirmInput.value) checkMatch(); });
     }
 
-    /* ══════════════════════════════════════
-       FOTO PREVIEW + INFO KOMPRESI ESTIMASI
-    ══════════════════════════════════════ */
+    /* ─── FOTO PREVIEW ─── */
+    const FOTO_ICON_SVG = `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    </svg>`;
+
+    function estimateWebpKb(file) {
+        const kb    = file.size / 1024;
+        const ratio = file.type === 'image/png' ? 0.09 : 0.16;
+        return Math.max(15, Math.round(kb * ratio));
+    }
+
     const fotoInput    = document.getElementById('foto');
     const fotoThumb    = document.getElementById('fotoThumb');
     const fileName     = document.getElementById('fileName');
@@ -902,67 +1022,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const compressText = document.getElementById('compressText');
     const fotoSlotText = document.getElementById('fotoSlotText');
 
-    /**
-     * Estimasi ukuran WebP setelah dikompresi oleh Intervention Image (quality 82).
-     * PNG biasanya lebih besar → rasio lebih kecil.
-     * JPEG sudah terkompresi → rasio sedikit lebih tinggi.
-     */
-    function estimateWebpKb(file) {
-        const kb    = file.size / 1024;
-        const ratio = file.type === 'image/png' ? 0.09 : 0.16;
-        return Math.max(15, Math.round(kb * ratio));
-    }
-
     function resetFotoPreview() {
         fotoThumb.innerHTML = FOTO_ICON_SVG;
         fotoThumb.classList.remove('has-image');
-        fileName.textContent = 'Klik untuk pilih foto profil…';
+        fileName.textContent     = 'Pilih foto…';
         compressInfo.classList.remove('show');
         compressText.textContent = '';
-        fotoSlotText.textContent = '0 dari 1 slot terisi';
+        fotoSlotText.textContent = 'Belum ada foto';
     }
 
     if (fotoInput) {
         fotoInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) { resetFotoPreview(); return; }
-
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-            if (!allowedTypes.includes(file.type)) {
+            if (!['image/jpeg','image/jpg','image/png'].includes(file.type)) {
                 alert('Format tidak didukung. Gunakan JPG atau PNG.');
-                this.value = '';
-                resetFotoPreview();
-                return;
+                this.value = ''; resetFotoPreview(); return;
             }
-
             if (file.size > 2 * 1024 * 1024) {
-                alert('Ukuran file melebihi 2MB. Pilih foto yang lebih kecil.');
-                this.value = '';
-                resetFotoPreview();
-                return;
+                alert('Ukuran file melebihi 2MB.');
+                this.value = ''; resetFotoPreview(); return;
             }
-
             const reader = new FileReader();
             reader.onload = ev => {
-                // Preview thumbnail
                 fotoThumb.innerHTML = `<img src="${ev.target.result}" alt="Foto Profil">`;
                 fotoThumb.classList.add('has-image');
-                fileName.textContent = file.name;
-
-                // Hitung & tampilkan info kompresi estimasi
-                const originalKb  = Math.round(file.size / 1024);
-                const estimatedKb = estimateWebpKb(file);
-                compressText.textContent = `Dikompresi: ${originalKb}KB ke ±${estimatedKb}KB (WebP)`;
+                fileName.textContent     = file.name;
+                const originalKb         = Math.round(file.size / 1024);
+                const estimatedKb        = estimateWebpKb(file);
+                compressText.textContent = `Dikompresi: ${originalKb}KB → ±${estimatedKb}KB (WebP)`;
                 compressInfo.classList.add('show');
-
-                // Update slot info
-                fotoSlotText.textContent = '1 dari 1 slot terisi';
+                fotoSlotText.textContent = '1 foto dipilih';
             };
             reader.readAsDataURL(file);
         });
     }
 
-    /* ── LEMBAGA ZAKAT INFO ── */
+    /* ─── LEMBAGA INFO ─── */
     const lembagaSelect  = document.getElementById('lembaga_id');
     const lembagaInfo    = document.getElementById('lembagaInfo');
     const lembagaInfoTxt = document.getElementById('lembagaInfoText');
@@ -978,13 +1074,22 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     if (lembagaSelect.value) lembagaSelect.dispatchEvent(new Event('change'));
 
-    /* ── FORM SUBMIT ── */
+    /* ─── FORM SUBMIT ─── */
     const form           = document.getElementById('muzakkiProfileForm');
     const submitBtn      = document.getElementById('submitBtn');
     const loadingOverlay = document.getElementById('loadingOverlay');
 
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
+
+        // Validasi jenis kelamin wajib diisi
+        if (!genderInput.value) {
+            genderHint.className   = 'lg-hint error';
+            genderHint.textContent = '✗ Pilih jenis kelamin terlebih dahulu';
+            document.querySelector('.gender-toggle').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
         loadingOverlay.classList.add('active');

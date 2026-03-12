@@ -10,13 +10,7 @@
 
     @php
         $config = \App\Models\KonfigurasiAplikasi::first();
-
-        $logoBase64 = null;
-        $logoPath = base_path('public/images/logo.png');
-        if (file_exists($logoPath)) {
-            $logoMime = mime_content_type($logoPath);
-            $logoBase64 = 'data:' . $logoMime . ';base64,' . base64_encode(file_get_contents($logoPath));
-        }
+        $logoUrl = asset('images/logo.png');
     @endphp
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f5f7; padding:40px 16px;">
@@ -29,14 +23,12 @@
                     <tr>
                         <td style="background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); padding:40px 40px 36px; text-align:center;">
 
-                            @if($logoBase64)
                             <div style="margin-bottom:20px;">
-                                <img src="{{ $logoBase64 }}"
+                                <img src="{{ $logoUrl }}"
                                      alt="Logo {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}"
                                      width="72" height="72"
                                      style="width:72px; height:72px; border-radius:50%; object-fit:cover; background-color:#ffffff; display:inline-block;">
                             </div>
-                            @endif
 
                             <h1 style="margin:0 0 8px; color:#ffffff; font-size:24px; font-weight:700;">
                                 Registrasi Berhasil!

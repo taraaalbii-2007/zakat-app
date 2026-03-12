@@ -10,14 +10,7 @@
 
     @php
         $config = \App\Models\KonfigurasiAplikasi::first();
-
-        // Ambil logo langsung dari public/images/logo.png
-        $logoBase64 = null;
-        $logoPath = base_path('public/images/logo.png');
-        if (file_exists($logoPath)) {
-            $logoMime = mime_content_type($logoPath);
-            $logoBase64 = 'data:' . $logoMime . ';base64,' . base64_encode(file_get_contents($logoPath));
-        }
+        $logoUrl = asset('images/logo.png');
     @endphp
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f5f7; padding:40px 16px;">
@@ -30,20 +23,18 @@
                     <tr>
                         <td style="background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); padding:40px 40px 36px; text-align:center;">
 
-                            @if($logoBase64)
                             <div style="margin-bottom:20px;">
-                                <img src="{{ $logoBase64 }}"
-                                     alt="Logo {{ $config->nama_aplikasi ?? 'Niat Zakat' }}"
+                                <img src="{{ $logoUrl }}"
+                                     alt="Logo {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}"
                                      width="72" height="72"
                                      style="width:72px; height:72px; border-radius:50%; object-fit:cover; background-color:#ffffff; display:inline-block;">
                             </div>
-                            @endif
 
                             <h1 style="margin:0 0 8px; color:#ffffff; font-size:24px; font-weight:700;">
                                 Verifikasi Email Anda
                             </h1>
                             <p style="margin:0; color:rgba(255,255,255,0.85); font-size:14px; line-height:1.6;">
-                                Gunakan kode OTP berikut untuk memverifikasi email Anda di <strong style="color:#ffffff;">{{ $config->nama_aplikasi ?? 'Niat Zakat' }}</strong>
+                                Gunakan kode OTP berikut untuk memverifikasi email Anda di <strong style="color:#ffffff;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>
                             </p>
                         </td>
                     </tr>
@@ -56,7 +47,7 @@
                                 Assalamu'alaikum,
                             </p>
                             <p style="margin:0 0 32px; color:#6b7280; font-size:14px; line-height:1.7;">
-                                Terima kasih telah bergabung dengan <strong style="color:#2d6936;">Niat Zakat</strong>. Berikut adalah kode OTP untuk memverifikasi email Anda:
+                                Terima kasih telah bergabung dengan <strong style="color:#2d6936;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>. Berikut adalah kode OTP untuk memverifikasi email Anda:
                             </p>
 
                             <!-- OTP -->
@@ -90,7 +81,7 @@
                             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                                 <tr>
                                     <td style="padding:4px 0; color:#6b7280; font-size:13px; line-height:1.6;">
-                                        - <strong style="color:#374151;">Jangan bagikan</strong> kode OTP ini kepada siapapun, termasuk petugas Niat Zakat.
+                                        - <strong style="color:#374151;">Jangan bagikan</strong> kode OTP ini kepada siapapun, termasuk petugas {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}.
                                     </td>
                                 </tr>
                                 <tr>
@@ -117,10 +108,10 @@
                     <tr>
                         <td style="background-color:#f8faf8; padding:24px 48px; text-align:center; border-top:1px solid #f0f0f0;">
                             <p style="margin:0 0 4px; color:#2d6936; font-size:15px; font-weight:700;">
-                                {{ $config->nama_aplikasi ?? 'Niat Zakat' }}
+                                {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}
                             </p>
                             <p style="margin:0 0 2px; color:#9ca3af; font-size:11px;">
-                                &copy; {{ date('Y') }} {{ $config->nama_aplikasi ?? 'Niat Zakat' }}. All Rights Reserved.
+                                &copy; {{ date('Y') }} {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}. All Rights Reserved.
                             </p>
                             <p style="margin:0; color:#c0c0c0; font-size:11px;">
                                 Email ini dikirim secara otomatis. Mohon tidak membalas email ini.
