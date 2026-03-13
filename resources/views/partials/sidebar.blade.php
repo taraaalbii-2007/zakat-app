@@ -886,8 +886,6 @@
     <div class="px-5 py-4" style="border-top: 1px solid #f3f4f6;">
         <div class="flex items-center justify-between">
             <p class="text-[11px] text-gray-400 font-medium">© {{ date('Y') }} {{ $appConfig->nama_aplikasi ?? 'Niat Zakat' }}</p>
-            <span class="text-[10px] text-gray-300 font-semibold px-2 py-0.5 rounded-full"
-                style="background:#f9fafb;">v{{ $appConfig->versi ?? '1.0.0' }}</span>
         </div>
     </div>
 </aside>
