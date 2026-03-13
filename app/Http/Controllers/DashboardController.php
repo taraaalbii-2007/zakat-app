@@ -110,145 +110,145 @@ class DashboardController extends Controller
     // ADMIN MASJID DASHBOARD
     // ================================================================
 
-protected function adminLembagaDashboard()
-{
-    $user    = Auth::user();
-    $lembaga = $user->lembaga;
+    protected function adminLembagaDashboard()
+    {
+        $user    = Auth::user();
+        $lembaga = $user->lembaga;
 
-    // ── Pengecekan: admin belum terhubung ke lembaga ─────────────────────
-    if (!$lembaga) {
-    // Logout user agar tidak loop
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    
-    return redirect()->route('login')
-        ->with('error', 'Akun Anda belum terhubung ke lembaga manapun. Hubungi superadmin.');
-}
+        // ── Pengecekan: admin belum terhubung ke lembaga ─────────────────────
+        if (!$lembaga) {
+            // Logout user agar tidak loop
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
 
-    $lembagaId    = $lembaga->id;
-    $breadcrumbs  = [['name' => 'Dashboard Admin Lembaga', 'url' => null]];
-    $periodeAwal  = now()->startOfMonth();
-    $periodeAkhir = now()->endOfMonth();
+            return redirect()->route('login')
+                ->with('error', 'Akun Anda belum terhubung ke lembaga manapun. Hubungi superadmin.');
+        }
 
-    // ── Keuangan Bulan Ini ───────────────────────────────────────────────
-    $totalPenerimaanBulanIni = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-        ->where('status', 'verified')
-        ->whereBetween('tanggal_transaksi', [$periodeAwal, $periodeAkhir])
-        ->sum('jumlah');
+        $lembagaId    = $lembaga->id;
+        $breadcrumbs  = [['name' => 'Dashboard Admin Lembaga', 'url' => null]];
+        $periodeAwal  = now()->startOfMonth();
+        $periodeAkhir = now()->endOfMonth();
 
-    $totalPenyaluranBulanIni = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->whereIn('status', ['disetujui', 'disalurkan'])
-        ->whereBetween('tanggal_penyaluran', [$periodeAwal, $periodeAkhir])
-        ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+        // ── Keuangan Bulan Ini ───────────────────────────────────────────────
+        $totalPenerimaanBulanIni = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('status', 'verified')
+            ->whereBetween('tanggal_transaksi', [$periodeAwal, $periodeAkhir])
+            ->sum('jumlah');
 
-    // Saldo = all-time penerimaan verified - all-time penyaluran
-    $saldoZakat = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-        ->where('status', 'verified')
-        ->sum('jumlah')
-        -
-        TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->whereIn('status', ['disetujui', 'disalurkan'])
-        ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+        $totalPenyaluranBulanIni = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->whereBetween('tanggal_penyaluran', [$periodeAwal, $periodeAkhir])
+            ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
 
-    // ── SDM ──────────────────────────────────────────────────────────────
-    $totalAmil = Amil::where('lembaga_id', $lembagaId)
-        ->where('status', 'aktif')
-        ->count();
+        // Saldo = all-time penerimaan verified - all-time penyaluran
+        $saldoZakat = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('status', 'verified')
+            ->sum('jumlah')
+            -
+            TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
 
-    $jumlahMuzakki = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-        ->where('status', 'verified')
-        ->distinct('muzakki_nama')
-        ->count('muzakki_nama');
+        // ── SDM ──────────────────────────────────────────────────────────────
+        $totalAmil = Amil::where('lembaga_id', $lembagaId)
+            ->where('status', 'aktif')
+            ->count();
 
-    $jumlahMustahik = Mustahik::where('lembaga_id', $lembagaId)
-        ->where('status_verifikasi', 'verified')
-        ->where('is_active', true)
-        ->count();
+        $jumlahMuzakki = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('status', 'verified')
+            ->distinct('muzakki_nama')
+            ->count('muzakki_nama');
 
-    $stats = [
-        'nama_lembaga'               => $lembaga->nama,
-        'kode_lembaga'               => $lembaga->kode_lembaga,
-        'total_amil'                 => $totalAmil,
-        'total_penerimaan_bulan_ini' => $totalPenerimaanBulanIni,
-        'total_penyaluran_bulan_ini' => $totalPenyaluranBulanIni,
-        'saldo_zakat'                => $saldoZakat,
-        'jumlah_muzakki'             => $jumlahMuzakki,
-        'jumlah_mustahik'            => $jumlahMustahik,
-    ];
+        $jumlahMustahik = Mustahik::where('lembaga_id', $lembagaId)
+            ->where('status_verifikasi', 'verified')
+            ->where('is_active', true)
+            ->count();
 
-    // ── Trend 6 Bulan (Penerimaan & Penyaluran) ─────────────────────────
-    $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+        $stats = [
+            'nama_lembaga'               => $lembaga->nama,
+            'kode_lembaga'               => $lembaga->kode_lembaga,
+            'total_amil'                 => $totalAmil,
+            'total_penerimaan_bulan_ini' => $totalPenerimaanBulanIni,
+            'total_penyaluran_bulan_ini' => $totalPenyaluranBulanIni,
+            'saldo_zakat'                => $saldoZakat,
+            'jumlah_muzakki'             => $jumlahMuzakki,
+            'jumlah_mustahik'            => $jumlahMustahik,
+        ];
 
-    $penerimaanPerBulan = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-        ->where('status', 'verified')
-        ->where('tanggal_transaksi', '>=', $sixMonthsAgo)
-        ->selectRaw('DATE_FORMAT(tanggal_transaksi, "%Y-%m") as ym, SUM(jumlah) as total')
-        ->groupBy('ym')
-        ->pluck('total', 'ym');
+        // ── Trend 6 Bulan (Penerimaan & Penyaluran) ─────────────────────────
+        $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
 
-    $penyaluranPerBulan = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->whereIn('status', ['disetujui', 'disalurkan'])
-        ->where('tanggal_penyaluran', '>=', $sixMonthsAgo)
-        ->selectRaw('DATE_FORMAT(tanggal_penyaluran, "%Y-%m") as ym,
+        $penerimaanPerBulan = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('status', 'verified')
+            ->where('tanggal_transaksi', '>=', $sixMonthsAgo)
+            ->selectRaw('DATE_FORMAT(tanggal_transaksi, "%Y-%m") as ym, SUM(jumlah) as total')
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
+
+        $penyaluranPerBulan = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->where('tanggal_penyaluran', '>=', $sixMonthsAgo)
+            ->selectRaw('DATE_FORMAT(tanggal_penyaluran, "%Y-%m") as ym,
             SUM(CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END) as total')
-        ->groupBy('ym')
-        ->pluck('total', 'ym');
+            ->groupBy('ym')
+            ->pluck('total', 'ym');
 
-    // Bangun 6 titik lengkap — label tetap ada meski data 0
-    $trendPenerimaan = collect();
-    for ($i = 5; $i >= 0; $i--) {
-        $tgl = now()->subMonths($i)->startOfMonth();
-        $key = $tgl->format('Y-m');
-        $trendPenerimaan->push([
-            'bulan'      => $tgl->translatedFormat('M Y'),
-            'penerimaan' => (float) ($penerimaanPerBulan[$key] ?? 0),
-            'penyaluran' => (float) ($penyaluranPerBulan[$key] ?? 0),
-        ]);
+        // Bangun 6 titik lengkap — label tetap ada meski data 0
+        $trendPenerimaan = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $tgl = now()->subMonths($i)->startOfMonth();
+            $key = $tgl->format('Y-m');
+            $trendPenerimaan->push([
+                'bulan'      => $tgl->translatedFormat('M Y'),
+                'penerimaan' => (float) ($penerimaanPerBulan[$key] ?? 0),
+                'penyaluran' => (float) ($penyaluranPerBulan[$key] ?? 0),
+            ]);
+        }
+
+        $breadcrumbs = [
+            'Dashboard Admin Lembaga' => null,
+        ];
+
+        // ── Approval Penyaluran (draft menunggu persetujuan) ─────────────────
+        $penyaluranPendingApproval = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->where('status', 'draft')
+            ->with(['mustahik', 'kategoriMustahik', 'amil'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        $totalPendingApproval = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->where('status', 'draft')
+            ->count();
+
+        $totalNominalPending = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->where('status', 'draft')
+            ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+
+        // ── Master Data & Lainnya ─────────────────────────────────────────────
+        $hargaTerkini     = HargaEmasPerak::where('is_active', true)->latest('tanggal')->first();
+        $jenisZakatAktif  = JenisZakat::all();
+        $kategoriMustahik = KategoriMustahik::all();
+        $logAktivitas     = LogAktivitas::where('pengguna_id', $user->id)->latest()->take(5)->get();
+
+        return view('dashboard.admin_lembaga', compact(
+            'breadcrumbs',
+            'user',
+            'lembaga',
+            'stats',
+            'hargaTerkini',
+            'jenisZakatAktif',
+            'kategoriMustahik',
+            'trendPenerimaan',
+            'logAktivitas',
+            'penyaluranPendingApproval',
+            'totalPendingApproval',
+            'totalNominalPending',
+            'breadcrumbs'
+        ));
     }
-
-    $breadcrumbs = [
-        'Dashboard Admin Lembaga' => null,
-    ];
-
-    // ── Approval Penyaluran (draft menunggu persetujuan) ─────────────────
-    $penyaluranPendingApproval = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->where('status', 'draft')
-        ->with(['mustahik', 'kategoriMustahik', 'amil'])
-        ->latest()
-        ->take(10)
-        ->get();
-
-    $totalPendingApproval = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->where('status', 'draft')
-        ->count();
-
-    $totalNominalPending = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
-        ->where('status', 'draft')
-        ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
-
-    // ── Master Data & Lainnya ─────────────────────────────────────────────
-    $hargaTerkini     = HargaEmasPerak::where('is_active', true)->latest('tanggal')->first();
-    $jenisZakatAktif  = JenisZakat::all();
-    $kategoriMustahik = KategoriMustahik::all();
-    $logAktivitas     = LogAktivitas::where('pengguna_id', $user->id)->latest()->take(5)->get();
-
-    return view('dashboard.admin_lembaga', compact(
-        'breadcrumbs',
-        'user',
-        'lembaga',
-        'stats',
-        'hargaTerkini',
-        'jenisZakatAktif',
-        'kategoriMustahik',
-        'trendPenerimaan',
-        'logAktivitas',
-        'penyaluranPendingApproval',
-        'totalPendingApproval',
-        'totalNominalPending',
-        'breadcrumbs'
-    ));
-}
 
     // ================================================================
     // AMIL DASHBOARD
@@ -438,6 +438,40 @@ protected function adminLembagaDashboard()
             'zakat_tahun_ini'     => $transaksiTahunIni,
         ];
 
+        // ── Statistik Transparansi Lembaga ──────────────────────────────────
+        $statsLembaga = [];
+        if ($lembagaId) {
+            $totalPenerimaanLembaga  = TransaksiPenerimaan::byLembaga($lembagaId)->verified()->sum('jumlah');
+            $totalPenyaluranLembaga  = TransaksiPenyaluran::byLembaga($lembagaId)
+                ->whereIn('status', ['disetujui', 'disalurkan'])
+                ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
+
+            $statsLembaga = [
+                'total_penerimaan'     => $totalPenerimaanLembaga,
+                'total_penyaluran'     => $totalPenyaluranLembaga,
+                'saldo_kas'            => $totalPenerimaanLembaga - $totalPenyaluranLembaga,
+                'rasio_penyaluran'     => $totalPenerimaanLembaga > 0
+                    ? round(($totalPenyaluranLembaga / $totalPenerimaanLembaga) * 100, 1)
+                    : 0,
+                'penerimaan_bulan_ini' => TransaksiPenerimaan::byLembaga($lembagaId)->verified()
+                    ->whereYear('tanggal_transaksi', now()->year)
+                    ->whereMonth('tanggal_transaksi', now()->month)
+                    ->sum('jumlah'),
+                'penyaluran_bulan_ini' => TransaksiPenyaluran::byLembaga($lembagaId)
+                    ->whereIn('status', ['disetujui', 'disalurkan'])
+                    ->whereYear('tanggal_penyaluran', now()->year)
+                    ->whereMonth('tanggal_penyaluran', now()->month)
+                    ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END')),
+                'total_muzakki'        => TransaksiPenerimaan::byLembaga($lembagaId)->verified()
+                    ->whereNotNull('muzakki_id')->distinct('muzakki_id')->count('muzakki_id'),
+                'total_mustahik'       => TransaksiPenyaluran::byLembaga($lembagaId)
+                    ->whereIn('status', ['disetujui', 'disalurkan'])
+                    ->distinct('mustahik_id')->count('mustahik_id'),
+                'program_aktif'        => \App\Models\ProgramZakat::where('lembaga_id', $lembagaId)
+                    ->where('status', 'aktif')->count(),
+            ];
+        }
+
         return view('dashboard.muzakki', compact(
             'breadcrumbs',
             'user',
@@ -447,7 +481,8 @@ protected function adminLembagaDashboard()
             'riwayatTerbaru',
             'trendZakat',
             'hargaTerkini',
-            'jenisZakatList'
+            'jenisZakatList',
+            'statsLembaga'
         ));
     }
 }
