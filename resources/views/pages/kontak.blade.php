@@ -155,8 +155,7 @@
                                         </svg>
                                     </div>
                                     <input type="text" id="subjek" name="subjek" value="{{ old('subjek') }}"
-                                        placeholder="Contoh: Pertanyaan tentang zakat fitrah"
-                                        maxlength="255"
+                                        placeholder="Contoh: Pertanyaan tentang zakat fitrah" maxlength="255"
                                         class="block w-full pl-10 pr-4 py-2.5 text-sm border rounded-xl bg-white placeholder-gray-400 transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
                                             {{ $errors->has('subjek') ? 'border-red-400 ring-2 ring-red-100' : 'border-gray-200' }}">
                                 </div>
@@ -411,12 +410,9 @@
 
     {{-- Sembunyikan tombol scroll-to-top dari layout global agar tidak menutupi reCAPTCHA badge --}}
     <style>
-        #back-to-top,
-        #scroll-to-top,
-        .back-to-top,
-        [data-scroll-top],
-        a[href="#top"].fixed {
-            display: none !important;
+        #backToTop {
+            right: auto !important;
+            left: 1.5rem !important;
         }
     </style>
 
@@ -432,8 +428,8 @@
     ═══════════════════════════════════════════════════════════════════ --}}
     <script>
         // ── Counter karakter: SUBJEK ──────────────────────────────────────
-        (function () {
-            var subjekEl      = document.getElementById('subjek');
+        (function() {
+            var subjekEl = document.getElementById('subjek');
             var subjekCountEl = document.getElementById('subjek-char-count');
             if (!subjekEl || !subjekCountEl) return;
 
@@ -455,7 +451,7 @@
         })();
 
         // ── Counter karakter: PESAN ───────────────────────────────────────
-        (function () {
+        (function() {
             var pesanEl = document.getElementById('pesan');
             var countEl = document.getElementById('char-count');
             if (!pesanEl || !countEl) return;
@@ -479,69 +475,71 @@
 
         // ── reCAPTCHA v3 submit handler ───────────────────────────────────
         @if ($recaptcha && $recaptcha->isEnabled())
-        (function () {
-            var form      = document.getElementById('kontak-form');
-            var submitBtn = document.getElementById('submit-btn');
-            if (!form || !submitBtn) return;
+            (function() {
+                var form = document.getElementById('kontak-form');
+                var submitBtn = document.getElementById('submit-btn');
+                if (!form || !submitBtn) return;
 
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
 
-                submitBtn.disabled = true;
-                submitBtn.innerHTML =
-                    '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML =
+                        '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
                         '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
                         '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
-                    '</svg> Memverifikasi...';
+                        '</svg> Memverifikasi...';
 
-                function doExecute() {
-                    grecaptcha.execute('{{ $recaptcha->RECAPTCHA_SITE_KEY }}', { action: 'kontak' })
-                        .then(function (token) {
-                            document.getElementById('recaptcha_token').value = token;
-                            form.submit();
-                        })
-                        .catch(function () {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML =
-                                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    function doExecute() {
+                        grecaptcha.execute('{{ $recaptcha->RECAPTCHA_SITE_KEY }}', {
+                                action: 'kontak'
+                            })
+                            .then(function(token) {
+                                document.getElementById('recaptcha_token').value = token;
+                                form.submit();
+                            })
+                            .catch(function() {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML =
+                                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                                     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>' +
-                                '</svg> Kirim Pesan';
-                        });
-                }
+                                    '</svg> Kirim Pesan';
+                            });
+                    }
 
-                if (typeof grecaptcha !== 'undefined') {
-                    grecaptcha.ready(doExecute);
-                } else {
-                    setTimeout(function () {
-                        if (typeof grecaptcha !== 'undefined') {
-                            grecaptcha.ready(doExecute);
-                        } else {
-                            alert('Gagal memuat reCAPTCHA. Silakan muat ulang halaman.');
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML =
-                                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    if (typeof grecaptcha !== 'undefined') {
+                        grecaptcha.ready(doExecute);
+                    } else {
+                        setTimeout(function() {
+                            if (typeof grecaptcha !== 'undefined') {
+                                grecaptcha.ready(doExecute);
+                            } else {
+                                alert('Gagal memuat reCAPTCHA. Silakan muat ulang halaman.');
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML =
+                                    '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
                                     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>' +
-                                '</svg> Kirim Pesan';
-                        }
-                    }, 1500);
-                }
-            });
-        })();
+                                    '</svg> Kirim Pesan';
+                            }
+                        }, 1500);
+                    }
+                });
+            })();
         @else
-        {{-- Tanpa reCAPTCHA --}}
-        (function () {
-            var form      = document.getElementById('kontak-form');
-            var submitBtn = document.getElementById('submit-btn');
-            if (!form || !submitBtn) return;
-            form.addEventListener('submit', function () {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML =
-                    '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
-                        '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
-                        '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
-                    '</svg> Mengirim...';
-            });
-        })();
+            {{-- Tanpa reCAPTCHA --}}
+                (function() {
+                    var form = document.getElementById('kontak-form');
+                    var submitBtn = document.getElementById('submit-btn');
+                    if (!form || !submitBtn) return;
+                    form.addEventListener('submit', function() {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML =
+                            '<svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">' +
+                            '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>' +
+                            '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>' +
+                            '</svg> Mengirim...';
+                    });
+                })();
         @endif
     </script>
 
