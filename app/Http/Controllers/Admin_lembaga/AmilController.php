@@ -93,9 +93,6 @@ class AmilController extends Controller
         return view('admin-lembaga.amil.create', compact('lembagas'));
     }
 
-    /**
-     * Generate kode amil otomatis
-     */
     private function generateKodeAmil($lembagaId)
     {
         $lembaga = Lembaga::find($lembagaId);
@@ -103,10 +100,9 @@ class AmilController extends Controller
             throw new \Exception('Lembaga tidak ditemukan');
         }
 
-        // Format: AMIL-KODE_MASJID-001
+        // Format: AMIL-LMBG20260001-001
         $prefix = "AMIL-{$lembaga->kode_lembaga}-";
 
-        // Cari nomor terakhir
         $lastAmil = Amil::where('kode_amil', 'like', $prefix . '%')
             ->orderBy('kode_amil', 'desc')
             ->first();
@@ -486,45 +482,44 @@ class AmilController extends Controller
         }
     }
 
-public function toggleStatus(Request $request, Amil $amil)
-{
-    try {
-        // Toggle status logic
-        if ($amil->status === 'aktif') {
-            $amil->status = 'nonaktif';
-            $amil->tanggal_selesai_tugas = now();
-        } else {
-            $amil->status = 'aktif';
-            $amil->tanggal_mulai_tugas = now();
-            $amil->tanggal_selesai_tugas = null;
+    public function toggleStatus(Request $request, Amil $amil)
+    {
+        try {
+            // Toggle status logic
+            if ($amil->status === 'aktif') {
+                $amil->status = 'nonaktif';
+                $amil->tanggal_selesai_tugas = now();
+            } else {
+                $amil->status = 'aktif';
+                $amil->tanggal_mulai_tugas = now();
+                $amil->tanggal_selesai_tugas = null;
+            }
+
+            $amil->save();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Status berhasil diubah',
+                    'new_status' => $amil->status,
+                    'status_badge_html' => view('amil.partials.status-badge', ['status' => $amil->status])->render()
+                ]);
+            }
+
+            return redirect()->route('amil.show', $amil->uuid)
+                ->with('success', 'Status berhasil diubah');
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mengubah status: ' . $e->getMessage()
+                ], 500);
+            }
+
+            return redirect()->route('amil.show', $amil->uuid)
+                ->with('error', 'Gagal mengubah status: ' . $e->getMessage());
         }
-        
-        $amil->save();
-        
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Status berhasil diubah',
-                'new_status' => $amil->status,
-                'status_badge_html' => view('amil.partials.status-badge', ['status' => $amil->status])->render()
-            ]);
-        }
-        
-        return redirect()->route('amil.show', $amil->uuid)
-            ->with('success', 'Status berhasil diubah');
-            
-    } catch (\Exception $e) {
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengubah status: ' . $e->getMessage()
-            ], 500);
-        }
-        
-        return redirect()->route('amil.show', $amil->uuid)
-            ->with('error', 'Gagal mengubah status: ' . $e->getMessage());
     }
-}
 
     /**
      * Get amil by lembaga (API)

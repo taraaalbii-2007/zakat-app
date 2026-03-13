@@ -29,7 +29,7 @@ class Amil extends Model
         'telepon',
         'email',
         'foto',
-        'tanda_tangan',          // ← TAMBAHAN
+        'tanda_tangan',         
         'tanggal_mulai_tugas',
         'tanggal_selesai_tugas',
         'status',

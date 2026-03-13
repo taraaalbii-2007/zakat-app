@@ -187,46 +187,46 @@ class MustahikController extends Controller
         return redirect()->route('mustahik.index')->with('success', $message);
     }
 
-public function show(Mustahik $mustahik)
-{
-    // Load relasi yang dibutuhkan
-    $mustahik->load(['kategoriMustahik', 'verifiedBy']);
+    public function show(Mustahik $mustahik)
+    {
+        // Load relasi yang dibutuhkan
+        $mustahik->load(['kategoriMustahik', 'verifiedBy']);
 
-    $user = auth()->user();
+        $user = auth()->user();
 
-    // ── Permissions ───────────────────────────────────────────────────────
-    // SALIN blok $permissions dari show() lama jika berbeda.
-    // Ini contoh yang sesuai dengan role sistem Anda:
-    $permissions = [
-        'canEdit'          => in_array($user->peran, ['admin_lembaga', 'amil']),
-        'canDelete'        => $user->peran === 'admin_lembaga',
-        'canVerify'        => $user->peran === 'admin_lembaga',
-        'canDistribute'    => in_array($user->peran, ['admin_lembaga', 'amil']),
-        'canScheduleVisit' => in_array($user->peran, ['admin_lembaga', 'amil']),
-    ];
+        // ── Permissions ───────────────────────────────────────────────────────
+        // SALIN blok $permissions dari show() lama jika berbeda.
+        // Ini contoh yang sesuai dengan role sistem Anda:
+        $permissions = [
+            'canEdit'          => in_array($user->peran, ['admin_lembaga', 'amil']),
+            'canDelete'        => $user->peran === 'admin_lembaga',
+            'canVerify'        => $user->peran === 'admin_lembaga',
+            'canDistribute'    => in_array($user->peran, ['admin_lembaga', 'amil']),
+            'canScheduleVisit' => in_array($user->peran, ['admin_lembaga', 'amil']),
+        ];
 
-    // ── Riwayat Penyaluran ────────────────────────────────────────────────
-    // Gunakan where() langsung — JANGAN pakai scope byLembaga() karena
-    // scope itu membaca Auth user, bukan parameter yang kita berikan.
-    $riwayatPenyaluran = TransaksiPenyaluran::with(['jenisZakat', 'programZakat'])
-        ->where('mustahik_id', $mustahik->id)
-        ->where('lembaga_id', $mustahik->lembaga_id)
-        ->orderByDesc('tanggal_penyaluran')
-        ->get();
+        // ── Riwayat Penyaluran ────────────────────────────────────────────────
+        // Gunakan where() langsung — JANGAN pakai scope byLembaga() karena
+        // scope itu membaca Auth user, bukan parameter yang kita berikan.
+        $riwayatPenyaluran = TransaksiPenyaluran::with(['jenisZakat', 'programZakat'])
+            ->where('mustahik_id', $mustahik->id)
+            ->where('lembaga_id', $mustahik->lembaga_id)
+            ->orderByDesc('tanggal_penyaluran')
+            ->get();
 
-    // ── Riwayat Kunjungan ─────────────────────────────────────────────────
-    $riwayatKunjungan = KunjunganMustahik::with(['amil.pengguna'])
-        ->where('mustahik_id', $mustahik->id)
-        ->orderByDesc('tanggal_kunjungan')
-        ->get();
+        // ── Riwayat Kunjungan ─────────────────────────────────────────────────
+        $riwayatKunjungan = KunjunganMustahik::with(['amil.pengguna'])
+            ->where('mustahik_id', $mustahik->id)
+            ->orderByDesc('tanggal_kunjungan')
+            ->get();
 
-    return view('admin-lembaga.mustahik.show', compact(
-        'mustahik',
-        'permissions',
-        'riwayatPenyaluran',
-        'riwayatKunjungan',
-    ));
-}
+        return view('admin-lembaga.mustahik.show', compact(
+            'mustahik',
+            'permissions',
+            'riwayatPenyaluran',
+            'riwayatKunjungan',
+        ));
+    }
 
     public function edit(Mustahik $mustahik)
     {
@@ -574,21 +574,26 @@ public function show(Mustahik $mustahik)
     {
         $lembaga = Lembaga::find(auth()->user()->lembaga_id);
 
-        // Get last mustahik number for this lembaga
         $lastMustahik = Mustahik::where('lembaga_id', auth()->user()->lembaga_id)
             ->orderBy('id', 'desc')
             ->first();
 
         if ($lastMustahik && $lastMustahik->no_registrasi) {
-            // Extract the last number from format MUST-MSJ001-001
             $lastNumber = intval(substr($lastMustahik->no_registrasi, -3));
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
 
-        // Format: MUST-{kode_lembaga}-{increment 3 digit}
-        return sprintf('MUST-%s-%03d', $lembaga->kode_lembaga, $newNumber);
+        // LAMA: sprintf('MUST-%s-%03d', $lembaga->kode_lembaga, $newNumber)
+        // → MUST-MSJ20260003-001
+
+        // BARU: ambil hanya bagian nomor dari kode_lembaga (LMBG-2026-0001 → 0001)
+        $parts = explode('-', $lembaga->kode_lembaga); // ['LMBG', '2026', '0001']
+        $nomorLembaga = end($parts); // '0001'
+
+        return sprintf('MUST-LMBG%s-%03d', $nomorLembaga, $newNumber);
+        // → MUST-LMBG0001-001
     }
 
     public function getMuzakiByAmil(Request $request, $amilId)
