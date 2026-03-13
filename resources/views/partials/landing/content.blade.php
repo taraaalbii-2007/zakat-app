@@ -6,6 +6,8 @@
      campur aduk satu sama lain.
      ============================================================ --}}
 
+@include('partials.landing.sections.video')
+
 @include('partials.landing.sections.fitur')
 
 @include('partials.landing.sections.statistik')
