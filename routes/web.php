@@ -55,6 +55,11 @@ Route::get('/kwitansi/{uuid}/download', [\App\Http\Controllers\Amil\TransaksiPen
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
+// Auto-login link dari email (signed URL)
+Route::get('/auto-login/{uuid}', [AuthController::class, 'autoLogin'])
+    ->name('auto-login')
+    ->middleware('signed');
+
 // Guest Routes (tanpa auth)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

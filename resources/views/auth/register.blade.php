@@ -43,11 +43,16 @@
         margin-bottom: .6rem;
     }
 
+    .role-required {
+        color: #f43f5e;
+        margin-left: 2px;
+    }
+
     .role-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: .65rem;
-        margin-bottom: 1rem;
+        margin-bottom: .5rem;
     }
 
     .role-card {
@@ -115,6 +120,11 @@
         line-height: 1.3;
     }
     .role-card input:checked + .role-inner .role-title { color: #15803d; }
+
+    /* role error state */
+    .role-grid.role-err .role-inner {
+        border-color: #fca5a5;
+    }
 
     /* ══════════════════════════════════
        FORM GROUP
@@ -223,7 +233,12 @@
         box-shadow: 0 8px 24px rgba(22,163,74,.42);
     }
     .btn-daftar:active  { transform: translateY(0); }
-    .btn-daftar:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-daftar:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
 
     .btn-spinner {
         width: 17px; height: 17px;
@@ -264,10 +279,17 @@
         white-space: nowrap;
     }
     .btn-google svg { width: 17px; height: 17px; flex-shrink: 0; display: block; }
-    .btn-google:hover {
+    .btn-google:hover:not(.btn-google-disabled) {
         border-color: #16a34a; background: #f0fdf4;
         transform: translateY(-1px);
         box-shadow: 0 3px 10px rgba(22,163,74,.1);
+    }
+
+    /* Google disabled state */
+    .btn-google-disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        pointer-events: none;
     }
 </style>
 @endpush
@@ -282,12 +304,21 @@
 
     {{-- Role Selector --}}
     <div class="rg-group">
-        <span class="role-label">Daftar sebagai</span>
-        <div class="role-grid">
+        <span class="role-label">
+            Daftar sebagai
+            <span class="role-required">*</span>
+        </span>
+        <div class="role-grid {{ $errors->has('role') ? 'role-err' : '' }}" id="role-grid">
 
             {{-- Admin Lembaga --}}
             <label class="role-card">
-                <input type="radio" name="role" value="admin_lembaga" checked>
+                <input
+                    type="radio"
+                    name="role"
+                    value="admin_lembaga"
+                    id="role-admin"
+                    {{ old('role') === 'admin_lembaga' ? 'checked' : '' }}
+                >
                 <div class="role-inner">
                     <div class="role-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -304,7 +335,13 @@
 
             {{-- Muzakki --}}
             <label class="role-card">
-                <input type="radio" name="role" value="muzakki">
+                <input
+                    type="radio"
+                    name="role"
+                    value="muzakki"
+                    id="role-muzakki"
+                    {{ old('role') === 'muzakki' ? 'checked' : '' }}
+                >
                 <div class="role-inner">
                     <div class="role-icon">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -320,6 +357,18 @@
             </label>
 
         </div>
+
+        {{-- Error role --}}
+        @error('role')
+            <div class="rg-err">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clip-rule="evenodd"/>
+                </svg>
+                {{ $message }}
+            </div>
+        @enderror
     </div>
 
     {{-- Email --}}
@@ -357,7 +406,7 @@
     </div>
 
     {{-- Submit --}}
-    <button type="submit" id="register-btn" class="btn-daftar">
+    <button type="submit" id="register-btn" class="btn-daftar" disabled>
         <div class="btn-spinner"></div>
         <span class="btn-label">
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
@@ -375,8 +424,11 @@
         <div class="or-line"></div>
     </div>
 
-    {{-- Google --}}
-    <a href="{{ route('auth.google', ['action' => 'register']) }}" id="btn-google-register" class="btn-google">
+    {{-- Google — disabled by default, enabled setelah role dipilih --}}
+    <a href="#"
+       id="btn-google-register"
+       class="btn-google btn-google-disabled"
+       aria-disabled="true">
         <svg viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -399,42 +451,62 @@
 @endif
 
 <script>
-    // Auto lowercase email
-    document.getElementById('email').addEventListener('input', function() {
-        this.value = this.value.toLowerCase();
-    });
+(function () {
+    const submitBtn  = document.getElementById('register-btn');
+    const googleBtn  = document.getElementById('btn-google-register');
+    const radios     = document.querySelectorAll('input[name="role"]');
+    const googleBase = '{{ route("auth.google", ["action" => "register"]) }}';
 
-    // Update Google button href saat role berubah
-    document.querySelectorAll('input[name="role"]').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            const btn = document.getElementById('btn-google-register');
-            if (btn) {
-                const url = new URL(btn.href);
-                url.searchParams.set('role', this.value);
-                btn.href = url.toString();
-            }
+    // ── Cek apakah ada old('role') dari Laravel (validasi gagal / redirect back)
+    const hasOldRole = {{ old('role') ? 'true' : 'false' }};
+    if (hasOldRole) {
+        enableActions('{{ old('role') }}');
+    }
+
+    // ── Saat user memilih role
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            enableActions(this.value);
         });
     });
 
+    function enableActions(role) {
+        // Enable submit
+        submitBtn.disabled = false;
+
+        // Enable + set href Google button
+        const url = new URL(googleBase);
+        url.searchParams.set('role', role);
+        googleBtn.href = url.toString();
+        googleBtn.classList.remove('btn-google-disabled');
+        googleBtn.removeAttribute('aria-disabled');
+    }
+
+    // ── Auto lowercase email
+    document.getElementById('email').addEventListener('input', function () {
+        this.value = this.value.toLowerCase();
+    });
+
     @if($recaptchaSiteKey)
-    document.getElementById('register-form').addEventListener('submit', function(e) {
+    // ── Submit dengan reCAPTCHA
+    document.getElementById('register-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        const btn = document.getElementById('register-btn');
-        btn.disabled = true;
-        btn.classList.add('loading');
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
 
         grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'register' })
-            .then(function(token) {
+            .then(function (token) {
                 document.getElementById('recaptcha_token').value = token;
                 document.getElementById('register-form').submit();
             })
-            .catch(function() {
-                btn.disabled = false;
-                btn.classList.remove('loading');
+            .catch(function () {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
                 document.getElementById('register-form').submit();
             });
     });
     @endif
+})();
 </script>
 @endpush

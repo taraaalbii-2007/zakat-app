@@ -26,6 +26,7 @@ use Laravolt\Indonesia\Models\Village;
 use App\Traits\LogsActivity;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -255,6 +256,39 @@ class AuthController extends Controller
             ->withErrors(['login' => 'Terjadi kesalahan saat login. Silakan coba lagi.']);
     }
 
+    public function autoLogin(Request $request, $uuid)
+    {
+        // Cari pengguna
+        $pengguna = Pengguna::where('uuid', $uuid)->first();
+
+        if (!$pengguna) {
+            return redirect()->route('login')
+                ->with('error', 'Link tidak valid.');
+        }
+
+        if (!$pengguna->is_active) {
+            return redirect()->route('login')
+                ->with('error', 'Akun tidak aktif.');
+        }
+
+        // Jika sudah login, langsung ke dashboard
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
+        // Login otomatis
+        Auth::login($pengguna);
+        $request->session()->regenerate();
+
+        $this->logAuth('login', 'Login otomatis via link email registrasi', [
+            'email' => $pengguna->email,
+            'login_type' => 'auto_login_email',
+        ], $pengguna->id);
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Selamat datang, ' . ($pengguna->username ?? $this->maskEmail($pengguna->email)) . '!');
+    }
+
     /**
      * REGISTER
      */
@@ -280,7 +314,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'email'           => 'required|email|unique:pengguna,email',
-            'role'            => 'required|in:admin_lembaga,muzakki',  // ← TAMBAH
+'role.required' => 'Pilih peran Anda terlebih dahulu',
             'recaptcha_token' => 'nullable|string',
         ], [
             'email.required'  => 'Email wajib diisi',
@@ -458,9 +492,8 @@ class AuthController extends Controller
         }
 
         // ← BACA ROLE DARI CACHE (dengan fallback ke session, lalu default)
-        $role = $otpData['role']
-            ?? session('otp_role')
-            ?? 'admin_lembaga';
+$role = $otpData['role'] ?? session('otp_role');
+
 
         DB::beginTransaction();
 
@@ -570,6 +603,8 @@ class AuthController extends Controller
             $expiresAt = Carbon::now()->addMinutes(self::OTP_EXPIRY_MINUTES);
 
             $cacheKey = 'otp_registration_' . $email;
+            $existingData = Cache::get($cacheKey);
+            
             Cache::put($cacheKey, [
                 'email' => $email,
                 'otp' => $otp,
@@ -1423,15 +1458,15 @@ class AuthController extends Controller
         $rules = [
             'nama'            => 'required|string|max:255',
             'telepon'         => 'required|string|max:20',
-            'jenis_kelamin'   => 'required|in:laki-laki,perempuan',   // ← BARU
-            'nik'             => [                                      // ← BARU
+            'jenis_kelamin'   => 'required|in:laki-laki,perempuan',
+            'nik'             => [
                 'nullable',
                 'string',
                 'size:16',
                 'regex:/^\d{16}$/',
                 'unique:muzakki,nik',
             ],
-            'alamat'          => 'nullable|string|max:500',            // ← BARU
+            'alamat'          => 'nullable|string|max:500',
             'lembaga_id'      => 'required|exists:lembaga,id',
             'username'        => $isGoogleUser ? 'nullable' : [
                 'required',
@@ -1498,40 +1533,53 @@ class AuthController extends Controller
                 $fotoPath = $this->uploadAndCompressGeneral($request->file('foto'), 'muzakki-fotos');
             }
 
-            // STEP 3: Buat record muzakki — semua field baru disertakan
+            // STEP 3: Buat record muzakki
             \App\Models\Muzakki::create([
                 'uuid'          => (string) Str::uuid(),
                 'pengguna_id'   => $pengguna->id,
                 'lembaga_id'    => $request->lembaga_id,
                 'nama'          => $request->nama,
-                'jenis_kelamin' => $request->jenis_kelamin,           // ← BARU
+                'jenis_kelamin' => $request->jenis_kelamin,
                 'telepon'       => $request->telepon,
                 'email'         => $pengguna->email,
-                'alamat'        => $request->alamat ?: null,          // ← BARU
-                'nik'           => $request->nik ?: null,             // ← BARU
+                'alamat'        => $request->alamat ?: null,
+                'nik'           => $request->nik ?: null,
                 'foto'          => $fotoPath,
                 'is_active'     => true,
             ]);
 
+            // STEP 4: Update lembaga_id di pengguna
             $pengguna->update([
                 'lembaga_id' => $request->lembaga_id,
             ]);
 
-            // STEP 4: Cleanup cache
+            // STEP 5: Cleanup cache
             $this->cleanupRegistrationCache($pengguna->email, $token);
 
-            // STEP 5: Email sukses (silent fail)
+            // STEP 6: Commit dulu sebelum kirim email
+            DB::commit();
+
+            // STEP 7: Generate signed URL auto-login (berlaku 7 hari)
+            $autoLoginUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'auto-login',
+                now()->addDays(7),
+                ['uuid' => $pengguna->uuid]
+            );
+
+            // STEP 8: Kirim email sukses (silent fail — tidak rollback)
             try {
                 $this->loadMailConfig();
+
                 Mail::send('emails.registration-success', [
-                    'nama'         => $request->nama,
-                    'username'     => $penggunaData['username'],
-                    'email'        => $pengguna->email,
-                    'isGoogleUser' => $isGoogleUser,
-                    'password'     => $isGoogleUser ? null : $request->password,
-                    'peran'        => 'muzakki',
-                    'nama_lembaga' => null,
-                    'kode_lembaga' => null,
+                    'nama'          => $request->nama,
+                    'username'      => $penggunaData['username'],
+                    'email'         => $pengguna->email,
+                    'isGoogleUser'  => $isGoogleUser,
+                    'password'      => $isGoogleUser ? null : $request->password,
+                    'peran'         => 'muzakki',
+                    'nama_lembaga'  => null,
+                    'kode_lembaga'  => null,
+                    'autoLoginUrl'  => $autoLoginUrl,
                 ], function ($message) use ($pengguna) {
                     $message->to($pengguna->email)
                         ->subject('Registrasi Berhasil - Niat Zakat');
@@ -1539,8 +1587,6 @@ class AuthController extends Controller
             } catch (\Exception $mailEx) {
                 Log::warning('Email registrasi muzakki gagal: ' . $mailEx->getMessage());
             }
-
-            DB::commit();
 
             $this->logRegistrasi('Registrasi muzakki berhasil', [
                 'username'      => $penggunaData['username'],
@@ -1560,8 +1606,6 @@ class AuthController extends Controller
                 ->withInput();
         }
     }
-
-
 
     private function uploadAndCompressGeneral($file, string $directory): string
     {
@@ -1865,6 +1909,7 @@ class AuthController extends Controller
                 'email' => $pengguna->email,
                 'pengguna_id' => $pengguna->id,
                 'token' => $profileToken,
+                'role'        => $pengguna->peran,
                 'created_at' => now()->toDateTimeString(),
                 'source' => 'google_login_reactivate'
             ];
