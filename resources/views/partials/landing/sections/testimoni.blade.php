@@ -124,8 +124,7 @@
 .nz-reveal.nz-visible { opacity: 1; transform: translateY(0); }
 </style>
 
-<section id="testimoni" class="relative py-20 bg-white overflow-hidden">
-
+<section id="testimoni" class="relative pt-4 pb-24 md:pt-10 bg-white overflow-hidden">
     {{-- Background dekoratif --}}
     <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
         <svg class="absolute inset-0 w-full h-full">

@@ -21,7 +21,7 @@
     }
 
     /* ── UNDERLINE ANIMASI NIAT ZAKAT — sekali saat scroll ── */
-    .nz-underline-svg { 
+    .nz-underline-svg {
         display: block;
         width: 100%;
         height: 10px;
@@ -194,32 +194,34 @@
     }
 </style>
 
-<section id="fitur" class="relative py-24 bg-white overflow-hidden">
-    <div class="absolute inset-0 bg-hex-pattern opacity-100 pointer-events-none"></div>
+<section id="fitur" class="relative pt-4 pb-24 md:pt-10 bg-white overflow-hidden">
+        <div class="absolute inset-0 bg-hex-pattern opacity-100 pointer-events-none"></div>
 
     <div class="relative z-10 w-full px-4 sm:px-10 lg:px-20 mx-auto">
 
-{{-- HEADER — gaya sama seperti section Cara Kerja --}}
-<div class="text-center mb-12 nz-reveal">
-    <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">
-        Fitur Unggulan
-    </span>
+        {{-- HEADER — gaya sama seperti section Cara Kerja --}}
+        <div class="text-center mb-12 nz-reveal">
+            <span class="inline-block px-4 py-2 bg-primary-50 text-primary-600 rounded-full text-sm font-semibold mb-4">
+                Fitur Unggulan
+            </span>
 
-    <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-        Kenapa Memilih
-        <span class="relative inline-block text-primary-600">
-            Niat Zakat?
-            {{-- SVG underline — draw animasi saat section masuk viewport --}}
-            <svg class="block w-full overflow-visible" style="height:11px;margin-top:3px;" viewBox="0 0 200 11" preserveAspectRatio="none">
-                <path class="nz-underline-path" id="nzUnderlinePath" d="M2,7 Q50,2 100,7 Q150,12 198,6" />
-            </svg>
-        </span>
-    </h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
+                Kenapa Memilih
+                <span class="relative inline-block text-primary-600">
+                    Niat Zakat?
+                    {{-- SVG underline — draw animasi saat section masuk viewport --}}
+                    <svg class="block w-full overflow-visible" style="height:11px;margin-top:3px;" viewBox="0 0 200 11"
+                        preserveAspectRatio="none">
+                        <path class="nz-underline-path" id="nzUnderlinePath" d="M2,7 Q50,2 100,7 Q150,12 198,6" />
+                    </svg>
+                </span>
+            </h2>
 
-    <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
-        Platform zakat digital yang mudah, transparan, dan terpercaya — dirancang untuk membantu Anda menunaikan kewajiban dengan tenang.
-    </p>
-</div>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                Platform zakat digital yang mudah, transparan, dan terpercaya — dirancang untuk membantu Anda menunaikan
+                kewajiban dengan tenang.
+            </p>
+        </div>
 
         {{-- CAROUSEL WRAPPER dengan panah overlay kiri/kanan --}}
         <div class="fitur-carousel-wrap nz-reveal" style="transition-delay: 200ms">

@@ -203,8 +203,7 @@
 }
 </style>
 
-<section id="statistik" class="relative py-24 bg-white overflow-hidden">
-
+<section id="statistik" class="relative pt-4 pb-24 md:pt-10 bg-white overflow-hidden">
     {{-- Background Grid --}}
     <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">

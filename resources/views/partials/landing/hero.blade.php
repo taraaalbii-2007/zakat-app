@@ -3,118 +3,72 @@
 
     {{-- Background Image --}}
     <div class="absolute inset-0 z-0">
-        <img
-            src="{{ asset('image/tangan.jpg') }}"
-            alt=""
-            class="w-full h-full object-cover object-center"
-            aria-hidden="true"
-        >
-        {{-- Overlay Gradien --}}
-        <div class="absolute inset-0" 
-             style="background: linear-gradient(to right, 
-                    rgba(255,255,255,0.92) 0%, 
-                    rgba(255,255,255,0.85) 40%, 
+        <img src="{{ asset('image/tangan.jpg') }}" alt=""
+             class="w-full h-full object-cover object-center" aria-hidden="true">
+        <div class="absolute inset-0"
+             style="background: linear-gradient(to right,
+                    rgba(255,255,255,0.92) 0%,
+                    rgba(255,255,255,0.85) 40%,
                     rgba(255,255,255,0.2) 100%);">
         </div>
     </div>
 
-    {{-- ===================== DOT GRID DEKORASI ===================== --}}
-
-    {{-- [1] Dot Grid PERSEGI — kiri bawah --}}
+    {{-- DOT GRID DEKORASI --}}
     <div class="absolute bottom-16 left-8 z-10 opacity-25 pointer-events-none"
-         style="width: 120px; height: 120px;
-                background-image: radial-gradient(#2d6936 2.2px, transparent 2.2px);
-                background-size: 16px 16px;">
-    </div>
-
-    {{-- [2] Dot Grid PERSEGI — kanan atas halaman --}}
+         style="width:120px;height:120px;background-image:radial-gradient(#2d6936 2.2px,transparent 2.2px);background-size:16px 16px;"></div>
     <div class="absolute top-24 right-4 z-10 opacity-20 pointer-events-none"
-         style="width: 100px; height: 100px;
-                background-image: radial-gradient(#2d6936 2px, transparent 2px);
-                background-size: 14px 14px;">
-    </div>
-
-    {{-- [3] Dot Grid PERSEGI PANJANG — kiri tengah --}}
+         style="width:100px;height:100px;background-image:radial-gradient(#2d6936 2px,transparent 2px);background-size:14px 14px;"></div>
     <div class="absolute top-1/3 left-0 z-10 opacity-20 pointer-events-none"
-         style="width: 80px; height: 160px;
-                background-image: radial-gradient(#2d6936 2px, transparent 2px);
-                background-size: 16px 16px;">
-    </div>
-
-    {{-- [4] Dot Grid PERSEGI PANJANG — atas tengah, horizontal --}}
+         style="width:80px;height:160px;background-image:radial-gradient(#2d6936 2px,transparent 2px);background-size:16px 16px;"></div>
     <div class="absolute top-6 left-1/3 z-10 opacity-15 pointer-events-none"
-         style="width: 220px; height: 60px;
-                background-image: radial-gradient(#94a3b8 1.8px, transparent 1.8px);
-                background-size: 18px 18px;">
-    </div>
-
-    {{-- [5] Dot Grid PERSEGI abu-abu — tengah kanan --}}
+         style="width:220px;height:60px;background-image:radial-gradient(#94a3b8 1.8px,transparent 1.8px);background-size:18px 18px;"></div>
     <div class="absolute top-1/2 right-2 z-10 opacity-18 pointer-events-none"
-         style="width: 90px; height: 90px;
-                background-image: radial-gradient(#94a3b8 2px, transparent 2px);
-                background-size: 15px 15px;">
-    </div>
+         style="width:90px;height:90px;background-image:radial-gradient(#94a3b8 2px,transparent 2px);background-size:15px 15px;"></div>
 
-    {{-- ===================== END DOT GRID ===================== --}}
-
-    {{-- Konten utama — px disesuaikan dengan navbar (px-4 sm:px-10 lg:px-20) --}}
+    {{-- Konten utama --}}
     <div class="relative z-20 flex items-center w-full px-4 sm:px-10 lg:px-20"
-         style="min-height: 100svh; padding-top: 100px; padding-bottom: 100px;">
+         style="min-height:100svh; padding-top:100px; padding-bottom:100px;">
 
         <div class="relative w-full flex flex-col lg:flex-row items-center gap-16">
 
             {{-- KONTEN KIRI --}}
             <div class="w-full lg:w-[55%] text-left order-2 lg:order-1">
-                <h1 class="hero-reveal font-black text-slate-900 tracking-tight mb-6"
-                    style="font-size: clamp(2.5rem, 4.5vw, 3.8rem); line-height: 1.1;">
-                    Kelola Zakat<br>
-                    <span class="text-primary-600">Lebih Modern,</span><br>
-                    <span class="relative inline-block">
-                        Lebih Amanah.
-                        {{-- Animated Curved Line SVG --}}
-                        <svg class="curved-line-svg absolute left-0 w-full pointer-events-none" 
-                             style="bottom: -14px; height: 22px; overflow: visible;"
-                             viewBox="0 0 300 22" 
-                             preserveAspectRatio="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path 
-                                class="curved-line-path"
-                                d="M4 14 C40 4, 80 20, 120 10 C160 0, 200 18, 240 9 C270 3, 288 15, 296 12"
-                                fill="none"
-                                stroke="#2d6936"
-                                stroke-width="3"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                            {{-- Garis kedua, lebih tipis --}}
-                            <path 
-                                class="curved-line-path-2"
-                                d="M4 18 C40 8, 80 22, 120 14 C160 4, 200 20, 240 13 C270 7, 288 18, 296 16"
-                                fill="none"
-                                stroke="#86efac"
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                opacity="0.6"
-                            />
+                <h1 class="font-black text-slate-900 tracking-tight mb-6"
+                    style="font-size:clamp(2.5rem,4.5vw,3.8rem); line-height:1.1;">
+                    <span class="hero-reveal block" style="transition-delay:0ms;">Kelola Zakat</span>
+                    <span class="hero-reveal block text-primary-600" style="transition-delay:120ms;">Lebih Modern,</span>
+                    <span class="hero-reveal relative inline-block" style="transition-delay:240ms;">
+                        <span id="hero-line3"></span><span id="hero-cursor" class="hero-cursor"></span>
+                        <svg class="absolute left-0 w-full pointer-events-none"
+                             style="bottom:-16px; height:20px; overflow:visible;"
+                             viewBox="0 0 300 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                            <path id="heroUnderlinePath1" class="hero-underline-path"
+                                d="M3,13 C80,4 220,18 297,11"
+                                fill="none" stroke="#2d6936" stroke-width="2.8"
+                                stroke-linecap="round" stroke-linejoin="round"/>
+                            <path id="heroUnderlinePath2" class="hero-underline-path-2"
+                                d="M3,17 C80,8 220,22 297,15"
+                                fill="none" stroke="#86efac" stroke-width="1.4"
+                                stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
                         </svg>
                     </span>
                 </h1>
 
-                <p class="hero-reveal text-slate-700 text-base sm:text-lg font-medium leading-relaxed mb-12 max-w-lg" style="margin-top: 1.5rem;">
-                    Transformasi digital untuk lembaga amil zakat dan masjid. 
+                <p class="hero-reveal text-slate-700 text-base sm:text-lg font-medium leading-relaxed mb-12 max-w-lg"
+                   style="margin-top:1.5rem; transition-delay:360ms;">
+                    Transformasi digital untuk lembaga amil zakat dan masjid.
                     Kelola transparansi laporan secara real-time dalam satu dashboard terintegrasi.
                 </p>
 
-                <div class="hero-reveal flex flex-wrap gap-4 items-center">
+                <div class="hero-reveal flex flex-wrap gap-4 items-center" style="transition-delay:480ms;">
                     <a href="{{ route('register') }}"
                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-600 text-white font-bold text-base rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-all duration-300">
                         Mulai Gratis Sekarang
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
                     </a>
-                    
                     <a href="#fitur"
                        class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/90 backdrop-blur-sm text-slate-700 font-bold text-base rounded-2xl border border-slate-200 hover:border-primary-500 hover:text-primary-600 active:scale-95 transition-all duration-300">
                         Pelajari Fitur
@@ -123,74 +77,91 @@
             </div>
 
             {{-- FOTO KANAN --}}
-            <div class="w-full lg:w-[45%] order-1 lg:order-2 hero-reveal flex justify-center lg:justify-end">
-                <div class="relative inline-block">
-                    
-                    {{-- ===== ELEMEN DEKORATIF DI BELAKANG GAMBAR ===== --}}
+            <div class="w-full lg:w-[45%] order-1 lg:order-2 hero-reveal flex justify-center lg:justify-end"
+                 style="transition-delay:200ms;">
 
-                    {{-- Aura samar --}}
-                    <div class="absolute z-0"
-                         style="width: 520px; height: 520px;
-                                top: 50%; left: 50%;
-                                transform: translate(-50%, -50%);
-                                background: radial-gradient(circle, rgba(45,105,54,0.08) 0%, rgba(45,105,54,0.03) 55%, transparent 75%);">
-                    </div>
+                {{-- Parallax wrapper --}}
+                <div id="hero-parallax" style="position:relative; width:440px; max-width:100%;">
 
-                    {{-- Garis arc kanan atas --}}
-                    <svg class="absolute z-0 pointer-events-none"
-                         style="width: 260px; height: 260px; top: -40px; right: -50px; opacity: 0.18;"
-                         viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M30 230 Q130 20, 230 130" stroke="#2d6936" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M50 240 Q150 30, 240 140" stroke="#2d6936" stroke-width="1.2" stroke-linecap="round"/>
+                    {{-- Glow blob --}}
+                    <div class="hero-glow-blob" aria-hidden="true"></div>
+
+                    {{-- Ring 1: luar, searah --}}
+                    <svg class="hero-ring hero-ring-1" viewBox="0 0 540 540" fill="none" aria-hidden="true">
+                        <circle cx="270" cy="270" r="256"
+                                stroke="#16a34a" stroke-width="3"
+                                stroke-dasharray="20 9"
+                                stroke-linecap="round" opacity="0.80"/>
                     </svg>
 
-                    {{-- Garis arc kiri bawah --}}
-                    <svg class="absolute z-0 pointer-events-none"
-                         style="width: 180px; height: 180px; bottom: -30px; left: -40px; opacity: 0.15;"
-                         viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M160 20 Q20 20, 20 160" stroke="#2d6936" stroke-width="2" stroke-linecap="round"/>
-                        <path d="M150 30 Q30 30, 30 150" stroke="#86efac" stroke-width="1.2" stroke-linecap="round"/>
+                    {{-- Ring 2: tengah, berlawanan --}}
+                    <svg class="hero-ring hero-ring-2" viewBox="0 0 540 540" fill="none" aria-hidden="true">
+                        <circle cx="270" cy="270" r="238"
+                                stroke="#22c55e" stroke-width="2.5"
+                                stroke-dasharray="5 16"
+                                stroke-linecap="round" opacity="0.65"/>
                     </svg>
 
-                    {{-- Dot Grid PERSEGI — pojok kiri atas foto --}}
-                    <div class="absolute -top-10 -left-10 w-32 h-32 z-0 opacity-60" 
-                         style="background-image: radial-gradient(#2d6936 2.5px, transparent 2.5px); background-size: 18px 18px;">
+                    {{-- Ring 3: dalam, searah lebih cepat --}}
+                    <svg class="hero-ring hero-ring-3" viewBox="0 0 540 540" fill="none" aria-hidden="true">
+                        <circle cx="270" cy="270" r="218"
+                                stroke="#86efac" stroke-width="3.5"
+                                stroke-dasharray="2 12"
+                                stroke-linecap="round" opacity="0.60"/>
+                    </svg>
+
+                    {{-- Arc dekoratif kanan atas --}}
+                    <svg class="absolute z-0 pointer-events-none"
+                         style="width:200px;height:200px;top:-30px;right:-40px;opacity:0.15;"
+                         viewBox="0 0 200 200" fill="none">
+                        <path d="M20 180 Q100 10, 180 100" stroke="#2d6936" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M36 186 Q116 16, 186 110" stroke="#86efac" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+
+                    {{-- Arc dekoratif kiri bawah --}}
+                    <svg class="absolute z-0 pointer-events-none"
+                         style="width:140px;height:140px;bottom:-24px;left:-30px;opacity:0.14;"
+                         viewBox="0 0 140 140" fill="none">
+                        <path d="M120 18 Q18 18, 18 120" stroke="#2d6936" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M112 28 Q28 28, 28 112" stroke="#86efac" stroke-width="1" stroke-linecap="round"/>
+                    </svg>
+
+                    {{-- Dot grids --}}
+                    <div class="absolute z-0 opacity-55"
+                         style="width:110px;height:110px;top:-28px;left:-28px;
+                                background-image:radial-gradient(#2d6936 2.2px,transparent 2.2px);
+                                background-size:16px 16px;"></div>
+                    <div class="absolute z-0 opacity-50"
+                         style="width:130px;height:130px;bottom:-28px;right:-28px;
+                                background-image:radial-gradient(#2d6936 2.2px,transparent 2.2px);
+                                background-size:16px 16px;"></div>
+
+                    {{-- ══════════════════════════════════════
+                         FOTO + CANVAS BORDER GLOW
+                         Canvas diposisikan ABSOLUTE di luar
+                         frame foto — tidak ada overflow:hidden
+                         ══════════════════════════════════════ --}}
+                    <div id="hero-photo-wrap" style="position:relative; z-index:10;">
+
+                        {{-- Frame foto — TIDAK ada overflow:hidden di parent ini --}}
+                        <div class="hero-img-frame">
+                            <img src="{{ asset('image/zakat.jpg') }}"
+                                 alt="Visual Zakat"
+                                 class="w-full object-cover aspect-square"
+                                 style="display:block;">
+                        </div>
+
+                        {{-- Canvas border glow — absolute, lebih besar dari foto,
+                             pointer-events:none sehingga tidak ganggu interaksi --}}
+                        <canvas id="hero-glow-canvas"
+                                aria-hidden="true"
+                                style="position:absolute;
+                                       pointer-events:none;
+                                       z-index:30;">
+                        </canvas>
+
                     </div>
 
-                    {{-- Dot Grid PERSEGI — pojok kanan bawah foto --}}
-                    <div class="absolute -bottom-10 -right-10 w-40 h-40 z-0 opacity-60" 
-                         style="background-image: radial-gradient(#2d6936 2.5px, transparent 2.5px); background-size: 18px 18px;">
-                    </div>
-
-                    {{-- Dot Grid PERSEGI PANJANG — bawah foto, horizontal --}}
-                    <div class="absolute z-0 opacity-35"
-                         style="width: 200px; height: 60px;
-                                bottom: -30px; left: 50%;
-                                transform: translateX(-50%);
-                                background-image: radial-gradient(#2d6936 2px, transparent 2px);
-                                background-size: 16px 16px;">
-                    </div>
-
-                    {{-- Dot Grid PERSEGI PANJANG — kanan foto, vertikal --}}
-                    <div class="absolute z-0 opacity-30"
-                         style="width: 55px; height: 180px;
-                                right: -35px; top: 50%;
-                                transform: translateY(-50%);
-                                background-image: radial-gradient(#94a3b8 2px, transparent 2px);
-                                background-size: 14px 14px;">
-                    </div>
-
-                    {{-- ===== END DEKORATIF ===== --}}
-
-                    {{-- Frame Gambar --}}
-                    <div class="relative z-10 rounded-[2.5rem] overflow-hidden shadow-2xl border-[12px] border-white/80 backdrop-blur-md">
-                        <img
-                            src="{{ asset('image/zakat.jpg') }}"
-                            alt="Visual Zakat"
-                            class="w-full object-cover aspect-square"
-                            style="max-width: 460px;"
-                        >
-                    </div>
                 </div>
             </div>
 
@@ -199,95 +170,196 @@
 </section>
 
 <style>
-    /* ===== Hero Reveal: smooth & soft ===== */
-    .hero-reveal {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1),
-                    transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .hero-reveal.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* ── Hero Reveal ── */
+.hero-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-reveal.is-visible { opacity: 1; transform: translateY(0); }
 
-    /* ===== Garis melengkung: tersembunyi sampai .curve-animate ditambahkan ===== */
-    .curved-line-path,
-    .curved-line-path-2 {
-        stroke-dasharray: 400;
-        stroke-dashoffset: 400;
-        opacity: 0;
-        /* Tidak ada animasi CSS default — semuanya dikontrol JS */
-    }
+/* ── Kursor ketik ── */
+.hero-cursor {
+    display: inline-block;
+    width: 2.5px; height: 0.8em;
+    background: #16a34a;
+    margin-left: 1px; vertical-align: middle;
+    border-radius: 2px; opacity: 1;
+}
+.hero-cursor.blink  { animation: heroBlink 0.9s step-end infinite; }
+.hero-cursor.hidden { opacity:0 !important; animation:none; }
+@keyframes heroBlink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    /* Kelas yang ditambahkan JS setelah splash selesai */
-    .curved-line-path.curve-animate {
-        animation: draw-curve-soft 5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-                   wave-shimmer-soft 7s ease-in-out 5.5s infinite;
-    }
-    .curved-line-path-2.curve-animate {
-        animation: draw-curve-soft 6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
-    }
+/* ── Garis bawah ── */
+.hero-underline-path,
+.hero-underline-path-2 {
+    stroke-dasharray:310; stroke-dashoffset:310;
+    opacity:0; transition:opacity .4s ease;
+}
+.hero-underline-path.is-drawn {
+    transition:none;
+    animation: heroLineDraw .95s cubic-bezier(.25,.46,.45,.94) forwards,
+               heroLineBreath 5s ease-in-out 1.2s infinite;
+}
+.hero-underline-path-2.is-drawn {
+    transition:none;
+    animation: heroLineDraw 1.15s cubic-bezier(.25,.46,.45,.94) .18s forwards;
+}
+.hero-underline-path.is-hiding,
+.hero-underline-path-2.is-hiding {
+    animation:none !important; opacity:0 !important;
+    transition:opacity .35s ease !important;
+}
+@keyframes heroLineDraw {
+    0%  { stroke-dashoffset:310; opacity:0; }
+    8%  { opacity:1; }
+    100%{ stroke-dashoffset:0;   opacity:1; }
+}
+@keyframes heroLineBreath { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-    @keyframes draw-curve-soft {
-        0%   { stroke-dashoffset: 400; opacity: 0; }
-        6%   { opacity: 0.8; }
-        100% { stroke-dashoffset: 0;   opacity: 1; }
-    }
+/* ── Frame foto ── */
+.hero-img-frame {
+    position: relative;
+    z-index: 10;
+    border-radius: 2.2rem;
+    overflow: hidden;
+    border: 10px solid rgba(255,255,255,0.92);
+    box-shadow:
+        0 0 0 1px rgba(22,163,74,0.14),
+        0 20px 60px rgba(22,163,74,0.20),
+        0 6px 20px rgba(0,0,0,0.08);
+    transition: box-shadow .5s ease;
+}
+.hero-img-frame:hover {
+    box-shadow:
+        0 0 0 2px rgba(22,163,74,0.28),
+        0 28px 72px rgba(22,163,74,0.28),
+        0 8px 28px rgba(0,0,0,0.10);
+}
 
-    /* Shimmer terus bernapas, pelan & lembut */
-    @keyframes wave-shimmer-soft {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.40; }
-    }
+/* ── Glow blob ── */
+.hero-glow-blob {
+    position:absolute; z-index:0;
+    top:50%; left:50%;
+    width:115%; height:115%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,
+        rgba(34,197,94,0.20) 0%,
+        rgba(22,163,74,0.10) 42%,
+        transparent 70%);
+    animation: heroGlowPulse 4s ease-in-out infinite;
+    pointer-events:none;
+}
+@keyframes heroGlowPulse {
+    0%,100%{ transform:translate(-50%,-50%) scale(1);    opacity:1;   }
+    50%    { transform:translate(-50%,-50%) scale(1.09); opacity:0.65; }
+}
+
+/* ── Ring ── */
+.hero-ring {
+    position:absolute; top:50%; left:50%;
+    z-index:1; pointer-events:none;
+    width:116%; height:116%;
+}
+.hero-ring-1 { animation:heroRingCW  24s linear infinite; transform:translate(-50%,-50%); }
+.hero-ring-2 { animation:heroRingCCW 17s linear infinite; transform:translate(-50%,-50%); }
+.hero-ring-3 { animation:heroRingCW  11s linear infinite; transform:translate(-50%,-50%); }
+@keyframes heroRingCW  { from{transform:translate(-50%,-50%) rotate(0deg)}   to{transform:translate(-50%,-50%) rotate(360deg)}  }
+@keyframes heroRingCCW { from{transform:translate(-50%,-50%) rotate(0deg)}   to{transform:translate(-50%,-50%) rotate(-360deg)} }
 </style>
 
 <script>
 (function () {
     var heroAnimated = false;
+    var loopRunning  = false;
 
-    /**
-     * Jalankan semua animasi hero — dipanggil sekali setelah splash selesai
-     */
-    function runHeroAnimations() {
-        if (heroAnimated) return;
-        heroAnimated = true;
+    var TEXT='Lebih Amanah.', TYPE_SPEED=68, DELETE_SPEED=32,
+        PAUSE_TYPED=2600, PAUSE_DELETED=500;
+    var elText=null, elCursor=null, p1=null, p2=null;
 
-        // --- Hero reveal dengan stagger cepat setelah splash ---
-        var reveals = document.querySelectorAll('.hero-reveal');
-        reveals.forEach(function (el, i) {
-            // Langsung mulai tanpa jeda awal, stagger 120ms per elemen
-            setTimeout(function () {
-                el.classList.add('is-visible');
-            }, i * 120);
+    function showLine() {
+        [p1,p2].forEach(function(p){
+            if(!p) return;
+            p.classList.remove('is-hiding','is-drawn');
+            p.style.strokeDashoffset='310'; p.style.opacity='0';
+            void p.getBoundingClientRect();
+            p.classList.add('is-drawn');
         });
-
-        // --- Garis melengkung: muncul setelah h1 sudah mulai terlihat ---
-        setTimeout(function () {
-            var path1 = document.querySelector('.curved-line-path');
-            var path2 = document.querySelector('.curved-line-path-2');
-            if (path1) path1.classList.add('curve-animate');
-            if (path2) path2.classList.add('curve-animate');
-        }, 500);
+    }
+    function hideLine() {
+        [p1,p2].forEach(function(p){
+            if(!p) return;
+            p.classList.remove('is-drawn');
+            p.classList.add('is-hiding');
+            setTimeout(function(){
+                p.classList.remove('is-hiding');
+                p.style.strokeDashoffset='310'; p.style.opacity='0';
+            }, 380);
+        });
     }
 
-    // ── 1. Mendengarkan event dari splash-screen.blade.php ───────────────────
-    document.addEventListener('splashHidden', function () {
-        runHeroAnimations();
-    });
+    function typeLoop() {
+        if(loopRunning) return; loopRunning=true;
+        function typeIn(i) {
+            elText.textContent=TEXT.slice(0,i);
+            if(i<TEXT.length){ setTimeout(function(){typeIn(i+1);},TYPE_SPEED); }
+            else {
+                elCursor.classList.remove('blink');
+                setTimeout(function(){
+                    showLine();
+                    setTimeout(function(){
+                        elCursor.classList.add('blink');
+                        setTimeout(deleteOut,PAUSE_TYPED);
+                    },200);
+                },100);
+            }
+        }
+        function deleteOut(){
+            var len=elText.textContent.length;
+            if(len===TEXT.length){ hideLine(); elCursor.classList.remove('blink'); elCursor.style.opacity='1'; }
+            if(len>0){ elText.textContent=elText.textContent.slice(0,len-1); setTimeout(deleteOut,DELETE_SPEED); }
+            else { setTimeout(function(){ elCursor.classList.add('blink'); setTimeout(function(){typeIn(0);},80); },PAUSE_DELETED); }
+        }
+        elText.textContent=''; elCursor.classList.add('blink'); typeIn(0);
+    }
 
-    // ── 2. Callback queue __onSplashHidden (splash juga memanggil ini) ───────
-    window.__onSplashHidden = window.__onSplashHidden || [];
-    window.__onSplashHidden.push(function () {
-        runHeroAnimations();
-    });
+    /* ── Parallax scroll ── */
+    function initParallax() {
+        var wrap = document.getElementById('hero-parallax');
+        if(!wrap) return;
+        var ticking=false;
+        window.addEventListener('scroll',function(){
+            if(ticking) return; ticking=true;
+            requestAnimationFrame(function(){
+                var offset=(window.scrollY||window.pageYOffset)*0.18;
+                wrap.style.transform='translateY(-'+offset+'px)';
+                ticking=false;
+            });
+        },{passive:true});
+    }
 
-    // ── 3. Failsafe: jika splash tidak ada / sudah lewat, tetap jalan ────────
-    //    Tunggu sampai MAX_MS splash (4500ms) + buffer 200ms, lalu paksa jalan
-    window.addEventListener('load', function () {
-        setTimeout(function () {
-            runHeroAnimations(); // heroAnimated guard memastikan tidak dobel
-        }, 4700);
+    function runHeroAnimations() {
+        if(heroAnimated) return; heroAnimated=true;
+        elText  =document.getElementById('hero-line3');
+        elCursor=document.getElementById('hero-cursor');
+        p1=document.getElementById('heroUnderlinePath1');
+        p2=document.getElementById('heroUnderlinePath2');
+
+        document.querySelectorAll('.hero-reveal').forEach(function(el){
+            el.classList.add('is-visible');
+        });
+
+        setTimeout(typeLoop,700);
+        initParallax();
+    }
+
+    document.addEventListener('splashHidden',function(){runHeroAnimations();});
+    window.__onSplashHidden=window.__onSplashHidden||[];
+    window.__onSplashHidden.push(function(){runHeroAnimations();});
+    window.addEventListener('load',function(){
+        setTimeout(function(){runHeroAnimations();},4700);
     });
 })();
 </script>

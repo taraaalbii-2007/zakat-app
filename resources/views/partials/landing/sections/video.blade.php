@@ -24,13 +24,13 @@
     to   { stroke-dashoffset: 0; }
 }
 
-/* ── Background floaters ── */
-@keyframes vdFloatA { 0%,100%{transform:rotate(12deg) translateY(0px)}  50%{transform:rotate(12deg) translateY(-9px)} }
-@keyframes vdFloatB { 0%,100%{transform:rotate(-8deg) translateY(0px)}  50%{transform:rotate(-8deg) translateY(-7px)} }
-@keyframes vdFloatC { 0%,100%{transform:rotate(5deg) translateY(0px)}   50%{transform:rotate(5deg) translateY(-11px)} }
-@keyframes vdFloatD { 0%,100%{transform:rotate(-14deg) translateY(0px)} 50%{transform:rotate(-14deg) translateY(-6px)} }
+/* ── Background floaters islami ── */
+@keyframes vdFloatA { 0%,100%{transform:translateY(0px) rotate(0deg)}   50%{transform:translateY(-10px) rotate(15deg)} }
+@keyframes vdFloatB { 0%,100%{transform:translateY(0px) rotate(0deg)}   50%{transform:translateY(-8px) rotate(-12deg)} }
+@keyframes vdFloatC { 0%,100%{transform:translateY(0px) rotate(0deg)}   50%{transform:translateY(-12px) rotate(10deg)} }
+@keyframes vdFloatD { 0%,100%{transform:translateY(0px) rotate(0deg)}   50%{transform:translateY(-7px) rotate(-8deg)} }
 .vd-fb-a { animation: vdFloatA 5s ease-in-out infinite; }
-.vd-fb-b { animation: vdFloatB 6s ease-in-out 0.8s infinite; }
+.vd-fb-b { animation: vdFloatB 6.5s ease-in-out 0.8s infinite; }
 .vd-fb-c { animation: vdFloatC 7s ease-in-out 1.6s infinite; }
 .vd-fb-d { animation: vdFloatD 5.5s ease-in-out 0.4s infinite; }
 
@@ -228,10 +228,26 @@
             </defs>
             <rect width="100%" height="100%" fill="url(#vd-diag-pat)"/>
         </svg>
-        <div class="vd-fb-a absolute rounded-2xl border-2" style="width:88px;height:88px;top:7%;left:4%;border-color:rgba(45,105,54,0.12);background:rgba(45,105,54,0.025);transform:rotate(12deg);"></div>
-        <div class="vd-fb-b absolute rounded-xl border-2"  style="width:60px;height:60px;top:15%;right:6%;border-color:rgba(45,105,54,0.09);background:rgba(45,105,54,0.02);transform:rotate(-8deg);"></div>
-        <div class="vd-fb-c absolute rounded-2xl border"   style="width:110px;height:110px;bottom:10%;left:2%;border-color:rgba(45,105,54,0.08);background:rgba(45,105,54,0.015);transform:rotate(5deg);"></div>
-        <div class="vd-fb-d absolute rounded-xl border"    style="width:68px;height:68px;bottom:18%;right:4%;border-color:rgba(45,105,54,0.1);background:rgba(45,105,54,0.02);transform:rotate(-14deg);"></div>
+        {{-- Bintang 6 sudut kiri atas --}}
+        <svg class="vd-fb-a absolute" style="width:52px;height:52px;top:7%;left:4%;opacity:0.13;" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="30,2 36,22 58,22 41,35 47,56 30,43 13,56 19,35 2,22 24,22" fill="#16a34a"/>
+        </svg>
+        {{-- Bulan sabit kanan atas --}}
+        <svg class="vd-fb-b absolute" style="width:48px;height:48px;top:10%;right:5%;opacity:0.12;" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M38,10 A20,20 0 1,0 38,50 A14,14 0 1,1 38,10Z" fill="#16a34a"/>
+        </svg>
+        {{-- Bintang 8 sudut kiri bawah --}}
+        <svg class="vd-fb-c absolute" style="width:64px;height:64px;bottom:10%;left:3%;opacity:0.10;" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="40,4 46,28 70,22 54,40 70,58 46,52 40,76 34,52 10,58 26,40 10,22 34,28" fill="#16a34a"/>
+        </svg>
+        {{-- Bintang kecil kanan bawah --}}
+        <svg class="vd-fb-d absolute" style="width:36px;height:36px;bottom:20%;right:5%;opacity:0.11;" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="30,2 36,22 58,22 41,35 47,56 30,43 13,56 19,35 2,22 24,22" fill="#16a34a"/>
+        </svg>
+        {{-- Bulan sabit kecil tengah kiri --}}
+        <svg class="vd-fb-a absolute" style="width:30px;height:30px;top:45%;left:1.5%;opacity:0.09;" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M38,10 A20,20 0 1,0 38,50 A14,14 0 1,1 38,10Z" fill="#16a34a"/>
+        </svg>
         <div class="absolute inset-0" style="background:radial-gradient(ellipse 65% 70% at 50% 50%, rgba(255,255,255,0.78) 0%, transparent 100%);"></div>
     </div>
 
