@@ -31,7 +31,7 @@
             <div class="p-4 sm:p-6 space-y-8">
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 1 — DATA ADMIN MASJID
+                     BAGIAN 1 — DATA ADMIN LEMBAGA
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -73,6 +73,8 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+
+                        {{-- Nama Admin --}}
                         <div>
                             <label for="admin_nama" class="block text-sm font-medium text-gray-700 mb-1.5">Nama Admin</label>
                             <input type="text" name="admin_nama" id="admin_nama"
@@ -81,6 +83,28 @@
                                 placeholder="Nama lengkap admin">
                             @error('admin_nama') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
+
+                        {{-- Jenis Kelamin Admin --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Kelamin Admin</label>
+                            <div class="flex gap-4 h-[42px] items-center">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="admin_jenis_kelamin" value="laki-laki"
+                                        {{ old('admin_jenis_kelamin', $lembaga->admin_jenis_kelamin) === 'laki-laki' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500">
+                                    <span class="text-sm text-gray-700">Laki-laki</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="admin_jenis_kelamin" value="perempuan"
+                                        {{ old('admin_jenis_kelamin', $lembaga->admin_jenis_kelamin) === 'perempuan' ? 'checked' : '' }}
+                                        class="w-4 h-4 text-emerald-600 border-gray-300 focus:ring-emerald-500">
+                                    <span class="text-sm text-gray-700">Perempuan</span>
+                                </label>
+                            </div>
+                            @error('admin_jenis_kelamin') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- Telepon Admin --}}
                         <div>
                             <label for="admin_telepon" class="block text-sm font-medium text-gray-700 mb-1.5">No. Telepon Admin</label>
                             <input type="text" name="admin_telepon" id="admin_telepon"
@@ -89,6 +113,8 @@
                                 placeholder="08xxxxxxxxxx">
                             @error('admin_telepon') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
+
+                        {{-- Email Admin --}}
                         <div>
                             <label for="admin_email" class="block text-sm font-medium text-gray-700 mb-1.5">Email Admin</label>
                             <input type="email" name="admin_email" id="admin_email"
@@ -97,11 +123,12 @@
                                 placeholder="email@lembaga.com">
                             @error('admin_email') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                         </div>
+
                     </div>
                 </div>
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 2 — DATA MASJID
+                     BAGIAN 2 — DATA LEMBAGA
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -126,7 +153,6 @@
                                 @if($index === 0)
                                     <span class="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md">Utama</span>
                                 @endif
-                                {{-- Tombol hapus --}}
                                 <label class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center cursor-pointer shadow-md hover:bg-red-600 transition"
                                        title="Hapus foto ini">
                                     <input type="checkbox" name="hapus_foto_index[]" value="{{ $index }}" class="hidden foto-hapus-cb">
@@ -134,7 +160,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
                                 </label>
-                                {{-- Overlay saat dicentang --}}
                                 <div class="foto-hapus-overlay absolute inset-0 bg-red-500 bg-opacity-50 rounded-xl items-center justify-center hidden">
                                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
@@ -145,7 +170,6 @@
                         </div>
                         @endif
 
-                        {{-- Upload foto baru --}}
                         @if($lembaga->canAddMoreFotos())
                         <div>
                             <input type="file" name="fotos[]" id="fotos" accept="image/*" multiple class="hidden"
@@ -203,7 +227,6 @@
                         </div>
                     </div>
 
-                    {{-- Alamat --}}
                     <div class="mt-4">
                         <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1.5">
                             Alamat <span class="text-red-500">*</span>
@@ -214,7 +237,6 @@
                         @error('alamat') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Wilayah --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-4">
                         <div>
                             <label for="provinsi_kode" class="block text-sm font-medium text-gray-700 mb-1.5">
@@ -267,7 +289,6 @@
                         </div>
                     </div>
 
-                    {{-- Deskripsi --}}
                     <div class="mt-4">
                         <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi Lembaga</label>
                         <textarea name="deskripsi" id="deskripsi" rows="3"
@@ -277,7 +298,7 @@
                 </div>
 
                 {{-- ══════════════════════════════════
-                     BAGIAN 3 — SEJARAH MASJID
+                     BAGIAN 3 — SEJARAH LEMBAGA
                 ══════════════════════════════════ --}}
                 <div>
                     <h2 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
@@ -390,122 +411,62 @@ document.querySelectorAll('.foto-hapus-cb').forEach(cb => {
 
 // ── Data wilayah dari controller ──────────────────────────────
 const provinces = @json($provinces);
-const cities = @json($cities);
+const cities    = @json($cities);
 const districts = @json($districts);
-const villages = @json($villages);
+const villages  = @json($villages);
 
-// ── Inisialisasi dropdown ────────────────────────────────────
+// ── Inisialisasi dropdown ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-    const provinsiSelect = document.getElementById('provinsi_kode');
-    const kotaSelect = document.getElementById('kota_kode');
+    const provinsiSelect  = document.getElementById('provinsi_kode');
+    const kotaSelect      = document.getElementById('kota_kode');
     const kecamatanSelect = document.getElementById('kecamatan_kode');
     const kelurahanSelect = document.getElementById('kelurahan_kode');
 
-    // Load kota berdasarkan provinsi yang dipilih
     function loadCities(provinceCode, selectedCityCode = null) {
-        kotaSelect.innerHTML = '<option value="">-- Pilih Kabupaten/Kota --</option>';
+        kotaSelect.innerHTML      = '<option value="">-- Pilih Kabupaten/Kota --</option>';
         kecamatanSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
         kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-
         if (!provinceCode) return;
-
-        // Filter cities berdasarkan province_code
-        const filteredCities = cities.filter(city => city.province_code === provinceCode);
-        
-        filteredCities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city.code;
-            option.textContent = city.name;
-            if (selectedCityCode && city.code === selectedCityCode) {
-                option.selected = true;
-            }
-            kotaSelect.appendChild(option);
+        cities.filter(c => c.province_code === provinceCode).forEach(city => {
+            const opt = new Option(city.name, city.code, false, selectedCityCode && city.code === selectedCityCode);
+            kotaSelect.appendChild(opt);
         });
-
-        // Jika ada kota yang dipilih, load kecamatannya
-        if (selectedCityCode) {
-            loadDistricts(selectedCityCode);
-        }
+        if (selectedCityCode) loadDistricts(selectedCityCode);
     }
 
-    // Load kecamatan berdasarkan kota yang dipilih
     function loadDistricts(cityCode, selectedDistrictCode = null) {
         kecamatanSelect.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
         kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-
         if (!cityCode) return;
-
-        // Filter districts berdasarkan city_code
-        const filteredDistricts = districts.filter(dist => dist.city_code === cityCode);
-        
-        filteredDistricts.forEach(dist => {
-            const option = document.createElement('option');
-            option.value = dist.code;
-            option.textContent = dist.name;
-            if (selectedDistrictCode && dist.code === selectedDistrictCode) {
-                option.selected = true;
-            }
-            kecamatanSelect.appendChild(option);
+        districts.filter(d => d.city_code === cityCode).forEach(dist => {
+            const opt = new Option(dist.name, dist.code, false, selectedDistrictCode && dist.code === selectedDistrictCode);
+            kecamatanSelect.appendChild(opt);
         });
-
-        // Jika ada kecamatan yang dipilih, load kelurahannya
-        if (selectedDistrictCode) {
-            loadVillages(selectedDistrictCode);
-        }
+        if (selectedDistrictCode) loadVillages(selectedDistrictCode);
     }
 
-    // Load kelurahan berdasarkan kecamatan yang dipilih
     function loadVillages(districtCode, selectedVillageCode = null) {
         kelurahanSelect.innerHTML = '<option value="">-- Pilih Kelurahan/Desa --</option>';
-
         if (!districtCode) return;
-
-        // Filter villages berdasarkan district_code
-        const filteredVillages = villages.filter(vil => vil.district_code === districtCode);
-        
-        filteredVillages.forEach(vil => {
-            const option = document.createElement('option');
-            option.value = vil.code;
-            option.textContent = vil.name;
-            if (selectedVillageCode && vil.code === selectedVillageCode) {
-                option.selected = true;
-            }
-            kelurahanSelect.appendChild(option);
+        villages.filter(v => v.district_code === districtCode).forEach(vil => {
+            const opt = new Option(vil.name, vil.code, false, selectedVillageCode && vil.code === selectedVillageCode);
+            kelurahanSelect.appendChild(opt);
         });
     }
 
-    // Event listener untuk perubahan provinsi
-    provinsiSelect.addEventListener('change', function() {
-        loadCities(this.value);
-    });
+    provinsiSelect.addEventListener('change',  function() { loadCities(this.value); });
+    kotaSelect.addEventListener('change',      function() { loadDistricts(this.value); });
+    kecamatanSelect.addEventListener('change', function() { loadVillages(this.value); });
 
-    // Event listener untuk perubahan kota
-    kotaSelect.addEventListener('change', function() {
-        loadDistricts(this.value);
-    });
+    // Inisialisasi awal
+    const selProv  = provinsiSelect.value;
+    const selCity  = '{{ $lembaga->kota_kode }}';
+    const selDist  = '{{ $lembaga->kecamatan_kode }}';
+    const selVil   = '{{ $lembaga->kelurahan_kode }}';
 
-    // Event listener untuk perubahan kecamatan
-    kecamatanSelect.addEventListener('change', function() {
-        loadVillages(this.value);
-    });
-
-    // Inisialisasi awal dengan nilai yang sudah dipilih
-    const selectedProvince = provinsiSelect.value;
-    const selectedCity = '{{ $lembaga->kota_kode }}';
-    const selectedDistrict = '{{ $lembaga->kecamatan_kode }}';
-    const selectedVillage = '{{ $lembaga->kelurahan_kode }}';
-
-    if (selectedProvince) {
-        loadCities(selectedProvince, selectedCity);
-    }
-    
-    if (selectedCity) {
-        loadDistricts(selectedCity, selectedDistrict);
-    }
-    
-    if (selectedDistrict) {
-        loadVillages(selectedDistrict, selectedVillage);
-    }
+    if (selProv) loadCities(selProv, selCity);
+    if (selCity) loadDistricts(selCity, selDist);
+    if (selDist) loadVillages(selDist, selVil);
 });
 </script>
 @endpush

@@ -75,6 +75,23 @@
                                 </svg>
                                 Admin Lembaga
                             </span>
+                            @if($lembaga->admin_jenis_kelamin)
+                                @if($lembaga->admin_jenis_kelamin === 'laki-laki')
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M9 9a3 3 0 1 0 6 0 3 3 0 0 0-6 0zm8-5h-3V2h-2v2h-3l-1 1v3h1v8h2v-4h2v4h2V7h1V4l-1-1z"/>
+                                        </svg>
+                                        Laki-laki
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800 border border-pink-200">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zm0 12c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        Perempuan
+                                    </span>
+                                @endif
+                            @endif
                             @if($user->is_active)
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">Aktif</span>
                             @else
@@ -131,8 +148,6 @@
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Terakhir Diperbarui</p>
                         <p class="text-sm text-gray-900">{{ optional($user->updated_at)->format('d F Y, H:i') ?? '-' }}</p>
                     </div>
-
-                    {{-- Keamanan Akun --}}
                     @if(!$user->is_google_user)
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Keamanan</p>
@@ -152,7 +167,7 @@
             <hr class="border-gray-100">
 
             {{-- ══════════════════════════════════
-                 BAGIAN 2 — DATA ADMIN MASJID
+                 BAGIAN 2 — DATA ADMIN LEMBAGA
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -162,6 +177,22 @@
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Nama Admin</p>
                         <p class="text-sm text-gray-900 font-medium">{{ $lembaga->admin_nama ?? '-' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Jenis Kelamin</p>
+                        @if($lembaga->admin_jenis_kelamin === 'laki-laki')
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5"></span>
+                                Laki-laki
+                            </span>
+                        @elseif($lembaga->admin_jenis_kelamin === 'perempuan')
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800 border border-pink-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-pink-500 mr-1.5"></span>
+                                Perempuan
+                            </span>
+                        @else
+                            <p class="text-sm text-gray-900">-</p>
+                        @endif
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">No. Telepon Admin</p>
@@ -177,7 +208,7 @@
             <hr class="border-gray-100">
 
             {{-- ══════════════════════════════════
-                 BAGIAN 3 — DATA MASJID
+                 BAGIAN 3 — DATA LEMBAGA
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -234,7 +265,7 @@
             <hr class="border-gray-100">
 
             {{-- ══════════════════════════════════
-                 BAGIAN 4 — SEJARAH MASJID
+                 BAGIAN 4 — SEJARAH LEMBAGA
             ══════════════════════════════════ --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
