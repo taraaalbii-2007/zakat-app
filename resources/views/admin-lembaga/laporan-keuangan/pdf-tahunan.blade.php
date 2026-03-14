@@ -15,27 +15,57 @@
 
         /* ── Header ── */
         .header {
-            text-align: center;
             margin-bottom: 25px;
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 12px;
         }
-        .header h1 {
+        .header-inner {
+            width: 100%;
+        }
+        .header-inner:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .header-logo-left {
+            float: left;
+            width: 70px;
+            text-align: center;
+        }
+        .header-logo-right {
+            float: right;
+            width: 70px;
+            text-align: center;
+        }
+        .header-logo-left img,
+        .header-logo-right img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .header-logo-label {
+            display: none;
+        }
+        .header-text {
+            text-align: center;
+            padding: 0 80px;
+        }
+        .header-text h1 {
             margin: 0;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             letter-spacing: 1px;
             color: #000;
         }
-        .header h2 {
+        .header-text h2 {
             margin: 4px 0;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: normal;
             color: #636e72;
         }
-        .header .subtitle {
+        .header-text .subtitle {
             margin: 2px 0;
-            font-size: 11px;
+            font-size: 10px;
             font-style: italic;
         }
 
@@ -155,18 +185,6 @@
             background-color: #f1f2f6;
         }
 
-        /* ── Chart Placeholder ── */
-        .chart-placeholder {
-            text-align: center;
-            padding: 18px;
-            border: 1px dashed #b2bec3;
-            border-radius: 4px;
-            color: #636e72;
-            font-style: italic;
-            font-size: 10px;
-            margin-bottom: 20px;
-        }
-
         /* ── Signature ── */
         .footer-container {
             margin-top: 30px;
@@ -203,9 +221,9 @@
             border-bottom: 1px solid #2d3436;
             line-height: 1.4;
         }
-        .paren-left  { text-align: left;   width: 10px; }
+        .paren-left  { text-align: left;  width: 10px; }
         .paren-mid   { text-align: center; }
-        .paren-right { text-align: right;  width: 10px; }
+        .paren-right { text-align: right; width: 10px; }
 
         /* ── Footer Note ── */
         .footer-note {
@@ -226,21 +244,75 @@
 <body>
 
     {{-- ══════════════════ HEADER ══════════════════ --}}
+    @php
+        // Logo Lembaga
+        $fotoLembaga    = $lembaga->foto;
+        $fotoLembagaArr = is_array($fotoLembaga) ? $fotoLembaga : (is_string($fotoLembaga) ? json_decode($fotoLembaga, true) : []);
+        $logoLembagaB64 = null;
+        if (!empty($fotoLembagaArr)) {
+            $lp = storage_path('app/public/' . $fotoLembagaArr[0]);
+            if (file_exists($lp)) {
+                $ext  = strtolower(pathinfo($lp, PATHINFO_EXTENSION));
+                $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                $logoLembagaB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($lp));
+            }
+        }
+        // Logo Aplikasi
+        $logoAplikasiB64 = null;
+        try {
+            $konfigApp = \App\Models\KonfigurasiAplikasi::getConfig();
+            if ($konfigApp && $konfigApp->logo_aplikasi) {
+                foreach ([
+                    storage_path('app/public/' . $konfigApp->logo_aplikasi),
+                    public_path('storage/' . $konfigApp->logo_aplikasi),
+                    public_path($konfigApp->logo_aplikasi),
+                    base_path($konfigApp->logo_aplikasi),
+                ] as $cp) {
+                    if (file_exists($cp)) {
+                        $ext  = strtolower(pathinfo($cp, PATHINFO_EXTENSION));
+                        $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                        $logoAplikasiB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cp));
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {}
+    @endphp
+
     <div class="header">
-        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN TAHUNAN KEUANGAN MASJID') }}</h1>
-        <h2>Laporan Keuangan Tahunan – Tahun {{ $tahun }}</h2>
-        <div class="subtitle">
-            {{ $lembaga->alamat ?? '' }}
-            @if(isset($lembaga->kelurahan_nama) && $lembaga->kelurahan_nama)
-                , Kel. {{ $lembaga->kelurahan_nama }}
-            @endif
-            @if(isset($lembaga->kecamatan_nama) && $lembaga->kecamatan_nama)
-                , Kec. {{ $lembaga->kecamatan_nama }}
-            @endif
-            @if(isset($lembaga->kota_nama) && $lembaga->kota_nama)
-                , {{ $lembaga->kota_nama }}
-            @endif
-        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                {{-- Kolom Logo Lembaga --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoLembagaB64)
+                        <img src="{{ $logoLembagaB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Lembaga">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+
+                {{-- Kolom Teks Tengah --}}
+                <td style="text-align:center; vertical-align:middle; padding:0 10px;">
+                    <h1 style="margin:0; font-size:17px; font-weight:bold; letter-spacing:1px; color:#000;">{{ strtoupper($lembaga->nama ?? 'LAPORAN TAHUNAN KEUANGAN MASJID') }}</h1>
+                    <h2 style="margin:4px 0; font-size:13px; font-weight:normal; color:#636e72;">Laporan Keuangan Tahunan – Tahun {{ $tahun }}</h2>
+                    <div style="margin:2px 0; font-size:10px; font-style:italic;">
+                        {{ $lembaga->alamat ?? '' }}
+                        @if(isset($lembaga->kelurahan_nama) && $lembaga->kelurahan_nama), Kel. {{ $lembaga->kelurahan_nama }}@endif
+                        @if(isset($lembaga->kecamatan_nama) && $lembaga->kecamatan_nama), Kec. {{ $lembaga->kecamatan_nama }}@endif
+                        @if(isset($lembaga->kota_nama) && $lembaga->kota_nama), {{ $lembaga->kota_nama }}@endif
+                    </div>
+                </td>
+
+                {{-- Kolom Logo Aplikasi --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoAplikasiB64)
+                        <img src="{{ $logoAplikasiB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Aplikasi">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- ══════════════════ INFO SECTION ══════════════════ --}}
@@ -367,11 +439,11 @@
     <h3 class="section-title">ANALISIS TAHUNAN</h3>
 
     @php
-        $maxPenerimaan        = $laporanTahunan->max('total_penerimaan');
-        $bulanMaxPenerimaan   = $laporanTahunan->where('total_penerimaan', $maxPenerimaan)->first();
-        $maxPenyaluran        = $laporanTahunan->max('total_penyaluran');
-        $bulanMaxPenyaluran   = $laporanTahunan->where('total_penyaluran', $maxPenyaluran)->first();
-        $jumlahBulan          = $laporanTahunan->count() ?: 12;
+        $maxPenerimaan       = $laporanTahunan->max('total_penerimaan');
+        $bulanMaxPenerimaan  = $laporanTahunan->where('total_penerimaan', $maxPenerimaan)->first();
+        $maxPenyaluran       = $laporanTahunan->max('total_penyaluran');
+        $bulanMaxPenyaluran  = $laporanTahunan->where('total_penyaluran', $maxPenyaluran)->first();
+        $jumlahBulan         = $laporanTahunan->count() ?: 12;
     @endphp
 
     <table class="analysis-table">
@@ -426,5 +498,6 @@
             </table>
         </div>
     </div>
+
 </body>
 </html>

@@ -12,34 +12,64 @@
             color: #2d3436;
             margin: 20px;
         }
-        
-        /* Header Styles */
+
+        /* ── Header ── */
         .header {
-            text-align: center;
             margin-bottom: 25px;
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 12px;
         }
-        .header h1 {
+        .header-inner {
+            width: 100%;
+        }
+        .header-inner:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .header-logo-left {
+            float: left;
+            width: 85px;
+            text-align: center;
+        }
+        .header-logo-right {
+            float: right;
+            width: 85px;
+            text-align: center;
+        }
+        .header-logo-left img,
+        .header-logo-right img {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+        .header-logo-label {
+            display: none;
+        }
+        .header-text {
+            text-align: center;
+            padding: 0 95px;
+        }
+        .header-text h1 {
             margin: 0;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
             letter-spacing: 1px;
             color: #000;
         }
-        .header h2 {
+        .header-text h2 {
             margin: 4px 0;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: normal;
             color: #636e72;
         }
-        .header .subtitle {
+        .header-text .subtitle {
             margin: 2px 0;
-            font-size: 11px;
+            font-size: 10px;
             font-style: italic;
         }
-        
-        /* Info Section */
+
+        /* ── Info Section ── */
         .info-section {
             margin-bottom: 20px;
             width: 100%;
@@ -65,8 +95,8 @@
             padding-left: 150px;
             border-bottom: 1px solid #f1f2f6;
         }
-        
-        /* Table Styles */
+
+        /* ── Table Styles ── */
         table.data-table {
             width: 100%;
             border-collapse: collapse;
@@ -88,53 +118,43 @@
             padding: 6px 4px;
             word-wrap: break-word;
         }
-
         table.data-table tr {
             page-break-inside: avoid;
         }
 
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
+        .text-left   { text-align: left; }
+        .text-right  { text-align: right; }
         .text-center { text-align: center; }
-        .text-green { color: #065f46; }
-        .text-red { color: #991b1b; }
-        .text-blue { color: #1e40af; }
-        .text-bold { font-weight: bold; }
+        .text-green  { color: #065f46; }
+        .text-red    { color: #991b1b; }
+        .text-blue   { color: #1e40af; }
+        .text-bold   { font-weight: bold; }
         .text-uppercase { text-transform: uppercase; }
-        
-        /* Footer & Signature */
+
+        /* ── Footer & Signature ── */
         .footer-container {
             margin-top: 30px;
             width: 100%;
             page-break-inside: avoid;
         }
-
         .footer-container:after {
             content: "";
             display: table;
             clear: both;
         }
-        
         .signature-wrapper {
             float: right;
             width: 250px;
             text-align: center;
         }
-
         .signature-space {
             height: 70px;
         }
-        
-        .signature-space {
-            height: 70px;
-        }
-
         .signature-name {
             font-weight: bold;
             margin-top: 0px;
             margin-bottom: 1px;
         }
-
         .signature-line-table {
             width: 210px;
             margin: 0 auto;
@@ -142,34 +162,19 @@
             font-weight: bold;
             font-size: 11px;
         }
-
         .signature-line-table td {
             border: none;
             padding: 0;
-            padding-top: 0;
             border-bottom: 1px solid #2d3436;
             line-height: 1.4;
         }
-
-        .paren-left {
-            text-align: left;
-            width: 10px;
-        }
-
-        .paren-mid {
-            text-align: center;
-        }
-
-        .paren-right {
-            text-align: right;
-            width: 10px;
-        }
-
+        .paren-left  { text-align: left;  width: 10px; }
+        .paren-mid   { text-align: center; }
+        .paren-right { text-align: right; width: 10px; }
         .signature-title {
             font-weight: bold;
             margin-bottom: 5px;
         }
-
         .footer-note {
             clear: both;
             padding-top: 20px;
@@ -178,94 +183,134 @@
             color: #b2bec3;
             border-top: 1px dashed #dfe6e9;
         }
-        
         .page-break {
             page-break-before: always;
         }
-
-        .ringkasan-value {
-            font-weight: bold;
-        }
-
         .status-text {
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .status-draft-text {
-            color: #6b7280;
-        }
-
-        .status-published-text {
-            color: #065f46;
-        }
+        .status-draft-text     { color: #6b7280; }
+        .status-published-text { color: #065f46; }
     </style>
 </head>
 <body>
+
+    {{-- ══════════════════ HEADER ══════════════════ --}}
+    @php
+        // Logo Lembaga
+        $fotoLembaga    = $laporan->lembaga->foto;
+        $fotoLembagaArr = is_array($fotoLembaga) ? $fotoLembaga : (is_string($fotoLembaga) ? json_decode($fotoLembaga, true) : []);
+        $logoLembagaB64 = null;
+        if (!empty($fotoLembagaArr)) {
+            $lp = storage_path('app/public/' . $fotoLembagaArr[0]);
+            if (file_exists($lp)) {
+                $ext = strtolower(pathinfo($lp, PATHINFO_EXTENSION));
+                $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                $logoLembagaB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($lp));
+            }
+        }
+        // Logo Aplikasi
+        $logoAplikasiB64 = null;
+        try {
+            $konfigApp = \App\Models\KonfigurasiAplikasi::getConfig();
+            if ($konfigApp && $konfigApp->logo_aplikasi) {
+                foreach ([
+                    storage_path('app/public/' . $konfigApp->logo_aplikasi),
+                    public_path('storage/' . $konfigApp->logo_aplikasi),
+                    public_path($konfigApp->logo_aplikasi),
+                    base_path($konfigApp->logo_aplikasi),
+                ] as $cp) {
+                    if (file_exists($cp)) {
+                        $ext  = strtolower(pathinfo($cp, PATHINFO_EXTENSION));
+                        $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                        $logoAplikasiB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cp));
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {}
+    @endphp
+
     <div class="header">
-        <h1>{{ strtoupper($laporan->lembaga->nama ?? 'LAPORAN KEUANGAN MASJID') }}</h1>
-        <h2>Laporan Keuangan Bulanan</h2>
-        <div class="subtitle">
-            {{ $laporan->lembaga->alamat ?? '' }}
-            @if(isset($laporan->lembaga->kelurahan_nama) && $laporan->lembaga->kelurahan_nama)
-                , Kel. {{ $laporan->lembaga->kelurahan_nama }}
-            @endif
-            @if(isset($laporan->lembaga->kecamatan_nama) && $laporan->lembaga->kecamatan_nama)
-                , Kec. {{ $laporan->lembaga->kecamatan_nama }}
-            @endif
-            @if(isset($laporan->lembaga->kota_nama) && $laporan->lembaga->kota_nama)
-                , {{ $laporan->lembaga->kota_nama }}
-            @endif
-        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                {{-- Kolom Logo Lembaga --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoLembagaB64)
+                        <img src="{{ $logoLembagaB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Lembaga">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+
+                {{-- Kolom Teks Tengah --}}
+                <td style="text-align:center; vertical-align:middle; padding:0 10px;">
+                    <h1 style="margin:0; font-size:17px; font-weight:bold; letter-spacing:1px; color:#000;">{{ strtoupper($laporan->lembaga->nama ?? 'LAPORAN KEUANGAN MASJID') }}</h1>
+                    <h2 style="margin:4px 0; font-size:13px; font-weight:normal; color:#636e72;">Laporan Keuangan Bulanan</h2>
+                    <div style="margin:2px 0; font-size:10px; font-style:italic;">
+                        {{ $laporan->lembaga->alamat ?? '' }}
+                        @if(isset($laporan->lembaga->kelurahan_nama) && $laporan->lembaga->kelurahan_nama), Kel. {{ $laporan->lembaga->kelurahan_nama }}@endif
+                        @if(isset($laporan->lembaga->kecamatan_nama) && $laporan->lembaga->kecamatan_nama), Kec. {{ $laporan->lembaga->kecamatan_nama }}@endif
+                        @if(isset($laporan->lembaga->kota_nama) && $laporan->lembaga->kota_nama), {{ $laporan->lembaga->kota_nama }}@endif
+                    </div>
+                </td>
+
+                {{-- Kolom Logo Aplikasi --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoAplikasiB64)
+                        <img src="{{ $logoAplikasiB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Aplikasi">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
+    {{-- ══════════════════ INFO SECTION ══════════════════ --}}
     <div class="info-section">
         <div class="info-row">
             <div class="info-label">Periode Laporan</div>
             <div class="info-value">: {{ \Carbon\Carbon::parse($laporan->periode_mulai)->locale('id')->translatedFormat('l, d F Y') }} - {{ \Carbon\Carbon::parse($laporan->periode_selesai)->locale('id')->translatedFormat('l, d F Y') }}</div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Bulan / Tahun</div>
             <div class="info-value">: {{ \Carbon\Carbon::createFromDate($laporan->tahun, $laporan->bulan, 1)->locale('id')->translatedFormat('F Y') }}</div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Status Laporan</div>
-            <div class="info-value">: 
+            <div class="info-value">:
                 <span class="status-text status-{{ $laporan->status }}-text">{{ strtoupper($laporan->status) }}</span>
             </div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Ringkasan Data</div>
-            <div class="info-value">: 
-                <span class="text-blue"><strong>Rp {{ number_format($laporan->saldo_awal, 0, ',', '.') }}</strong> Saldo Awal</span> | 
-                <span class="text-green"><strong>Rp {{ number_format($laporan->total_penerimaan, 0, ',', '.') }}</strong> Penerimaan</span> | 
-                <span class="text-red"><strong>Rp {{ number_format($laporan->total_penyaluran, 0, ',', '.') }}</strong> Penyaluran</span> | 
+            <div class="info-value">:
+                <span class="text-blue"><strong>Rp {{ number_format($laporan->saldo_awal, 0, ',', '.') }}</strong> Saldo Awal</span> |
+                <span class="text-green"><strong>Rp {{ number_format($laporan->total_penerimaan, 0, ',', '.') }}</strong> Penerimaan</span> |
+                <span class="text-red"><strong>Rp {{ number_format($laporan->total_penyaluran, 0, ',', '.') }}</strong> Penyaluran</span> |
                 <strong>Rp {{ number_format($laporan->saldo_akhir, 0, ',', '.') }}</strong> Saldo Akhir
             </div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Statistik Transaksi</div>
-            <div class="info-value">: 
-                <strong>{{ $laporan->jumlah_muzakki }}</strong> Muzakki | 
-                <strong>{{ $laporan->jumlah_transaksi_masuk }}</strong> Transaksi Masuk | 
-                <strong>{{ $laporan->jumlah_mustahik }}</strong> Mustahik | 
+            <div class="info-value">:
+                <strong>{{ $laporan->jumlah_muzakki }}</strong> Muzakki |
+                <strong>{{ $laporan->jumlah_transaksi_masuk }}</strong> Transaksi Masuk |
+                <strong>{{ $laporan->jumlah_mustahik }}</strong> Mustahik |
                 <strong>{{ $laporan->jumlah_transaksi_keluar }}</strong> Transaksi Keluar
             </div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Petugas Ekspor</div>
             <div class="info-value">: {{ $laporan->creator->nama_lengkap ?? $laporan->creator->username ?? 'System' }}</div>
         </div>
     </div>
 
-    {{-- Detail Penerimaan --}}
+    {{-- ══════════════════ DETAIL PENERIMAAN ══════════════════ --}}
     <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">DETAIL PENERIMAAN PER JENIS ZAKAT</h3>
-    
+
     <table class="data-table">
         <thead>
             <tr>
@@ -276,9 +321,7 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $totalPenerimaan = $laporan->total_penerimaan;
-            @endphp
+            @php $totalPenerimaan = $laporan->total_penerimaan; @endphp
             @forelse($detailPenerimaan as $item)
                 <tr>
                     <td class="text-left">{{ $item['jenis_zakat'] }}</td>
@@ -287,15 +330,11 @@
                     <td class="text-center">
                         @if($totalPenerimaan > 0)
                             {{ number_format(($item['jumlah'] / $totalPenerimaan) * 100, 1) }}%
-                        @else
-                            0%
-                        @endif
+                        @else 0% @endif
                     </td>
                 </tr>
             @empty
-                <tr>
-                    <td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penerimaan</td>
-                </tr>
+                <tr><td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penerimaan</td></tr>
             @endforelse
             @if(count($detailPenerimaan) > 0)
                 <tr style="font-weight: bold; background-color: #f1f2f6;">
@@ -308,9 +347,9 @@
         </tbody>
     </table>
 
-    {{-- Detail Penyaluran --}}
+    {{-- ══════════════════ DETAIL PENYALURAN ══════════════════ --}}
     <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">DETAIL PENYALURAN PER KATEGORI MUSTAHIK</h3>
-    
+
     <table class="data-table">
         <thead>
             <tr>
@@ -321,9 +360,7 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $totalPenyaluran = $laporan->total_penyaluran;
-            @endphp
+            @php $totalPenyaluran = $laporan->total_penyaluran; @endphp
             @forelse($detailPenyaluran as $item)
                 <tr>
                     <td class="text-left">{{ $item['kategori'] }}</td>
@@ -332,15 +369,11 @@
                     <td class="text-center">
                         @if($totalPenyaluran > 0)
                             {{ number_format(($item['jumlah'] / $totalPenyaluran) * 100, 1) }}%
-                        @else
-                            0%
-                        @endif
+                        @else 0% @endif
                     </td>
                 </tr>
             @empty
-                <tr>
-                    <td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penyaluran</td>
-                </tr>
+                <tr><td colspan="4" class="text-center" style="padding: 20px;">Tidak ada data penyaluran</td></tr>
             @endforelse
             @if(count($detailPenyaluran) > 0)
                 <tr style="font-weight: bold; background-color: #f1f2f6;">
@@ -353,9 +386,9 @@
         </tbody>
     </table>
 
-    {{-- Informasi Tambahan --}}
+    {{-- ══════════════════ INFORMASI LAPORAN ══════════════════ --}}
     <h3 style="margin: 20px 0 10px 0; font-size: 12px; border-bottom: 1px solid #2d3436; padding-bottom: 5px;">INFORMASI LAPORAN</h3>
-    
+
     <table class="data-table">
         <tbody>
             <tr>
@@ -375,7 +408,7 @@
         </tbody>
     </table>
 
-    {{-- Signature Section - Rata Kanan --}}
+    {{-- ══════════════════ TANDA TANGAN ══════════════════ --}}
     <div class="footer-container">
         <div class="signature-wrapper">
             <div>{{ $laporan->lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::parse($tanggalCetak)->locale('id')->translatedFormat('d F Y') }}</div>
