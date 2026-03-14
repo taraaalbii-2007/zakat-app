@@ -22,7 +22,7 @@ class KategoriBulletinController extends Controller
         $kategoriList = $query->orderBy('nama_kategori')->paginate(10);
 
         $breadcrumbs = [
-            'Kategori Bulletin' => null,
+            'Kategori Bulletin' => route('superadmin.kategori-bulletin.index'),
         ];
 
         return view('superadmin.kategori_bulletin.index', compact('kategoriList', 'breadcrumbs'));
@@ -33,7 +33,11 @@ class KategoriBulletinController extends Controller
     // ============================================
     public function create()
     {
-        return view('superadmin.kategori_bulletin.create');
+        $breadcrumbs = [
+            'Kategori Bulletin' => route('superadmin.kategori-bulletin.index'),
+            'Tambah Kategori Bulletin' => route('superadmin.kategori-bulletin.create'),
+        ];
+        return view('superadmin.kategori_bulletin.create', compact('breadcrumbs'));
     }
 
     // ============================================
@@ -61,11 +65,16 @@ class KategoriBulletinController extends Controller
     // ============================================
     // EDIT
     // ============================================
-    public function edit(KategoriBulletin $kategoriBulletin)
+    public function edit($uuid)
     {
-        $kategoriBulletin->loadCount('bulletins');
+        $kategoriBulletin = KategoriBulletin::where('uuid', $uuid)->firstOrFail();
 
-        return view('superadmin.kategori_bulletin.edit', compact('kategoriBulletin'));
+        $breadcrumbs = [
+            'Kategori Bulletin' => route('superadmin.kategori-bulletin.index'),
+            'Edit Kategori Bulletin' => route('superadmin.kategori-bulletin.edit', $uuid),
+        ];
+
+        return view('superadmin.kategori_bulletin.edit', compact('kategoriBulletin', 'breadcrumbs'));
     }
 
     // ============================================

@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdownContainer = document.getElementById('dropdown-container');
     const editLink          = document.getElementById('dropdown-edit-link');
     const deleteBtn         = document.getElementById('dropdown-delete-btn');
-    const baseUrl           = '{{ url("superadmin/kategori-bulletin") }}';
+    const baseUrl           = '{{ url("/kategori-bulletin") }}';
 
     // ---- Dropdown toggle ----
     document.addEventListener('click', function (e) {

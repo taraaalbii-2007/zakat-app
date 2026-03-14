@@ -49,7 +49,7 @@ class PenggunaController extends Controller
         $lembagaList = Lembaga::orderBy('nama')->get(['id', 'nama']);
 
         $breadcrumbs = [
-            'Data Pengguna' => null,
+            'Data Pengguna' => route('pengguna.index'),
         ];
 
         return view('superadmin.pengguna.index', compact('pengguna', 'lembagaList', 'breadcrumbs'));
@@ -61,8 +61,12 @@ class PenggunaController extends Controller
     {
         $lembagaList = Lembaga::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_lembaga']);
         $provinces  = Province::orderBy('name')->get(['code', 'name']);
+        $breadcrumbs = [
+            'Pengguna' => route('pengguna.index'),
+            'Tambah Pengguna' => route('pengguna.create'),
+        ];
 
-        return view('superadmin.pengguna.create', compact('lembagaList', 'provinces'));
+        return view('superadmin.pengguna.create', compact('lembagaList', 'provinces', 'breadcrumbs'));
     }
 
     // ── Store ─────────────────────────────────────────────────────────────────
@@ -377,8 +381,12 @@ class PenggunaController extends Controller
     public function show(string $uuid): View
     {
         $pengguna = Pengguna::with(['lembaga', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
+        $breadcrumbs = [
+            'Pengguna' => route('pengguna.index'),
+            'Detail Pengguna' => route('pengguna.show', $uuid),
+        ];
 
-        return view('superadmin.pengguna.show', compact('pengguna'));
+        return view('superadmin.pengguna.show', compact('pengguna', 'breadcrumbs'));
     }
 
     // ── Edit ──────────────────────────────────────────────────────────────────
@@ -389,7 +397,12 @@ class PenggunaController extends Controller
         $lembagaList = Lembaga::orderBy('nama')->get(['id', 'uuid', 'nama', 'kode_lembaga']);
         $provinces  = Province::orderBy('name')->get(['code', 'name']);
 
-        return view('superadmin.pengguna.edit', compact('pengguna', 'lembagaList', 'provinces'));
+        $breadcrumbs = [
+            'Pengguna' => route('pengguna.index'),
+            'Edit Pengguna' => route('pengguna.edit', $uuid),
+        ];
+
+        return view('superadmin.pengguna.edit', compact('pengguna', 'lembagaList', 'provinces', 'breadcrumbs'));
     }
 
     // ── Update ────────────────────────────────────────────────────────────────
