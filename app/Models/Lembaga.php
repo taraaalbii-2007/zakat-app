@@ -57,7 +57,6 @@ class Lembaga extends Model
 
         // FOTO Lembaga
         'foto',
-
         'is_active'
     ];
 

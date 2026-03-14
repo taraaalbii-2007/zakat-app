@@ -10,6 +10,7 @@ use Laravolt\Indonesia\Models\Province;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
+use Illuminate\Support\Facades\DB;
 
 class LembagaController extends Controller
 {
@@ -104,8 +105,8 @@ class LembagaController extends Controller
         }
 
         // Set is_active
-        $validated['is_active'] = $request->boolean('is_active', true);
-
+        // SESUDAH
+        $validated['is_active'] = true;
         // Simpan foto paths sebagai JSON array
         if (!empty($fotoPaths)) {
             $validated['foto'] = $fotoPaths;
@@ -166,7 +167,7 @@ class LembagaController extends Controller
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('lembaga', 'kode_lembaga')->ignore($lembaga->id) 
+                Rule::unique('lembaga', 'kode_lembaga')->ignore($lembaga->id)
             ],
             'alamat' => 'required|string',
             'provinsi_kode' => 'required|string|max:5',
@@ -214,14 +215,14 @@ class LembagaController extends Controller
         // Handle penghapusan foto lembaga berdasarkan index
         $hapusFotoIndex = $request->input('hapus_foto_index', []);
         // Filter hanya nilai yang valid (bukan null atau string kosong)
-        $hapusFotoIndex = array_filter($hapusFotoIndex, function($value) {
+        $hapusFotoIndex = array_filter($hapusFotoIndex, function ($value) {
             return $value !== '' && $value !== null;
         });
-        
+
         if (!empty($hapusFotoIndex)) {
             // Konversi ke integer dan hapus duplikat
             $hapusFotoIndex = array_unique(array_map('intval', $hapusFotoIndex));
-            
+
             foreach ($hapusFotoIndex as $index) {
                 $lembaga->removeFotoByIndex($index);
             }
@@ -246,8 +247,7 @@ class LembagaController extends Controller
             $lembaga->addFoto($path);
         }
 
-        $validated['is_active'] = $request->boolean('is_active', true);
-
+        $validated['is_active'] = $lembaga->is_active;
         // Update data lembaga (kecuali foto yang sudah dihandle terpisah)
         unset($validated['fotos']);
         $lembaga->update($validated);
@@ -404,5 +404,52 @@ class LembagaController extends Controller
             'foto_count' => $lembaga->foto_count,
             'fotos' => $uploadedPaths
         ]);
+    }
+
+    public function toggleStatus(Lembaga $lembaga)
+    {
+        $lembaga->update(['is_active' => !$lembaga->is_active]);
+        $status = $lembaga->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        if (!$lembaga->is_active) {
+            $this->logoutLembagaUsers($lembaga);
+        }
+
+        return redirect()->back()
+            ->with('success', "Lembaga \"{$lembaga->nama}\" berhasil {$status}.");
+    }
+
+    private function logoutLembagaUsers(Lembaga $lembaga)
+    {
+        $penggunaIds = collect();
+
+        // Admin lembaga
+        $adminIds = \App\Models\Pengguna::where('lembaga_id', $lembaga->id)
+            ->where('peran', 'admin_lembaga')
+            ->pluck('id');
+        $penggunaIds = $penggunaIds->merge($adminIds);
+
+        // Amil
+        $amilIds = \App\Models\Amil::where('lembaga_id', $lembaga->id)
+            ->pluck('pengguna_id')
+            ->filter();
+        $penggunaIds = $penggunaIds->merge($amilIds);
+
+        // Muzakki
+        if (class_exists(\App\Models\Muzakki::class)) {
+            $muzakkiIds = \App\Models\Muzakki::where('lembaga_id', $lembaga->id)
+                ->pluck('pengguna_id')
+                ->filter();
+            $penggunaIds = $penggunaIds->merge($muzakkiIds);
+        }
+
+        // Hapus sesi (hanya efektif jika SESSION_DRIVER=database)
+        if (config('session.driver') === 'database') {
+            foreach ($penggunaIds->unique() as $penggunaId) {
+                DB::table('sessions')
+                    ->where('user_id', $penggunaId)
+                    ->delete();
+            }
+        }
     }
 }

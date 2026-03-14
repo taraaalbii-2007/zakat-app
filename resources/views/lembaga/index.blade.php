@@ -178,7 +178,8 @@
                                             <button type="button"
                                                 class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                                                 data-uuid="{{ $lembaga->uuid }}"
-                                                data-nama="{{ $lembaga->nama }}">
+                                                data-nama="{{ $lembaga->nama }}"
+                                                data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
                                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                                 </svg>
@@ -330,7 +331,8 @@
                                         <button type="button"
                                             class="dropdown-toggle p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                                             data-uuid="{{ $lembaga->uuid }}"
-                                            data-nama="{{ $lembaga->nama }}">
+                                            data-nama="{{ $lembaga->nama }}"
+                                            data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                             </svg>
@@ -468,6 +470,23 @@
                     </svg>
                     Edit
                 </a>
+
+                {{-- Toggle Status Button --}}
+                <button type="button" id="dropdown-toggle-status-btn"
+                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm transition-colors">
+                    <svg id="dropdown-toggle-status-icon-nonaktif" class="w-4 h-4 mr-3 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                    </svg>
+                    <svg id="dropdown-toggle-status-icon-aktif" class="w-4 h-4 mr-3 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="dropdown-toggle-status-label">Nonaktifkan</span>
+                </button>
+
+                <div class="border-t border-gray-100 my-1"></div>
+
                 <button type="button" id="dropdown-delete-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -476,6 +495,47 @@
                         </path>
                     </svg>
                     Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Toggle Status Modal --}}
+    <div id="toggle-status-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
+            <div class="flex justify-center mb-3 sm:mb-4">
+                <div id="toggle-status-icon-wrapper-nonaktif" class="hidden">
+                    <svg class="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                    </svg>
+                </div>
+                <div id="toggle-status-icon-wrapper-aktif" class="hidden">
+                    <svg class="h-8 w-8 sm:h-10 sm:w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 id="toggle-status-modal-title" class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">
+                Nonaktifkan Lembaga
+            </h3>
+            <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
+                Apakah Anda yakin ingin
+                <span id="toggle-status-action-label" class="font-semibold text-gray-700">menonaktifkan</span>
+                lembaga "<span id="modal-toggle-lembaga-name" class="font-semibold text-gray-700"></span>"?
+            </p>
+            <p id="toggle-status-modal-desc" class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">
+                Lembaga yang dinonaktifkan tidak akan bisa diakses.
+            </p>
+            <div class="flex justify-center gap-2 sm:gap-3">
+                <button type="button" id="cancel-toggle-status-btn"
+                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    Batal
+                </button>
+                <button type="button" id="confirm-toggle-status-btn"
+                    class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors">
+                    Konfirmasi
                 </button>
             </div>
         </div>
@@ -513,12 +573,17 @@
 @push('scripts')
     <script>
         let currentDropdownData = null;
+        let currentLembagaIsActive = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
             const showLink = document.getElementById('dropdown-show-link');
             const editLink = document.getElementById('dropdown-edit-link');
             const deleteBtn = document.getElementById('dropdown-delete-btn');
+            const toggleStatusBtn = document.getElementById('dropdown-toggle-status-btn');
+            const toggleStatusLabel = document.getElementById('dropdown-toggle-status-label');
+            const toggleStatusIconNonaktif = document.getElementById('dropdown-toggle-status-icon-nonaktif');
+            const toggleStatusIconAktif = document.getElementById('dropdown-toggle-status-icon-aktif');
 
             // ── Desktop Expandable Rows ───────────────────────────────────
             document.querySelectorAll('.expandable-row').forEach(row => {
@@ -549,6 +614,7 @@
                     e.stopPropagation();
                     const dropdownUuid = toggle.getAttribute('data-uuid');
                     const lembagaName = toggle.getAttribute('data-nama');
+                    const isActive = toggle.getAttribute('data-is-active') === '1';
 
                     if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
                         !dropdownContainer.classList.contains('hidden')) {
@@ -560,7 +626,7 @@
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 132;
+                    const dropdownHeight = 160;
 
                     let top = rect.bottom + 4;
                     let left = rect.left;
@@ -573,6 +639,21 @@
                     showLink.href = `/lembaga/${dropdownUuid}`;
                     editLink.href = `/lembaga/${dropdownUuid}/edit`;
                     currentDropdownData = { uuid: dropdownUuid, name: lembagaName };
+                    currentLembagaIsActive = isActive;
+
+                    // Update toggle status button appearance
+                    if (isActive) {
+                        toggleStatusLabel.textContent = 'Nonaktifkan';
+                        toggleStatusBtn.className = 'flex items-center w-full px-3 sm:px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors';
+                        toggleStatusIconNonaktif.classList.remove('hidden');
+                        toggleStatusIconAktif.classList.add('hidden');
+                    } else {
+                        toggleStatusLabel.textContent = 'Aktifkan';
+                        toggleStatusBtn.className = 'flex items-center w-full px-3 sm:px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors';
+                        toggleStatusIconNonaktif.classList.add('hidden');
+                        toggleStatusIconAktif.classList.remove('hidden');
+                    }
+
                     dropdownContainer.classList.remove('hidden');
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
@@ -580,6 +661,66 @@
                         dropdownContainer.removeAttribute('data-current-uuid');
                     }
                 }
+            });
+
+            // ── Toggle Status ─────────────────────────────────────────────
+            toggleStatusBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (!currentDropdownData) return;
+                dropdownContainer.classList.add('hidden');
+                dropdownContainer.removeAttribute('data-current-uuid');
+
+                const isActive = currentLembagaIsActive;
+                const modal = document.getElementById('toggle-status-modal');
+                const modalTitle = document.getElementById('toggle-status-modal-title');
+                const actionLabel = document.getElementById('toggle-status-action-label');
+                const modalDesc = document.getElementById('toggle-status-modal-desc');
+                const confirmBtn = document.getElementById('confirm-toggle-status-btn');
+                const iconWrapperNonaktif = document.getElementById('toggle-status-icon-wrapper-nonaktif');
+                const iconWrapperAktif = document.getElementById('toggle-status-icon-wrapper-aktif');
+
+                document.getElementById('modal-toggle-lembaga-name').textContent = currentDropdownData.name;
+
+                if (isActive) {
+                    modalTitle.textContent = 'Nonaktifkan Lembaga';
+                    actionLabel.textContent = 'menonaktifkan';
+                    modalDesc.textContent = 'Lembaga yang dinonaktifkan tidak akan bisa diakses oleh pengguna.';
+                    confirmBtn.className = 'w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors';
+                    iconWrapperNonaktif.classList.remove('hidden');
+                    iconWrapperAktif.classList.add('hidden');
+                } else {
+                    modalTitle.textContent = 'Aktifkan Lembaga';
+                    actionLabel.textContent = 'mengaktifkan';
+                    modalDesc.textContent = 'Lembaga yang diaktifkan kembali akan bisa diakses oleh pengguna.';
+                    confirmBtn.className = 'w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors';
+                    iconWrapperNonaktif.classList.add('hidden');
+                    iconWrapperAktif.classList.remove('hidden');
+                }
+
+                modal.classList.remove('hidden');
+            });
+
+            document.getElementById('confirm-toggle-status-btn').addEventListener('click', function() {
+                if (!currentDropdownData) return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/lembaga/${currentDropdownData.uuid}/toggle-status`;
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden'; method.name = '_method'; method.value = 'PATCH';
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            document.getElementById('cancel-toggle-status-btn').addEventListener('click', function() {
+                document.getElementById('toggle-status-modal').classList.add('hidden');
+            });
+
+            document.getElementById('toggle-status-modal').addEventListener('click', function(e) {
+                if (e.target === this) this.classList.add('hidden');
             });
 
             // ── Delete ────────────────────────────────────────────────────
@@ -647,7 +788,7 @@
             document.getElementById('filter-panel').classList.toggle('hidden');
         }
 
-        // ── ESC menutup search form ───────────────────────────────────────
+        // ── ESC menutup search form & modal ──────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 var form = document.getElementById('search-form');
@@ -659,6 +800,7 @@
                     container.style.minWidth = '';
                 }
                 document.getElementById('delete-modal').classList.add('hidden');
+                document.getElementById('toggle-status-modal').classList.add('hidden');
             }
         });
     </script>

@@ -26,8 +26,16 @@ class LembagaAccess
             return $next($request);
         }
 
-        // ✅ TAMBAH INI — muzakki tidak butuh cek lembaga di middleware ini
         if ($user->peran === 'muzakki') {
+            $muzakki = \App\Models\Muzakki::where('pengguna_id', $user->id)->first();
+            $lembaga = $muzakki?->lembaga;
+
+            if ($lembaga && !$lembaga->is_active) {
+                return $this->logoutNonaktif($request,
+                    'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.'
+                );
+            }
+
             return $next($request);
         }
 
@@ -60,9 +68,28 @@ class LembagaAccess
                 ->with('error', 'Tidak dapat menentukan lembaga Anda.');
         }
 
+        // Cek apakah lembaga masih aktif — auto logout jika tidak
+        if (!$lembaga->is_active) {
+            return $this->logoutNonaktif($request,
+                'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.'
+            );
+        }
+
         $request->attributes->set('lembaga', $lembaga);
 
         return $next($request);
+    }
+
+    /**
+     * Logout user dan redirect ke login dengan pesan error
+     */
+    private function logoutNonaktif(Request $request, string $message): Response
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('error', $message);
     }
 
     /**

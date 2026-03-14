@@ -166,6 +166,9 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
     Route::delete('/lembaga/{lembaga}/fotos/{index}', [LembagaController::class, 'deleteFoto']) // Ubah dari lembaga
         ->name('lembaga.fotos.delete'); // Ubah nama route
 
+    Route::patch('/lembaga/{lembaga}/toggle-status', [LembagaController::class, 'toggleStatus'])
+    ->name('lembaga.toggle-status');
+
     // Master Data Jenis Zakat (superadmin only)
     Route::prefix('jenis-zakat')->name('jenis-zakat.')->group(function () {
         Route::get('/', [JenisZakatController::class, 'index'])->name('index');

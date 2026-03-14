@@ -481,19 +481,6 @@
                                 </div>
                             @endif
                         </div>
-
-                        {{-- Status --}}
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Status
-                            </label>
-                            <div class="flex items-center">
-                                <input type="checkbox" name="is_active" id="is_active" value="1" 
-                                    {{ old('is_active', $lembaga->is_active) ? 'checked' : '' }}
-                                    class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
-                                <label for="is_active" class="ml-2 text-sm text-gray-700">Aktif</label>
-                            </div>
-                        </div>
                     </div>
 
                     @if($errors->any())

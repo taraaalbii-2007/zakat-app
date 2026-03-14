@@ -126,6 +126,15 @@ class DashboardController extends Controller
                 ->with('error', 'Akun Anda belum terhubung ke lembaga manapun. Hubungi superadmin.');
         }
 
+        // Cek lembaga masih aktif
+        if (!$lembaga->is_active) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('error', 'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.');
+        }
+
         $lembagaId    = $lembaga->id;
         $breadcrumbs  = [['name' => 'Dashboard Admin Lembaga', 'url' => null]];
         $periodeAwal  = now()->startOfMonth();
@@ -268,6 +277,13 @@ class DashboardController extends Controller
         }
 
         $lembaga      = $amil->lembaga;
+        if (!$lembaga || !$lembaga->is_active) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('error', 'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.');
+        }
         $lembagaId    = $lembaga->id;
         $breadcrumbs = [
             'Dashboard Amil' => null,
@@ -375,6 +391,13 @@ class DashboardController extends Controller
         }
 
         $lembaga      = $muzakki->lembaga;
+        if ($lembaga && !$lembaga->is_active) {
+            Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect()->route('login')
+                ->with('error', 'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.');
+        }
         $lembagaId    = $lembaga?->id;
         $breadcrumbs = [
             'Dashboard Muzakki' => null,

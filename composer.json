@@ -16,7 +16,8 @@
         "laravel/tinker": "^2.8",
         "laravolt/indonesia": "^0.39.0",
         "maatwebsite/excel": "*",
-        "midtrans/midtrans-php": "^2.6"
+        "midtrans/midtrans-php": "^2.6",
+        "phpoffice/phpspreadsheet": "^1.30"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.1",
