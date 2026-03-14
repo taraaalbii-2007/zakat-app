@@ -57,7 +57,11 @@ class ProfilMuzakkiController extends Controller
                 ->where('status', 'verified')->sum('jumlah'),
         ];
 
-        return view('muzakki.profil.show', compact('muzakki', 'stats', 'user'));
+        $breadcrumbs = [
+            'Profil Saya' => route('muzakki.profil.show'),
+        ];
+
+        return view('muzakki.profil.show', compact('muzakki', 'stats', 'user', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------
@@ -67,7 +71,12 @@ class ProfilMuzakkiController extends Controller
     {
         $muzakki = $this->muzakki->load(['pengguna', 'lembaga']);
         $user    = $this->user;
-        return view('muzakki.profil.edit', compact('muzakki', 'user'));
+
+        $breadcrumbs = [
+            'Profil Saya' => route('muzakki.profil.show'),
+            'Edit Profile' => route('muzakki.profil.edit')
+        ];
+        return view('muzakki.profil.edit', compact('muzakki', 'user', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------

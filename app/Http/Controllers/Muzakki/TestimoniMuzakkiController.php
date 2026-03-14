@@ -35,8 +35,12 @@ class TestimoniMuzakkiController extends Controller
         $testimonis = Testimoni::where('muzakki_id', $this->muzakki->id)
             ->latest()
             ->paginate(10);
+        
+        $breadcrumbs = [
+            'Rating Saya' => route('muzakki.testimoni.index'),
+        ];
 
-        return view('muzakki.testimoni.index', compact('testimonis'));
+        return view('muzakki.testimoni.index', compact('testimonis', 'breadcrumbs'));
     }
 
     /**
@@ -49,8 +53,13 @@ class TestimoniMuzakkiController extends Controller
             ->where('status', 'verified')
             ->latest()
             ->first();
+        
+        $breadcrumbs = [
+            'Rating Saya' => route('muzakki.testimoni.index'),
+            'Buat Rating' => route('muzakki.testimoni.create')
+        ];
 
-        return view('muzakki.testimoni.create', compact('transaksiTerakhir'));
+        return view('muzakki.testimoni.create', compact('transaksiTerakhir', 'breadcrumbs'));
     }
 
     /**

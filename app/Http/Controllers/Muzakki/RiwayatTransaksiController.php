@@ -109,10 +109,15 @@ class RiwayatTransaksiController extends Controller
             'total_infaq'    => (float) $statsRaw->total_infaq,
         ];
 
+        $breadcrumbs = [
+            'Riwayat Zakat Saya' => route('riwayat-transaksi-muzakki.index'),
+        ];
+
         return view('muzakki.riwayat-transaksi.index', compact(
             'transaksis',
             'jenisZakatList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 }

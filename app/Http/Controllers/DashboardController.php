@@ -495,6 +495,10 @@ class DashboardController extends Controller
             ];
         }
 
+         $breadcrumbs = [
+            'Dashboard Muzakki' => null,
+        ];
+        
         return view('dashboard.muzakki', compact(
             'breadcrumbs',
             'user',
@@ -505,7 +509,8 @@ class DashboardController extends Controller
             'trendZakat',
             'hargaTerkini',
             'jenisZakatList',
-            'statsLembaga'
+            'statsLembaga',
+            'breadcrumbs'
         ));
     }
 }

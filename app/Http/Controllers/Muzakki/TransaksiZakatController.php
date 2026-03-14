@@ -109,10 +109,15 @@ class TransaksiZakatController extends Controller
             'total_infaq'    => (float) $statsRaw->total_infaq,
         ];
 
+         $breadcrumbs = [
+            'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
+        ];
+
         return view('muzakki.transaksi-daring-muzakki.index', compact(
             'transaksis',
             'jenisZakatList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 
@@ -165,6 +170,11 @@ class TransaksiZakatController extends Controller
         $konfigurasiQris = \App\Models\KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->first();
+        
+        $breadcrumbs = [
+            'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
+            'Tambah Bayar Zakat' => route('transaksi-daring-muzakki.create')
+        ];
 
         return view('muzakki.transaksi-daring-muzakki.create', compact(
             'jenisZakatList',
@@ -174,7 +184,8 @@ class TransaksiZakatController extends Controller
             'rekeningLembagaList',
             'zakatFitrahInfo',
             'muzakkiData',
-            'konfigurasiQris'
+            'konfigurasiQris',
+            'breadcrumbs'
         ));
     }
 
@@ -293,8 +304,14 @@ class TransaksiZakatController extends Controller
             ->where('uuid', $uuid)
             ->where('muzakki_id', $this->muzakki->id)
             ->firstOrFail();
+        
+        $breadcrumbs = [
+            'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
+            'Detail Bayar Zakat' => route('transaksi-daring-muzakki.show', $uuid)
+        ];
 
-        return view('muzakki.transaksi-daring-muzakki.show', compact('transaksi'));
+
+        return view('muzakki.transaksi-daring-muzakki.show', compact('transaksi', 'breadcrumbs'));
     }
 
     // ================================================================
