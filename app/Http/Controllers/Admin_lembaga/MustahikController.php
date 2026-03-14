@@ -78,7 +78,11 @@ class MustahikController extends Controller
             'userRole'  => $userRole,
         ];
 
-        return view('admin-lembaga.mustahik.index', compact('mustahiks', 'kategoris', 'permissions'));
+         $breadcrumbs = [
+            'Kelola Mustahik' => route('mustahik.index'),
+        ];
+
+        return view('admin-lembaga.mustahik.index', compact('mustahiks', 'kategoris', 'permissions', 'breadcrumbs'));
     }
     public function create()
     {
@@ -90,7 +94,12 @@ class MustahikController extends Controller
         $kategoris = KategoriMustahik::all();
         $provinces = Province::orderBy('name')->get();
 
-        return view('admin-lembaga.mustahik.create', compact('kategoris', 'provinces'));
+         $breadcrumbs = [
+            'Kelola Mustahik' => route('mustahik.index'),
+            'Tambah Mustahik' => route('mustahik.create')
+        ];
+
+        return view('admin-lembaga.mustahik.create', compact('kategoris', 'provinces', 'breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -219,12 +228,18 @@ class MustahikController extends Controller
             ->where('mustahik_id', $mustahik->id)
             ->orderByDesc('tanggal_kunjungan')
             ->get();
+        
+         $breadcrumbs = [
+            'Kelola Mustahik' => route('mustahik.index'),
+            'Detail Mustahik' => route('mustahik.show', $mustahik)
+        ];
 
         return view('admin-lembaga.mustahik.show', compact(
             'mustahik',
             'permissions',
             'riwayatPenyaluran',
             'riwayatKunjungan',
+            'breadcrumbs'
         ));
     }
 
@@ -258,8 +273,13 @@ class MustahikController extends Controller
         $villages = $mustahik->kecamatan_kode
             ? Village::where('district_code', $mustahik->kecamatan_kode)->orderBy('name')->get()
             : collect();
+        
+         $breadcrumbs = [
+            'Kelola Mustahik' => route('mustahik.index'),
+            'Edit Mustahik' => route('mustahik.show', $mustahik)
+        ];
 
-        return view('admin-lembaga.mustahik.edit', compact('mustahik', 'kategoris', 'provinces', 'cities', 'districts', 'villages'));
+        return view('admin-lembaga.mustahik.edit', compact('mustahik', 'kategoris', 'provinces', 'cities', 'districts', 'villages', 'breadcrumbs'));
     }
 
     public function update(Request $request, Mustahik $mustahik)

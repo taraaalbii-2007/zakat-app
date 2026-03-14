@@ -57,7 +57,11 @@ class RekeningLembagaController extends Controller
         // Get permissions
         $permissions = $this->getPermissions();
 
-        return view('admin-lembaga.rekening-lembaga.index', compact('rekeningLembagas', 'permissions'));
+        $breadcrumbs = [
+            'Kelola Rekening Lembaga' => route('rekening-lembaga.index'),
+        ];
+
+        return view('admin-lembaga.rekening-lembaga.index', compact('rekeningLembagas', 'permissions', 'breadcrumbs'));
     }
 
     /**
@@ -74,8 +78,13 @@ class RekeningLembagaController extends Controller
         }
 
         $lembaga = Lembaga::find($lembagaId);
+
+        $breadcrumbs = [
+            'Kelola Rekening Lembaga' => route('rekening-lembaga.index'),
+            'Tambah Rekening Lembaga' => route('rekening-lembaga.create')
+        ];
         
-        return view('admin-lembaga.rekening-lembaga.create', compact('lembaga'));
+        return view('admin-lembaga.rekening-lembaga.create', compact('lembaga', 'breadcrumbs'));
     }
 
     /**
@@ -140,16 +149,6 @@ class RekeningLembagaController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(RekeningLembaga $rekeningLembaga)
-    {
-        $this->authorize('view', $rekeningLembaga);
-
-        return view('admin-lembaga.rekening-lembaga.show', compact('rekeningLembaga'));
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(RekeningLembaga $rekeningLembaga)
@@ -160,7 +159,12 @@ class RekeningLembagaController extends Controller
         $lembagaId = $user->lembaga_id;
         $lembaga = Lembaga::find($lembagaId);
 
-        return view('admin-lembaga.rekening-lembaga.edit', compact('rekeningLembaga', 'lembaga'));
+        $breadcrumbs = [
+            'Kelola Rekening Lembaga' => route('rekening-lembaga.index'),
+            'Edit Rekening Lembaga' => route('rekening-lembaga.edit', $rekeningLembaga)
+        ];
+
+        return view('admin-lembaga.rekening-lembaga.edit', compact('rekeningLembaga', 'lembaga', 'breadcrumbs'));
     }
 
     /**

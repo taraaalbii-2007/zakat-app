@@ -51,8 +51,12 @@ class BulletinAdminLembagaController extends Controller
             $query->byKategori($request->kategori);
         }
 
-        $bulletins    = $query->paginate(10)->withQueryString();
+        $bulletins    = $query->paginate(10);
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
+
+         $breadcrumbs = [
+            'Kelola Bulletin' => route('admin-lembaga.bulletin.index'),
+        ];
 
         // Hitung per-status untuk badge
         $counts = [
@@ -63,7 +67,7 @@ class BulletinAdminLembagaController extends Controller
             'rejected' => Bulletin::where('lembaga_id', $lembagaId)->where('status', 'rejected')->count(),
         ];
 
-        return view('admin-lembaga.bulletin.index', compact('bulletins', 'kategoriList', 'counts'));
+        return view('admin-lembaga.bulletin.index', compact('bulletins', 'kategoriList', 'counts', 'breadcrumbs'));
     }
 
     // ============================================
@@ -72,8 +76,12 @@ class BulletinAdminLembagaController extends Controller
     public function create()
     {
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
+         $breadcrumbs = [
+            'Kelola Bulletin' => route('admin-lembaga.bulletin.index'),
+            'Tambah Bulletin' => route('admin-lembaga.bulletin.create')
+        ];
 
-        return view('admin-lembaga.bulletin.create', compact('kategoriList'));
+        return view('admin-lembaga.bulletin.create', compact('kategoriList', 'breadcrumbs'));
     }
 
     // ============================================
@@ -148,7 +156,12 @@ class BulletinAdminLembagaController extends Controller
         $this->authorizeOwnership($bulletin);
         $bulletin->load(['kategoriBulletin']);
 
-        return view('admin-lembaga.bulletin.show', compact('bulletin'));
+         $breadcrumbs = [
+            'Kelola Bulletin' => route('admin-lembaga.bulletin.index'),
+            'Detail Bulletin' => route('admin-lembaga.bulletin.show', $bulletin)
+        ];
+
+        return view('admin-lembaga.bulletin.show', compact('bulletin', 'breadcrumbs'));
     }
 
     // ============================================
@@ -164,8 +177,12 @@ class BulletinAdminLembagaController extends Controller
         }
 
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
+         $breadcrumbs = [
+            'Kelola Bulletin' => route('admin-lembaga.bulletin.index'),
+            'Edit Bulletin' => route('admin-lembaga.bulletin.edit', $bulletin)
+        ];
 
-        return view('admin-lembaga.bulletin.edit', compact('bulletin', 'kategoriList'));
+        return view('admin-lembaga.bulletin.edit', compact('bulletin', 'kategoriList', 'breadcrumbs'));
     }
 
     // ============================================

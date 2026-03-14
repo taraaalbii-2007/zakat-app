@@ -81,9 +81,12 @@ class LaporanKeuanganController extends Controller
         }
 
         $availableYears = range(now()->year, max(now()->year - 5, 2020));
+         $breadcrumbs = [
+            'Kelola Laporan Keuangan' => route('laporan-keuangan.index'),
+        ];
 
         return view('admin-lembaga.laporan-keuangan.index', compact(
-            'laporanTahunan', 'tahun', 'availableYears', 'chartData'
+            'laporanTahunan', 'tahun', 'availableYears', 'chartData', 'breadcrumbs'
         ));
     }
 
@@ -151,9 +154,14 @@ class LaporanKeuanganController extends Controller
 
         $tanggalCetak = now()->format('d F Y H:i:s');
 
+         $breadcrumbs = [
+            'Kelola Laporan Keuangan' => route('laporan-keuangan.index'),
+            'Detail Laporan Keuangan' => route('laporan-keuangan.show', $uuid)
+        ];
+
         return view('admin-lembaga.laporan-keuangan.show', compact(
             'laporan', 'detailPenerimaan', 'detailPenyaluran',
-            'chartPenerimaan', 'chartPenyaluran', 'tanggalCetak'
+            'chartPenerimaan', 'chartPenyaluran', 'tanggalCetak', 'breadcrumbs'
         ));
     }
 

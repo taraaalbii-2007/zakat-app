@@ -93,11 +93,16 @@ class TransaksiPenyaluranController extends Controller
         $transaksis      = $query->paginate(10);
         $jenisZakatList  = JenisZakat::all();
 
+        $breadcrumbs = [
+            'Kelola Penyaluran' => route('transaksi-penyaluran.index'),
+        ];
+
         return view('amil.transaksi-penyaluran.index', compact(
             'transaksis',
             'stats',
             'jenisZakatList',
-            'lembaga'
+            'lembaga',
+            'breadcrumbs'
         ));
     }
 
@@ -166,6 +171,11 @@ class TransaksiPenyaluranController extends Controller
         // Mencari kata kunci umum: beras, minyak, gula, tepung, dll
         $ringkasanBarang = $this->parseRingkasanBarang($riwayatBarang);
 
+         $breadcrumbs = [
+            'Kelola Penyaluran' => route('transaksi-penyaluran.index'),
+            'Tambah Penyaluran' => route('transaksi-penyaluran.create')
+        ];
+
         return view('amil.transaksi-penyaluran.create', compact(
             'lembaga',
             'mustahikList',
@@ -180,6 +190,7 @@ class TransaksiPenyaluranController extends Controller
             'totalDisalurkan',
             'saldoKas',
             'ringkasanBarang',
+            'breadcrumbs'
         ));
     }
 
@@ -510,10 +521,15 @@ class TransaksiPenyaluranController extends Controller
             'dokumentasi',
         ]);
 
+         $breadcrumbs = [
+            'Kelola Transaksi Penyaluran' => route('transaksi-penyaluran.index'),
+            'Detail Transaksi Penyaluran' => route('transaksi-penyaluran.show', $transaksiPenyaluran)
+        ];
+
         // Ganti nama variabel agar sesuai dengan view (dari $transaksiPenyaluran jadi $transaksi)
         $transaksi = $transaksiPenyaluran;
 
-        return view('amil.transaksi-penyaluran.show', compact('transaksi', 'lembaga'));
+        return view('amil.transaksi-penyaluran.show', compact('transaksi', 'lembaga', 'breadcrumbs'));
     }
 
     public function edit(TransaksiPenyaluran $transaksiPenyaluran)
@@ -539,7 +555,12 @@ class TransaksiPenyaluranController extends Controller
 
         // Rename ke $transaksi agar konsisten dengan view
         $transaksi = $transaksiPenyaluran;
-
+        
+         $breadcrumbs = [
+            'Kelola Transaksi Penyaluran' => route('transaksi-penyaluran.index'),
+            'Edit Transaksi Penyaluran' => route('transaksi-penyaluran.edit', $transaksiPenyaluran)
+        ];
+        
         return view('amil.transaksi-penyaluran.edit', compact(
             'transaksi',
             'lembaga',
@@ -547,7 +568,8 @@ class TransaksiPenyaluranController extends Controller
             'kategoriMustahikList',
             'jenisZakatList',
             'programZakatList',
-            'amilList'
+            'amilList',
+            'breadcrumbs'
         ));
     }
 

@@ -50,8 +50,12 @@ class ProgramZakatController extends Controller
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
+        
+        $breadcrumbs = [
+            'Kelola Program Zakat' => route('program-zakat.index'),
+        ];
 
-        return view('admin-lembaga.program.index', compact('programs', 'tahunList'));
+        return view('admin-lembaga.program.index', compact('programs', 'tahunList', 'breadcrumbs'));
     }
 
     // ============================================================
@@ -64,7 +68,12 @@ class ProgramZakatController extends Controller
         $lembaga      = $user->lembaga;
         $kodeProgram = ProgramZakat::generateKodeProgram($user->lembaga_id);
 
-        return view('admin-lembaga.program.create', compact('lembaga', 'kodeProgram'));
+        $breadcrumbs = [
+            'Kelola Program Zakat' => route('program-zakat.index'),
+            'Tambah Program Zakat' => route('program-zakat.create')
+        ];
+
+        return view('admin-lembaga.program.create', compact('lembaga', 'kodeProgram', 'breadcrumbs'));
     }
 
     // ============================================================
@@ -177,6 +186,11 @@ class ProgramZakatController extends Controller
             ->count();
         $totalPenyaluranTrx     = $penyaluranList->count();
 
+        $breadcrumbs = [
+            'Kelola Program Zakat' => route('program-zakat.index'),
+            'Detail Program Zakat' => route('program-zakat.show', $uuid)
+        ];
+
         return view('admin-lembaga.program.show', compact(
             'program',
             'penerimaanList',
@@ -187,6 +201,7 @@ class ProgramZakatController extends Controller
             'totalPenyaluranNominal',
             'totalMustahikUnik',
             'totalPenyaluranTrx',
+            'breadcrumbs'
         ));
     }
 
@@ -205,7 +220,12 @@ class ProgramZakatController extends Controller
             return back()->with('error', 'Program dengan status ' . $program->status . ' tidak dapat diedit');
         }
 
-        return view('admin-lembaga.program.edit', compact('program'));
+        $breadcrumbs = [
+            'Kelola Program Zakat' => route('program-zakat.index'),
+            'Edit Program Zakat' => route('program-zakat.edit', $uuid)
+        ];
+
+        return view('admin-lembaga.program.edit', compact('program', 'breadcrumbs'));
     }
 
     // ============================================================

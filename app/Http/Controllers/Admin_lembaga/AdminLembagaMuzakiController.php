@@ -52,7 +52,11 @@ class AdminLembagaMuzakiController extends Controller
                                     ->where('status', 'verified')->sum('jumlah'),
         ];
 
-        return view('admin-lembaga.muzaki.index', compact('amils', 'summary'));
+        $breadcrumbs = [
+            'Data Muzakki' => route('admin-lembaga.muzaki.index'),
+        ];
+
+        return view('admin-lembaga.muzaki.index', compact('amils', 'summary', 'breadcrumbs'));
     }
 
     /**

@@ -40,8 +40,12 @@ class TerimaSetorKasController extends Controller
             ->groupBy('status')
             ->get()
             ->keyBy('status');
+        
+         $breadcrumbs = [
+            'Kelola Setor Kas' => route('admin-lembaga.setor-kas.pending'),
+        ];
 
-        return view('admin-lembaga.setor-kas.pending', compact('setorans', 'summary'));
+        return view('admin-lembaga.setor-kas.pending', compact('setorans', 'summary', 'breadcrumbs'));
     }
 
     // ============================================

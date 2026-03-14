@@ -32,7 +32,11 @@ class KonfigurasiIntegrasiController extends Controller
                 ['is_active' => false]
             );
 
-            return view('admin-lembaga.konfigurasi-integrasi.show', compact('lembaga', 'qris'));
+             $breadcrumbs = [
+            'Kelola Pengaturan Lembaga' => route('konfigurasi-integrasi.show'),
+        ];
+
+            return view('admin-lembaga.konfigurasi-integrasi.show', compact('lembaga', 'qris', 'breadcrumbs'));
         } catch (\Exception $e) {
             Log::error('Error showing konfigurasi integrasi: ' . $e->getMessage());
             return redirect()->route('dashboard')->with('error', 'Terjadi kesalahan saat memuat konfigurasi');
@@ -58,7 +62,12 @@ class KonfigurasiIntegrasiController extends Controller
                 ['is_active' => false]
             );
 
-            return view('admin-lembaga.konfigurasi-integrasi.edit', compact('lembaga', 'qris'));
+             $breadcrumbs = [
+            'Kelola Pengaturan Lembaga' => route('konfigurasi-integrasi.show'),
+            'Edit Pengaturan Lembaga' => route('konfigurasi-integrasi.edit')
+        ];
+
+            return view('admin-lembaga.konfigurasi-integrasi.edit', compact('lembaga', 'qris', 'breadcrumbs'));
         } catch (\Exception $e) {
             Log::error('Error showing edit konfigurasi integrasi: ' . $e->getMessage());
             return redirect()->route('dashboard')

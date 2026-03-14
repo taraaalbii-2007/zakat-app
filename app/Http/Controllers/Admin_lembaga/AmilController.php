@@ -70,8 +70,12 @@ class AmilController extends Controller
         $lembagas = $user->peran === 'superadmin'
             ? Lembaga::where('is_active', true)->get()
             : collect();
+        
+        $breadcrumbs = [
+            'Kelola Amil' => route('amil.index'),
+        ];
 
-        return view('admin-lembaga.amil.index', compact('amils', 'lembagas'));
+        return view('admin-lembaga.amil.index', compact('amils', 'lembagas', 'breadcrumbs'));
     }
 
     /**
@@ -90,7 +94,12 @@ class AmilController extends Controller
             $lembagas = Lembaga::where('is_active', true)->get();
         }
 
-        return view('admin-lembaga.amil.create', compact('lembagas'));
+        $breadcrumbs = [
+            'Kelola Amil' => route('amil.index'),
+            'Tambah Amil' => route('amil.create')
+        ];
+
+        return view('admin-lembaga.amil.create', compact('lembagas', 'breadcrumbs'));
     }
 
     private function generateKodeAmil($lembagaId)
@@ -295,7 +304,12 @@ class AmilController extends Controller
 
         $amil->load(['lembaga', 'pengguna']);
 
-        return view('admin-lembaga.amil.show', compact('amil'));
+        $breadcrumbs = [
+            'Kelola Amil' => route('amil.index'),
+            'Detail Amil' => route('amil.show', $amil)
+        ];
+
+        return view('admin-lembaga.amil.show', compact('amil', 'breadcrumbs'));
     }
 
     public function edit(Amil $amil)
@@ -326,7 +340,12 @@ class AmilController extends Controller
             $lembagas = Lembaga::where('is_active', true)->get();
         }
 
-        return view('admin-lembaga.amil.edit', compact('amil', 'lembagas'));
+         $breadcrumbs = [
+            'Kelola Amil' => route('amil.index'),
+            'Edit Amil' => route('amil.edit', $amil)
+        ];
+
+        return view('admin-lembaga.amil.edit', compact('amil', 'lembagas', 'breadcrumbs'));
     }
 
     /**

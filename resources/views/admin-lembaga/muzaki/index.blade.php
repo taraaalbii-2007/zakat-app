@@ -7,7 +7,7 @@
 
         {{-- ===== HEADER STATS ===== --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
                 <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
                 <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
                 <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -61,222 +61,387 @@
         </div>
 
         {{-- ===== TABEL UTAMA ===== --}}
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+
+            {{-- Header --}}
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Data Muzaki per Amil</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">
-                            Klik nama amil untuk melihat daftar muzaki yang diinput
-                        </p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ number_format($summary['total_amil']) }} Amil</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <button type="button" onclick="expandAll()"
-                            class="inline-flex items-center justify-center px-3 py-2 bg-[#2d6a2d] hover:bg-[#245424] text-white text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                            Buka Semua
+                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                                Buka Semua
+                            </span>
                         </button>
                         <button type="button" onclick="collapseAll()"
-                            class="inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
                             </svg>
-                            Tutup Semua
+                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                                Tutup Semua
+                            </span>
                         </button>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div id="search-container" class="transition-all duration-300"
+                            style="{{ request('search') ? 'min-width: 280px;' : '' }}">
+                            <button type="button" onclick="toggleSearch()" id="search-button"
+                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('search') ? 'hidden' : '' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
+                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                                    Cari
+                                </span>
+                            </button>
+                            {{-- Search inline (client-side filter) --}}
+                            <div id="search-form" class="{{ request('search') ? '' : 'hidden' }}">
+                                <div class="relative flex-1">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <input type="search" id="cari-amil" placeholder="Cari nama amil..."
+                                        oninput="filterAmil(this.value)"
+                                        class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                </div>
                             </div>
-                            <input type="search" id="cari-amil" placeholder="Cari nama amil..."
-                                oninput="filterAmil(this.value)"
-                                class="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a2d] focus:border-[#2d6a2d] transition-all w-full sm:w-52">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="w-10 px-4 py-3"></th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amil</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Status</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Muzaki</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Transaksi</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Total Nominal</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="tbody-amil">
-                        @forelse ($amils as $amil)
-                            {{-- ROW AMIL --}}
-                            <tr class="amil-row cursor-pointer hover:bg-green-50/50 transition-colors"
-                                data-nama="{{ strtolower($amil->nama_lengkap) }} {{ strtolower($amil->kode_amil) }}"
-                                data-amil-id="{{ $amil->id }}"
-                                onclick="toggleAmil({{ $amil->id }}, this)">
-                                <td class="px-4 py-3">
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 amil-chevron"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-3">
-                                        {{-- Avatar --}}
-                                        @if ($amil->foto)
+            @if($amils->count() > 0)
+
+                {{-- Desktop View --}}
+                <div class="hidden md:block overflow-x-auto" id="table-container">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="w-12 px-4 py-3"></th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amil
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Muzaki
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Transaksi
+                                </th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Total Nominal
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="tbody-amil">
+                            @foreach($amils as $amil)
+                                {{-- Parent Row Amil --}}
+                                <tr class="amil-row hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
+                                    data-target="detail-{{ $amil->id }}"
+                                    data-amil-id="{{ $amil->id }}"
+                                    data-nama="{{ strtolower($amil->nama_lengkap) }} {{ strtolower($amil->kode_amil) }}">
+                                    <td class="px-4 py-4">
+                                        <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
+                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon amil-chevron"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            @if($amil->foto)
+                                                <img src="{{ asset('storage/' . $amil->foto) }}"
+                                                    alt="{{ $amil->nama_lengkap }}"
+                                                    class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0">
+                                            @else
+                                                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                    <span class="text-sm font-semibold text-primary">
+                                                        {{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <div class="text-sm font-semibold text-gray-900">{{ $amil->nama_lengkap }}</div>
+                                                <div class="text-xs text-gray-400 mt-0.5">{{ $amil->kode_amil }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        @if($amil->status === 'aktif')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1"></span>Aktif
+                                            </span>
+                                        @elseif($amil->status === 'cuti')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 mr-1"></span>Cuti
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1"></span>Nonaktif
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                            {{ number_format($amil->jumlah_muzakki) }} Muzaki
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="text-sm text-gray-700 font-medium">
+                                            {{ number_format($amil->jumlah_transaksi) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="text-sm font-semibold text-gray-900">
+                                            Rp {{ number_format($amil->total_nominal ?? 0, 0, ',', '.') }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                {{-- Expandable Detail Row: Sub-tabel Muzaki --}}
+                                <tr id="detail-{{ $amil->id }}" class="hidden amil-content-row expandable-content">
+                                    <td colspan="6" class="px-0 py-0">
+                                        <div class="bg-gray-50 border-y border-gray-100">
+                                            <div class="px-6 py-4">
+
+                                                {{-- Sub-header --}}
+                                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="w-1 h-5 bg-primary rounded-full"></div>
+                                                        <h3 class="text-sm font-semibold text-gray-800">
+                                                            Muzaki diinput oleh
+                                                            <span class="text-primary">{{ $amil->nama_lengkap }}</span>
+                                                        </h3>
+                                                    </div>
+                                                    <div class="relative">
+                                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                            </svg>
+                                                        </div>
+                                                        <input type="search"
+                                                            placeholder="Cari muzaki..."
+                                                            oninput="searchMuzaki({{ $amil->id }}, this.value)"
+                                                            onclick="event.stopPropagation()"
+                                                            class="pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary w-48 transition-all">
+                                                    </div>
+                                                </div>
+
+                                                {{-- Konten muzaki (diisi via AJAX) --}}
+                                                <div id="muzaki-container-{{ $amil->id }}">
+                                                    <div class="text-center py-8 text-sm text-gray-400">
+                                                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-300 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                        </svg>
+                                                        Memuat data muzaki...
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile View --}}
+                <div class="md:hidden divide-y divide-gray-200" id="tbody-amil-mobile">
+                    @foreach($amils as $amil)
+                        <div class="expandable-card amil-row-mobile"
+                            data-nama="{{ strtolower($amil->nama_lengkap) }} {{ strtolower($amil->kode_amil) }}"
+                            data-amil-id="{{ $amil->id }}">
+
+                            {{-- Card Header --}}
+                            <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
+                                data-target="detail-mobile-{{ $amil->id }}"
+                                data-amil-id="{{ $amil->id }}">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center flex-1 min-w-0 gap-3">
+                                        @if($amil->foto)
                                             <img src="{{ asset('storage/' . $amil->foto) }}"
                                                 alt="{{ $amil->nama_lengkap }}"
                                                 class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0">
                                         @else
-                                            <div
-                                                class="w-9 h-9 rounded-full bg-[#2d6a2d]/10 flex items-center justify-center flex-shrink-0">
-                                                <span class="text-sm font-semibold text-[#2d6a2d]">
+                                            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                <span class="text-sm font-semibold text-primary">
                                                     {{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}
                                                 </span>
                                             </div>
                                         @endif
-                                        <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $amil->nama_lengkap }}</div>
-                                            <div class="text-xs text-gray-400">{{ $amil->kode_amil }}</div>
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-sm font-semibold text-gray-900 truncate">
+                                                {{ $amil->nama_lengkap }}
+                                            </h3>
+                                            <div class="flex items-center flex-wrap gap-1.5 mt-1">
+                                                <span class="text-[10px] text-gray-400">{{ $amil->kode_amil }}</span>
+                                                <span class="text-[10px] text-gray-300">•</span>
+                                                @if($amil->status === 'aktif')
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
+                                                        <span class="w-1 h-1 rounded-full bg-green-500 mr-0.5"></span>Aktif
+                                                    </span>
+                                                @elseif($amil->status === 'cuti')
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800">
+                                                        <span class="w-1 h-1 rounded-full bg-yellow-500 mr-0.5"></span>Cuti
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-800">
+                                                        <span class="w-1 h-1 rounded-full bg-red-500 mr-0.5"></span>Nonaktif
+                                                    </span>
+                                                @endif
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800">
+                                                    {{ number_format($amil->jumlah_muzakki) }} Muzaki
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </td>
-                                <td class="px-6 py-3 text-center hidden sm:table-cell">
-                                    @if ($amil->status === 'aktif')
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1"></span>Aktif
-                                        </span>
-                                    @elseif($amil->status === 'cuti')
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 mr-1"></span>Cuti
-                                        </span>
-                                    @else
-                                        <span
-                                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 mr-1"></span>Nonaktif
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-3 text-center">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                                        {{ number_format($amil->jumlah_muzakki) }} Muzaki
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3 text-center hidden md:table-cell">
-                                    <span class="text-sm text-gray-700 font-medium">
-                                        {{ number_format($amil->jumlah_transaksi) }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3 text-right hidden lg:table-cell">
-                                    <span class="text-sm font-semibold text-gray-900">
-                                        Rp {{ number_format($amil->total_nominal ?? 0, 0, ',', '.') }}
-                                    </span>
-                                </td>
-                            </tr>
+                                    <div class="flex items-center ml-2">
+                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile amil-chevron-mobile"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </div>
+                                </div>
 
-                            {{-- EXPANDABLE ROW: Tabel Muzaki --}}
-                            <tr id="amil-content-{{ $amil->id }}" class="hidden amil-content-row">
-                                <td colspan="6" class="p-0">
-                                    <div
-                                        class="bg-gradient-to-b from-green-50/60 to-gray-50 border-y border-[#2d6a2d]/20 px-6 py-4">
+                                {{-- Stats row --}}
+                                <div class="flex items-center gap-4 mt-3 pl-12">
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Transaksi</p>
+                                        <p class="text-sm font-semibold text-gray-900">{{ number_format($amil->jumlah_transaksi) }}</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Total Nominal</p>
+                                        <p class="text-sm font-semibold text-gray-900">Rp {{ number_format($amil->total_nominal ?? 0, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                            </div>
 
-                                        {{-- Header sub-tabel --}}
-                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-1 h-5 bg-[#2d6a2d] rounded-full"></div>
-                                                <h3 class="text-sm font-semibold text-gray-800">
-                                                    Muzaki yang diinput oleh <span class="text-[#2d6a2d]">{{ $amil->nama_lengkap }}</span>
-                                                </h3>
-                                            </div>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                                    </svg>
-                                                </div>
-                                                <input type="search"
-                                                    placeholder="Cari muzaki..."
-                                                    oninput="searchMuzaki({{ $amil->id }}, this.value)"
-                                                    class="pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2d6a2d] w-48"
-                                                    onclick="event.stopPropagation()">
-                                            </div>
+                            {{-- Mobile Expandable Content --}}
+                            <div id="detail-mobile-{{ $amil->id }}" class="hidden expandable-content-mobile">
+                                <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
+                                    {{-- Sub-header mobile --}}
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-1 h-4 bg-primary rounded-full"></div>
+                                            <h4 class="text-xs font-semibold text-gray-800">Daftar Muzaki</h4>
                                         </div>
-
-                                        {{-- Konten muzaki (akan diisi via AJAX) --}}
-                                        <div id="muzaki-container-{{ $amil->id }}">
-                                            <div class="text-center py-8 text-sm text-gray-400">
-                                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                                 </svg>
-                                                Klik untuk memuat data muzaki
                                             </div>
+                                            <input type="search"
+                                                placeholder="Cari muzaki..."
+                                                oninput="searchMuzaki({{ $amil->id }}, this.value)"
+                                                onclick="event.stopPropagation()"
+                                                class="pl-7 pr-3 py-1 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary w-36 transition-all">
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-6 py-16 text-center">
-                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-200" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <p class="text-sm text-gray-400">Belum ada data amil</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+
+                                    {{-- Konten muzaki (diisi via AJAX) --}}
+                                    <div id="muzaki-container-mobile-{{ $amil->id }}">
+                                        <div class="text-center py-6 text-xs text-gray-400">
+                                            <svg class="w-6 h-6 mx-auto mb-1.5 text-gray-300 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                            Memuat data muzaki...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+            @else
+                <div class="p-8 sm:p-12 text-center">
+                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Amil</h3>
+                    <p class="text-sm text-gray-500">Belum ada data amil yang tersedia.</p>
+                </div>
+            @endif
         </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        // State: simpan amil yang sudah di-load & yang sedang open
         const loadedAmil = {};
-        const openAmil   = {};
+        const loadedAmilMobile = {};
         let searchTimers = {};
 
         // ============================================================
-        // TOGGLE ROW
+        // DESKTOP: EXPANDABLE ROWS
         // ============================================================
-        function toggleAmil(amilId, row) {
-            const contentRow = document.getElementById(`amil-content-${amilId}`);
-            const chevron    = row.querySelector('.amil-chevron');
-            const isHidden   = contentRow.classList.contains('hidden');
+        document.querySelectorAll('.expandable-row').forEach(row => {
+            row.addEventListener('click', function (e) {
+                if (e.target.closest('input')) return;
 
-            // Toggle
-            contentRow.classList.toggle('hidden', !isHidden);
-            chevron.classList.toggle('rotate-90', isHidden);
-            openAmil[amilId] = isHidden;
+                const targetId  = this.getAttribute('data-target');
+                const targetRow = document.getElementById(targetId);
+                const icon      = this.querySelector('.expand-icon');
+                const amilId    = this.getAttribute('data-amil-id');
+                const isHidden  = targetRow.classList.contains('hidden');
 
-            // Load data via AJAX jika belum pernah di-load
-            if (isHidden && !loadedAmil[amilId]) {
-                fetchMuzaki(amilId, '');
-            }
-        }
+                if (isHidden) {
+                    targetRow.classList.remove('hidden');
+                    icon.classList.add('rotate-90');
+                    if (!loadedAmil[amilId]) fetchMuzaki(amilId, '');
+                } else {
+                    targetRow.classList.add('hidden');
+                    icon.classList.remove('rotate-90');
+                }
+            });
+        });
 
         // ============================================================
-        // FETCH MUZAKI VIA AJAX
+        // MOBILE: EXPANDABLE CARDS
+        // ============================================================
+        document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+            row.addEventListener('click', function (e) {
+                if (e.target.closest('input')) return;
+
+                const targetId      = this.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                const icon          = this.querySelector('.expand-icon-mobile');
+                const amilId        = this.getAttribute('data-amil-id');
+                const isHidden      = targetContent.classList.contains('hidden');
+
+                if (isHidden) {
+                    targetContent.classList.remove('hidden');
+                    icon.classList.add('rotate-180');
+                    if (!loadedAmilMobile[amilId]) fetchMuzakiMobile(amilId, '');
+                } else {
+                    targetContent.classList.add('hidden');
+                    icon.classList.remove('rotate-180');
+                }
+            });
+        });
+
+        // ============================================================
+        // FETCH MUZAKI — DESKTOP
         // ============================================================
         function fetchMuzaki(amilId, search = '', page = 1) {
             const container = document.getElementById(`muzaki-container-${amilId}`);
@@ -285,34 +450,60 @@
             const params = new URLSearchParams({ search, page });
 
             fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                    }
-                })
-                .then(r => r.json())
-                .then(data => {
-                    if (!data.success) throw new Error('Gagal memuat data');
-                    loadedAmil[amilId] = true;
-                    container.innerHTML = renderMuzakiTable(data.muzakkis, amilId);
-                })
-                .catch(() => {
-                    container.innerHTML = renderError();
-                });
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) throw new Error('Gagal memuat data');
+                loadedAmil[amilId] = true;
+                container.innerHTML = renderMuzakiTable(data.muzakkis, amilId, false);
+            })
+            .catch(() => { container.innerHTML = renderError(amilId); });
         }
 
         // ============================================================
-        // SEARCH DEBOUNCE
+        // FETCH MUZAKI — MOBILE
+        // ============================================================
+        function fetchMuzakiMobile(amilId, search = '', page = 1) {
+            const container = document.getElementById(`muzaki-container-mobile-${amilId}`);
+            container.innerHTML = renderLoadingSmall();
+
+            const params = new URLSearchParams({ search, page });
+
+            fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) throw new Error('Gagal memuat data');
+                loadedAmilMobile[amilId] = true;
+                container.innerHTML = renderMuzakiCards(data.muzakkis, amilId);
+            })
+            .catch(() => { container.innerHTML = renderError(amilId); });
+        }
+
+        // ============================================================
+        // SEARCH MUZAKI (debounce)
         // ============================================================
         function searchMuzaki(amilId, keyword) {
             clearTimeout(searchTimers[amilId]);
             searchTimers[amilId] = setTimeout(() => {
-                fetchMuzaki(amilId, keyword, 1);
+                // Detect if triggered from mobile container
+                const mobileContainer = document.getElementById(`muzaki-container-mobile-${amilId}`);
+                const desktopContainer= document.getElementById(`muzaki-container-${amilId}`);
+                if (desktopContainer && document.getElementById(`detail-${amilId}`) &&
+                    !document.getElementById(`detail-${amilId}`).classList.contains('hidden')) {
+                    fetchMuzaki(amilId, keyword, 1);
+                }
+                if (mobileContainer && document.getElementById(`detail-mobile-${amilId}`) &&
+                    !document.getElementById(`detail-mobile-${amilId}`).classList.contains('hidden')) {
+                    fetchMuzakiMobile(amilId, keyword, 1);
+                }
             }, 400);
         }
 
         // ============================================================
-        // FILTER AMIL (client-side)
+        // FILTER AMIL — DESKTOP (client-side)
         // ============================================================
         function filterAmil(keyword) {
             const q = keyword.toLowerCase().trim();
@@ -325,53 +516,80 @@
                     next.style.display = show ? '' : 'none';
                 }
             });
+            // Mobile
+            document.querySelectorAll('.amil-row-mobile').forEach(card => {
+                const nama = card.getAttribute('data-nama') || '';
+                card.style.display = (!q || nama.includes(q)) ? '' : 'none';
+            });
         }
 
         // ============================================================
         // EXPAND / COLLAPSE ALL
         // ============================================================
         function expandAll() {
-            document.querySelectorAll('.amil-row').forEach(row => {
-                const amilId = row.getAttribute('data-amil-id');
-                if (!amilId) return;
-                const contentRow = document.getElementById(`amil-content-${amilId}`);
-                const chevron    = row.querySelector('.amil-chevron');
-                if (contentRow && contentRow.classList.contains('hidden')) {
-                    contentRow.classList.remove('hidden');
-                    chevron.classList.add('rotate-90');
+            // Desktop
+            document.querySelectorAll('.expandable-row').forEach(row => {
+                const amilId    = row.getAttribute('data-amil-id');
+                const targetId  = row.getAttribute('data-target');
+                const targetRow = document.getElementById(targetId);
+                const icon      = row.querySelector('.expand-icon');
+                if (targetRow && targetRow.classList.contains('hidden')) {
+                    targetRow.classList.remove('hidden');
+                    if (icon) icon.classList.add('rotate-90');
                     if (!loadedAmil[amilId]) fetchMuzaki(amilId, '');
+                }
+            });
+            // Mobile
+            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+                const amilId    = row.getAttribute('data-amil-id');
+                const targetId  = row.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                const icon      = row.querySelector('.expand-icon-mobile');
+                if (targetContent && targetContent.classList.contains('hidden')) {
+                    targetContent.classList.remove('hidden');
+                    if (icon) icon.classList.add('rotate-180');
+                    if (!loadedAmilMobile[amilId]) fetchMuzakiMobile(amilId, '');
                 }
             });
         }
 
         function collapseAll() {
             document.querySelectorAll('.amil-content-row').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.amil-chevron').forEach(el => el.classList.remove('rotate-90'));
+            document.querySelectorAll('.expand-icon').forEach(el => el.classList.remove('rotate-90'));
+            document.querySelectorAll('.expandable-content-mobile').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.expand-icon-mobile').forEach(el => el.classList.remove('rotate-180'));
         }
 
         // ============================================================
-        // RENDER HELPERS
+        // SEARCH TOGGLE (header)
         // ============================================================
-        function renderLoading() {
-            return `<div class="text-center py-8">
-                <svg class="w-6 h-6 mx-auto animate-spin text-[#2d6a2d]" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                <p class="text-xs text-gray-400 mt-2">Memuat data muzaki...</p>
-            </div>`;
+        function toggleSearch() {
+            const searchButton    = document.getElementById('search-button');
+            const searchForm      = document.getElementById('search-form');
+            const searchInput     = document.getElementById('cari-amil');
+            const searchContainer = document.getElementById('search-container');
+
+            if (searchForm.classList.contains('hidden')) {
+                searchButton.classList.add('hidden');
+                searchForm.classList.remove('hidden');
+                searchContainer.style.minWidth = '280px';
+                setTimeout(() => searchInput && searchInput.focus(), 50);
+            } else {
+                if (searchInput) searchInput.value = '';
+                filterAmil('');
+                searchForm.classList.add('hidden');
+                searchButton.classList.remove('hidden');
+                searchContainer.style.minWidth = 'auto';
+            }
         }
 
-        function renderError() {
-            return `<div class="text-center py-8 text-sm text-red-400">
-                Gagal memuat data. <button onclick="" class="underline">Coba lagi</button>
-            </div>`;
-        }
-
+        // ============================================================
+        // RENDER: DESKTOP TABLE
+        // ============================================================
         function renderMuzakiTable(pagination, amilId) {
             const data = pagination.data;
             if (!data || data.length === 0) {
-                return `<div class="text-center py-8 bg-white rounded-xl border border-gray-100">
+                return `<div class="text-center py-10 bg-white rounded-xl border border-gray-100">
                     <svg class="w-10 h-10 mx-auto mb-2 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -396,7 +614,7 @@
                         <span class="text-sm text-gray-600">${escHtml(m.muzakki_telepon || '-')}</span>
                     </td>
                     <td class="px-4 py-3 hidden md:table-cell">
-                        <span class="text-xs text-gray-500">${escHtml(m.muzakki_alamat ? m.muzakki_alamat.substring(0, 40) + (m.muzakki_alamat.length > 40 ? '...' : '') : '-')}</span>
+                        <span class="text-xs text-gray-500">${escHtml(m.muzakki_alamat ? m.muzakki_alamat.substring(0,40) + (m.muzakki_alamat.length > 40 ? '...' : '') : '-')}</span>
                     </td>
                     <td class="px-4 py-3 text-center">
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
@@ -404,9 +622,7 @@
                         </span>
                     </td>
                     <td class="px-4 py-3 text-right hidden lg:table-cell">
-                        <span class="text-sm font-semibold text-gray-900">
-                            Rp ${formatRupiah(m.total_nominal || 0)}
-                        </span>
+                        <span class="text-sm font-semibold text-gray-900">Rp ${formatRupiah(m.total_nominal || 0)}</span>
                     </td>
                     <td class="px-4 py-3 text-center hidden sm:table-cell">
                         <span class="text-xs text-gray-500">${m.transaksi_terakhir ? formatDate(m.transaksi_terakhir) : '-'}</span>
@@ -414,44 +630,77 @@
                 </tr>
             `).join('');
 
-            const thead = `
-                <thead class="bg-white">
-                    <tr>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Nama Muzaki</th>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Telepon</th>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Alamat</th>
-                        <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Transaksi</th>
-                        <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Total Nominal</th>
-                        <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Terakhir</th>
-                    </tr>
-                </thead>`;
-
-            // Pagination
-            const paginationHtml = renderPagination(pagination, amilId);
-
             return `<div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 <table class="min-w-full divide-y divide-gray-200">
-                    ${thead}
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Nama Muzaki</th>
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Telepon</th>
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Alamat</th>
+                            <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Transaksi</th>
+                            <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Total Nominal</th>
+                            <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Terakhir</th>
+                        </tr>
+                    </thead>
                     <tbody class="bg-white divide-y divide-gray-100">${rows}</tbody>
                 </table>
             </div>
-            ${paginationHtml}`;
+            ${renderPagination(pagination, amilId, false)}`;
         }
 
-        function renderPagination(pagination, amilId) {
+        // ============================================================
+        // RENDER: MOBILE CARDS
+        // ============================================================
+        function renderMuzakiCards(pagination, amilId) {
+            const data = pagination.data;
+            if (!data || data.length === 0) {
+                return `<div class="text-center py-6 text-xs text-gray-400">Belum ada muzaki yang diinput</div>`;
+            }
+
+            const cards = data.map(m => `
+                <div class="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <span class="text-xs font-bold text-blue-700">${(m.muzakki_nama || '-').charAt(0).toUpperCase()}</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-gray-900 truncate">${escHtml(m.muzakki_nama || '-')}</div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-[10px] text-gray-400">${escHtml(m.muzakki_telepon || '-')}</span>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <div class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-800">
+                            ${m.total_transaksi}x
+                        </div>
+                        <div class="text-[10px] text-gray-500 mt-0.5">Rp ${formatRupiah(m.total_nominal || 0)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            return `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden px-3 py-1">
+                ${cards}
+            </div>
+            ${renderPagination(pagination, amilId, true)}`;
+        }
+
+        // ============================================================
+        // RENDER: PAGINATION
+        // ============================================================
+        function renderPagination(pagination, amilId, isMobile) {
             if (pagination.last_page <= 1) return '';
             const currentPage = pagination.current_page;
             const lastPage    = pagination.last_page;
             const from        = pagination.from;
             const to          = pagination.to;
             const total       = pagination.total;
+            const fn          = isMobile ? `fetchMuzakiMobile` : `fetchMuzaki`;
 
             let pages = '';
             for (let p = 1; p <= lastPage; p++) {
                 if (p === currentPage) {
-                    pages += `<span class="px-3 py-1 text-xs font-semibold text-white bg-[#2d6a2d] rounded-md">${p}</span>`;
+                    pages += `<span class="px-3 py-1 text-xs font-semibold text-white bg-primary rounded-md">${p}</span>`;
                 } else {
-                    pages += `<button onclick="fetchMuzaki(${amilId},'',${p})" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">${p}</button>`;
+                    pages += `<button onclick="${fn}(${amilId},'',${p})" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">${p}</button>`;
                 }
             }
 
@@ -461,6 +710,38 @@
             </div>`;
         }
 
+        // ============================================================
+        // RENDER: LOADING & ERROR
+        // ============================================================
+        function renderLoading() {
+            return `<div class="text-center py-8">
+                <svg class="w-6 h-6 mx-auto animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <p class="text-xs text-gray-400 mt-2">Memuat data muzaki...</p>
+            </div>`;
+        }
+
+        function renderLoadingSmall() {
+            return `<div class="text-center py-4">
+                <svg class="w-5 h-5 mx-auto animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+            </div>`;
+        }
+
+        function renderError(amilId) {
+            return `<div class="text-center py-8 text-sm text-red-400">
+                Gagal memuat data.
+                <button onclick="fetchMuzaki(${amilId},'')" class="underline ml-1">Coba lagi</button>
+            </div>`;
+        }
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
         function escHtml(str) {
             return String(str)
                 .replace(/&/g, '&amp;')
@@ -475,8 +756,9 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '-';
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            return new Date(dateStr).toLocaleDateString('id-ID', {
+                day: '2-digit', month: 'short', year: 'numeric'
+            });
         }
     </script>
 @endpush
