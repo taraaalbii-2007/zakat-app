@@ -170,12 +170,17 @@ class TransaksiPenerimaanController extends Controller
             'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)->fidyah()->count(),
         ];
 
+        $breadcrumbs = [
+            'Data Keseluruhan Metode Penerimaan' => route('pemantauan-transaksi.index')
+        ];
+
         return view('amil.transaksi-penerimaan.index', compact(
             'transaksis',
             'jenisZakatList',
             'programZakatList',
             'amilList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 
@@ -236,11 +241,16 @@ class TransaksiPenerimaanController extends Controller
             'total_fidyah' => $baseQuery->fidyah()->count(),
         ];
 
+        $breadcrumbs = [
+            'Kelola Datang Langsung' => route('transaksi-datang-langsung.index')
+        ];
+
         return view('amil.transaksi-penerimaan.index-datang-langsung', compact(
             'transaksis',
             'jenisZakatList',
             'programZakatList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 
@@ -273,10 +283,15 @@ class TransaksiPenerimaanController extends Controller
             'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->verified()->sum('jumlah'),
         ];
 
+        $breadcrumbs = [
+            'Kelola Daring' => route('transaksi-daring.index')
+        ];
+
         return view('amil.transaksi-penerimaan.index-daring', compact(
             'transaksis',
             'jenisZakatList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 
@@ -337,10 +352,15 @@ class TransaksiPenerimaanController extends Controller
                 ->whereNotNull('jenis_zakat_id')->count(),
         ];
 
+        $breadcrumbs = [
+            'Kelola Dijemput' => route('transaksi-dijemput.index')
+        ];
+
         return view('amil.transaksi-penerimaan.index-dijemput', compact(
             'transaksis',
             'amilList',
-            'stats'
+            'stats',
+            'breadcrumbs'
         ));
     }
 
@@ -405,6 +425,8 @@ class TransaksiPenerimaanController extends Controller
             ];
         }
 
+        $breadcrumbs = $request->input('breadcrumbs', []);
+
         return view('amil.transaksi-penerimaan.create', compact(
             'mode',
             'jenisZakatList',
@@ -417,7 +439,8 @@ class TransaksiPenerimaanController extends Controller
             'zakatFitrahInfo',
             'fidyahInfo',
             'muzakkiData',
-            'qrisConfig'
+            'qrisConfig',
+            'breadcrumbs'
         ));
     }
 
@@ -426,7 +449,14 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     public function createDatangLangsung(Request $request)
     {
-        $request->merge(['mode' => 'datang_langsung']);
+        $request->merge([
+        'mode' => 'datang_langsung',
+        'breadcrumbs' => [
+            'Kelola Datang Langsung' => route('transaksi-datang-langsung.index'),
+            'Tambah Data Datang Langsung' => route('transaksi-datang-langsung.create'),
+        ],
+    ]);
+
         return $this->create($request);
     }
 
@@ -435,7 +465,14 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     public function createDijemput(Request $request)
     {
-        $request->merge(['mode' => 'dijemput']);
+         $request->merge([
+        'mode' => 'dijemput',
+        'breadcrumbs' => [
+            'Kelola Dijemput' => route('transaksi-dijemput.index'),
+            'Tambah Data Dijemput' => route('transaksi-dijemput.create'),
+        ],
+    ]);
+        
         return $this->create($request);
     }
 
@@ -551,8 +588,13 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung')
             ->firstOrFail();
+        
+         $breadcrumbs = [
+            'Kelola Datang Langsung' => route('transaksi-datang-langsung.index'),
+            'Detail Datang Langsung' => route('transaksi-datang-langsung.show', $uuid)
+        ];
 
-        return view('amil.transaksi-penerimaan.show-datang-langsung', compact('transaksi'));
+        return view('amil.transaksi-penerimaan.show-datang-langsung', compact('transaksi', 'breadcrumbs'));
     }
 
     // ================================================================
@@ -1331,8 +1373,13 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('dijemput')
             ->firstOrFail();
+        
+        $breadcrumbs = [
+            'Kelola Dijemput' => route('transaksi-dijemput.index'),
+            'Detail Dijemput' => route('transaksi-dijemput.show', $uuid)
+        ];
 
-        return view('amil.transaksi-penerimaan.show-dijemput', compact('transaksi'));
+        return view('amil.transaksi-penerimaan.show-dijemput', compact('transaksi', 'breadcrumbs'));
     }
 
     // ================================================================
@@ -1353,8 +1400,13 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring')
             ->firstOrFail();
+        
+        $breadcrumbs = [
+            'Kelola Daring' => route('transaksi-daring.index'),
+            'Detail Daring' => route('transaksi-daring.show', $uuid)
+        ];
 
-        return view('amil.transaksi-penerimaan.show-daring', compact('transaksi'));
+        return view('amil.transaksi-penerimaan.show-daring', compact('transaksi', 'breadcrumbs'));
     }
 
     // ================================================================
@@ -1379,6 +1431,7 @@ class TransaksiPenerimaanController extends Controller
 
         $transaksi = $query->firstOrFail();
 
+
         return view('muzakki.transaksi.show', compact('transaksi'));
     }
 
@@ -1398,7 +1451,12 @@ class TransaksiPenerimaanController extends Controller
             // tidak ada filter metode — semua metode bisa dilihat
             ->firstOrFail();
 
-        return view('amil.transaksi-penerimaan.show-pemantauan', compact('transaksi'));
+        $breadcrumbs = [
+            'Data Keseluruhan Metode Penerimaan' => route('pemantauan-transaksi.index'),
+            'Detail Keseluruhan Metode Penerimaan' => route('pemantauan-transaksi.show', $uuid)
+        ];
+
+        return view('amil.transaksi-penerimaan.show-pemantauan', compact('transaksi', 'breadcrumbs'));
     }
 
     public function showKas($uuid)
@@ -1487,6 +1545,11 @@ class TransaksiPenerimaanController extends Controller
         // Tambahkan tanggalHariIni untuk input hidden
         $tanggalHariIni = now()->format('Y-m-d');
 
+        $breadcrumbs = [
+            'Kelola Data Dijemput' => route('transaksi-dijemput.index'),
+            'Edit Data Dijemput' => route('transaksi-dijemput.edit', $uuid)
+        ];
+
         return view('amil.transaksi-penerimaan.edit', compact(
             'transaksi',
             'jenisZakatList',
@@ -1501,7 +1564,8 @@ class TransaksiPenerimaanController extends Controller
             'qrisConfig',
             'noTransaksiPreview',
             'muzakkiData',
-            'tanggalHariIni'
+            'tanggalHariIni',
+            'breadcrumbs'
         ));
     }
 
@@ -2346,30 +2410,30 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     // DOWNLOAD KWITANSI VIA SIGNED URL (GUEST)
     // ================================================================
-public function downloadKwitansi(Request $request, $uuid)
-{
-    if (!$request->hasValidSignature()) {
-        abort(403, 'Link kwitansi tidak valid atau sudah kadaluarsa.');
+    public function downloadKwitansi(Request $request, $uuid)
+    {
+        if (!$request->hasValidSignature()) {
+            abort(403, 'Link kwitansi tidak valid atau sudah kadaluarsa.');
+        }
+
+        $transaksi = TransaksiPenerimaan::with([
+            'lembaga',
+            'jenisZakat',
+            'tipeZakat',
+            'programZakat',
+            'amil',          // ← cukup ini, tanda_tangan ada di model Amil langsung
+            'verifiedBy',
+        ])->where('uuid', $uuid)->firstOrFail();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+            'amil.transaksi-penerimaan.kwitansi-pdf',
+            compact('transaksi')
+        );
+
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->set_option('isHtml5ParserEnabled', true);
+        $pdf->set_option('isRemoteEnabled', false); // false karena kita pakai base64
+
+        return $pdf->download('kwitansi-' . $transaksi->no_transaksi . '.pdf');
     }
-
-    $transaksi = TransaksiPenerimaan::with([
-        'lembaga',
-        'jenisZakat',
-        'tipeZakat',
-        'programZakat',
-        'amil',          // ← cukup ini, tanda_tangan ada di model Amil langsung
-        'verifiedBy',
-    ])->where('uuid', $uuid)->firstOrFail();
-
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-        'amil.transaksi-penerimaan.kwitansi-pdf',
-        compact('transaksi')
-    );
-
-    $pdf->setPaper('A4', 'portrait');
-    $pdf->set_option('isHtml5ParserEnabled', true);
-    $pdf->set_option('isRemoteEnabled', false); // false karena kita pakai base64
-
-    return $pdf->download('kwitansi-' . $transaksi->no_transaksi . '.pdf');
-}
 }

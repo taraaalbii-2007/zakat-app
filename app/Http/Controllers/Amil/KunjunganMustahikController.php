@@ -48,7 +48,11 @@ class KunjunganMustahikController extends Controller
             'selesai'      => KunjunganMustahik::byAmil($amil->id)->selesai()->whereRaw("DATE_FORMAT(tanggal_kunjungan,'%Y-%m') = ?", [$bulanIni])->count(),
         ];
 
-        return view('amil.kunjungan.calendar', compact('amil', 'tujuanOptions', 'statusOptions', 'stats'));
+        $breadcrumbs = [
+            'Data Kunjungan Mustahik' => route('amil.kunjungan.index'),
+        ];
+
+        return view('amil.kunjungan.calendar', compact('amil', 'tujuanOptions', 'statusOptions', 'stats', 'breadcrumbs'));
     }
 
     /**
@@ -119,7 +123,12 @@ class KunjunganMustahikController extends Controller
             ->select('id', 'nama_lengkap', 'alamat', 'no_registrasi', 'telepon')
             ->get();
 
-        return view('amil.kunjungan.create', compact('amil', 'mustahiks'));
+        $breadcrumbs = [
+            'Data Kunjungan Mustahik' => route('amil.kunjungan.index'),
+            'Tambah Jadwal Kunjungan Mustahik' => route('amil.kunjungan.create')
+        ];
+
+        return view('amil.kunjungan.create', compact('amil', 'mustahiks', 'breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -164,8 +173,13 @@ class KunjunganMustahikController extends Controller
             ->where('uuid', $uuid)
             ->with('mustahik')
             ->firstOrFail();
+        
+        $breadcrumbs = [
+            'Data Kunjungan Mustahik' => route('amil.kunjungan.index'),
+            'Detail Jadwal Kunjungan Mustahik' => route('amil.kunjungan.show', $uuid)
+        ];
 
-        return view('amil.kunjungan.show', compact('kunjungan'));
+        return view('amil.kunjungan.show', compact('kunjungan', 'breadcrumbs'));
     }
 
     // ── Edit ─────────────────────────────────────────────────────────────
@@ -235,7 +249,12 @@ class KunjunganMustahikController extends Controller
             ->with('mustahik')
             ->firstOrFail();
 
-        return view('amil.kunjungan.finish', compact('kunjungan'));
+        $breadcrumbs = [
+            'Data Kunjungan Mustahik' => route('amil.kunjungan.index'),
+            'Final Kunjungan Mustahik' => route('amil.kunjungan.finish', $uuid)
+        ];
+
+        return view('amil.kunjungan.finish', compact('kunjungan', 'breadcrumbs'));
     }
 
     /**

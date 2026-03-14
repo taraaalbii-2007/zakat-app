@@ -97,6 +97,10 @@ class KasHarianAmilController extends Controller
             ->limit(7)
             ->get();
 
+        $breadcrumbs = [
+            'Kas Harian Saya' => route('kas-harian.index')
+        ];
+
         return view('amil.kas-harian.index', compact(
             'kas',
             'tanggal',
@@ -104,7 +108,8 @@ class KasHarianAmilController extends Controller
             'saldoAwalEstimasi',
             'transaksiPenerimaan',
             'transaksiPenyaluran',
-            'riwayat7Hari'
+            'riwayat7Hari',
+            'breadcrumbs'
         ));
     }
 

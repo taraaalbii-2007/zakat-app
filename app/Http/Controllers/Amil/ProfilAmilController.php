@@ -53,7 +53,11 @@ class ProfilAmilController extends Controller
             'total_nominal'  => $amil->transaksiPenerimaan()->where('status', 'verified')->sum('jumlah'),
         ];
 
-        return view('amil.profil.show', compact('amil', 'stats'));
+         $breadcrumbs = [
+            'Data Profil' => route('profil.show'),
+        ];
+
+        return view('amil.profil.show', compact('amil', 'stats', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------
@@ -62,7 +66,11 @@ class ProfilAmilController extends Controller
     public function edit()
     {
         $amil = $this->amil->load(['pengguna', 'lembaga']);
-        return view('amil.profil.edit', compact('amil'));
+         $breadcrumbs = [
+            'Data Profil' => route('profil.show'),
+            'Edit Profil' => route('profil.edit')
+        ];
+        return view('amil.profil.edit', compact('amil', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------

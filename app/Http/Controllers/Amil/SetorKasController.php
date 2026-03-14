@@ -58,7 +58,11 @@ class SetorKasController extends Controller
             ->get()
             ->keyBy('status');
 
-        return view('amil.setor-kas.index', compact('setorans', 'summary', 'amil'));
+        $breadcrumbs = [
+            'Data Setor Kas Saya' => route('amil.setor-kas.index'),
+        ];
+
+        return view('amil.setor-kas.index', compact('setorans', 'summary', 'amil', 'breadcrumbs'));
     }
 
     // ============================================
@@ -78,7 +82,12 @@ class SetorKasController extends Controller
             $rekapKas = $this->hitungRekapKas($amil->id, $amil->lembaga_id, $periodeDari, $periodeSampai);
         }
 
-        return view('amil.setor-kas.create', compact('amil', 'rekapKas', 'periodeDari', 'periodeSampai'));
+        $breadcrumbs = [
+            'Data Setor Kas Saya' => route('amil.setor-kas.index'),
+            'Tambah Data Setor' => route('amil.setor-kas.create')
+        ];
+
+        return view('amil.setor-kas.create', compact('amil', 'rekapKas', 'periodeDari', 'periodeSampai', 'breadcrumbs'));
     }
 
     // ============================================
@@ -167,7 +176,12 @@ class SetorKasController extends Controller
         // Timeline events
         $timeline = $this->buildTimeline($setorKas);
 
-        return view('amil.setor-kas.show', compact('setorKas', 'timeline'));
+        $breadcrumbs = [
+            'Data Setor Kas Saya' => route('amil.setor-kas.index'),
+            'Detail Data Setor' => route('amil.setor-kas.show', $setorKas)
+        ];
+
+        return view('amil.setor-kas.show', compact('setorKas', 'timeline', 'breadcrumbs'));
     }
 
     // ============================================
@@ -186,7 +200,12 @@ class SetorKasController extends Controller
             $setorKas->periode_sampai->format('Y-m-d')
         );
 
-        return view('amil.setor-kas.edit', compact('setorKas', 'amil', 'rekapKas'));
+        $breadcrumbs = [
+            'Data Setor Kas Saya' => route('amil.setor-kas.index'),
+            'Edit Data Setor' => route('amil.setor-kas.edit', $setorKas)
+        ];
+
+        return view('amil.setor-kas.edit', compact('setorKas', 'amil', 'rekapKas', 'breadcrumbs'));
     }
 
     // ============================================
