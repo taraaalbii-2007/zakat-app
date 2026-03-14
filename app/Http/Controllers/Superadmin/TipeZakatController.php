@@ -67,7 +67,7 @@ class TipeZakatController extends Controller
         $tipeZakat = $query->paginate(10);
         $jenisZakatList = JenisZakat::orderBy('nama')->get(['id', 'nama']);
 
-        $breadcrumbs = ['Tipe Zakat' => null];
+        $breadcrumbs = ['Tipe Zakat' => route('tipe-zakat.index')];
 
         return view('superadmin.tipe-zakat.index', compact('tipeZakat', 'jenisZakatList', 'breadcrumbs'));
     }
@@ -81,7 +81,12 @@ class TipeZakatController extends Controller
         $zakatMalId     = $this->getZakatMalId();
         $zakatMalTypes  = self::ZAKAT_MAL_TYPES;
 
-        return view('superadmin.tipe-zakat.create', compact('jenisZakatList', 'zakatMalId', 'zakatMalTypes'));
+        $breadcrumbs = [
+            'Tipe Zakat' => route('tipe-zakat.index'),
+            'Edit Tipe Zakat' => route('tipe-zakat.create'),
+        ];
+
+        return view('superadmin.tipe-zakat.create', compact('jenisZakatList', 'zakatMalId', 'zakatMalTypes', 'breadcrumbs'));
     }
 
     /**
@@ -140,7 +145,12 @@ class TipeZakatController extends Controller
         $zakatMalId     = $this->getZakatMalId();
         $zakatMalTypes  = self::ZAKAT_MAL_TYPES;
 
-        return view('superadmin.tipe-zakat.edit', compact('tipeZakat', 'jenisZakatList', 'zakatMalId', 'zakatMalTypes'));
+        $breadcrumbs = [
+            'Tipe Zakat' => route('tipe-zakat.index'),
+            'Edit Tipe Zakat' => route('tipe-zakat.edit', $zakatMalId),
+        ];
+
+        return view('superadmin.tipe-zakat.edit', compact('tipeZakat', 'jenisZakatList', 'zakatMalId', 'zakatMalTypes', 'breadcrumbs'));
     }
 
     /**

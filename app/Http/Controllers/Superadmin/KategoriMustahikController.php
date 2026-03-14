@@ -35,7 +35,7 @@ class KategoriMustahikController extends Controller
         $kategoriMustahik = $query->paginate(10);
 
         $breadcrumbs = [
-            'Kategori Mustahik' => null,
+            'Kategori Mustahik' => route('kategori-mustahik.index'),
         ];
 
 
@@ -47,7 +47,11 @@ class KategoriMustahikController extends Controller
      */
     public function create()
     {
-        return view('superadmin.kategori-mustahik.create');
+        $breadcrumbs = [
+            'Kategori Mustahik' => route('kategori-mustahik.index'),
+            'Tambah Kategori Mustahik' => route('kategori-mustahik.create'),
+        ];
+        return view('superadmin.kategori-mustahik.create', compact('breadcrumbs'));
     }
 
     /**
@@ -78,20 +82,18 @@ class KategoriMustahikController extends Controller
             ->with('success', 'Kategori mustahik berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(KategoriMustahik $kategoriMustahik)
-    {
-        return view('superadmin.kategori-mustahik.show', compact('kategoriMustahik'));
-    }
-
+   
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(KategoriMustahik $kategoriMustahik)
+    public function edit($uuid)
     {
-        return view('superadmin.kategori-mustahik.edit', compact('kategoriMustahik'));
+        $kategoriMustahik = KategoriMustahik::where('uuid', $uuid)->firstOrFail();
+        $breadcrumbs = [
+            'Kategori Mustahik' => route('kategori-mustahik.index'),
+            'Edit Kategori Mustahik' => route('kategori-mustahik.edit', $uuid),
+        ];
+        return view('superadmin.kategori-mustahik.edit', compact('kategoriMustahik', 'breadcrumbs'));
     }
 
     /**

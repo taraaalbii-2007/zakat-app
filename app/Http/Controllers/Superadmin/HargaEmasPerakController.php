@@ -51,7 +51,7 @@ class HargaEmasPerakController extends Controller
         $hargaEmasPerak = $query->paginate(10);
 
         $breadcrumbs = [
-            'Harga Emas & Perak' => null,
+            'Harga Emas & Perak' => route('harga-emas-perak.index'),
         ];
 
         // Get unique sumber for filter
@@ -62,7 +62,11 @@ class HargaEmasPerakController extends Controller
 
     public function create()
     {
-        return view('superadmin.harga-emas-perak.create');
+        $breadcrumbs = [
+            'Harga Emas Perak' => route('harga-emas-perak.index'),
+            'Tambah Harga Emas Perak' => route('harga-emas-perak.create'),
+        ];
+        return view('superadmin.harga-emas-perak.create', compact('breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -106,7 +110,11 @@ class HargaEmasPerakController extends Controller
     public function edit($uuid)
     {
         $harga = HargaEmasPerak::where('uuid', $uuid)->firstOrFail();
-        return view('superadmin.harga-emas-perak.edit', compact('harga'));
+        $breadcrumbs = [
+            'Harga Emas Perak' => route('harga-emas-perak.index'),
+            'Edit Harga Emas Perak' => route('harga-emas-perak.edit', $uuid),
+        ];
+        return view('superadmin.harga-emas-perak.edit', compact('harga', 'breadcrumbs'));
     }
 
     public function update(Request $request, $uuid)

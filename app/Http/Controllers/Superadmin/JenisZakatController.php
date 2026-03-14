@@ -29,7 +29,7 @@ class JenisZakatController extends Controller
         $jenisZakat = $query->paginate(10);
 
         $breadcrumbs = [
-            'Jenis Zakat' => null,
+            'Jenis Zakat' => route('jenis-zakat.index'),
         ];
 
         return view('superadmin.jenis-zakat.index', compact('jenisZakat', 'breadcrumbs'));
@@ -42,7 +42,7 @@ class JenisZakatController extends Controller
     {
         $breadcrumbs = [
             'Jenis Zakat' => route('jenis-zakat.index'),
-            'Tambah Jenis Zakat' => null,
+            'Tambah Jenis Zakat' => route('jenis-zakat.create'),
         ];
 
         return view('superadmin.jenis-zakat.create', compact('breadcrumbs'));
@@ -87,7 +87,7 @@ class JenisZakatController extends Controller
 
         $breadcrumbs = [
             'Jenis Zakat' => route('jenis-zakat.index'),
-            'Edit Jenis Zakat' => null,
+            'Edit Jenis Zakat' => route('jenis-zakat.edit', $uuid),
         ];
 
         return view('superadmin.jenis-zakat.edit', compact('jenisZakat', 'breadcrumbs'));
