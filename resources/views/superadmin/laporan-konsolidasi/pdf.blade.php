@@ -12,35 +12,14 @@
             color: #2d3436;
             margin: 15px;
         }
-        
-        /* Header Styles */
+
+        /* Header */
         .header {
-            text-align: center;
             margin-bottom: 20px;
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 10px;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #000;
-            text-transform: uppercase;
-        }
-        .header h2 {
-            margin: 4px 0;
-            font-size: 14px;
-            font-weight: normal;
-            color: #636e72;
-        }
-        .header .subtitle {
-            margin: 2px 0;
-            font-size: 10px;
-            font-style: italic;
-            color: #2d3436;
-        }
-        
+
         /* Info Section */
         .info-section {
             margin-bottom: 20px;
@@ -66,7 +45,7 @@
             display: table-cell;
             padding: 3px 0;
         }
-        
+
         /* Summary Cards */
         .summary-cards {
             display: table;
@@ -97,8 +76,8 @@
             font-size: 8px;
             color: #636e72;
         }
-        
-        /* Table Styles - Diperbaiki untuk menghindari pemotongan */
+
+        /* Table Styles */
         table.data-table {
             width: 100%;
             border-collapse: collapse;
@@ -107,20 +86,12 @@
             table-layout: fixed;
             page-break-inside: auto;
         }
-        
         tr {
             page-break-inside: avoid;
             page-break-after: auto;
         }
-        
-        thead {
-            display: table-header-group;
-        }
-        
-        tfoot {
-            display: table-footer-group;
-        }
-        
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
         table.data-table th {
             background-color: #1a7a4a;
             color: #ffffff;
@@ -140,7 +111,7 @@
         table.data-table tr:nth-child(even) {
             background-color: #f8f9fa;
         }
-        
+
         /* Section Titles */
         .section-title {
             background-color: #e9ecef;
@@ -153,11 +124,11 @@
             text-transform: uppercase;
             page-break-after: avoid;
         }
-        
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
+
+        .text-left   { text-align: left; }
+        .text-right  { text-align: right; }
         .text-center { text-align: center; }
-        
+
         /* Footer */
         .footer-note {
             clear: both;
@@ -168,7 +139,7 @@
             border-top: 1px dashed #dfe6e9;
             margin-top: 20px;
         }
-        
+
         /* Badge */
         .badge {
             display: inline-block;
@@ -183,39 +154,99 @@
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
-        /* Compact table for better fit */
+
         .compact-table th, .compact-table td {
             padding: 3px 2px;
         }
     </style>
 </head>
 <body>
+
+    {{-- ══════════════════ HEADER ══════════════════ --}}
+    @php
+        // Logo Lembaga
+        $fotoLembaga    = $lembaga->foto;
+        $fotoLembagaArr = is_array($fotoLembaga) ? $fotoLembaga : (is_string($fotoLembaga) ? json_decode($fotoLembaga, true) : []);
+        $logoLembagaB64 = null;
+        if (!empty($fotoLembagaArr)) {
+            $lp = storage_path('app/public/' . $fotoLembagaArr[0]);
+            if (file_exists($lp)) {
+                $ext  = strtolower(pathinfo($lp, PATHINFO_EXTENSION));
+                $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                $logoLembagaB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($lp));
+            }
+        }
+        // Logo Aplikasi
+        $logoAplikasiB64 = null;
+        try {
+            $konfigApp = \App\Models\KonfigurasiAplikasi::getConfig();
+            if ($konfigApp && $konfigApp->logo_aplikasi) {
+                foreach ([
+                    storage_path('app/public/' . $konfigApp->logo_aplikasi),
+                    public_path('storage/' . $konfigApp->logo_aplikasi),
+                    public_path($konfigApp->logo_aplikasi),
+                    base_path($konfigApp->logo_aplikasi),
+                ] as $cp) {
+                    if (file_exists($cp)) {
+                        $ext  = strtolower(pathinfo($cp, PATHINFO_EXTENSION));
+                        $mime = in_array($ext, ['jpg','jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                        $logoAplikasiB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cp));
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {}
+    @endphp
+
     <div class="header">
-        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN KONSOLIDASI ZAKAT') }}</h1>
-        <h2>Laporan Konsolidasi {{ $type == 'penerimaan' ? 'Penerimaan' : ($type == 'penyaluran' ? 'Penyaluran' : 'Penerimaan & Penyaluran') }}</h2>
-        <div class="subtitle">
-            {{ $lembaga->alamat ?? '' }}
-            {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
-            {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
-            {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
-        </div>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+            <tr>
+                {{-- Logo Lembaga --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoLembagaB64)
+                        <img src="{{ $logoLembagaB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Lembaga">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+
+                {{-- Teks Tengah --}}
+                <td style="text-align:center; vertical-align:middle; padding:0 10px;">
+                    <h1 style="margin:0; font-size:18px; font-weight:bold; letter-spacing:1px; color:#000; text-transform:uppercase;">{{ strtoupper($lembaga->nama ?? 'LAPORAN KONSOLIDASI ZAKAT') }}</h1>
+                    <h2 style="margin:4px 0; font-size:14px; font-weight:normal; color:#636e72;">Laporan Konsolidasi {{ $type == 'penerimaan' ? 'Penerimaan' : ($type == 'penyaluran' ? 'Penyaluran' : 'Penerimaan & Penyaluran') }}</h2>
+                    <div style="margin:2px 0; font-size:10px; font-style:italic; color:#2d3436;">
+                        {{ $lembaga->alamat ?? '' }}
+                        {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
+                        {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
+                        {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
+                    </div>
+                </td>
+
+                {{-- Logo Aplikasi --}}
+                <td style="width:85px; text-align:center; vertical-align:middle;">
+                    @if($logoAplikasiB64)
+                        <img src="{{ $logoAplikasiB64 }}" style="width:72px;height:72px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:4px;background:#ffffff;" alt="Logo Aplikasi">
+                    @else
+                        <div style="width:72px;height:72px;display:inline-block;"></div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
+    {{-- ══════════════════ INFO SECTION ══════════════════ --}}
     <div class="info-section">
         <div class="info-row">
             <div class="info-label">Hari / Tanggal</div>
             <div class="info-value">: {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}, {{ \Carbon\Carbon::now()->format('H:i') }} WIB</div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Periode Laporan</div>
             <div class="info-value">: {{ $periode_text ?? ($bulan_nama . ' ' . $tahun) }}</div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Filter</div>
-            <div class="info-value">: 
+            <div class="info-value">:
                 @php
                     $filterText = [];
                     if(!empty($filters['type'])) {
@@ -227,28 +258,19 @@
                         $filterText[] = "Tipe: " . $typeText;
                     }
                 @endphp
-                
-                @if(count($filterText) > 0)
-                    {{ implode(' | ', $filterText) }}
-                @else
-                    Semua Data
-                @endif
+                {{ count($filterText) > 0 ? implode(' | ', $filterText) : 'Semua Data' }}
             </div>
         </div>
-
         <div class="info-row">
             <div class="info-label">Petugas Ekspor</div>
             <div class="info-value">: {{ $user->name ?? $user->username ?? 'System' }}</div>
         </div>
     </div>
 
+    {{-- ══════════════════ KONSOLIDASI ══════════════════ --}}
     @if($type == 'konsolidasi')
-        @php
-            // Convert array to collection untuk menghindari error sum() on array
-            $ringkasanCollection = collect($ringkasan_bulanan ?? []);
-        @endphp
-        
-        <!-- Summary Cards -->
+        @php $ringkasanCollection = collect($ringkasan_bulanan ?? []); @endphp
+
         <table class="summary-cards">
             <tr>
                 <td class="card">
@@ -274,7 +296,6 @@
             </tr>
         </table>
 
-        <!-- Ringkasan Bulanan -->
         <div class="section-title">RINGKASAN BULANAN</div>
         <table class="data-table">
             <thead>
@@ -304,14 +325,11 @@
                     <td class="text-right">{{ number_format($item['total_penerimaan'] - $item['total_penyaluran'], 0, ',', '.') }}</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="9" class="text-center" style="padding: 20px;">Tidak ada data untuk periode ini</td>
-                </tr>
+                <tr><td colspan="9" class="text-center" style="padding: 20px;">Tidak ada data untuk periode ini</td></tr>
                 @endforelse
             </tbody>
         </table>
 
-        <!-- Breakdown Jenis Zakat -->
         <div class="section-title">BREAKDOWN PER JENIS ZAKAT</div>
         <table class="data-table">
             <thead>
@@ -335,14 +353,11 @@
                     <td class="text-center">{{ round(($item->total_nominal / ($total_penerimaan ?: 1)) * 100, 2) }}%</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data penerimaan</td>
-                </tr>
+                <tr><td colspan="6" class="text-center">Tidak ada data penerimaan</td></tr>
                 @endforelse
             </tbody>
         </table>
 
-        <!-- Breakdown Kategori Mustahik -->
         <div class="section-title">BREAKDOWN PER KATEGORI MUSTAHIK</div>
         <table class="data-table">
             <thead>
@@ -366,20 +381,16 @@
                     <td class="text-center">{{ round(($item->total_nominal / ($total_penyaluran ?: 1)) * 100, 2) }}%</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="6" class="text-center">Tidak ada data penyaluran</td>
-                </tr>
+                <tr><td colspan="6" class="text-center">Tidak ada data penyaluran</td></tr>
                 @endforelse
             </tbody>
         </table>
     @endif
 
+    {{-- ══════════════════ DETAIL PENERIMAAN / PENYALURAN ══════════════════ --}}
     @if(in_array($type, ['penerimaan', 'penyaluran']))
-        {{-- HAPUS TAG PAGE-BREAK INI --}}
-        {{-- <div class="page-break"></div> --}}
-        
         <div class="section-title">DETAIL TRANSAKSI {{ strtoupper($type) }}</div>
-        
+
         @if($type == 'penerimaan' && !empty($penerimaan_detail))
             <table class="data-table">
                 <thead>
@@ -408,9 +419,7 @@
                         <td class="text-right">{{ number_format($transaksi->jumlah, 0, ',', '.') }}</td>
                         <td class="text-center">{{ ucfirst($transaksi->metode_pembayaran ?? '-') }}</td>
                         <td style="font-size: 7px;">{{ $transaksi->amil_nama ?? '-' }}</td>
-                        <td class="text-center">
-                            <span class="badge badge-success">Verified</span>
-                        </td>
+                        <td class="text-center"><span class="badge badge-success">Verified</span></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -423,7 +432,7 @@
                 </tfoot>
             </table>
         @endif
-        
+
         @if($type == 'penyaluran' && !empty($penyaluran_detail))
             <table class="data-table">
                 <thead>
@@ -442,8 +451,9 @@
                 <tbody>
                     @foreach($penyaluran_detail as $index => $transaksi)
                     @php
-                        $nominal = $transaksi->metode_penyaluran == 'barang' ? 
-                            ($transaksi->nilai_barang ?? 0) : ($transaksi->jumlah ?? 0);
+                        $nominal = $transaksi->metode_penyaluran == 'barang'
+                            ? ($transaksi->nilai_barang ?? 0)
+                            : ($transaksi->jumlah ?? 0);
                     @endphp
                     <tr>
                         <td class="text-center">{{ $index + 1 }}</td>
@@ -469,10 +479,29 @@
         @endif
     @endif
 
-    <div class="footer-note">
-        <p><strong>Catatan:</strong> Laporan ini dibuat berdasarkan transaksi yang telah terverifikasi. Untuk penerimaan via transfer, nominal sesuai dengan bukti transfer yang diunggah. Penyaluran barang dinilai berdasarkan harga pasar wajar.</p>
-        <p>Laporan ini diterbitkan secara resmi melalui Sistem Manajemen Zakat {{ $lembaga->nama ?? 'Lembaga' }}.</p>
-        <p>Dicetak pada: {{ $tanggalExport }}</p>
+    {{-- ══════════════════ TANDA TANGAN ══════════════════ --}}
+    <div style="margin-top:30px; width:100%; page-break-inside:avoid;">
+        <div style="float:right; width:250px; text-align:center;">
+            <div>{{ $lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>
+            <div style="margin-top:12px;">Yang Membuat Laporan,</div>
+            <div style="font-weight:bold; margin-bottom:5px;">Admin Lembaga</div>
+
+            <div style="height:70px;"></div>
+
+            <table style="width:210px; margin:0 auto; border-collapse:collapse; font-weight:bold; font-size:11px;">
+                <tr>
+                    <td colspan="3" style="border:none; text-align:center; font-weight:bold; padding:0; line-height:1.3;">
+                        {{ $lembaga->admin_nama ?? '' }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:left; width:10px; border:none; padding:0; border-bottom:1px solid #2d3436; line-height:1.4;">(</td>
+                    <td style="text-align:center; border:none; padding:0; border-bottom:1px solid #2d3436; line-height:1.4;">&nbsp;</td>
+                    <td style="text-align:right; width:10px; border:none; padding:0; border-bottom:1px solid #2d3436; line-height:1.4;">)</td>
+                </tr>
+            </table>
+        </div>
+        <div style="clear:both;"></div>
     </div>
 </body>
 </html>
