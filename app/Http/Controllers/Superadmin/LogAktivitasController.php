@@ -61,7 +61,7 @@ class LogAktivitasController extends Controller
             ->pluck('peran');
 
        $breadcrumbs = [
-            'Riwayat Aktivitas' => null,
+            'Riwayat Aktivitas' => route('log-aktivitas.index'),
         ]; 
             
         return view('superadmin.log-aktivitas.index', compact(
@@ -81,8 +81,13 @@ class LogAktivitasController extends Controller
         $log = LogAktivitas::with('pengguna')
             ->where('uuid', $uuid)
             ->firstOrFail();
+        
+        $breadcrumbs = [
+            'Riwayat Aktivitas' => route('log-aktivitas.index'),
+            'Detail Riwayat Aktivitas' => route('log-aktivitas.show', $uuid),
+        ];
 
-        return view('superadmin.log-aktivitas.show', compact('log'));
+        return view('superadmin.log-aktivitas.show', compact('log', 'breadcrumbs'));
     }
 
     /**

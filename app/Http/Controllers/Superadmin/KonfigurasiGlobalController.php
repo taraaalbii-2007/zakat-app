@@ -22,9 +22,8 @@ class KonfigurasiGlobalController extends Controller
         $mail = MailConfig::first();
 
         $breadcrumbs = [
-            'Kelola Sistem Aplikasi' => null,
+            'Detail Konfigurasi Aplikasi' => route('konfigurasi-global.show'),
         ];
-
 
         return view('superadmin.konfigurasi-global.show', compact('config', 'recaptcha', 'google', 'mail', 'breadcrumbs'));
     }
@@ -36,7 +35,12 @@ class KonfigurasiGlobalController extends Controller
         $google = GoogleConfig::first();
         $mail = MailConfig::first();
 
-        return view('superadmin.konfigurasi-global.edit', compact('config', 'recaptcha', 'google', 'mail'));
+        $breadcrumbs = [
+            'Detail Konfigurasi Aplikasi' => route('konfigurasi-global.show'),
+            'Edit Konfigurasi Aplikasi' => route('konfigurasi-global.edit'),
+        ];
+
+        return view('superadmin.konfigurasi-global.edit', compact('config', 'recaptcha', 'google', 'mail', 'breadcrumbs'));
     }
 
     public function update(Request $request)

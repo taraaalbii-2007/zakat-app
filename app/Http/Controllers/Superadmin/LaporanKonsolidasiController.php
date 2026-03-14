@@ -195,7 +195,7 @@ class LaporanKonsolidasiController extends Controller
         $availableYears = $this->getAvailableYears();
 
         $breadcrumbs = [
-            'Laporan Keuangan' => null,
+            'Laporan Keuangan' => route('laporan-konsolidasi.index'),
         ];
 
         return view('superadmin.laporan-konsolidasi.index', compact(
@@ -347,6 +347,11 @@ class LaporanKonsolidasiController extends Controller
             ->orderByDesc('total')
             ->get();
 
+            $breadcrumbs = [
+            'Kelola Laporan Konsolidasi' => route('laporan-konsolidasi.index'),
+            'Detail Laporan Konsolidasi' => route('laporan-konsolidasi.detail', $lembagaId)
+        ];
+
         return view('superadmin.laporan-konsolidasi.show', compact(
             'lembaga',
             'laporanBulanan',
@@ -361,7 +366,8 @@ class LaporanKonsolidasiController extends Controller
             'chartPenyaluran',
             'chartSaldo',
             'breakdownJenisZakat',
-            'breakdownMustahik'
+            'breakdownMustahik',
+            'breadcrumbs'
         ));
     }
 

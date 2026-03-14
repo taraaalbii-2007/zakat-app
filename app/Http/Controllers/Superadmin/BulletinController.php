@@ -54,8 +54,12 @@ class BulletinController extends Controller
             'rejected' => Bulletin::whereNotNull('lembaga_id')->where('status', 'rejected')->count(),
         ];
 
+        $breadcrumbs = [
+            'Kelola Bulletin' => route('superadmin.bulletin.index'),
+        ];
+
         return view('superadmin.bulletin.index', compact(
-            'bulletins', 'kategoriList', 'pendingCount', 'counts'
+            'bulletins', 'kategoriList', 'pendingCount', 'counts', 'breadcrumbs'
         ));
     }
 
@@ -66,7 +70,12 @@ class BulletinController extends Controller
     {
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
 
-        return view('superadmin.bulletin.create', compact('kategoriList'));
+        $breadcrumbs = [
+            'Bulletin' => route('superadmin.bulletin.index'),
+            'Tambah Bulletin' => route('superadmin.bulletin.create'),
+        ];
+
+        return view('superadmin.bulletin.create', compact('kategoriList', 'breadcrumbs'));
     }
 
     // ============================================
@@ -135,7 +144,12 @@ class BulletinController extends Controller
         $bulletin->load(['author', 'kategoriBulletin', 'lembaga', 'reviewer']);
         $bulletin->incrementViewCount();
 
-        return view('superadmin.bulletin.show', compact('bulletin'));
+        $breadcrumbs = [
+            'Bulletin' => route('superadmin.bulletin.index'),
+            'Detail Bulletin' => route('superadmin.bulletin.show', $bulletin),
+        ];
+
+        return view('superadmin.bulletin.show', compact('bulletin', 'breadcrumbs'));
     }
 
     // ============================================
@@ -144,8 +158,12 @@ class BulletinController extends Controller
     public function edit(Bulletin $bulletin)
     {
         $kategoriList = KategoriBulletin::orderBy('nama_kategori')->get();
+        $breadcrumbs = [
+            'Bulletin' => route('superadmin.bulletin.index'),
+            'Edit Bulletin' => route('superadmin.bulletin.edit', $bulletin),
+        ];
 
-        return view('superadmin.bulletin.edit', compact('bulletin', 'kategoriList'));
+        return view('superadmin.bulletin.edit', compact('bulletin', 'kategoriList', 'breadcrumbs'));
     }
 
     // ============================================

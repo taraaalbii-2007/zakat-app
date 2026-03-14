@@ -41,7 +41,7 @@ class LembagaController extends Controller
         $provinces = Province::orderBy('name')->get();
 
         $breadcrumbs = [
-            'Kelola Lembaga' => null,
+            'Kelola Lembaga' => route('lembaga.index'),
         ];
 
         return view('lembaga.index', compact('lembagas', 'provinces', 'breadcrumbs'));
@@ -50,7 +50,12 @@ class LembagaController extends Controller
     public function create()
     {
         $provinces = Province::orderBy('name')->get();
-        return view('lembaga.create', compact('provinces'));
+
+        $breadcrumbs = [
+            'Kelola Lembaga' => route('lembaga.index'),
+            'Tambah Lembaga' => route('lembaga.create')
+        ];
+        return view('lembaga.create', compact('provinces', 'breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -121,7 +126,11 @@ class LembagaController extends Controller
 
     public function show(Lembaga $lembaga)
     {
-        return view('lembaga.show', compact('lembaga'));
+        $breadcrumbs = [
+            'Kelola Lembaga' => route('lembaga.index'),
+            'Detail Lembaga' => route('lembaga.show', $lembaga)
+        ];
+        return view('lembaga.show', compact('lembaga', 'breadcrumbs'));
     }
 
     public function edit(Lembaga $lembaga)
@@ -141,7 +150,12 @@ class LembagaController extends Controller
             ? Village::where('district_code', $lembaga->kecamatan_kode)->orderBy('name')->get()
             : collect();
 
-        return view('lembaga.edit', compact('lembaga', 'provinces', 'cities', 'districts', 'villages'));
+        $breadcrumbs = [
+            'Kelola Lembaga' => route('lembaga.index'),
+            'Edit Lembaga' => route('lembaga.edit', $lembaga)
+        ];
+
+        return view('lembaga.edit', compact('lembaga', 'provinces', 'cities', 'districts', 'villages', 'breadcrumbs'));
     }
 
     public function update(Request $request, Lembaga $lembaga)

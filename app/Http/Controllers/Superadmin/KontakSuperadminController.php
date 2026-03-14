@@ -7,6 +7,7 @@ use App\Models\Kontak;
 use App\Mail\KontakBalasanMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class KontakSuperadminController extends Controller
 {
@@ -32,16 +33,21 @@ class KontakSuperadminController extends Controller
             });
         }
 
-        $kontaks      = $query->paginate(15)->withQueryString();
+        $kontaks      = $query->paginate(10);
         $totalBaru    = Kontak::whereNull('dibaca_at')->count();
         $totalDibaca  = Kontak::whereNotNull('dibaca_at')->whereNull('dibalas_at')->count();
         $totalDibalas = Kontak::whereNotNull('dibalas_at')->count();
+
+        $breadcrumbs = [
+            'Kelola Pesan' => route('superadmin.kontak.index'),
+        ];
 
         return view('superadmin.kontak.index', compact(
             'kontaks',
             'totalBaru',
             'totalDibaca',
-            'totalDibalas'
+            'totalDibalas',
+            'breadcrumbs'
         ));
     }
 
@@ -49,7 +55,12 @@ class KontakSuperadminController extends Controller
     {
         $kontak->tandaiDibaca();
 
-        return view('superadmin.kontak.show', compact('kontak'));
+        $breadcrumbs = [
+            'Kelola Pesan' => route('superadmin.kontak.index'),
+            'Detail Pesan' => route('superadmin.kontak.show', $kontak)
+        ];
+
+        return view('superadmin.kontak.show', compact('kontak', 'breadcrumbs'));
     }
 
     public function balas(Request $request, Kontak $kontak)
@@ -74,7 +85,7 @@ class KontakSuperadminController extends Controller
                 ->with('success', 'Balasan berhasil dikirim ke ' . $kontak->email);
 
         } catch (\Throwable $e) {
-            \Log::error('Gagal kirim email kontak: ' . $e->getMessage());
+            Log::error('Gagal kirim email kontak: ' . $e->getMessage());
 
             return back()
                 ->withInput()

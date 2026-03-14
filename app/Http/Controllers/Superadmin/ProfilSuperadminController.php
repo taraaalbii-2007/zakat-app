@@ -34,7 +34,11 @@ class ProfilSuperadminController extends Controller
     public function show()
     {
         $user = $this->user;
-        return view('superadmin.profil.show', compact('user'));
+
+        $breadcrumbs = [
+            'Kelola Profil' => route('superadmin.profil.show'),
+        ];
+        return view('superadmin.profil.show', compact('user', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------
@@ -43,7 +47,11 @@ class ProfilSuperadminController extends Controller
     public function edit()
     {
         $user = $this->user;
-        return view('superadmin.profil.edit', compact('user'));
+        $breadcrumbs = [
+            'Kelola Profil' => route('superadmin.profil.show'),
+            'Edit Profil' => route('superadmin.profil.edit')
+        ];
+        return view('superadmin.profil.edit', compact('user', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------

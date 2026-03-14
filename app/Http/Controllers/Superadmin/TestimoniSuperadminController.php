@@ -40,10 +40,15 @@ class TestimoniSuperadminController extends Controller
         $totalPending  = Testimoni::where('is_approved', false)->count();
         $totalApproved = Testimoni::where('is_approved', true)->count();
 
+        $breadcrumbs = [
+            'Kelola Testimoni' => route('superadmin.testimoni.index')
+        ];
+
         return view('superadmin.testimoni.index', compact(
             'testimonis',
             'totalPending',
-            'totalApproved'
+            'totalApproved',
+            'breadcrumbs'
         ));
     }
 
@@ -53,6 +58,11 @@ class TestimoniSuperadminController extends Controller
     public function show(Testimoni $testimoni)
     {
         $testimoni->load(['muzakki', 'transaksi', 'approvedBy']);
+
+        $breadcrumbs = [
+            'Kelola Testimoni' => route('superadmin.testimoni.index'),
+            'Detail Testimoni' => route('superadmin.testimoni.show', $testimoni)
+        ];
         return view('superadmin.testimoni.show', compact('testimoni'));
     }
 
