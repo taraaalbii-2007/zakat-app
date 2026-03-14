@@ -43,7 +43,11 @@ class ProfilAdminLembagaController extends Controller
     {
         $user   = $this->user;
         $lembaga = $this->lembaga;
-        return view('admin-lembaga.profil.show', compact('user', 'lembaga'));
+        $breadcrumbs = [
+            'Detail Profil' => route('admin-lembaga.profil.show')
+        ];
+        return view('admin-lembaga.profil.show', compact('user', 'lembaga', 'breadcrumbs'));
+        
     }
 
     // ---------------------------------------------------------------
@@ -66,8 +70,13 @@ class ProfilAdminLembagaController extends Controller
         // Ambil semua kelurahan (untuk keperluan JavaScript)
         $villages = Village::orderBy('name')->get();
 
+        $breadcrumbs = [
+            'Detail Profil' => route('admin-lembaga.profil.show'),
+            'Edit Profile' => route('admin-lembaga.profil.edit')
+        ];
+
         return view('admin-lembaga.profil.edit', compact(
-            'user', 'lembaga', 'provinces', 'cities', 'districts', 'villages'
+            'user', 'lembaga', 'provinces', 'cities', 'districts', 'villages', 'breadcrumbs'
         ));
     }
 
