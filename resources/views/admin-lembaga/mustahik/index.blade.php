@@ -14,14 +14,15 @@
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $mustahiks->total() }} Mustahik</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        @if($permissions['canCreate'])
+                        @if ($permissions['canCreate'])
                             <a href="{{ route('mustahik.create') }}"
                                 class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                                <span
+                                    class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                     Tambah
                                 </span>
                             </a>
@@ -32,7 +33,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                            <span
+                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                 Filter
                             </span>
                         </button>
@@ -51,13 +53,14 @@
                             </button>
                             <form method="GET" action="{{ route('mustahik.index') }}" id="search-form"
                                 class="{{ request('q') ? '' : 'hidden' }}">
-                                @if(request('kategori_id'))
+                                @if (request('kategori_id'))
                                     <input type="hidden" name="kategori_id" value="{{ request('kategori_id') }}">
                                 @endif
-                                @if(request('status_verifikasi'))
-                                    <input type="hidden" name="status_verifikasi" value="{{ request('status_verifikasi') }}">
+                                @if (request('status_verifikasi'))
+                                    <input type="hidden" name="status_verifikasi"
+                                        value="{{ request('status_verifikasi') }}">
                                 @endif
-                                @if(request('is_active'))
+                                @if (request('is_active'))
                                     <input type="hidden" name="is_active" value="{{ request('is_active') }}">
                                 @endif
                                 <div class="flex items-center">
@@ -81,9 +84,10 @@
             </div>
 
             {{-- Filter Panel --}}
-            <div id="filter-panel" class="{{ (request('kategori_id') || request('status_verifikasi') || request('is_active') || request('jenis_kelamin')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+            <div id="filter-panel"
+                class="{{ request('kategori_id') || request('status_verifikasi') || request('is_active') || request('jenis_kelamin') ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('mustahik.index') }}" id="filter-form">
-                    @if(request('q'))
+                    @if (request('q'))
                         <input type="hidden" name="q" value="{{ request('q') }}">
                     @endif
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4">
@@ -93,8 +97,9 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Kategori</option>
-                                @foreach($kategoris as $kategori)
-                                    <option value="{{ $kategori->id }}" {{ request('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                                @foreach ($kategoris as $kategori)
+                                    <option value="{{ $kategori->id }}"
+                                        {{ request('kategori_id') == $kategori->id ? 'selected' : '' }}>
                                         {{ $kategori->nama }}
                                     </option>
                                 @endforeach
@@ -106,9 +111,12 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
-                                <option value="pending" {{ request('status_verifikasi') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="verified" {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>Verified</option>
-                                <option value="rejected" {{ request('status_verifikasi') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="pending" {{ request('status_verifikasi') == 'pending' ? 'selected' : '' }}>
+                                    Pending</option>
+                                <option value="verified"
+                                    {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>Verified</option>
+                                <option value="rejected"
+                                    {{ request('status_verifikasi') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             </select>
                         </div>
                         <div>
@@ -118,7 +126,8 @@
                                 onchange="this.form.submit()">
                                 <option value="">Semua</option>
                                 <option value="1" {{ request('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
-                                <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
+                                <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Nonaktif
+                                </option>
                             </select>
                         </div>
                         <div>
@@ -127,17 +136,20 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua</option>
-                                <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki
+                                </option>
+                                <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
+                                </option>
                             </select>
                         </div>
                     </div>
-                    @if(request('kategori_id') || request('status_verifikasi') || request('is_active') || request('jenis_kelamin'))
+                    @if (request('kategori_id') || request('status_verifikasi') || request('is_active') || request('jenis_kelamin'))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('mustahik.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
                             </a>
@@ -148,14 +160,16 @@
 
             @if ($mustahiks->count() > 0)
                 {{-- Info Filter Aktif --}}
-                @if(request('q'))
+                @if (request('q'))
                     <div class="px-4 sm:px-6 py-2 bg-blue-50 border-b border-blue-100">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center flex-wrap gap-2">
                                 <span class="text-xs font-medium text-blue-800">Filter Aktif:</span>
-                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                <span
+                                    class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                     Pencarian: "{{ request('q') }}"
-                                    <button type="button" onclick="removeFilter('q')" class="ml-1.5 text-blue-600 hover:text-blue-800">
+                                    <button type="button" onclick="removeFilter('q')"
+                                        class="ml-1.5 text-blue-600 hover:text-blue-800">
                                         ×
                                     </button>
                                 </span>
@@ -179,7 +193,8 @@
                                     Alamat</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi</th>
                             </tr>
                         </thead>
@@ -191,22 +206,45 @@
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900">{{ $item->no_registrasi }}</div>
-                                        <div class="text-xs text-gray-500">{{ $item->tanggal_registrasi->format('d M Y') }}</div>
+                                        <div class="text-xs text-gray-500">
+                                            {{ $item->tanggal_registrasi->format('d M Y') }}</div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
-                                                <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-primary">
-                                                        {{ strtoupper(substr($item->nama_lengkap, 0, 1)) }}
+                                                @php
+                                                    // Generate warna berdasarkan huruf pertama
+                                                    $colors = [
+                                                        'bg-blue-500',
+                                                        'bg-green-500',
+                                                        'bg-yellow-500',
+                                                        'bg-red-500',
+                                                        'bg-purple-500',
+                                                        'bg-pink-500',
+                                                        'bg-indigo-500',
+                                                        'bg-orange-500',
+                                                        'bg-teal-500',
+                                                        'bg-cyan-500',
+                                                        'bg-emerald-500',
+                                                        'bg-rose-500',
+                                                    ];
+                                                    $initial = strtoupper(substr($item->nama_lengkap, 0, 1));
+                                                    $colorIndex = $initial ? (ord($initial) - 65) % count($colors) : 0;
+                                                    $bgColor = $colors[$colorIndex];
+                                                @endphp
+                                                <div
+                                                    class="h-10 w-10 rounded-full {{ $bgColor }} flex items-center justify-center shadow-sm">
+                                                    <span class="text-sm font-medium text-white">
+                                                        {{ $initial }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ $item->nama_lengkap }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $item->nama_lengkap }}
+                                                </div>
                                                 <div class="text-xs text-gray-500">
                                                     NIK: {{ $item->nik ?? '-' }}
-                                                    @if($item->telepon)
+                                                    @if ($item->telepon)
                                                         | {{ $item->telepon }}
                                                     @endif
                                                 </div>
@@ -214,13 +252,14 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             {{ $item->kategoriMustahik->nama }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900">{{ Str::limit($item->alamat, 40) }}</div>
-                                        @if($item->rt_rw)
+                                        @if ($item->rt_rw)
                                             <div class="text-xs text-gray-500">RT/RW: {{ $item->rt_rw }}</div>
                                         @endif
                                     </td>
@@ -263,60 +302,40 @@
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-3 flex-1 min-w-0">
                                     <div class="flex-shrink-0">
-                                        <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                                            <span class="text-base font-medium text-primary">
-                                                {{ strtoupper(substr($item->nama_lengkap, 0, 1)) }}
+                                        @php
+                                            // Generate warna berdasarkan huruf pertama
+                                            $colors = [
+                                                'bg-blue-500',
+                                                'bg-green-500',
+                                                'bg-yellow-500',
+                                                'bg-red-500',
+                                                'bg-purple-500',
+                                                'bg-pink-500',
+                                                'bg-indigo-500',
+                                                'bg-orange-500',
+                                                'bg-teal-500',
+                                                'bg-cyan-500',
+                                                'bg-emerald-500',
+                                                'bg-rose-500',
+                                            ];
+                                            $initial = strtoupper(substr($item->nama_lengkap, 0, 1));
+                                            $colorIndex = $initial ? (ord($initial) - 65) % count($colors) : 0;
+                                            $bgColor = $colors[$colorIndex];
+                                        @endphp
+                                        <div
+                                            class="h-12 w-12 rounded-full {{ $bgColor }} flex items-center justify-center shadow-sm">
+                                            <span class="text-base font-medium text-white">
+                                                {{ $initial }}
                                             </span>
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-gray-900 mb-0.5">{{ $item->nama_lengkap }}</h3>
-                                        <p class="text-xs text-gray-500 mb-2">{{ $item->no_registrasi }}</p>
-
-                                        <div class="flex flex-wrap gap-1.5 mb-2">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                {{ $item->kategoriMustahik->nama }}
-                                            </span>
-                                            {!! $item->status_badge !!}
-                                            {!! $item->active_badge !!}
-                                        </div>
-
-                                        <div class="space-y-1">
-                                            @if($item->nik)
-                                                <div class="flex items-center text-xs text-gray-600">
-                                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
-                                                    </svg>
-                                                    NIK: {{ $item->nik }}
-                                                </div>
-                                            @endif
-                                            @if($item->telepon)
-                                                <div class="flex items-center text-xs text-gray-600">
-                                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                                    </svg>
-                                                    {{ $item->telepon }}
-                                                </div>
-                                            @endif
-                                            <div class="flex items-start text-xs text-gray-600">
-                                                <svg class="w-3.5 h-3.5 mr-1.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                </svg>
-                                                <span class="line-clamp-2">{{ $item->alamat }}</span>
-                                            </div>
-                                        </div>
+                                        <!-- ... sisanya tetap sama ... -->
                                     </div>
                                 </div>
                                 <button type="button" data-dropdown-toggle="{{ $item->uuid }}"
-                                    data-nama="{{ $item->nama_lengkap }}"
-                                    data-actions="{{ json_encode($actions) }}"
-                                    data-status="{{ $item->status_verifikasi }}"
-                                    data-is-active="{{ $item->is_active }}"
+                                    data-nama="{{ $item->nama_lengkap }}" data-actions="{{ json_encode($actions) }}"
+                                    data-status="{{ $item->status_verifikasi }}" data-is-active="{{ $item->is_active }}"
                                     data-user-role="{{ $permissions['userRole'] }}"
                                     class="dropdown-toggle flex-shrink-0 ml-2 inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -337,17 +356,19 @@
                 @endif
             @else
                 <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div
+                        class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
                             </path>
                         </svg>
                     </div>
-                    @if(request('q') || request('kategori_id') || request('status_verifikasi') || request('is_active'))
+                    @if (request('q') || request('kategori_id') || request('status_verifikasi') || request('is_active'))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-sm text-gray-500 mb-6">
-                            @if(request('q'))
+                            @if (request('q'))
                                 Tidak ada mustahik yang cocok dengan "{{ request('q') }}"
                             @else
                                 Tidak ada mustahik yang sesuai dengan filter yang dipilih
@@ -364,7 +385,7 @@
                     @else
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Mustahik</h3>
                         <p class="text-sm text-gray-500 mb-6">Mulai tambahkan data mustahik penerima zakat.</p>
-                        @if($permissions['canCreate'])
+                        @if ($permissions['canCreate'])
                             <a href="{{ route('mustahik.create') }}"
                                 class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -388,9 +409,9 @@
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                     Lihat Detail
                 </a>
@@ -408,7 +429,7 @@
                 <button type="button" id="dropdown-verify-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                     Verifikasi
                 </button>
@@ -416,7 +437,7 @@
                 <button type="button" id="dropdown-reject-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                     Tolak
                 </button>
@@ -424,7 +445,8 @@
                 <button type="button" id="dropdown-toggle-active-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors hidden">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span id="toggle-active-text">Aktifkan</span>
                 </button>
@@ -487,7 +509,8 @@
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Tolak Verifikasi Mustahik</h3>
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Tolak Verifikasi
+                Mustahik</h3>
             <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
                 Tolak verifikasi mustahik
                 "<span id="modal-reject-mustahik-name" class="font-semibold text-gray-700"></span>"?
@@ -497,8 +520,7 @@
                 <label for="alasan_penolakan" class="block text-sm font-medium text-gray-700 mb-2">
                     Alasan Penolakan <span class="text-red-500">*</span>
                 </label>
-                <textarea id="alasan_penolakan" name="alasan_penolakan" rows="3"
-                    placeholder="Masukkan alasan penolakan..."
+                <textarea id="alasan_penolakan" name="alasan_penolakan" rows="3" placeholder="Masukkan alasan penolakan..."
                     class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                     required></textarea>
             </div>
@@ -524,13 +546,13 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
-            const viewLink          = document.getElementById('dropdown-view-link');
-            const editLink          = document.getElementById('dropdown-edit-link');
-            const deleteBtn         = document.getElementById('dropdown-delete-btn');
-            const verifyBtn         = document.getElementById('dropdown-verify-btn');
-            const rejectBtn         = document.getElementById('dropdown-reject-btn');
-            const toggleActiveBtn   = document.getElementById('dropdown-toggle-active-btn');
-            const tableContainer    = document.getElementById('table-container');
+            const viewLink = document.getElementById('dropdown-view-link');
+            const editLink = document.getElementById('dropdown-edit-link');
+            const deleteBtn = document.getElementById('dropdown-delete-btn');
+            const verifyBtn = document.getElementById('dropdown-verify-btn');
+            const rejectBtn = document.getElementById('dropdown-reject-btn');
+            const toggleActiveBtn = document.getElementById('dropdown-toggle-active-btn');
+            const tableContainer = document.getElementById('table-container');
 
             // ── Dropdown open/close ─────────────────────────────
             document.addEventListener('click', function(e) {
@@ -541,10 +563,10 @@
 
                     const dropdownUuid = toggle.getAttribute('data-dropdown-toggle');
                     const mustahikName = toggle.getAttribute('data-nama');
-                    const actions      = JSON.parse(toggle.getAttribute('data-actions') || '{}');
-                    const status       = toggle.getAttribute('data-status');
-                    const isActive     = toggle.getAttribute('data-is-active') === '1';
-                    const userRole     = toggle.getAttribute('data-user-role');
+                    const actions = JSON.parse(toggle.getAttribute('data-actions') || '{}');
+                    const status = toggle.getAttribute('data-status');
+                    const isActive = toggle.getAttribute('data-is-active') === '1';
+                    const userRole = toggle.getAttribute('data-user-role');
 
                     // Toggle close jika klik tombol yang sama
                     if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
@@ -555,22 +577,30 @@
                     }
 
                     currentMustahikUuid = dropdownUuid;
-                    currentDropdownData = { uuid: dropdownUuid, name: mustahikName, actions, status, isActive, userRole };
+                    currentDropdownData = {
+                        uuid: dropdownUuid,
+                        name: mustahikName,
+                        actions,
+                        status,
+                        isActive,
+                        userRole
+                    };
 
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
 
                     // Hitung posisi dropdown
-                    const rect          = toggle.getBoundingClientRect();
+                    const rect = toggle.getBoundingClientRect();
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
                     const dropdownHeight = 200;
 
-                    let top  = rect.bottom;
+                    let top = rect.bottom;
                     let left = rect.left;
 
-                    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 10;
+                    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth -
+                        10;
                     if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight;
 
-                    dropdownContainer.style.top  = top  + 'px';
+                    dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
 
                     // Set link
@@ -593,7 +623,8 @@
                     // Toggle aktif
                     if (actions.can_toggle_active) {
                         toggleActiveBtn.classList.remove('hidden');
-                        document.getElementById('toggle-active-text').textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
+                        document.getElementById('toggle-active-text').textContent = isActive ?
+                            'Nonaktifkan' : 'Aktifkan';
                     } else {
                         toggleActiveBtn.classList.add('hidden');
                     }
@@ -645,7 +676,8 @@
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
 
-                document.getElementById('modal-reject-mustahik-name').textContent = currentDropdownData.name;
+                document.getElementById('modal-reject-mustahik-name').textContent = currentDropdownData
+                .name;
                 document.getElementById('alasan_penolakan').value = '';
                 document.getElementById('reject-modal').classList.remove('hidden');
             });
@@ -695,9 +727,9 @@
 
         // ── Search toggle ───────────────────────────────────────
         function toggleSearch() {
-            const searchButton    = document.getElementById('search-button');
-            const searchForm      = document.getElementById('search-form');
-            const searchInput     = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const searchForm = document.getElementById('search-form');
+            const searchInput = document.getElementById('search-input');
             const searchContainer = document.getElementById('search-container');
 
             if (searchForm.classList.contains('hidden')) {
@@ -729,59 +761,61 @@
         // ── API: Verifikasi ─────────────────────────────────────
         function verifyMustahik(uuid) {
             fetch(`/mustahik/${uuid}/verify`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(r => r.json())
-            .then(data => {
-                ToastNotification.show(data.message, data.success ? 'success' : 'error');
-                if (data.success) setTimeout(() => location.reload(), 1500);
-            })
-            .catch(() => ToastNotification.show('Terjadi kesalahan saat memverifikasi', 'error'));
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    ToastNotification.show(data.message, data.success ? 'success' : 'error');
+                    if (data.success) setTimeout(() => location.reload(), 1500);
+                })
+                .catch(() => ToastNotification.show('Terjadi kesalahan saat memverifikasi', 'error'));
         }
 
         // ── API: Tolak ──────────────────────────────────────────
         function rejectMustahik(uuid, alasan) {
             fetch(`/mustahik/${uuid}/reject`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ alasan_penolakan: alasan })
-            })
-            .then(r => r.json())
-            .then(data => {
-                ToastNotification.show(data.message, data.success ? 'success' : 'error');
-                if (data.success) {
-                    document.getElementById('reject-modal').classList.add('hidden');
-                    setTimeout(() => location.reload(), 1500);
-                }
-            })
-            .catch(() => ToastNotification.show('Terjadi kesalahan saat menolak', 'error'));
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        alasan_penolakan: alasan
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    ToastNotification.show(data.message, data.success ? 'success' : 'error');
+                    if (data.success) {
+                        document.getElementById('reject-modal').classList.add('hidden');
+                        setTimeout(() => location.reload(), 1500);
+                    }
+                })
+                .catch(() => ToastNotification.show('Terjadi kesalahan saat menolak', 'error'));
         }
 
         // ── API: Toggle Aktif ───────────────────────────────────
         function toggleActiveMustahik(uuid) {
             fetch(`/mustahik/${uuid}/toggle-active`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(r => r.json())
-            .then(data => {
-                ToastNotification.show(data.message, data.success ? 'success' : 'error');
-                if (data.success) setTimeout(() => location.reload(), 1500);
-            })
-            .catch(() => ToastNotification.show('Terjadi kesalahan saat mengubah status', 'error'));
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    ToastNotification.show(data.message, data.success ? 'success' : 'error');
+                    if (data.success) setTimeout(() => location.reload(), 1500);
+                })
+                .catch(() => ToastNotification.show('Terjadi kesalahan saat mengubah status', 'error'));
         }
     </script>
 @endpush

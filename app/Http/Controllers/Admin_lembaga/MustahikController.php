@@ -119,10 +119,6 @@ class MustahikController extends Controller
             'tempat_lahir' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'alamat' => 'required|string',
-            'provinsi_kode' => 'nullable|string|max:2',
-            'kota_kode' => 'nullable|string|max:4',
-            'kecamatan_kode' => 'nullable|string|max:10',
-            'kelurahan_kode' => 'nullable|string|max:13',
             'rt_rw' => 'nullable|string|max:10',
             'kode_pos' => 'nullable|string|max:10',
             'pekerjaan' => 'nullable|string|max:255',
@@ -313,10 +309,6 @@ class MustahikController extends Controller
             'tempat_lahir' => 'nullable|string|max:255',
             'telepon' => 'nullable|string|max:20',
             'alamat' => 'required|string',
-            'provinsi_kode' => 'nullable|string|max:2',
-            'kota_kode' => 'nullable|string|max:4',
-            'kecamatan_kode' => 'nullable|string|max:10',
-            'kelurahan_kode' => 'nullable|string|max:13',
             'rt_rw' => 'nullable|string|max:10',
             'kode_pos' => 'nullable|string|max:10',
             'pekerjaan' => 'nullable|string|max:255',
@@ -560,34 +552,6 @@ class MustahikController extends Controller
             'is_active' => $mustahik->is_active,
             'active_badge_html' => $mustahik->active_badge
         ]);
-    }
-
-    // API Wilayah
-    public function getCities($provinceCode)
-    {
-        $cities = City::where('province_code', $provinceCode)
-            ->orderBy('name')
-            ->get(['code', 'name']);
-
-        return response()->json($cities);
-    }
-
-    public function getDistricts($cityCode)
-    {
-        $districts = District::where('city_code', $cityCode)
-            ->orderBy('name')
-            ->get(['code', 'name']);
-
-        return response()->json($districts);
-    }
-
-    public function getVillages($districtCode)
-    {
-        $villages = Village::where('district_code', $districtCode)
-            ->orderBy('name')
-            ->get(['code', 'name']);
-
-        return response()->json($villages);
     }
 
     private function generateNoRegistrasi()

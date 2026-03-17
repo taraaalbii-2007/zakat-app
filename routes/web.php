@@ -749,10 +749,6 @@ Route::middleware(['auth', 'active.user', 'role:admin_lembaga,amil', 'lembaga.ac
         Route::put('/{mustahik:uuid}', [MustahikController::class, 'update'])->name('update');
         Route::delete('/{mustahik:uuid}', [MustahikController::class, 'destroy'])->name('destroy');
 
-        // Wilayah API
-        Route::get('/api/cities/{provinceCode}', [MustahikController::class, 'getCities'])->name('api.cities');
-        Route::get('/api/districts/{cityCode}', [MustahikController::class, 'getDistricts'])->name('api.districts');
-        Route::get('/api/villages/{districtCode}', [MustahikController::class, 'getVillages'])->name('api.villages');
     });
 
 // Mustahik - Admin Lembaga Only (Verifikasi)

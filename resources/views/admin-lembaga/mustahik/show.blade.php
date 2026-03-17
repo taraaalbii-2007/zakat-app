@@ -169,32 +169,6 @@
                                         <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
                                             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                                            </svg>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-xs text-gray-500">Wilayah</p>
-                                            <p class="text-sm font-medium text-gray-900">
-                                                @if($mustahik->kelurahan_kode)
-                                                    {{ \Laravolt\Indonesia\Models\Village::where('code', $mustahik->kelurahan_kode)->first()->name ?? '-' }},
-                                                @endif
-                                                @if($mustahik->kecamatan_kode)
-                                                    {{ \Laravolt\Indonesia\Models\District::where('code', $mustahik->kecamatan_kode)->first()->name ?? '-' }},
-                                                @endif
-                                                @if($mustahik->kota_kode)
-                                                    {{ \Laravolt\Indonesia\Models\City::where('code', $mustahik->kota_kode)->first()->name ?? '-' }},
-                                                @endif
-                                                @if($mustahik->provinsi_kode)
-                                                    {{ \Laravolt\Indonesia\Models\Province::where('code', $mustahik->provinsi_kode)->first()->name ?? '-' }}
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                             </svg>
                                         </div>
