@@ -10,7 +10,6 @@
 
     @php
         $config = \App\Models\KonfigurasiAplikasi::first();
-        $logoUrl = asset('images/logo.png');
     @endphp
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f5f7; padding:40px 16px;">
@@ -19,27 +18,20 @@
 
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px; background-color:#ffffff; border-radius:12px; overflow:hidden; box-shadow:0 2px 16px rgba(0,0,0,0.08);">
 
-                    <!-- HEADER -->
+                    <!-- ===== HEADER (putih, bersih) ===== -->
                     <tr>
-                        <td style="background:linear-gradient(160deg, #2d6936 0%, #4a9040 100%); padding:40px 40px 36px; text-align:center;">
+                        <td style="background-color:#ffffff; padding:40px 40px 32px; text-align:center; border-bottom:1px solid #f0f0f0;">
 
-                            <div style="margin-bottom:20px;">
-                                <img src="{{ $logoUrl }}"
-                                     alt="Logo {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}"
-                                     width="72" height="72"
-                                     style="width:72px; height:72px; border-radius:50%; object-fit:cover; background-color:#ffffff; display:inline-block;">
-                            </div>
-
-                            <h1 style="margin:0 0 8px; color:#ffffff; font-size:24px; font-weight:700;">
+                            <h1 style="margin:0 0 8px; color:#1a1a1a; font-size:22px; font-weight:700;">
                                 Verifikasi Email Anda
                             </h1>
-                            <p style="margin:0; color:rgba(255,255,255,0.85); font-size:14px; line-height:1.6;">
-                                Gunakan kode OTP berikut untuk memverifikasi email Anda di <strong style="color:#ffffff;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>
+                            <p style="margin:0; color:#6b7280; font-size:14px; line-height:1.6;">
+                                Gunakan kode OTP berikut untuk memverifikasi email Anda di <strong style="color:#2d6936;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>
                             </p>
                         </td>
                     </tr>
 
-                    <!-- CONTENT -->
+                    <!-- ===== CONTENT ===== -->
                     <tr>
                         <td style="padding:40px 48px;">
 
@@ -50,8 +42,8 @@
                                 Terima kasih telah bergabung dengan <strong style="color:#2d6936;">{{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }}</strong>. Berikut adalah kode OTP untuk memverifikasi email Anda:
                             </p>
 
-                            <!-- OTP -->
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                            <!-- ===== OTP ===== -->
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
                                 <tr>
                                     <td style="text-align:center; padding:8px 0;">
                                         <p style="margin:0 0 12px; color:#6b7280; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:2px;">
@@ -74,7 +66,7 @@
                                 </tr>
                             </table>
 
-                            <!-- WARNING -->
+                            <!-- ===== WARNING (tanpa border, tanpa emoticon) ===== -->
                             <p style="margin:0 0 10px; color:#374151; font-size:13px; font-weight:600;">
                                 Harap diperhatikan:
                             </p>
@@ -104,7 +96,7 @@
                         </td>
                     </tr>
 
-                    <!-- FOOTER -->
+                    <!-- ===== FOOTER ===== -->
                     <tr>
                         <td style="background-color:#f8faf8; padding:24px 48px; text-align:center; border-top:1px solid #f0f0f0;">
                             <p style="margin:0 0 4px; color:#2d6936; font-size:15px; font-weight:700;">
