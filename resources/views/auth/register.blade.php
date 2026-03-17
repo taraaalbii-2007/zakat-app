@@ -6,291 +6,356 @@
 
 @push('styles')
 <style>
-    /* ══════════════════════════════════
-       HIDE UNWANTED ELEMENTS
-    ══════════════════════════════════ */
-    .right-brand,
-    .right-eyebrow { display: none !important; }
+/* ══════════════════════════════════
+   HIDE UNWANTED ELEMENTS
+══════════════════════════════════ */
+.right-brand,
+.right-eyebrow { display: none !important; }
 
-    .auth-right {
-        padding: 2rem 2.5rem !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-    }
+.auth-right {
+    padding: 2rem 2.5rem !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
 
-    .right-heading { margin-bottom: 1.25rem !important; }
-    .right-heading h1 {
-        font-size: 1.6rem !important;
-        font-weight: 800 !important;
-        color: #111827 !important;
-        letter-spacing: -.03em !important;
-        margin-bottom: .3rem !important;
-        line-height: 1.2 !important;
-    }
-    .right-heading p { font-size: .8rem !important; color: #9ca3af !important; }
-    .right-footer { margin-top: 1rem !important; font-size: .78rem !important; }
+.right-heading { margin-bottom: 1rem !important; } /* Reduced from 1.25rem */
+.right-heading h1 {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    letter-spacing: -.03em !important;
+    margin-bottom: .25rem !important; /* Reduced from .3rem */
+    line-height: 1.2 !important;
+}
+.right-heading p { font-size: .8rem !important; color: #9ca3af !important; }
+.right-footer { margin-top: 1rem !important; font-size: .78rem !important; }
 
-    /* ══════════════════════════════════
-       ROLE SELECTOR
-    ══════════════════════════════════ */
-    .role-label {
-        display: block;
-        font-size: .78rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: .6rem;
-    }
+/* ══════════════════════════════════
+   ROLE SELECTOR - COMPACT
+══════════════════════════════════ */
+.role-label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: .4rem; /* Reduced from .6rem */
+}
 
-    .role-required {
-        color: #f43f5e;
-        margin-left: 2px;
-    }
+.role-required {
+    color: #f43f5e;
+    margin-left: 2px;
+}
 
-    .role-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: .65rem;
-        margin-bottom: .5rem;
-    }
+.role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .5rem; /* Reduced from .65rem */
+    margin-bottom: .25rem; /* Reduced from .5rem */
+}
 
-    .role-card {
-        position: relative;
-        cursor: pointer;
-    }
-    .role-card input[type="radio"] {
-        position: absolute;
-        opacity: 0;
-        width: 0; height: 0;
-    }
+.role-card {
+    position: relative;
+    cursor: pointer;
+}
+.role-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+}
 
-    .role-inner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: .35rem;
-        padding: .9rem .75rem;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 10px;
-        background: #ffffff;
-        transition: border-color .2s, background .2s, box-shadow .2s;
-        text-align: center;
-        cursor: pointer;
-    }
-    .role-inner:hover {
-        border-color: #86efac;
-        background: #f9fefb;
-    }
+.role-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem; /* Reduced from .35rem */
+    padding: .7rem .5rem; /* Reduced from .9rem .75rem */
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+    text-align: center;
+    cursor: pointer;
+}
+.role-inner:hover {
+    border-color: #86efac;
+    background: #f9fefb;
+}
 
-    /* checked state */
-    .role-card input:checked + .role-inner {
-        border-color: #16a34a;
-        background: #f0fdf4;
-        box-shadow: 0 0 0 3px rgba(22,163,74,.1);
-    }
+/* checked state */
+.role-card input:checked + .role-inner {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+}
 
-    .role-icon {
-        width: 36px; height: 36px;
-        border-radius: 9px;
-        background: #f3f4f6;
-        display: flex; align-items: center; justify-content: center;
-        transition: background .2s;
-        flex-shrink: 0;
-    }
-    .role-icon svg { width: 18px; height: 18px; color: #9ca3af; transition: color .2s; }
+.role-icon {
+    width: 32px; height: 32px; /* Reduced from 36px */
+    border-radius: 8px; /* Reduced from 9px */
+    background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+    flex-shrink: 0;
+}
+.role-icon svg { width: 16px; height: 16px; color: #9ca3af; transition: color .2s; } /* Reduced from 18px */
 
-    .role-card input:checked + .role-inner .role-icon {
-        background: #dcfce7;
-    }
-    .role-card input:checked + .role-inner .role-icon svg {
-        color: #16a34a;
-    }
+.role-card input:checked + .role-inner .role-icon {
+    background: #dcfce7;
+}
+.role-card input:checked + .role-inner .role-icon svg {
+    color: #16a34a;
+}
 
-    .role-title {
-        font-size: .75rem;
-        font-weight: 700;
-        color: #374151;
-        line-height: 1.2;
-    }
-    .role-desc {
-        font-size: .67rem;
-        color: #9ca3af;
-        line-height: 1.3;
-    }
-    .role-card input:checked + .role-inner .role-title { color: #15803d; }
+.role-title {
+    font-size: .72rem; /* Slightly reduced from .75rem */
+    font-weight: 700;
+    color: #374151;
+    line-height: 1.2;
+}
+.role-desc {
+    font-size: .64rem; /* Slightly reduced from .67rem */
+    color: #9ca3af;
+    line-height: 1.2;
+}
+.role-card input:checked + .role-inner .role-title { color: #15803d; }
 
-    /* role error state */
-    .role-grid.role-err .role-inner {
-        border-color: #fca5a5;
-    }
+/* role error state */
+.role-grid.role-err .role-inner {
+    border-color: #fca5a5;
+}
 
-    /* ══════════════════════════════════
-       FORM GROUP
-    ══════════════════════════════════ */
-    .rg-group { margin-bottom: .9rem; }
+/* ══════════════════════════════════
+   FORM GROUP - COMPACT
+══════════════════════════════════ */
+.rg-group { 
+    margin-bottom: .6rem; /* Reduced from .9rem */
+}
 
-    .rg-label {
-        display: block;
-        font-size: .78rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: .5rem;
-    }
+/* Remove bottom margin from last group before button */
+.rg-group:last-of-type {
+    margin-bottom: .4rem; /* Reduced significantly */
+}
 
-    .rg-wrap { position: relative; }
+.rg-label {
+    display: block;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: .3rem; /* Reduced from .5rem */
+}
 
-    .rg-icon {
-        position: absolute;
-        left: .875rem; top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        pointer-events: none;
-        display: flex; align-items: center;
-        transition: color .2s;
-    }
-    .rg-icon svg { width: 16px; height: 16px; display: block; }
+.rg-wrap { 
+    position: relative; 
+}
 
-    /* INPUT — putih bersih */
-    .rg-input {
-        display: block;
-        width: 100%;
-        height: 48px;
-        padding: 0 .875rem 0 2.75rem;
-        background: #ffffff;
-        border: 1.5px solid #e5e7eb;
-        border-radius: 10px;
-        font-family: 'Inter', sans-serif;
-        font-size: .83rem;
-        font-weight: 400;
-        color: #111827;
-        outline: none;
-        transition: border-color .2s, box-shadow .2s;
-        -webkit-appearance: none;
-        appearance: none;
-        box-sizing: border-box;
-    }
-    .rg-input::placeholder { color: #c4cad4; }
-    .rg-input:hover  { border-color: #d1d5db; }
-    .rg-input:focus  {
-        border-color: #16a34a;
-        box-shadow: 0 0 0 3px rgba(22,163,74,.1);
-    }
-    .rg-input.err { border-color: #f43f5e; }
-    .rg-input.err:focus { box-shadow: 0 0 0 3px rgba(244,63,94,.1); }
+.rg-icon {
+    position: absolute;
+    left: .875rem; top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+    display: flex; align-items: center;
+    transition: color .2s;
+}
+.rg-icon svg { width: 16px; height: 16px; display: block; }
 
-    .rg-input:-webkit-autofill,
-    .rg-input:-webkit-autofill:hover,
-    .rg-input:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0 999px #ffffff inset !important;
-        -webkit-text-fill-color: #111827 !important;
-        transition: background-color 9999s ease 0s;
-    }
+/* Loading spinner di kanan */
+.loading-spinner {
+    position: absolute;
+    right: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.loading-spinner.show { display: flex; }
 
-    .rg-wrap:focus-within .rg-icon { color: #16a34a; }
-    .rg-wrap.err .rg-icon          { color: #f43f5e; }
+.spinner {
+    width: 16px; /* Reduced from 18px */
+    height: 16px; /* Reduced from 18px */
+    border: 2px solid #e5e7eb;
+    border-top-color: #16a34a;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    .rg-err {
-        display: flex; align-items: center; gap: .3rem;
-        font-size: .71rem; color: #f43f5e; margin-top: .4rem;
-    }
-    .rg-err svg { width: 13px; height: 13px; flex-shrink: 0; }
+/* Status icon di kanan */
+.status-icon {
+    position: absolute;
+    right: .875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.status-icon.show { display: flex; }
+.status-icon.available { color: #16a34a; }
+.status-icon.unavailable { color: #f43f5e; }
+.status-icon svg { width: 16px; height: 16px; } /* Reduced from 18px */
 
-    /* OTP info box */
-    .otp-info {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        padding: .6rem .75rem;
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-        border-radius: 8px;
-        margin-bottom: .9rem;
-    }
-    .otp-info svg { width: 14px; height: 14px; color: #16a34a; flex-shrink: 0; }
-    .otp-info span { font-size: .72rem; color: #15803d; line-height: 1.4; }
+/* INPUT */
+.rg-input {
+    display: block;
+    width: 100%;
+    height: 44px; /* Reduced from 48px */
+    padding: 0 .875rem 0 2.75rem;
+    background: #ffffff;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: .83rem;
+    font-weight: 400;
+    color: #111827;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    -webkit-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+}
+.rg-input::placeholder { color: #c4cad4; }
+.rg-input:hover  { border-color: #d1d5db; }
+.rg-input:focus  {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22,163,74,.1);
+}
+.rg-input.available { 
+    border-color: #16a34a; 
+    padding-right: 2.75rem;
+}
+.rg-input.unavailable { 
+    border-color: #f43f5e; 
+    padding-right: 2.75rem;
+}
+.rg-input.checking { 
+    border-color: #6b7280; 
+    padding-right: 2.75rem;
+}
 
-    /* ══════════════════════════════════
-       SUBMIT BUTTON
-    ══════════════════════════════════ */
-    .btn-daftar {
-        display: flex; align-items: center; justify-content: center; gap: .5rem;
-        width: 100%; height: 48px; padding: 0 1.25rem;
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
-        color: #fff;
-        font-family: 'Inter', sans-serif;
-        font-size: .88rem; font-weight: 700;
-        border: none; border-radius: 10px; cursor: pointer;
-        white-space: nowrap;
-        box-shadow: 0 4px 14px rgba(22,163,74,.35);
-        transition: transform .18s, box-shadow .18s;
-        -webkit-appearance: none;
-    }
-    .btn-daftar svg { width: 18px; height: 18px; flex-shrink: 0; display: block; }
-    .btn-daftar:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px rgba(22,163,74,.42);
-    }
-    .btn-daftar:active  { transform: translateY(0); }
-    .btn-daftar:disabled {
-        opacity: .45;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
+.rg-wrap:focus-within .rg-icon { color: #16a34a; }
 
-    .btn-spinner {
-        width: 17px; height: 17px;
-        border: 2.5px solid rgba(255,255,255,.35);
-        border-top-color: #fff; border-radius: 50%;
-        animation: spin .6s linear infinite;
-        flex-shrink: 0; display: none;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn-daftar.loading .btn-spinner { display: block; }
-    .btn-daftar.loading .btn-label   { display: none; }
-    .btn-label { display: flex; align-items: center; gap: .5rem; line-height: 1; }
+/* Email status message - smaller and closer */
+.email-status {
+    font-size: .68rem; /* Slightly reduced from .7rem */
+    margin-top: .2rem; /* Reduced from .3rem */
+    min-height: 16px; /* Reduced from 18px */
+    line-height: 1.2;
+}
+.email-status.available { color: #16a34a; }
+.email-status.unavailable { color: #f43f5e; }
+.email-status.checking { color: #6b7280; }
 
-    /* ══════════════════════════════════
-       DIVIDER
-    ══════════════════════════════════ */
-    .or-row {
-        display: flex; align-items: center; gap: .75rem;
-        margin: .9rem 0;
-    }
-    .or-line { flex: 1; height: 1px; background: #f3f4f6; }
-    .or-row span {
-        font-size: .72rem; font-weight: 600;
-        color: #9ca3af; white-space: nowrap; letter-spacing: .02em;
-    }
+.rg-err {
+    display: flex; align-items: center; gap: .3rem;
+    font-size: .68rem; color: #f43f5e; margin-top: .2rem; /* Reduced from .4rem */
+}
+.rg-err svg { width: 12px; height: 12px; flex-shrink: 0; } /* Reduced from 13px */
 
-    /* ══════════════════════════════════
-       GOOGLE BUTTON
-    ══════════════════════════════════ */
-    .btn-google {
-        display: flex; align-items: center; justify-content: center; gap: .6rem;
-        width: 100%; height: 46px; padding: 0 1.25rem;
-        background: #fff; border: 1.5px solid #e5e7eb; border-radius: 10px;
-        font-family: 'Inter', sans-serif;
-        font-size: .82rem; font-weight: 700;
-        color: #374151; text-decoration: none; cursor: pointer;
-        transition: border-color .2s, background .2s, transform .18s, box-shadow .2s;
-        white-space: nowrap;
-    }
-    .btn-google svg { width: 17px; height: 17px; flex-shrink: 0; display: block; }
-    .btn-google:hover:not(.btn-google-disabled) {
-        border-color: #16a34a; background: #f0fdf4;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 10px rgba(22,163,74,.1);
-    }
+/* OTP info box - if needed */
+.otp-info {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem .7rem; /* Reduced from .6rem .75rem */
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    margin-bottom: .6rem; /* Reduced from .9rem */
+}
+.otp-info svg { width: 14px; height: 14px; color: #16a34a; flex-shrink: 0; }
+.otp-info span { font-size: .7rem; color: #15803d; line-height: 1.4; } /* Slightly reduced */
 
-    /* Google disabled state */
-    .btn-google-disabled {
-        opacity: .45;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
+/* ══════════════════════════════════
+   SUBMIT BUTTON - CLOSER TO INPUT
+══════════════════════════════════ */
+.btn-daftar {
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
+    width: 100%; 
+    height: 44px; /* Reduced from 48px to match input height */
+    padding: 0 1.25rem;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: .85rem; font-weight: 700;
+    border: none; border-radius: 10px; cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(22,163,74,.35);
+    transition: transform .18s, box-shadow .18s;
+    -webkit-appearance: none;
+    margin-top: .25rem; /* Added minimal top margin */
+}
+.btn-daftar svg { width: 18px; height: 18px; flex-shrink: 0; display: block; }
+.btn-daftar:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(22,163,74,.42);
+}
+.btn-daftar:active  { transform: translateY(0); }
+.btn-daftar:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-spinner {
+    width: 16px; height: 16px;
+    border: 2.5px solid rgba(255,255,255,.35);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin .6s linear infinite;
+    flex-shrink: 0; display: none;
+}
+.btn-daftar.loading .btn-spinner { display: block; }
+.btn-daftar.loading .btn-label   { display: none; }
+.btn-label { display: flex; align-items: center; gap: .5rem; line-height: 1; }
+
+/* ══════════════════════════════════
+   DIVIDER - COMPACT
+══════════════════════════════════ */
+.or-row {
+    display: flex; align-items: center; gap: .6rem; /* Reduced from .75rem */
+    margin: .6rem 0; /* Reduced from .9rem */
+}
+.or-line { flex: 1; height: 1px; background: #f3f4f6; }
+.or-row span {
+    font-size: .7rem; /* Slightly reduced from .72rem */
+    font-weight: 600;
+    color: #9ca3af; white-space: nowrap; letter-spacing: .02em;
+}
+
+/* ══════════════════════════════════
+   GOOGLE BUTTON - COMPACT
+══════════════════════════════════ */
+.btn-google {
+    display: flex; align-items: center; justify-content: center; gap: .6rem;
+    width: 100%; 
+    height: 44px; /* Reduced from 46px to match */
+    padding: 0 1.25rem;
+    background: #fff; border: 1.5px solid #e5e7eb; border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: .8rem; font-weight: 700;
+    color: #374151; text-decoration: none; cursor: pointer;
+    transition: border-color .2s, background .2s, transform .18s, box-shadow .2s;
+    white-space: nowrap;
+}
+.btn-google svg { width: 16px; height: 16px; flex-shrink: 0; display: block; } /* Reduced from 17px */
+.btn-google:hover:not(.btn-google-disabled) {
+    border-color: #16a34a; background: #f0fdf4;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(22,163,74,.1);
+}
+
+/* Google disabled state */
+.btn-google-disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 </style>
 @endpush
 
@@ -371,16 +436,34 @@
         @enderror
     </div>
 
-    {{-- Email --}}
+    {{-- Email dengan Live Check --}}
     <div class="rg-group">
         <label class="rg-label" for="email">Email</label>
-        <div class="rg-wrap {{ $errors->has('email') ? 'err' : '' }}">
+        <div class="rg-wrap">
             <span class="rg-icon">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
             </span>
+            
+            {{-- Loading Spinner --}}
+            <span class="loading-spinner" id="email-loading">
+                <div class="spinner"></div>
+            </span>
+            
+            {{-- Status Icons --}}
+            <span class="status-icon available" id="email-status-available">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+            </span>
+            <span class="status-icon unavailable" id="email-status-unavailable">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </span>
+            
             <input
                 type="email"
                 id="email"
@@ -389,10 +472,15 @@
                 required
                 autocomplete="email"
                 autofocus
-                class="rg-input {{ $errors->has('email') ? 'err' : '' }}"
+                class="rg-input"
                 placeholder="nama@email.com"
             >
         </div>
+        
+        {{-- Status Message (ukuran kecil) --}}
+        <div id="email-status-message" class="email-status"></div>
+        
+        {{-- Error dari server --}}
         @error('email')
             <div class="rg-err">
                 <svg fill="currentColor" viewBox="0 0 20 20">
@@ -424,7 +512,7 @@
         <div class="or-line"></div>
     </div>
 
-    {{-- Google — disabled by default, enabled setelah role dipilih --}}
+    {{-- Google --}}
     <a href="#"
        id="btn-google-register"
        class="btn-google btn-google-disabled"
@@ -455,24 +543,139 @@
     const submitBtn  = document.getElementById('register-btn');
     const googleBtn  = document.getElementById('btn-google-register');
     const radios     = document.querySelectorAll('input[name="role"]');
+    const emailInput = document.getElementById('email');
     const googleBase = '{{ route("auth.google", ["action" => "register"]) }}';
+    
+    // Email status elements
+    const loadingSpinner = document.getElementById('email-loading');
+    const statusAvailable = document.getElementById('email-status-available');
+    const statusUnavailable = document.getElementById('email-status-unavailable');
+    const statusMessage = document.getElementById('email-status-message');
+    
+    let emailCheckTimeout;
+    let lastCheckedEmail = '';
+    let isEmailAvailable = false;
 
-    // ── Cek apakah ada old('role') dari Laravel (validasi gagal / redirect back)
+    // Cek apakah ada old('role') dari Laravel
     const hasOldRole = {{ old('role') ? 'true' : 'false' }};
     if (hasOldRole) {
         enableActions('{{ old('role') }}');
     }
 
-    // ── Saat user memilih role
+    // Live check email
+    emailInput.addEventListener('input', function () {
+        const email = this.value.toLowerCase();
+        this.value = email; // Auto lowercase
+        
+        // Reset status
+        clearTimeout(emailCheckTimeout);
+        resetEmailStatus();
+        
+        // Hide all indicators
+        hideAllIndicators();
+        
+        // Remove input classes
+        emailInput.classList.remove('available', 'unavailable', 'checking');
+        
+        if (!email) {
+            updateSubmitButtonState();
+            return;
+        }
+        
+        // Validate email format
+        if (!isValidEmail(email)) {
+            showEmailStatus('unavailable', 'Format email tidak valid');
+            emailInput.classList.add('unavailable');
+            statusUnavailable.classList.add('show');
+            isEmailAvailable = false;
+            updateSubmitButtonState();
+            return;
+        }
+        
+        // Show loading spinner
+        emailInput.classList.add('checking');
+        loadingSpinner.classList.add('show');
+        showEmailStatus('checking', 'Memeriksa ketersediaan...');
+        
+        // Debounce check
+        emailCheckTimeout = setTimeout(function() {
+            checkEmailAvailability(email);
+        }, 500);
+    });
+
+    // Email check function
+    function checkEmailAvailability(email) {
+        fetch('{{ route("api.check-email") }}?email=' + encodeURIComponent(email))
+            .then(response => response.json())
+            .then(data => {
+                hideAllIndicators();
+                emailInput.classList.remove('checking');
+                
+                if (data.available) {
+                    emailInput.classList.add('available');
+                    statusAvailable.classList.add('show');
+                    showEmailStatus('available', 'Email tersedia');
+                    isEmailAvailable = true;
+                    lastCheckedEmail = email;
+                } else {
+                    emailInput.classList.add('unavailable');
+                    statusUnavailable.classList.add('show');
+                    showEmailStatus('unavailable', 'Email sudah terdaftar');
+                    isEmailAvailable = false;
+                    lastCheckedEmail = '';
+                }
+                
+                updateSubmitButtonState();
+            })
+            .catch(error => {
+                console.error('Error checking email:', error);
+                hideAllIndicators();
+                emailInput.classList.remove('checking');
+                showEmailStatus('unavailable', 'Gagal memeriksa email');
+                isEmailAvailable = false;
+                updateSubmitButtonState();
+            });
+    }
+
+    // Helper functions
+    function hideAllIndicators() {
+        loadingSpinner.classList.remove('show');
+        statusAvailable.classList.remove('show');
+        statusUnavailable.classList.remove('show');
+    }
+
+    function resetEmailStatus() {
+        statusMessage.innerHTML = '';
+        statusMessage.className = 'email-status';
+    }
+
+    function showEmailStatus(type, message) {
+        statusMessage.innerHTML = message;
+        statusMessage.className = 'email-status ' + type;
+    }
+
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function updateSubmitButtonState() {
+        const roleSelected = Array.from(radios).some(radio => radio.checked);
+        const emailValid = isEmailAvailable && emailInput.value.trim() !== '';
+        submitBtn.disabled = !(roleSelected && emailValid);
+    }
+
+    // Saat user memilih role
     radios.forEach(function (radio) {
         radio.addEventListener('change', function () {
             enableActions(this.value);
+            updateSubmitButtonState();
         });
     });
 
     function enableActions(role) {
-        // Enable submit
-        submitBtn.disabled = false;
+        // Enable submit (akan di-update lagi oleh email check)
+        updateSubmitButtonState();
 
         // Enable + set href Google button
         const url = new URL(googleBase);
@@ -482,13 +685,14 @@
         googleBtn.removeAttribute('aria-disabled');
     }
 
-    // ── Auto lowercase email
-    document.getElementById('email').addEventListener('input', function () {
-        this.value = this.value.toLowerCase();
-    });
+    // Initial state jika ada old email
+    if (emailInput.value.trim() !== '') {
+        const event = new Event('input');
+        emailInput.dispatchEvent(event);
+    }
 
     @if($recaptchaSiteKey)
-    // ── Submit dengan reCAPTCHA
+    // Submit dengan reCAPTCHA
     document.getElementById('register-form').addEventListener('submit', function (e) {
         e.preventDefault();
 

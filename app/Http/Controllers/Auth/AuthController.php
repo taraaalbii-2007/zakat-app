@@ -1466,7 +1466,7 @@ $role = $otpData['role'] ?? session('otp_role');
                 'regex:/^\d{16}$/',
                 'unique:muzakki,nik',
             ],
-            'alamat'          => 'nullable|string|max:500',
+            'alamat'          => 'required|string|max:500',
             'lembaga_id'      => 'required|exists:lembaga,id',
             'username'        => $isGoogleUser ? 'nullable' : [
                 'required',
@@ -1498,6 +1498,8 @@ $role = $otpData['role'] ?? session('otp_role');
             'password.required'       => 'Password wajib diisi',
             'password.min'            => 'Password minimal 8 karakter',
             'password.confirmed'      => 'Konfirmasi password tidak cocok',
+            'alamat.required'         => 'Alamat tempat tinggal wajib diisi', 
+            'alamat.max'              => 'Alamat maksimal 500 karakter',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
