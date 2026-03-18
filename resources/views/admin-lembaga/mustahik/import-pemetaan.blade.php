@@ -118,58 +118,60 @@
 
         </div>{{-- /card --}}
 
-        {{-- Action Buttons — semua dalam satu baris, rata kanan --}}
-        <div class="flex items-center justify-end mt-5 pt-5 border-t border-gray-200 gap-3">
+    </form>{{-- /form-import — ditutup di sini agar action buttons tidak nested --}}
 
-            {{-- Batal Import --}}
-            <form method="POST" action="{{ route('mustahik.import.batal') }}" style="margin:0;">
-                @csrf
-                <button type="submit"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300
-                           text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Batal Import
-                </button>
-            </form>
-
-            {{-- Cek Pemetaan --}}
-            <button type="button" id="btn-cek-pemetaan"
-                class="inline-flex items-center gap-2 px-5 py-2.5 border border-primary
-                       text-sm font-medium text-primary bg-white hover:bg-primary/5
-                       rounded-lg shadow-sm transition-all">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7
-                           -1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                </svg>
-                <span id="btn-cek-label">Cek Pemetaan &amp; Preview</span>
-                <svg id="cek-spinner" class="hidden animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                </svg>
-            </button>
-
-            {{-- Import Data Mustahik --}}
-            <button type="button" id="btn-import" disabled
-                onclick="openModalKonfirmasi()"
-                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white rounded-lg
-                       bg-gradient-to-r from-primary to-primary-600 shadow-md shadow-primary/30 transition-all
-                       disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
-                       enabled:hover:shadow-lg enabled:hover:shadow-primary/40">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                </svg>
-                Import Data Mustahik
-            </button>
-
-        </div>
-
+    {{-- Form batal — standalone, tidak nested dalam form-import --}}
+    <form method="POST" action="{{ route('mustahik.import.batal') }}" id="form-batal" style="display:none;">
+        @csrf
     </form>
+
+    {{-- Action Buttons — di luar form-import --}}
+    <div class="flex items-center justify-end mt-5 pt-5 border-t border-gray-200 gap-3">
+
+        {{-- Batal Import: submit form-batal standalone --}}
+        <button type="button" onclick="document.getElementById('form-batal').submit()"
+            class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300
+                   text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Batal Import
+        </button>
+
+        {{-- Cek Pemetaan --}}
+        <button type="button" id="btn-cek-pemetaan"
+            class="inline-flex items-center gap-2 px-5 py-2.5 border border-primary
+                   text-sm font-medium text-primary bg-white hover:bg-primary/5
+                   rounded-lg shadow-sm transition-all">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7
+                       -1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <span id="btn-cek-label">Cek Pemetaan &amp; Preview</span>
+            <svg id="cek-spinner" class="hidden animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+            </svg>
+        </button>
+
+        {{-- Import Data Mustahik --}}
+        <button type="button" id="btn-import" disabled
+            onclick="openModalKonfirmasi()"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white rounded-lg
+                   bg-gradient-to-r from-primary to-primary-600 shadow-md shadow-primary/30 transition-all
+                   disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+                   enabled:hover:shadow-lg enabled:hover:shadow-primary/40">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            Import Data Mustahik
+        </button>
+
+    </div>
 </div>
 
 {{-- ══════════════════════════════════════════════════════════════

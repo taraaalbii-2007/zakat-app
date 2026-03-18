@@ -625,7 +625,7 @@
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-3.5 text-xs text-blue-700 space-y-1">
                         <p class="font-semibold text-blue-800">Panduan Import:</p>
                         <p>• Download template terlebih dahulu, isi data, lalu upload.</p>
-                        <p>• Format file: .xlsx atau .xls (maks. 5 MB, maks. 500 baris).</p>
+                        <p>• Format file: .xlsx atau .xls (maks. 500 MB).</p>
                         <p>• Setelah upload, Anda akan diarahkan ke halaman pemetaan kolom.</p>
                     </div>
 
