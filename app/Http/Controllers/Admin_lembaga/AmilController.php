@@ -984,7 +984,7 @@ class AmilController extends Controller
             ],
         ]);
 
-        return redirect()->route('amil.import.pemetaan');
+        return redirect()->route('import.pemetaan');
     }
 
     // ─────────────────────────────────────────────────────────────
@@ -1034,7 +1034,7 @@ class AmilController extends Controller
 
         $breadcrumbs = [
             'Kelola Amil'           => route('amil.index'),
-            'Pemetaan Kolom Import' => route('amil.import.pemetaan'),
+            'Pemetaan Kolom Import' => route('import.pemetaan'),
         ];
 
         return view('admin-lembaga.amil.import-pemetaan', compact(
@@ -1198,25 +1198,8 @@ class AmilController extends Controller
                         'keterangan'            => $rowData['keterangan'] ?? null,
                     ]);
 
-                    // Kirim email (best effort, tidak gagalkan import)
-                    try {
-                        $mailConfig = \App\Models\MailConfig::first();
-                        if ($mailConfig) {
-                            config([
-                                'mail.mailers.smtp.host'       => $mailConfig->MAIL_HOST,
-                                'mail.mailers.smtp.port'       => $mailConfig->MAIL_PORT ?? 587,
-                                'mail.mailers.smtp.username'   => $mailConfig->MAIL_USERNAME,
-                                'mail.mailers.smtp.password'   => $mailConfig->MAIL_PASSWORD,
-                                'mail.mailers.smtp.encryption' => $mailConfig->MAIL_ENCRYPTION ?? 'tls',
-                                'mail.from.address'            => $mailConfig->MAIL_FROM_ADDRESS ?? $mailConfig->MAIL_USERNAME,
-                                'mail.from.name'               => $mailConfig->MAIL_FROM_NAME ?? config('app.name'),
-                            ]);
-                        }
-                        $amil->load('lembaga');
-                        Mail::to($amil->email)->send(new \App\Mail\AmilRegistrationMail($amil, $username, $defaultPassword));
-                    } catch (\Exception $mailEx) {
-                        Log::warning("Email gagal dikirim ke {$amil->email}: " . $mailEx->getMessage());
-                    }
+                    // Email sengaja tidak dikirim saat import massal
+                    Log::info("Import amil: akun dibuat untuk {$amil->email}, notifikasi email dilewati.");
 
                     $imported++;
                 }
