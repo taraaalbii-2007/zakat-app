@@ -1366,4 +1366,265 @@ public function cekNik(Request $request)
     ]);
 }
 
+// ─────────────────────────────────────────────────────────────
+    // EXPORT — Query builder (tanpa paginate, ambil SEMUA data)
+    // ─────────────────────────────────────────────────────────────
+    private function buildExportQuery(Request $request)
+    {
+        $user  = auth()->user();
+        $query = Mustahik::with(['kategoriMustahik'])->orderBy('nama_lengkap');
+
+        if ($user->peran === 'superadmin') {
+            // semua
+        } elseif ($user->peran === 'amil') {
+            $query->where('lembaga_id', $user->lembaga_id)
+                  ->where('created_by', $user->id);
+        } else {
+            $query->where('lembaga_id', $user->lembaga_id);
+        }
+
+        if ($request->filled('q'))                 $query->search($request->q);
+        if ($request->filled('kategori_id'))        $query->byKategori($request->kategori_id);
+        if ($request->filled('status_verifikasi'))  $query->byStatus($request->status_verifikasi);
+        if ($request->filled('is_active'))          $request->is_active == '1' ? $query->active() : $query->inactive();
+        if ($request->filled('jenis_kelamin'))      $query->where('jenis_kelamin', $request->jenis_kelamin);
+
+        return $query;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // EXPORT EXCEL
+    // ─────────────────────────────────────────────────────────────
+    public function exportExcel(Request $request)
+    {
+        if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil', 'superadmin'])) {
+            abort(403);
+        }
+
+        @ini_set('memory_limit', '512M');
+        @ini_set('max_execution_time', '300');
+
+        $mustahiks   = $this->buildExportQuery($request)->get();
+        $lembagaNama = auth()->user()->lembaga?->nama ?? 'Semua Lembaga';
+        $totalData   = $mustahiks->count();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet       = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Mustahik');
+
+        $lastCol    = 'U';
+        $headerRow  = 4;
+        $dataRowStart = $headerRow + 1; // baris 5
+
+        // ── PAKSA FORMAT TEXT dulu sebelum isi data ──────────────
+        // Ini WAJIB dilakukan sebelum setCellValue agar Excel
+        // tidak mengkonversi NIK/KK/Telepon/Tanggal ke number
+        $textFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT;
+
+        // Kolom D = NIK, E = No. KK, I = No. Telepon, H = Tanggal Lahir
+        // Range sampai baris yang cukup besar (totalData + buffer)
+        $maxDataRow = $dataRowStart + $totalData + 5;
+
+        foreach (['D', 'E', 'H', 'I'] as $col) {
+            $sheet->getStyle($col . $dataRowStart . ':' . $col . $maxDataRow)
+                ->getNumberFormat()
+                ->setFormatCode($textFormat);
+        }
+
+        // ── Baris 1: Judul ───────────────────────────────────────
+        $sheet->mergeCells('A1:' . $lastCol . '1');
+        $sheet->setCellValue('A1', 'DATA MUSTAHIK — ' . strtoupper($lembagaNama));
+        $sheet->getStyle('A1')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => 'FFFFFF']],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1E3A8A']],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(28);
+
+        // ── Baris 2: Info ekspor ─────────────────────────────────
+        $sheet->mergeCells('A2:' . $lastCol . '2');
+        $sheet->setCellValue('A2',
+            'Diekspor: ' . now()->format('d F Y, H:i') . ' WIB  |  Total data: ' . $totalData . ' mustahik'
+        );
+        $sheet->getStyle('A2')->applyFromArray([
+            'font'      => ['size' => 9, 'color' => ['rgb' => '374151']],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'DBEAFE']],
+            'alignment' => ['horizontal' => 'center'],
+        ]);
+        $sheet->getRowDimension(2)->setRowHeight(16);
+        $sheet->getRowDimension(3)->setRowHeight(6);
+
+        // ── Baris 4: Header kolom ────────────────────────────────
+        $headers = [
+            'A' => ['No.',                     5],
+            'B' => ['No. Registrasi',         18],
+            'C' => ['Nama Lengkap',           28],
+            'D' => ['NIK',                    20],   // → text
+            'E' => ['No. KK',                 20],   // → text
+            'F' => ['Jenis Kelamin',          14],
+            'G' => ['Tempat Lahir',           18],
+            'H' => ['Tanggal Lahir',          16],   // → text YYYY-MM-DD
+            'I' => ['No. Telepon',            16],   // → text (0 di depan)
+            'J' => ['Alamat',                 40],
+            'K' => ['RT/RW',                  10],
+            'L' => ['Kode Pos',               10],
+            'M' => ['Kategori Mustahik',      22],
+            'N' => ['Pekerjaan',              20],
+            'O' => ['Penghasilan/Bulan (Rp)', 22],
+            'P' => ['Jml. Tanggungan',        16],
+            'Q' => ['Status Rumah',           18],
+            'R' => ['Kondisi Kesehatan',      22],
+            'S' => ['Status Verifikasi',      18],
+            'T' => ['Status Aktif',           14],
+            'U' => ['Tgl. Registrasi',        18],
+        ];
+
+        foreach ($headers as $col => [$label, $width]) {
+            $sheet->setCellValue($col . $headerRow, $label);
+            $sheet->getColumnDimension($col)->setWidth($width);
+        }
+
+        $sheet->getStyle('A' . $headerRow . ':' . $lastCol . $headerRow)->applyFromArray([
+            'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1E40AF']],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical'   => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+            'borders'   => ['allBorders' => ['borderStyle' => 'thin', 'color' => ['rgb' => '3B5998']]],
+        ]);
+        $sheet->getRowDimension($headerRow)->setRowHeight(22);
+
+        // ── Baris 5+: Isi data ───────────────────────────────────
+        $statusRumahMap = [
+            'milik_sendiri' => 'Milik Sendiri',
+            'kontrak'       => 'Kontrak',
+            'menumpang'     => 'Menumpang',
+            'lainnya'       => 'Lainnya',
+        ];
+
+        $row = $dataRowStart;
+        $no  = 1;
+
+        foreach ($mustahiks as $m) {
+            $bg          = ($no % 2 === 0) ? 'EFF6FF' : 'FFFFFF';
+            $statusVerif = match($m->status_verifikasi) {
+                'verified' => 'Terverifikasi',
+                'pending'  => 'Pending',
+                'rejected' => 'Ditolak',
+                default    => $m->status_verifikasi ?? '-',
+            };
+
+            // ── Set nilai pakai setValueExplicit TYPE_STRING ─────
+            // untuk kolom yang rentan dikonversi Excel
+
+            // Kolom biasa (angka & teks umum)
+            $sheet->setCellValue('A' . $row, $no);
+            $sheet->setCellValue('B' . $row, $m->no_registrasi ?? '-');
+            $sheet->setCellValue('C' . $row, $m->nama_lengkap);
+
+            // NIK — TYPE_STRING agar 16 digit tidak terpotong
+            $sheet->setCellValueExplicit(
+                'D' . $row,
+                $m->nik ?? '',
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+            );
+
+            // No. KK — TYPE_STRING
+            $sheet->setCellValueExplicit(
+                'E' . $row,
+                $m->kk ?? '',
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+            );
+
+            $sheet->setCellValue('F' . $row, $m->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan');
+            $sheet->setCellValue('G' . $row, $m->tempat_lahir ?? '-');
+
+            // Tanggal Lahir — TYPE_STRING format YYYY-MM-DD
+            $sheet->setCellValueExplicit(
+                'H' . $row,
+                $m->tanggal_lahir ? $m->tanggal_lahir->format('Y-m-d') : '',
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+            );
+
+            // No. Telepon — TYPE_STRING agar 0 di depan tidak hilang
+            $sheet->setCellValueExplicit(
+                'I' . $row,
+                $m->telepon ?? '',
+                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING
+            );
+
+            $sheet->setCellValue('J' . $row, $m->alamat);
+            $sheet->setCellValue('K' . $row, $m->rt_rw ?? '-');
+            $sheet->setCellValue('L' . $row, $m->kode_pos ?? '-');
+            $sheet->setCellValue('M' . $row, $m->kategoriMustahik?->nama ?? '-');
+            $sheet->setCellValue('N' . $row, $m->pekerjaan ?? '-');
+            $sheet->setCellValue('O' . $row, $m->penghasilan_perbulan ?? 0);
+            $sheet->setCellValue('P' . $row, $m->jumlah_tanggungan ?? 0);
+            $sheet->setCellValue('Q' . $row, $statusRumahMap[$m->status_rumah ?? ''] ?? ($m->status_rumah ?? '-'));
+            $sheet->setCellValue('R' . $row, $m->kondisi_kesehatan ?? '-');
+            $sheet->setCellValue('S' . $row, $statusVerif);
+            $sheet->setCellValue('T' . $row, $m->is_active ? 'Aktif' : 'Nonaktif');
+            $sheet->setCellValue('U' . $row, $m->tanggal_registrasi ? $m->tanggal_registrasi->format('d/m/Y') : '-');
+
+            // Format angka penghasilan
+            $sheet->getStyle('O' . $row)
+                ->getNumberFormat()
+                ->setFormatCode('#,##0');
+
+            // Warna baris alternating
+            $sheet->getStyle('A' . $row . ':' . $lastCol . $row)->applyFromArray([
+                'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => $bg]],
+                'borders'   => ['allBorders' => ['borderStyle' => 'thin', 'color' => ['rgb' => 'E5E7EB']]],
+                'alignment' => ['vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER],
+            ]);
+
+            // Warna badge status verifikasi
+            $verifStyle = match($statusVerif) {
+                'Terverifikasi' => ['bg' => 'DCFCE7', 'font' => '166534'],
+                'Pending'       => ['bg' => 'FEF9C3', 'font' => '713F12'],
+                'Ditolak'       => ['bg' => 'FEE2E2', 'font' => '991B1B'],
+                default         => null,
+            };
+            if ($verifStyle) {
+                $sheet->getStyle('S' . $row)->applyFromArray([
+                    'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => $verifStyle['bg']]],
+                    'font'      => ['bold' => true, 'color' => ['rgb' => $verifStyle['font']]],
+                    'alignment' => ['horizontal' => 'center'],
+                ]);
+            }
+
+            $sheet->getRowDimension($row)->setRowHeight(18);
+            $row++;
+            $no++;
+        }
+
+        // ── Baris total ──────────────────────────────────────────
+        $sheet->mergeCells('A' . $row . ':R' . $row);
+        $sheet->setCellValue('A' . $row, 'Total: ' . $totalData . ' mustahik');
+        $sheet->getStyle('A' . $row . ':' . $lastCol . $row)->applyFromArray([
+            'font'    => ['bold' => true, 'color' => ['rgb' => '1E3A8A']],
+            'fill'    => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'DBEAFE']],
+            'borders' => ['allBorders' => ['borderStyle' => 'thin', 'color' => ['rgb' => '93C5FD']]],
+        ]);
+        $sheet->getRowDimension($row)->setRowHeight(20);
+
+        // ── Freeze header & auto filter ──────────────────────────
+        $sheet->freezePane('A' . $dataRowStart);
+        $sheet->setAutoFilter('A' . $headerRow . ':' . $lastCol . $headerRow);
+
+        // ── Download ─────────────────────────────────────────────
+        $filename = 'mustahik_' . now()->format('Ymd_His') . '.xlsx';
+        $writer   = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->stream(function () use ($writer) {
+            $writer->save('php://output');
+        }, 200, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'max-age=0',
+        ]);
+    }
+
 }

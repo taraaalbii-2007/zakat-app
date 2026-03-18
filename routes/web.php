@@ -386,6 +386,13 @@ Route::middleware(['auth', 'active.user', 'admin.lembaga', 'complete.profile'])-
         Route::patch('/{rekeningLembaga:uuid}/set-primary', [\App\Http\Controllers\Admin_lembaga\RekeningLembagaController::class, 'setPrimary'])->name('set-primary');
     });
 
+    Route::get('/template-import',  [AmilController::class, 'downloadTemplate'])->name('import.template');
+    Route::post('/upload-import',   [AmilController::class, 'uploadImport'])->name('import.upload');
+    Route::get('/pemetaan-import',  [AmilController::class, 'pemetaanImport'])->name('import.pemetaan');
+    Route::post('/proses-import',   [AmilController::class, 'prosesImport'])->name('import.proses');
+    Route::post('/batal-import',    [AmilController::class, 'batalImport'])->name('import.batal');
+    Route::get('/export-excel',     [AmilController::class, 'exportExcel'])->name('export.excel');
+
     // Ubah bagian route amil menjadi:
     Route::prefix('amil')->name('amil.')->group(function () {
         Route::get('/', [AmilController::class, 'index'])->name('index');
@@ -754,6 +761,7 @@ Route::middleware(['auth', 'active.user', 'role:admin_lembaga,amil', 'lembaga.ac
 
         // Bersihkan session import (cancel)
         Route::post('/batal-import',    [MustahikController::class, 'batalImport'])->name('import.batal');
+        Route::get('/export-excel', [MustahikController::class, 'exportExcel'])->name('export.excel');
 
         // AJAX: cek kategori mustahik ada di DB
         Route::post('/import/cek-kategori', [MustahikController::class, 'cekKategori'])
