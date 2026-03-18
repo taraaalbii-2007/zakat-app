@@ -1,7 +1,7 @@
 {{-- resources/views/partials/landing/card-bulletin.blade.php --}}
 {{--
     PROPS:
-    $bulletin = object Bulletin (dengan relasi kategoriBulletin & author sudah di-load)
+    $bulletin = object Bulletin (dengan relasi kategoriBulletin, author, & lembaga sudah di-load)
 --}}
 
 @php
@@ -16,6 +16,7 @@
     $views         = $bulletin->view_count ?? 0;
     $url           = route('artikel.show', $bulletin->slug);
     $caption       = $bulletin->image_caption ?? null;
+    $lembagaNama   = $bulletin->lembaga->nama ?? null;
 @endphp
 
 <article class="bul-card">
@@ -37,6 +38,17 @@
                     <circle cx="32" cy="16" r="5" fill="#bbf7d0"/>
                 </svg>
                 <span>Tidak ada gambar</span>
+            </div>
+        @endif
+
+        {{-- ── BADGE LEMBAGA ─────────────────────── --}}
+        @if($lembagaNama)
+            <div class="bul-card__badge-lembaga">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                {{ $lembagaNama }}
             </div>
         @endif
 

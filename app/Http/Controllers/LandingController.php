@@ -44,7 +44,8 @@ class LandingController extends Controller
             ->get();
 
         // Ambil beberapa bulletin terbaru untuk ditampilkan di landing page
-        $bulletinTerbaru = Bulletin::with(['kategoriBulletin'])
+        // ← PERBAIKAN: tambah eager load 'author' & 'lembaga'
+        $bulletinTerbaru = Bulletin::with(['kategoriBulletin', 'author', 'lembaga'])
             ->published()
             ->latest('published_at')
             ->limit(3)
@@ -91,8 +92,9 @@ class LandingController extends Controller
 
     public function artikel(Request $request)
     {
-        $query = Bulletin::with(['kategoriBulletin', 'author'])
-            ->published()   // scope sudah include status = approved
+        // ← PERBAIKAN: tambah eager load 'lembaga'
+        $query = Bulletin::with(['kategoriBulletin', 'author', 'lembaga'])
+            ->published()
             ->latest('published_at');
 
         if ($request->filled('q')) {
@@ -111,8 +113,8 @@ class LandingController extends Controller
 
     public function artikelShow($slug)
     {
-        // Cari berdasarkan slug, pastikan hanya yang approved yang bisa diakses publik
-        $bulletin = Bulletin::with(['kategoriBulletin', 'author'])
+        // ← PERBAIKAN: tambah eager load 'lembaga'
+        $bulletin = Bulletin::with(['kategoriBulletin', 'author', 'lembaga'])
             ->where('slug', $slug)
             ->where('status', 'approved')
             ->firstOrFail();
@@ -120,7 +122,8 @@ class LandingController extends Controller
         $bulletin->incrementViewCount();
 
         // Artikel terkait: sekategori dulu
-        $related = Bulletin::with(['kategoriBulletin', 'author'])
+        // ← PERBAIKAN: tambah eager load 'lembaga'
+        $related = Bulletin::with(['kategoriBulletin', 'author', 'lembaga'])
             ->published()
             ->where('id', '!=', $bulletin->id)
             ->where('kategori_bulletin_id', $bulletin->kategori_bulletin_id)
@@ -132,7 +135,8 @@ class LandingController extends Controller
         if ($related->count() < 3) {
             $existingIds = $related->pluck('id')->push($bulletin->id);
 
-            $tambahan = Bulletin::with(['kategoriBulletin', 'author'])
+            // ← PERBAIKAN: tambah eager load 'lembaga'
+            $tambahan = Bulletin::with(['kategoriBulletin', 'author', 'lembaga'])
                 ->published()
                 ->whereNotIn('id', $existingIds)
                 ->latest('published_at')
