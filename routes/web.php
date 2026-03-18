@@ -167,7 +167,7 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
         ->name('lembaga.fotos.delete'); // Ubah nama route
 
     Route::patch('/lembaga/{lembaga}/toggle-status', [LembagaController::class, 'toggleStatus'])
-    ->name('lembaga.toggle-status');
+        ->name('lembaga.toggle-status');
 
     // Master Data Jenis Zakat (superadmin only)
     Route::prefix('jenis-zakat')->name('jenis-zakat.')->group(function () {
@@ -740,6 +740,30 @@ Route::post('/midtrans/callback', [App\Http\Controllers\Amil\TransaksiPenerimaan
 Route::middleware(['auth', 'active.user', 'role:admin_lembaga,amil', 'lembaga.access'])
     ->prefix('mustahik')->name('mustahik.')->group(function () {
 
+
+        Route::get('/template-import',  [MustahikController::class, 'downloadTemplate'])->name('import.template');
+
+        // Step 1: Upload file → tampil halaman pemetaan kolom
+        Route::post('/upload-import',   [MustahikController::class, 'uploadImport'])->name('import.upload');
+
+        // Step 2: Halaman pemetaan + preview
+        Route::get('/pemetaan-import',  [MustahikController::class, 'pemetaanImport'])->name('import.pemetaan');
+
+        // Step 3: Eksekusi import sesungguhnya
+        Route::post('/proses-import',   [MustahikController::class, 'prosesImport'])->name('import.proses');
+
+        // Bersihkan session import (cancel)
+        Route::post('/batal-import',    [MustahikController::class, 'batalImport'])->name('import.batal');
+
+        // AJAX: cek kategori mustahik ada di DB
+        Route::post('/import/cek-kategori', [MustahikController::class, 'cekKategori'])
+            ->name('import.cekKategori');
+        
+        // AJAX: cek NIK duplikat di DB
+        Route::post('/import/cek-nik', [MustahikController::class, 'cekNik'])
+            ->name('import.cekNik');
+ 
+
         // CRUD - Both can access
         Route::get('/', [MustahikController::class, 'index'])->name('index');
         Route::get('/create', [MustahikController::class, 'create'])->name('create');
@@ -748,7 +772,6 @@ Route::middleware(['auth', 'active.user', 'role:admin_lembaga,amil', 'lembaga.ac
         Route::get('/{mustahik:uuid}/edit', [MustahikController::class, 'edit'])->name('edit');
         Route::put('/{mustahik:uuid}', [MustahikController::class, 'update'])->name('update');
         Route::delete('/{mustahik:uuid}', [MustahikController::class, 'destroy'])->name('destroy');
-
     });
 
 // Mustahik - Admin Lembaga Only (Verifikasi)

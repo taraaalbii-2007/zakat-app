@@ -78,7 +78,7 @@ class MustahikController extends Controller
             'userRole'  => $userRole,
         ];
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Kelola Mustahik' => route('mustahik.index'),
         ];
 
@@ -94,7 +94,7 @@ class MustahikController extends Controller
         $kategoris = KategoriMustahik::all();
         $provinces = Province::orderBy('name')->get();
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Kelola Mustahik' => route('mustahik.index'),
             'Tambah Mustahik' => route('mustahik.create')
         ];
@@ -224,8 +224,8 @@ class MustahikController extends Controller
             ->where('mustahik_id', $mustahik->id)
             ->orderByDesc('tanggal_kunjungan')
             ->get();
-        
-         $breadcrumbs = [
+
+        $breadcrumbs = [
             'Kelola Mustahik' => route('mustahik.index'),
             'Detail Mustahik' => route('mustahik.show', $mustahik)
         ];
@@ -269,8 +269,8 @@ class MustahikController extends Controller
         $villages = $mustahik->kecamatan_kode
             ? Village::where('district_code', $mustahik->kecamatan_kode)->orderBy('name')->get()
             : collect();
-        
-         $breadcrumbs = [
+
+        $breadcrumbs = [
             'Kelola Mustahik' => route('mustahik.index'),
             'Edit Mustahik' => route('mustahik.show', $mustahik)
         ];
@@ -632,4 +632,738 @@ class MustahikController extends Controller
             'muzakkis' => $muzakkis,
         ]);
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // STEP 0 — Download template Excel
+    // ─────────────────────────────────────────────────────────────
+public function downloadTemplate()
+{
+    if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+        abort(403);
+    }
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet       = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Template Mustahik');
+
+    // ── Header kolom ─────────────────────────────────────────
+    $columns = [
+        'A' => ['label' => 'Nama Lengkap *',                                         'width' => 28],
+        'B' => ['label' => 'NIK (16 digit)',                                          'width' => 20],
+        'C' => ['label' => 'No. KK (16 digit)',                                       'width' => 20],
+        'D' => ['label' => 'Jenis Kelamin * (L/P)',                                   'width' => 20],
+        'E' => ['label' => 'Tanggal Lahir (YYYY-MM-DD)',                              'width' => 24],
+        'F' => ['label' => 'Tempat Lahir',                                            'width' => 20],
+        'G' => ['label' => 'No. Telepon',                                             'width' => 18],
+        'H' => ['label' => 'Alamat *',                                                'width' => 35],
+        'I' => ['label' => 'RT/RW (contoh: 01/02)',                                  'width' => 20],
+        'J' => ['label' => 'Kode Pos',                                                'width' => 12],
+        'K' => ['label' => 'Nama Kategori Mustahik *',                                'width' => 26],
+        'L' => ['label' => 'Pekerjaan',                                               'width' => 20],
+        'M' => ['label' => 'Penghasilan/Bulan (angka)',                               'width' => 24],
+        'N' => ['label' => 'Jumlah Tanggungan (angka)',                               'width' => 24],
+        'O' => ['label' => 'Status Rumah (milik_sendiri/kontrak/menumpang/lainnya)',  'width' => 46],
+        'P' => ['label' => 'Kondisi Kesehatan',                                       'width' => 24],
+        'Q' => ['label' => 'Catatan',                                                 'width' => 30],
+    ];
+
+    foreach ($columns as $col => $info) {
+        $sheet->getCell($col . '1')->setValue($info['label']);
+        $sheet->getStyle($col . '1')->applyFromArray([
+            'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '1B6CA8']],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center', 'wrapText' => true],
+            'borders'   => ['allBorders' => ['borderStyle' => 'thin', 'color' => ['rgb' => 'AAAAAA']]],
+        ]);
+        $sheet->getColumnDimension($col)->setWidth($info['width']);
+    }
+
+    $sheet->getRowDimension(1)->setRowHeight(38);
+
+    // ── Format kolom NIK, KK, No. Telepon, Tanggal Lahir sebagai TEXT ─────
+    // Wajib dilakukan SEBELUM mengisi nilai contoh agar tidak di-convert Excel
+    $textFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT;
+
+    // NIK (B), No. KK (C), No. Telepon (G), Tanggal Lahir (E) → semua TEXT
+    foreach (['B', 'C', 'E', 'G'] as $col) {
+        $sheet->getStyle($col . '1:' . $col . '1000')
+              ->getNumberFormat()
+              ->setFormatCode($textFormat);
+    }
+
+    // ── Baris contoh ─────────────────────────────────────────
+    // Gunakan TYPE_STRING agar nilai tidak diinterpretasi ulang oleh PhpSpreadsheet
+    $examples = [
+        'A' => ['Siti Rahmawati',                              \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'B' => ['3201234567890001',                            \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'C' => ['3201234567890002',                            \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'D' => ['P',                                           \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'E' => ['1980-05-15',                                  \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'F' => ['Bandung',                                     \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'G' => ['081234567890',                                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'H' => ['Jl. Merdeka No. 10 RT 01/02 Kel. Cibeunying', \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'I' => ['01/02',                                       \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'J' => ['40132',                                       \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'K' => ['Fakir Miskin',                                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'L' => ['Buruh Harian',                                \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'M' => ['500000',                                      \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC],
+        'N' => ['3',                                           \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC],
+        'O' => ['kontrak',                                     \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'P' => ['Sehat',                                       \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+        'Q' => ['Perlu bantuan sembako',                       \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING],
+    ];
+
+    foreach ($examples as $col => [$val, $type]) {
+        $sheet->getCell($col . '2')->setValueExplicit($val, $type);
+        $sheet->getStyle($col . '2')->applyFromArray([
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E8F4FD']],
+            'alignment' => ['vertical' => 'center'],
+            'borders'   => ['allBorders' => ['borderStyle' => 'thin', 'color' => ['rgb' => 'CCCCCC']]],
+        ]);
+    }
+
+    $sheet->getRowDimension(2)->setRowHeight(20);
+
+    // ── Freeze header ─────────────────────────────────────────
+    $sheet->freezePane('A2');
+
+    // ── Sheet Instruksi ───────────────────────────────────────
+    $sheet2 = $spreadsheet->createSheet();
+    $sheet2->setTitle('Instruksi');
+
+    $instruksi = [
+        ['INSTRUKSI PENGISIAN TEMPLATE IMPORT MUSTAHIK',                                    true,  13],
+        ['',                                                                                 false, 11],
+        ['KOLOM WAJIB DIISI (bertanda *):',                                                  true,  11],
+        ['1. Nama Lengkap — Nama lengkap mustahik',                                          false, 10],
+        ['2. Jenis Kelamin — Isi dengan L (Laki-laki) atau P (Perempuan)',                   false, 10],
+        ['3. Alamat — Alamat lengkap mustahik',                                              false, 10],
+        ['4. Nama Kategori Mustahik — Harus sesuai dengan nama kategori yang ada di sistem', false, 10],
+        ['',                                                                                 false, 10],
+        ['KOLOM OPSIONAL:',                                                                  true,  11],
+        ['- NIK: 16 digit angka (tanpa spasi/titik) — kolom otomatis format TEXT',           false, 10],
+        ['- No. KK: 16 digit angka — kolom otomatis format TEXT',                            false, 10],
+        ['- No. Telepon: Tulis lengkap dengan 0 di depan, contoh: 081234567890',             false, 10],
+        ['- Tanggal Lahir: Format YYYY-MM-DD (contoh: 1990-01-25) — kolom otomatis TEXT',    false, 10],
+        ['- RT/RW: Format XX/XX (contoh: 01/02)',                                            false, 10],
+        ['- Penghasilan/Bulan: Angka saja tanpa titik/koma (contoh: 500000)',                false, 10],
+        ['- Jumlah Tanggungan: Angka saja (contoh: 3)',                                      false, 10],
+        ['- Status Rumah: milik_sendiri / kontrak / menumpang / lainnya',                    false, 10],
+        ['',                                                                                 false, 10],
+        ['CATATAN PENTING:',                                                                 true,  11],
+        ['- Jangan mengubah urutan atau nama kolom header (baris ke-1)',                     false, 10],
+        ['- Data dimulai dari baris ke-2 (baris contoh boleh dihapus)',                     false, 10],
+        ['- Maksimal 500 baris per sekali import',                                           false, 10],
+        ['- Format file harus .xlsx atau .xls',                                              false, 10],
+        ['- Nama kategori mustahik harus PERSIS sama dengan yang ada di sistem',             false, 10],
+    ];
+
+    foreach ($instruksi as $i => [$text, $bold, $size]) {
+        $row = $i + 1;
+        $sheet2->getCell('A' . $row)->setValue($text);
+        $sheet2->getStyle('A' . $row)->applyFromArray([
+            'font'      => ['bold' => $bold, 'size' => $size],
+            'alignment' => ['vertical' => 'center'],
+        ]);
+        $sheet2->getRowDimension($row)->setRowHeight(18);
+    }
+
+    $sheet2->getColumnDimension('A')->setWidth(80);
+
+    // ── Aktifkan sheet pertama ────────────────────────────────
+    $spreadsheet->setActiveSheetIndex(0);
+
+    // ── Stream response ───────────────────────────────────────
+    $writer   = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'template_import_mustahik.xlsx';
+
+    return response()->stream(function () use ($writer) {
+        $writer->save('php://output');
+    }, 200, [
+        'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        'Cache-Control'       => 'max-age=0',
+    ]);
+}
+
+
+    // ─────────────────────────────────────────────────────────────
+    // STEP 1 — Upload file Excel, simpan sementara, baca kolom
+    // ─────────────────────────────────────────────────────────────
+    public function uploadImport(Request $request)
+    {
+        if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+            abort(403);
+        }
+
+        $request->validate([
+            'file_import' => 'required|file|mimes:xlsx,xls|max:512000',
+        ], [
+            'file_import.required' => 'Silakan pilih file Excel terlebih dahulu.',
+            'file_import.mimes'    => 'File harus berformat .xlsx atau .xls.',
+            'file_import.max'      => 'Ukuran file maksimal 500 MB.',
+        ]);
+
+        $file = $request->file('file_import');
+
+        // Simpan file sementara di storage/app/imports/
+        $tmpFilename = 'import_mustahik_' . auth()->id() . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $tmpPath     = $file->storeAs('imports', $tmpFilename);          // storage/app/imports/...
+
+        // Baca header & 5 baris pertama untuk pemetaan kolom
+        try {
+            $fullPath    = storage_path('app/' . $tmpPath);
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($fullPath);
+            $sheet       = $spreadsheet->getActiveSheet();
+            $highestCol  = $sheet->getHighestColumn();
+            $highestRow  = $sheet->getHighestRow();
+
+            if ($highestRow < 2) {
+                \Illuminate\Support\Facades\Storage::delete($tmpPath);
+                return back()->with('error', 'File Excel kosong atau tidak memiliki data.');
+            }
+
+            // Ambil header baris 1
+            $excelHeaders = [];
+            foreach ($sheet->getRowIterator(1, 1) as $row) {
+                foreach ($row->getCellIterator('A', $highestCol) as $cell) {
+                    $val = trim((string) $cell->getValue());
+                    if ($val !== '') {
+                        $excelHeaders[] = $val;
+                    }
+                }
+            }
+
+            if (empty($excelHeaders)) {
+                \Illuminate\Support\Facades\Storage::delete($tmpPath);
+                return back()->with('error', 'Baris header tidak ditemukan di file Excel.');
+            }
+
+            // Ambil maks 10 baris pertama sebagai preview (baris 2–11)
+            $previewRows = [];
+            $maxPreview  = min($highestRow, 101); // baris 2 s.d. 101 (100 baris preview)
+            foreach ($sheet->getRowIterator(2, $maxPreview) as $row) {
+                $rowData = [];
+                foreach ($row->getCellIterator('A', $highestCol) as $cell) {
+                    $rowData[] = $cell->getValue();
+                }
+                // Hanya simpan baris yang tidak seluruhnya kosong
+                if (count(array_filter($rowData, fn($v) => $v !== null && $v !== '')) > 0) {
+                    $previewRows[] = $rowData;
+                }
+            }
+
+            $totalRows = $highestRow - 1; // minus header
+
+            if ($totalRows > 5000) {
+                \Illuminate\Support\Facades\Storage::delete($tmpPath);
+                return back()->with('error', 'Jumlah data melebihi batas maksimal 500 baris per sekali import.');
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Storage::delete($tmpPath);
+            return back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
+
+        // Simpan info ke session
+        session([
+            'import_mustahik' => [
+                'tmp_path'      => $tmpPath,
+                'excel_headers' => $excelHeaders,
+                'preview_rows'  => $previewRows,
+                'total_rows'    => $totalRows,
+                'lembaga_id'    => auth()->user()->lembaga_id,
+                'uploaded_by'   => auth()->id(),
+                'uploaded_at'   => now()->toDateTimeString(),
+            ],
+        ]);
+
+        return redirect()->route('mustahik.import.pemetaan');
+    }
+
+
+    // ─────────────────────────────────────────────────────────────
+    // STEP 2 — Tampilkan halaman pemetaan kolom + preview data
+    // ─────────────────────────────────────────────────────────────
+    public function pemetaanImport(Request $request)
+    {
+        if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+            abort(403);
+        }
+
+        $importSession = session('import_mustahik');
+        if (!$importSession || !isset($importSession['tmp_path'])) {
+            return redirect()->route('mustahik.index')
+                ->with('error', 'Sesi import tidak ditemukan. Silakan upload ulang file.');
+        }
+
+        // Definisi kolom sistem yang bisa dipetakan
+        $systemColumns = [
+            // field_key => [label, required]
+            'nama_lengkap'         => ['label' => 'Nama Lengkap',              'required' => true],
+            'nik'                  => ['label' => 'NIK (16 digit)',             'required' => false],
+            'kk'                   => ['label' => 'No. KK (16 digit)',          'required' => false],
+            'jenis_kelamin'        => ['label' => 'Jenis Kelamin (L/P)',        'required' => true],
+            'tanggal_lahir'        => ['label' => 'Tanggal Lahir',              'required' => false],
+            'tempat_lahir'         => ['label' => 'Tempat Lahir',               'required' => false],
+            'telepon'              => ['label' => 'No. Telepon',                'required' => false],
+            'alamat'               => ['label' => 'Alamat',                     'required' => true],
+            'rt_rw'                => ['label' => 'RT/RW',                      'required' => false],
+            'kode_pos'             => ['label' => 'Kode Pos',                   'required' => false],
+            'kategori_mustahik'    => ['label' => 'Nama Kategori Mustahik',     'required' => true],
+            'pekerjaan'            => ['label' => 'Pekerjaan',                  'required' => false],
+            'penghasilan_perbulan' => ['label' => 'Penghasilan/Bulan',          'required' => false],
+            'jumlah_tanggungan'    => ['label' => 'Jumlah Tanggungan',          'required' => false],
+            'status_rumah'         => ['label' => 'Status Rumah',               'required' => false],
+            'kondisi_kesehatan'    => ['label' => 'Kondisi Kesehatan',          'required' => false],
+            'catatan'              => ['label' => 'Catatan',                    'required' => false],
+        ];
+
+        // Auto-mapping: cocokkan header Excel dengan field sistem
+        $autoMapping = [];
+        foreach ($importSession['excel_headers'] as $idx => $excelHeader) {
+            $normalized = strtolower(trim(preg_replace('/[^a-z0-9]/i', '_', $excelHeader)));
+            foreach (array_keys($systemColumns) as $fieldKey) {
+                if ($normalized === $fieldKey || str_contains($normalized, $fieldKey) || str_contains($fieldKey, explode('_', $normalized)[0])) {
+                    if (!in_array($fieldKey, $autoMapping)) {
+                        $autoMapping[$idx] = $fieldKey;
+                        break;
+                    }
+                }
+            }
+        }
+
+        $kategoris = \App\Models\KategoriMustahik::orderBy('nama')->get();
+
+        $breadcrumbs = [
+            'Kelola Mustahik'   => route('mustahik.index'),
+            'Pemetaan Kolom Import' => route('mustahik.import.pemetaan'),
+        ];
+
+        return view('admin-lembaga.mustahik.import-pemetaan', compact(
+            'importSession',
+            'systemColumns',
+            'autoMapping',
+            'kategoris',
+            'breadcrumbs'
+        ));
+    }
+
+
+  // ─────────────────────────────────────────────────────────────
+    // STEP 3 — Proses import sesungguhnya
+    // ─────────────────────────────────────────────────────────────
+    public function prosesImport(Request $request)
+    {
+        if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+            abort(403);
+        }
+
+        $importSession = session('import_mustahik');
+        if (!$importSession || !isset($importSession['tmp_path'])) {
+            return redirect()->route('mustahik.index')
+                ->with('error', 'Sesi import tidak ditemukan. Silakan upload ulang file.');
+        }
+
+        $request->validate([
+            'mapping'   => 'required|array',
+            'mapping.*' => 'nullable|string',
+        ]);
+
+        $mapping = $request->input('mapping');
+
+        // Pastikan kolom wajib terpetakan
+        $requiredFields = ['nama_lengkap', 'jenis_kelamin', 'alamat', 'kategori_mustahik'];
+        $mappedFields   = array_values(array_filter($mapping));
+        foreach ($requiredFields as $rf) {
+            if (!in_array($rf, $mappedFields)) {
+                return back()
+                    ->with('error', "Kolom wajib \"{$rf}\" belum dipetakan.")
+                    ->withInput();
+            }
+        }
+
+        $fullPath = storage_path('app/' . $importSession['tmp_path']);
+        if (!file_exists($fullPath)) {
+            session()->forget('import_mustahik');
+            return redirect()->route('mustahik.index')
+                ->with('error', 'File import sudah tidak tersedia. Silakan upload ulang.');
+        }
+
+        // Naikkan limit PHP untuk file besar
+        @ini_set('memory_limit', '512M');
+        @ini_set('max_execution_time', '300');
+
+        $lembagaId = auth()->user()->lembaga_id;
+        $userId    = auth()->id();
+        $peran     = auth()->user()->peran;
+
+        // ── Preload lookup kategori (lowercase → id) ─────────────
+        $kategoris = \App\Models\KategoriMustahik::all()
+            ->mapWithKeys(fn($k) => [
+                strtolower(trim(preg_replace('/\s+/', ' ', $k->nama))) => $k->id,
+            ])->toArray();
+
+        // ── Preload semua NIK yang sudah ada di DB lembaga ini ───
+        // Disimpan sebagai flip array agar lookup O(1)
+        $existingNiks = \App\Models\Mustahik::where('lembaga_id', $lembagaId)
+            ->whereNotNull('nik')
+            ->pluck('nik')
+            ->map(fn($n) => preg_replace('/\D/', '', $n))
+            ->filter(fn($n) => strlen($n) === 16)
+            ->flip()
+            ->toArray();
+
+        $imported = 0;
+        $skipped  = 0;
+        $errors   = [];
+
+        // ── Baca tinggi baris file tanpa muat konten ─────────────
+        try {
+            $readerCount = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($fullPath);
+            $readerCount->setReadDataOnly(true);
+            $readerCount->setReadEmptyCells(false);
+            $spreadsheetCount = $readerCount->load($fullPath);
+            $highestRow       = $spreadsheetCount->getActiveSheet()->getHighestRow();
+            $highestCol       = $spreadsheetCount->getActiveSheet()->getHighestColumn();
+            $spreadsheetCount->disconnectWorksheets();
+            unset($spreadsheetCount, $readerCount);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal membaca file Excel: ' . $e->getMessage());
+        }
+
+        // ── Proses per chunk 100 baris ───────────────────────────
+        $chunkSize   = 100;
+        $chunkFilter = new \App\Imports\ChunkReadFilter();
+
+        DB::beginTransaction();
+        try {
+            for ($startRow = 2; $startRow <= $highestRow; $startRow += $chunkSize) {
+                $endRow = min($startRow + $chunkSize - 1, $highestRow);
+
+                $chunkFilter->setRows($startRow, $endRow);
+
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($fullPath);
+                $reader->setReadDataOnly(true);
+                $reader->setReadEmptyCells(false);
+                $reader->setReadFilter($chunkFilter);
+
+                $spreadsheet = $reader->load($fullPath);
+                $sheet       = $spreadsheet->getActiveSheet();
+
+                foreach ($sheet->getRowIterator($startRow, $endRow) as $rowIndex => $row) {
+                    // Kumpulkan nilai sel per kolom
+                    $cells    = [];
+                    $colIndex = 0;
+                    foreach ($row->getCellIterator('A', $highestCol) as $cell) {
+                        $cells[$colIndex] = $cell->getValue();
+                        $colIndex++;
+                    }
+
+                    // Lewati baris kosong sepenuhnya
+                    if (empty(array_filter($cells, fn($v) => $v !== null && $v !== ''))) {
+                        continue;
+                    }
+
+                    // Petakan kolom Excel → field sistem
+                    $rowData = [];
+                    foreach ($mapping as $excelColIdx => $systemField) {
+                        if (!$systemField) continue;
+                        $rowData[$systemField] = isset($cells[$excelColIdx])
+                            ? trim((string) $cells[$excelColIdx])
+                            : null;
+                    }
+
+                    // ── Validasi format & kelengkapan baris ──────
+                    $rowErrors = $this->validateImportRow($rowData, $rowIndex, $kategoris);
+                    if (!empty($rowErrors)) {
+                        $errors[] = "Baris {$rowIndex}: " . implode(', ', $rowErrors);
+                        $skipped++;
+                        continue;
+                    }
+
+                    // ── Cek duplikat NIK ke DB (dan dalam file) ──
+                    $nikBersih = $this->cleanNik($rowData['nik'] ?? null);
+                    if ($nikBersih !== null) {
+                        if (isset($existingNiks[$nikBersih])) {
+                            // NIK sudah ada di DB atau sudah diproses di baris sebelumnya
+                            $errors[] = "Baris {$rowIndex}: NIK {$nikBersih} sudah terdaftar, baris dilewati.";
+                            $skipped++;
+                            continue;
+                        }
+                        // Tandai NIK ini sudah dipakai agar duplikat dalam file juga tertangkap
+                        $existingNiks[$nikBersih] = true;
+                    }
+
+                    // ── Siapkan data insert ──────────────────────
+                    $insertData = [
+                        'uuid'                 => \Illuminate\Support\Str::uuid(),
+                        'lembaga_id'           => $lembagaId,
+                        'no_registrasi'        => $this->generateNoRegistrasi(),
+                        'nama_lengkap'         => $rowData['nama_lengkap'],
+                        'jenis_kelamin'        => strtoupper($rowData['jenis_kelamin']),
+                        'alamat'               => $rowData['alamat'],
+                        'kategori_mustahik_id' => $kategoris[strtolower(trim(preg_replace('/\s+/', ' ', $rowData['kategori_mustahik'])))],
+                        'nik'                  => $nikBersih,
+                        'kk'                   => $this->cleanNik($rowData['kk'] ?? null),
+                        'tanggal_lahir'        => $this->parseDate($rowData['tanggal_lahir'] ?? null),
+                        'tempat_lahir'         => $rowData['tempat_lahir'] ?? null,
+                        'telepon'              => $rowData['telepon'] ?? null,
+                        'rt_rw'                => $rowData['rt_rw'] ?? null,
+                        'kode_pos'             => $rowData['kode_pos'] ?? null,
+                        'pekerjaan'            => $rowData['pekerjaan'] ?? null,
+                        'penghasilan_perbulan' => is_numeric($rowData['penghasilan_perbulan'] ?? null)
+                            ? (float) $rowData['penghasilan_perbulan']
+                            : null,
+                        'jumlah_tanggungan'    => is_numeric($rowData['jumlah_tanggungan'] ?? null)
+                            ? (int) $rowData['jumlah_tanggungan']
+                            : null,
+                        'status_rumah'         => $this->normalizeStatusRumah($rowData['status_rumah'] ?? null),
+                        'kondisi_kesehatan'    => $rowData['kondisi_kesehatan'] ?? null,
+                        'catatan'              => $rowData['catatan'] ?? null,
+                        'is_active'            => true,
+                        'tanggal_registrasi'   => now()->toDateString(),
+                        'created_by'           => $userId,
+                    ];
+
+                    // Status verifikasi berdasarkan role
+                    if ($peran === 'admin_lembaga') {
+                        $insertData['status_verifikasi'] = 'verified';
+                        $insertData['verified_by']       = $userId;
+                        $insertData['verified_at']       = now();
+                    } else {
+                        $insertData['status_verifikasi'] = 'pending';
+                    }
+
+                    \App\Models\Mustahik::create($insertData);
+                    $imported++;
+                }
+
+                // Bebaskan memori setelah tiap chunk
+                $spreadsheet->disconnectWorksheets();
+                unset($spreadsheet, $reader);
+                gc_collect_cycles();
+            }
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Import gagal: ' . $e->getMessage());
+        }
+
+        // Bersihkan file sementara & session
+        \Illuminate\Support\Facades\Storage::delete($importSession['tmp_path']);
+        session()->forget('import_mustahik');
+
+        $message = "Import selesai. {$imported} data berhasil diimport.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} baris dilewati.";
+        }
+
+        return redirect()->route('mustahik.index')
+            ->with('success', $message)
+            ->with('import_errors', $errors);
+    }
+    // ─────────────────────────────────────────────────────────────
+    // Cancel import — hapus file sementara & session
+    // ─────────────────────────────────────────────────────────────
+    public function batalImport()
+    {
+        $importSession = session('import_mustahik');
+        if ($importSession && isset($importSession['tmp_path'])) {
+            \Illuminate\Support\Facades\Storage::delete($importSession['tmp_path']);
+        }
+        session()->forget('import_mustahik');
+
+        return redirect()->route('mustahik.index')->with('info', 'Import dibatalkan.');
+    }
+ 
+ 
+// ─────────────────────────────────────────────────────────────
+// PRIVATE HELPERS
+// ─────────────────────────────────────────────────────────────
+
+    /** Validasi satu baris data import, return array of error strings */
+    private function validateImportRow(array $row, int $rowIndex, array $kategoris): array
+    {
+        $errors = [];
+
+        // Wajib: nama_lengkap
+        if (empty($row['nama_lengkap'])) {
+            $errors[] = 'nama_lengkap kosong';
+        }
+
+        // Wajib: jenis_kelamin
+        if (empty($row['jenis_kelamin'])) {
+            $errors[] = 'jenis_kelamin kosong';
+        } elseif (!in_array(strtoupper($row['jenis_kelamin']), ['L', 'P'])) {
+            $errors[] = 'jenis_kelamin harus L atau P';
+        }
+
+        // Wajib: alamat
+        if (empty($row['alamat'])) {
+            $errors[] = 'alamat kosong';
+        }
+
+        // Wajib: kategori_mustahik
+        if (empty($row['kategori_mustahik'])) {
+            $errors[] = 'kategori_mustahik kosong';
+        } else {
+            $keyKategori = strtolower(trim(preg_replace('/\s+/', ' ', $row['kategori_mustahik'])));
+            if (!isset($kategoris[$keyKategori])) {
+                $errors[] = 'kategori_mustahik "' . $row['kategori_mustahik'] . '" tidak ditemukan di sistem';
+            }
+        }
+
+        // NIK: harus 16 digit jika diisi
+        if (!empty($row['nik'])) {
+            $nik = preg_replace('/\D/', '', $row['nik']);
+            if (strlen($nik) !== 16) {
+                $errors[] = 'NIK harus 16 digit angka';
+            }
+        }
+
+        // Tanggal lahir
+        if (!empty($row['tanggal_lahir'])) {
+            if (!$this->parseDate($row['tanggal_lahir'])) {
+                $errors[] = 'format tanggal_lahir tidak valid (gunakan YYYY-MM-DD)';
+            }
+        }
+
+        // Penghasilan
+        if (!empty($row['penghasilan_perbulan']) && !is_numeric($row['penghasilan_perbulan'])) {
+            $errors[] = 'penghasilan_perbulan harus berupa angka';
+        }
+
+        // Jumlah tanggungan
+        if (!empty($row['jumlah_tanggungan']) && !is_numeric($row['jumlah_tanggungan'])) {
+            $errors[] = 'jumlah_tanggungan harus berupa angka';
+        }
+
+        return $errors;
+    }
+
+    /** Bersihkan NIK/KK: hanya angka, max 16 */
+    private function cleanNik(?string $value): ?string
+    {
+        if ($value === null || $value === '') return null;
+        $cleaned = preg_replace('/\D/', '', $value);
+        return strlen($cleaned) >= 1 ? substr($cleaned, 0, 16) : null;
+    }
+
+    private function parseDate(?string $value): ?string
+    {
+        if ($value === null || $value === '') return null;
+
+        // Excel serial date (angka seperti 44927)
+        if (is_numeric($value)) {
+            try {
+                $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float)$value);
+                return $date->format('Y-m-d');
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+
+        // Format yang didukung — urutan dari yang paling spesifik
+        $formats = ['Y-m-d', 'Y/m/d', 'd/m/Y', 'd-m-Y', 'm/d/Y'];
+        foreach ($formats as $fmt) {
+            $dt = \DateTime::createFromFormat($fmt, trim($value));
+            if ($dt && $dt->format($fmt) === trim($value)) {
+                return $dt->format('Y-m-d');
+            }
+        }
+
+        // Fallback strtotime
+        $ts = strtotime($value);
+        if ($ts !== false) {
+            return date('Y-m-d', $ts);
+        }
+
+        return null;
+    }
+
+    /** Normalkan nilai status_rumah */
+    private function normalizeStatusRumah(?string $value): ?string
+    {
+        if ($value === null || $value === '') return null;
+        $allowed = ['milik_sendiri', 'kontrak', 'menumpang', 'lainnya'];
+        $lower   = strtolower(trim($value));
+        return in_array($lower, $allowed) ? $lower : 'lainnya';
+    }
+
+    public function cekKategori(Request $request)
+{
+    if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+        abort(403);
+    }
+ 
+    $request->validate([
+        'values'   => 'required|array|max:100',
+        'values.*' => 'string|max:255',
+    ]);
+ 
+    // Normalisasi nama kategori di DB (lowercase + trim + spasi ganda dihapus)
+    $existingNormalized = \App\Models\KategoriMustahik::all()
+        ->map(fn($k) => strtolower(trim(preg_replace('/\s+/', ' ', $k->nama))))
+        ->toArray();
+ 
+    $notFound = [];
+ 
+    foreach ($request->values as $val) {
+        $normalized = strtolower(trim(preg_replace('/\s+/', ' ', $val)));
+        if (!in_array($normalized, $existingNormalized)) {
+            $notFound[] = $val; // kembalikan nilai ASLI agar mudah dibaca user
+        }
+    }
+ 
+    return response()->json([
+        'not_found' => $notFound,
+        'found'     => count($request->values) - count($notFound),
+        'total'     => count($request->values),
+    ]);
+}
+ 
+ 
+/**
+ * AJAX — Cek apakah NIK dari file Excel sudah ada di database mustahik.
+ *
+ * POST body (JSON) : { "values": ["3201234567890001", ...] }
+ * Response (JSON)  : { "duplicates": ["3201234567890001"], "total": 1 }
+ */
+public function cekNik(Request $request)
+{
+    if (!in_array(auth()->user()->peran, ['admin_lembaga', 'amil'])) {
+        abort(403);
+    }
+ 
+    $request->validate([
+        'values'   => 'required|array|max:500',
+        'values.*' => 'string|max:20',
+    ]);
+ 
+    // Bersihkan input: ambil digit saja
+    $cleaned = collect($request->values)
+        ->map(fn($v) => preg_replace('/\D/', '', $v))
+        ->filter(fn($v) => strlen($v) >= 10)
+        ->unique()
+        ->values()
+        ->toArray();
+ 
+    if (empty($cleaned)) {
+        return response()->json(['duplicates' => [], 'total' => 0]);
+    }
+ 
+    // Cek yang sudah ada di DB (scope per lembaga jika perlu)
+    $existing = \App\Models\Mustahik::whereIn('nik', $cleaned)
+        ->where('lembaga_id', auth()->user()->lembaga_id)
+        ->pluck('nik')
+        ->toArray();
+ 
+    return response()->json([
+        'duplicates' => $existing,
+        'total'      => count($existing),
+    ]);
+}
+
 }

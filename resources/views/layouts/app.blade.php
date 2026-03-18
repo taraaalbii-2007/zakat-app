@@ -141,7 +141,6 @@
     @stack('styles')
 </head>
 <body>
-    @include('partials.splash-screen')
 
     @include('partials.popup-testimoni')
 
