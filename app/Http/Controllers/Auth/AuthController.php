@@ -1172,7 +1172,7 @@ $role = $otpData['role'] ?? session('otp_role');
 
             // Data Admin Lembaga
             'admin_nama' => 'required|string|max:255',
-            'admin_telepon' => 'required|string|max:20',
+            'admin_telepon' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/'],
             'admin_jenis_kelamin' => 'required|in:laki-laki,perempuan',
             'admin_email' => 'required|email|max:255',
             'admin_foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
@@ -1185,7 +1185,7 @@ $role = $otpData['role'] ?? session('otp_role');
             'kecamatan_kode' => 'required|string|exists:indonesia_districts,code',
             'kelurahan_kode' => 'required|string|exists:indonesia_villages,code',
             'kode_pos' => 'required|string|max:5',
-            'telepon' => 'required|string|max:20',
+            'telepon' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/'],
             'email_lembaga' => 'required|email|max:255',
 
             // Sejarah Lembaga
@@ -1457,7 +1457,7 @@ $role = $otpData['role'] ?? session('otp_role');
 
         $rules = [
             'nama'            => 'required|string|max:255',
-            'telepon'         => 'required|string|max:20',
+            'telepon' => ['required', 'string', 'max:20', 'regex:/^[0-9]+$/'],
             'jenis_kelamin'   => 'required|in:laki-laki,perempuan',
             'nik'             => [
                 'nullable',
@@ -1500,6 +1500,8 @@ $role = $otpData['role'] ?? session('otp_role');
             'password.confirmed'      => 'Konfirmasi password tidak cocok',
             'alamat.required'         => 'Alamat tempat tinggal wajib diisi', 
             'alamat.max'              => 'Alamat maksimal 500 karakter',
+            'admin_telepon.regex' => 'Nomor telepon admin hanya boleh berisi angka',
+            'telepon.regex'       => 'Nomor telepon lembaga hanya boleh berisi angka',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);

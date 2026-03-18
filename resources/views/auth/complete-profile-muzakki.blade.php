@@ -7,8 +7,8 @@
 @push('styles')
     <style>
         /* ══════════════════════════════════
-           HIDE / OVERRIDE LAYOUT ELEMENTS
-        ══════════════════════════════════ */
+                   HIDE / OVERRIDE LAYOUT ELEMENTS
+                ══════════════════════════════════ */
         .right-brand,
         .right-eyebrow {
             display: none !important;
@@ -46,8 +46,8 @@
         }
 
         /* ══════════════════════════════════
-           STEP INDICATOR
-        ══════════════════════════════════ */
+                   STEP INDICATOR
+                ══════════════════════════════════ */
         .cp-steps {
             display: flex;
             align-items: center;
@@ -110,8 +110,8 @@
         }
 
         /* ══════════════════════════════════
-           SECTION TITLE
-        ══════════════════════════════════ */
+                   SECTION TITLE
+                ══════════════════════════════════ */
         .cp-section {
             display: flex;
             align-items: center;
@@ -138,8 +138,8 @@
         }
 
         /* ══════════════════════════════════
-           FORM GROUP
-        ══════════════════════════════════ */
+                   FORM GROUP
+                ══════════════════════════════════ */
         .lg-group {
             margin-bottom: .9rem;
         }
@@ -372,8 +372,8 @@
         }
 
         /* ══════════════════════════════════
-           HELPER TEXTS
-        ══════════════════════════════════ */
+                   HELPER TEXTS
+                ══════════════════════════════════ */
         .lg-err {
             display: flex;
             align-items: center;
@@ -430,8 +430,8 @@
         }
 
         /* ══════════════════════════════════
-           2-COLUMN GRID
-        ══════════════════════════════════ */
+                   2-COLUMN GRID
+                ══════════════════════════════════ */
         .cp-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -446,8 +446,8 @@
         }
 
         /* ══════════════════════════════════
-           FILE UPLOAD
-        ══════════════════════════════════ */
+                   FILE UPLOAD
+                ══════════════════════════════════ */
         .cp-file-label {
             display: flex;
             align-items: center;
@@ -989,7 +989,8 @@
                     </span>
                     <input type="tel" name="telepon" id="telepon"
                         class="lg-input {{ $errors->has('telepon') ? 'err' : '' }}" value="{{ old('telepon') }}"
-                        required maxlength="20" placeholder="08xxxxxxxxxx">
+                        required maxlength="20" placeholder="08xxxxxxxxxx" inputmode="numeric" pattern="[0-9]+"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 @error('telepon')
                     <div class="lg-err">
@@ -1283,6 +1284,26 @@
                 });
             }
 
+            /* ─── TELEPON — only digits ─── */
+            const teleponInput = document.getElementById('telepon');
+            const teleponHelp = teleponInput?.closest('.lg-group')?.querySelector('.lg-hint, .lg-err');
+            if (teleponInput) {
+                teleponInput.addEventListener('input', function() {
+                    const before = this.value;
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    // Opsional: tampilkan hint jika ada karakter yang dihapus
+                    if (before !== this.value) {
+                        // input sudah dibersihkan otomatis
+                    }
+                });
+                teleponInput.addEventListener('keypress', function(e) {
+                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab']
+                        .includes(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
             /* ─── PASSWORD TOGGLE ─── */
             window.togglePw = function(inputId, iconId) {
                 const input = document.getElementById(inputId);
@@ -1318,7 +1339,7 @@
                         try {
                             const res = await fetch(
                                 `/api/check-username?username=${encodeURIComponent(val)}&pengguna_id={{ $pengguna->id }}`
-                                );
+                            );
                             const r = await res.json();
                             help.className = r.available ? 'lg-hint success' : 'lg-hint error';
                             help.textContent = (r.available ? '✓ ' : '✗ ') + r.message;
