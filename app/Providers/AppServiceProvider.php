@@ -55,23 +55,26 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 if ($lembagaId) {
+                    // Tentukan apakah user ini amil (bukan admin_lembaga)
+                    $isAmil  = $user->peran === 'amil';
+                    $amilId  = ($isAmil && $user->amil) ? $user->amil->id : null;
+
                     $sidebarCounts = [
-                        // Datang langsung: transaksi pending (belum verified)
                         'datang_langsung' => 0,
 
-                        // Daring: menunggu konfirmasi pembayaran
                         'daring' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'daring')
                             ->where('konfirmasi_status', 'menunggu_konfirmasi')
+                            ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                             ->count(),
 
-                        // Dijemput: menunggu penjemputan atau belum dilengkapi data zakat
                         'dijemput' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'dijemput')
                             ->where(function ($q) {
                                 $q->where('status_penjemputan', 'menunggu')
                                     ->orWhereNull('jenis_zakat_id');
                             })
+                            ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                             ->count(),
                     ];
                 }

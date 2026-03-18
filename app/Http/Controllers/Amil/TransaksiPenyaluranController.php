@@ -28,20 +28,34 @@ class TransaksiPenyaluranController extends Controller
      */
     public function index(Request $request)
     {
-        $user    = Auth::user();
-        $lembaga  = $user->amil->lembaga ?? $user->lembaga;
+        $user      = Auth::user();
+        $lembaga   = $user->amil->lembaga ?? $user->lembaga;
         $lembagaId = $lembaga->id;
+
+        // Filter per amil yang login (admin_lembaga tetap lihat semua)
+        $isAmil = $user->peran === 'amil';
+        $amilId = ($isAmil && $user->amil) ? $user->amil->id : null;
 
         // Stats ringkasan
         $stats = [
-            'total'            => TransaksiPenyaluran::byLembaga($lembagaId)->count(),
-            'total_draft'      => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('draft')->count(),
-            'total_disetujui'  => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('disetujui')->count(),
-            'total_disalurkan' => TransaksiPenyaluran::byLembaga($lembagaId)->byStatus('disalurkan')->count(),
+            'total'            => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
+                ->count(),
+            'total_draft'      => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
+                ->byStatus('draft')->count(),
+            'total_disetujui'  => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
+                ->byStatus('disetujui')->count(),
+            'total_disalurkan' => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
+                ->byStatus('disalurkan')->count(),
             'total_nominal'    => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->sum('jumlah'),
             'total_hari_ini'   => TransaksiPenyaluran::byLembaga($lembagaId)
+                ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                 ->whereDate('tanggal_penyaluran', today())
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->sum('jumlah'),
@@ -50,6 +64,7 @@ class TransaksiPenyaluranController extends Controller
         // Query dengan filter
         $query = TransaksiPenyaluran::byLembaga($lembagaId)
             ->with(['mustahik', 'kategoriMustahik', 'jenisZakat', 'programZakat', 'amil'])
+            ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
             ->orderByDesc('tanggal_penyaluran')
             ->orderByDesc('created_at');
 
@@ -171,7 +186,7 @@ class TransaksiPenyaluranController extends Controller
         // Mencari kata kunci umum: beras, minyak, gula, tepung, dll
         $ringkasanBarang = $this->parseRingkasanBarang($riwayatBarang);
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Kelola Penyaluran' => route('transaksi-penyaluran.index'),
             'Tambah Penyaluran' => route('transaksi-penyaluran.create')
         ];
@@ -521,7 +536,7 @@ class TransaksiPenyaluranController extends Controller
             'dokumentasi',
         ]);
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Kelola Transaksi Penyaluran' => route('transaksi-penyaluran.index'),
             'Detail Transaksi Penyaluran' => route('transaksi-penyaluran.show', $transaksiPenyaluran)
         ];
@@ -555,12 +570,12 @@ class TransaksiPenyaluranController extends Controller
 
         // Rename ke $transaksi agar konsisten dengan view
         $transaksi = $transaksiPenyaluran;
-        
-         $breadcrumbs = [
+
+        $breadcrumbs = [
             'Kelola Transaksi Penyaluran' => route('transaksi-penyaluran.index'),
             'Edit Transaksi Penyaluran' => route('transaksi-penyaluran.edit', $transaksiPenyaluran)
         ];
-        
+
         return view('amil.transaksi-penyaluran.edit', compact(
             'transaksi',
             'lembaga',

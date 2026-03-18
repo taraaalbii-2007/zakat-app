@@ -178,61 +178,64 @@
 
     {{-- Modal card — tanpa garis hijau di atas --}}
     <div id="logout-card"
-        class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden scale-90 opacity-0 transition-all duration-300"
-        style="border: 1px solid #f0f0f0; box-shadow: 0 25px 60px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.08);">
+        class="relative bg-white rounded-3xl w-full max-w-sm mx-4 overflow-hidden scale-90 opacity-0 transition-all duration-300"
+        style="box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.08);">
 
-        <div class="p-8">
+        <div class="px-8 pt-8 pb-7">
             {{-- Ikon --}}
-            <div class="flex items-center justify-center mb-6">
-                <div class="w-20 h-20 rounded-2xl flex items-center justify-center"
-                    style="background: linear-gradient(135deg, #fff0f0 0%, #ffe4e4 100%);">
-                    <svg class="w-9 h-9 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center justify-center mb-5">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background: #fff0f0;">
+                    <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </div>
             </div>
 
-            <h2 class="text-xl font-bold text-gray-900 text-center mb-2" style="letter-spacing: -0.03em;">Keluar dari
-                Akun?</h2>
-            <p class="text-sm text-gray-400 text-center leading-relaxed mb-6">Sesi Anda akan diakhiri. Pastikan semua
-                pekerjaan sudah tersimpan sebelum keluar.</p>
+            <h2 class="text-[18px] font-bold text-gray-900 text-center mb-1.5" style="letter-spacing: -0.025em;">
+                Keluar dari Akun?
+            </h2>
+            <p class="text-[13px] text-gray-400 text-center leading-relaxed mb-5">
+                Sesi Anda akan diakhiri. Pastikan semua<br>pekerjaan sudah tersimpan sebelum keluar.
+            </p>
 
             {{-- User info card --}}
-            <div class="flex items-center space-x-3 px-4 py-3.5 rounded-2xl mb-7"
-                style="background: #f8f9fa; border: 1px solid #f0f0f0;">
-                <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+            <div class="flex items-center space-x-3 px-4 py-3 rounded-2xl mb-6" style="background: #f8f9fa;">
+                <div class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
                     style="background: #2d6a2d;">
                     @if ($avatarUrl)
                         <img src="{{ $avatarUrl }}" alt="{{ $authUser->username }}"
                             class="w-full h-full object-cover">
                     @else
-                        <span
-                            class="text-white text-sm font-bold">{{ strtoupper(substr($authUser->username ?? 'U', 0, 1)) }}</span>
+                        <span class="text-white text-[13px] font-bold">
+                            {{ strtoupper(substr($authUser->username ?? 'U', 0, 1)) }}
+                        </span>
                     @endif
                 </div>
                 <div class="min-w-0 flex-1">
-                    <p class="text-sm font-semibold text-gray-800 truncate">
+                    <p class="text-[13px] font-semibold text-gray-800 truncate leading-tight">
                         {{ $isAdminLembaga && $authUser?->lembaga?->admin_nama ? $authUser->lembaga->admin_nama : $authUser->username ?? 'Pengguna' }}
                     </p>
-                    <p class="text-xs text-gray-400 truncate">{{ $authUser->email ?? '' }}</p>
+                    <p class="text-[11.5px] text-gray-400 truncate mt-0.5">{{ $authUser->email ?? '' }}</p>
                 </div>
                 <span
-                    class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold flex-shrink-0 {{ $badgeClass }}">{{ $roleLabel }}</span>
+                    class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold flex-shrink-0 {{ $badgeClass }}">
+                    {{ $roleLabel }}
+                </span>
             </div>
 
             {{-- Buttons --}}
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
                 <button onclick="closeLogoutModal()"
-                    class="flex-1 px-4 py-3 rounded-2xl text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all duration-200">
+                    class="flex-1 px-4 py-2.5 rounded-2xl text-[13px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all duration-200">
                     Batal
                 </button>
                 <form method="POST" action="{{ route('logout') }}" id="logout-form" class="flex-1">
                     @csrf
                     <button type="submit"
-                        class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-2xl text-sm font-semibold text-white active:scale-95 transition-all duration-200"
-                        style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 12px rgba(220,38,38,0.3);">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-2xl text-[13px] font-semibold text-white active:scale-95 transition-all duration-200"
+                        style="background: #ef4444; box-shadow: 0 4px 14px rgba(239,68,68,0.35);">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>

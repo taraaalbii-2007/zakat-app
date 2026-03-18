@@ -134,6 +134,11 @@ class TransaksiPenerimaanController extends Controller
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil'])
             ->byLembaga($this->lembaga->id);
 
+        // Filter per amil yang login (admin lembaga tetap lihat semua)
+        if ($this->user->isAmil() && $this->amil) {
+            $query->where('amil_id', $this->amil->id);
+        }
+
         if ($request->filled('q'))                 $query->search($request->q);
         if ($request->filled('tanggal'))           $query->byTanggal($request->tanggal);
         if ($request->filled('start_date') && $request->filled('end_date'))
@@ -158,16 +163,34 @@ class TransaksiPenerimaanController extends Controller
             ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
         $amilList         = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
 
+        $amil = $this->amil;
+        $isAmil = $this->user->isAmil() && $amil;
+
         $stats = [
-            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)->count(),
-            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->count(),
-            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->pending()->count(),
-            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)->menungguKonfirmasi()->count(),
-            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->sum('jumlah'),
-            'total_hari_ini'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byTanggal(now())->verified()->sum('jumlah'),
-            'total_infaq'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)->verified()->sum('jumlah_infaq'),
-            // Stats fidyah
-            'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)->fidyah()->count(),
+            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->count(),
+            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->verified()->count(),
+            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->pending()->count(),
+            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->menungguKonfirmasi()->count(),
+            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->verified()->sum('jumlah'),
+            'total_hari_ini'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->byTanggal(now())->verified()->sum('jumlah'),
+            'total_infaq'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->verified()->sum('jumlah_infaq'),
+            'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->fidyah()->count(),
         ];
 
         $breadcrumbs = [
@@ -196,6 +219,11 @@ class TransaksiPenerimaanController extends Controller
         $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna'])
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung');
+
+        // Filter per amil yang login (admin lembaga tetap lihat semua)
+        if ($this->user->isAmil() && $this->amil) {
+            $query->where('amil_id', $this->amil->id);
+        }
 
         if ($request->filled('q')) {
             $query->search($request->q);
@@ -230,15 +258,30 @@ class TransaksiPenerimaanController extends Controller
         $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
             ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
 
-        $baseQuery = TransaksiPenerimaan::byLembaga($this->lembaga->id)
-            ->byMetodePenerimaan('datang_langsung');
+        $amil = $this->amil;
+        $isAmil = $this->user->isAmil() && $amil;
 
         $stats = [
-            'total' => $baseQuery->count(),
-            'tunai' => $baseQuery->where('metode_pembayaran', 'tunai')->count(),
-            'non_tunai' => $baseQuery->whereIn('metode_pembayaran', ['transfer', 'qris'])->count(),
-            'total_nominal' => $baseQuery->where('status', 'verified')->sum('jumlah'),
-            'total_fidyah' => $baseQuery->fidyah()->count(),
+            'total'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('datang_langsung')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->count(),
+            'tunai'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('datang_langsung')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->where('metode_pembayaran', 'tunai')->count(),
+            'non_tunai'     => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('datang_langsung')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->whereIn('metode_pembayaran', ['transfer', 'qris'])->count(),
+            'total_nominal' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('datang_langsung')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->where('status', 'verified')->sum('jumlah'),
+            'total_fidyah'  => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('datang_langsung')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->fidyah()->count(),
         ];
 
         $breadcrumbs = [
@@ -263,6 +306,11 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring');
 
+        // Filter per amil yang login (admin lembaga tetap lihat semua)
+        if ($this->user->isAmil() && $this->amil) {
+            $query->where('amil_id', $this->amil->id);
+        }
+
         if ($request->filled('q'))                 $query->search($request->q);
         if ($request->filled('start_date') && $request->filled('end_date'))
             $query->byPeriode($request->start_date, $request->end_date);
@@ -272,15 +320,33 @@ class TransaksiPenerimaanController extends Controller
 
         $query->orderBy('created_at', 'desc');
 
-        $transaksis       = $query->paginate(10)->withQueryString();
+        $transaksis       = $query->paginate(10);
         $jenisZakatList   = JenisZakat::orderBy('nama')->get();
 
+        $amil = $this->amil;
+        $isAmil = $this->user->isAmil() && $amil;
+
         $stats = [
-            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->count(),
-            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->verified()->count(),
-            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->pending()->count(),
-            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->menungguKonfirmasi()->count(),
-            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)->byMetodePenerimaan('daring')->verified()->sum('jumlah'),
+            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('daring')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->count(),
+            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('daring')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->verified()->count(),
+            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('daring')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->pending()->count(),
+            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('daring')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->menungguKonfirmasi()->count(),
+            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('daring')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->verified()->sum('jumlah'),
         ];
 
         $breadcrumbs = [
@@ -308,6 +374,11 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('dijemput');
 
+        // Filter per amil yang login (admin lembaga tetap lihat semua)
+        if ($this->user->isAmil() && $this->amil) {
+            $query->where('amil_id', $this->amil->id);
+        }
+
         if ($request->filled('q')) {
             $query->search($request->q);
         }
@@ -333,21 +404,30 @@ class TransaksiPenerimaanController extends Controller
             ->where('status', 'aktif')
             ->get();
 
+        $amil = $this->amil;
+        $isAmil = $this->user->isAmil() && $amil;
+
         $stats = [
-            'total' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->byMetodePenerimaan('dijemput')->count(),
-            'menunggu' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            'total'             => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
+                ->count(),
+            'menunggu'          => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+                ->byMetodePenerimaan('dijemput')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
                 ->where('status_penjemputan', 'menunggu')->count(),
-            'dalam_proses' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            'dalam_proses'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
                 ->whereIn('status_penjemputan', ['diterima', 'dalam_perjalanan', 'sampai_lokasi'])->count(),
-            'perlu_dilengkapi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            'perlu_dilengkapi'  => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
                 ->whereIn('status_penjemputan', ['sampai_lokasi', 'selesai'])
                 ->whereNull('jenis_zakat_id')->count(),
-            'selesai' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            'selesai'           => TransaksiPenerimaan::byLembaga($this->lembaga->id)
                 ->byMetodePenerimaan('dijemput')
+                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
                 ->where('status_penjemputan', 'selesai')
                 ->whereNotNull('jenis_zakat_id')->count(),
         ];
@@ -450,12 +530,12 @@ class TransaksiPenerimaanController extends Controller
     public function createDatangLangsung(Request $request)
     {
         $request->merge([
-        'mode' => 'datang_langsung',
-        'breadcrumbs' => [
-            'Kelola Datang Langsung' => route('transaksi-datang-langsung.index'),
-            'Tambah Data Datang Langsung' => route('transaksi-datang-langsung.create'),
-        ],
-    ]);
+            'mode' => 'datang_langsung',
+            'breadcrumbs' => [
+                'Kelola Datang Langsung' => route('transaksi-datang-langsung.index'),
+                'Tambah Data Datang Langsung' => route('transaksi-datang-langsung.create'),
+            ],
+        ]);
 
         return $this->create($request);
     }
@@ -465,14 +545,14 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     public function createDijemput(Request $request)
     {
-         $request->merge([
-        'mode' => 'dijemput',
-        'breadcrumbs' => [
-            'Kelola Dijemput' => route('transaksi-dijemput.index'),
-            'Tambah Data Dijemput' => route('transaksi-dijemput.create'),
-        ],
-    ]);
-        
+        $request->merge([
+            'mode' => 'dijemput',
+            'breadcrumbs' => [
+                'Kelola Dijemput' => route('transaksi-dijemput.index'),
+                'Tambah Data Dijemput' => route('transaksi-dijemput.create'),
+            ],
+        ]);
+
         return $this->create($request);
     }
 
@@ -588,8 +668,8 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('datang_langsung')
             ->firstOrFail();
-        
-         $breadcrumbs = [
+
+        $breadcrumbs = [
             'Kelola Datang Langsung' => route('transaksi-datang-langsung.index'),
             'Detail Datang Langsung' => route('transaksi-datang-langsung.show', $uuid)
         ];
@@ -1373,7 +1453,7 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('dijemput')
             ->firstOrFail();
-        
+
         $breadcrumbs = [
             'Kelola Dijemput' => route('transaksi-dijemput.index'),
             'Detail Dijemput' => route('transaksi-dijemput.show', $uuid)
@@ -1400,7 +1480,7 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring')
             ->firstOrFail();
-        
+
         $breadcrumbs = [
             'Kelola Daring' => route('transaksi-daring.index'),
             'Detail Daring' => route('transaksi-daring.show', $uuid)

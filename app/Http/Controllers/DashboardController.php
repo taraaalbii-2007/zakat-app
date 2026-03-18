@@ -276,7 +276,7 @@ class DashboardController extends Controller
                 ->with('warning', 'Anda belum terdaftar sebagai amil aktif di lembaga manapun.');
         }
 
-        $lembaga      = $amil->lembaga;
+        $lembaga = $amil->lembaga;
         if (!$lembaga || !$lembaga->is_active) {
             Auth::logout();
             request()->session()->invalidate();
@@ -284,38 +284,47 @@ class DashboardController extends Controller
             return redirect()->route('login')
                 ->with('error', 'Lembaga Anda sedang dinonaktifkan. Silakan hubungi superadmin.');
         }
-        $lembagaId    = $lembaga->id;
+
+        $lembagaId   = $lembaga->id;
+        $amilId      = $amil->id; // ← filter per amil login
         $breadcrumbs = [
             'Dashboard Amil' => null,
         ];
         $periodeAwal  = now()->startOfMonth();
         $periodeAkhir = now()->endOfMonth();
 
-        // ── Keuangan Bulan Ini ───────────────────────────────────────────────
+        // ── Keuangan Bulan Ini (hanya transaksi milik amil ini) ──────────────
         $totalPenerimaanBulanIni = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('amil_id', $amilId)
             ->where('status', 'verified')
             ->whereBetween('tanggal_transaksi', [$periodeAwal, $periodeAkhir])
             ->sum('jumlah');
 
         $totalPenyaluranBulanIni = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->where('amil_id', $amilId)
             ->whereIn('status', ['disetujui', 'disalurkan'])
             ->whereBetween('tanggal_penyaluran', [$periodeAwal, $periodeAkhir])
             ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
 
         $saldoSaatIni = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('amil_id', $amilId)
             ->where('status', 'verified')
             ->sum('jumlah')
             -
             TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+            ->where('amil_id', $amilId)
             ->whereIn('status', ['disetujui', 'disalurkan'])
             ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
 
         // ── SDM ──────────────────────────────────────────────────────────────
+        // Muzakki yang pernah ditangani amil ini
         $jumlahMuzakki = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+            ->where('amil_id', $amilId)
             ->where('status', 'verified')
             ->distinct('muzakki_nama')
             ->count('muzakki_nama');
 
+        // Mustahik tetap per lembaga (tidak ada kolom amil_id di tabel mustahik)
         $jumlahMustahik = Mustahik::where('lembaga_id', $lembagaId)
             ->where('status_verifikasi', 'verified')
             ->where('is_active', true)
@@ -330,7 +339,7 @@ class DashboardController extends Controller
 
         $quickStats = [
             [
-                'label' => 'Muzakki Aktif',
+                'label' => 'Muzakki Ditangani',
                 'value' => $jumlahMuzakki,
                 'icon'  => 'users',
             ],
@@ -341,7 +350,7 @@ class DashboardController extends Controller
             ],
         ];
 
-        // ── Trend 6 Bulan ────────────────────────────────────────────────────
+        // ── Trend 6 Bulan (hanya transaksi amil ini) ─────────────────────────
         $trendData = collect();
         for ($i = 5; $i >= 0; $i--) {
             $bulan        = now()->subMonths($i);
@@ -349,11 +358,13 @@ class DashboardController extends Controller
             $endOfMonth   = $bulan->copy()->endOfMonth();
 
             $penerimaan = TransaksiPenerimaan::where('lembaga_id', $lembagaId)
+                ->where('amil_id', $amilId)
                 ->where('status', 'verified')
                 ->whereBetween('tanggal_transaksi', [$startOfMonth, $endOfMonth])
                 ->sum('jumlah');
 
             $penyaluran = TransaksiPenyaluran::where('lembaga_id', $lembagaId)
+                ->where('amil_id', $amilId)
                 ->whereIn('status', ['disetujui', 'disalurkan'])
                 ->whereBetween('tanggal_penyaluran', [$startOfMonth, $endOfMonth])
                 ->sum(DB::raw('CASE WHEN metode_penyaluran = "barang" THEN COALESCE(nilai_barang, 0) ELSE jumlah END'));
@@ -495,10 +506,10 @@ class DashboardController extends Controller
             ];
         }
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Dashboard Muzakki' => null,
         ];
-        
+
         return view('dashboard.muzakki', compact(
             'breadcrumbs',
             'user',
