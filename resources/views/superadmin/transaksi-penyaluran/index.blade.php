@@ -222,7 +222,7 @@
                             @endphp
 
                             {{-- Baris Lembaga (ikon dihapus) --}}
-                            <tr class="lembaga-row cursor-pointer hover:bg-purple-50/50 transition-colors"
+                            <tr class="lembaga-row cursor-pointer hover:bg-primary-50/50 transition-colors"
                                 data-nama="{{ strtolower($lembaga->nama) }}"
                                 onclick="toggleLembaga('trx-penyaluran-{{ $lembaga->id }}', this)">
                                 <td class="px-4 py-3">
@@ -237,7 +237,7 @@
                                     <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat penyaluran</div>
                                 </td>
                                 <td class="px-6 py-3 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                                         {{ $transaksiLembaga->count() }} Transaksi
                                     </span>
                                 </td>
@@ -260,7 +260,7 @@
                                 <td colspan="5" class="p-0">
                                     <div class="bg-gradient-to-b from-purple-50/50 to-gray-50 border-y border-purple-200/50 px-6 py-4">
                                         <div class="flex items-center gap-2 mb-3">
-                                            <div class="w-1 h-5 bg-purple-500 rounded-full"></div>
+                                            <div class="w-1 h-5 bg-primary-500 rounded-full"></div>
                                             <h3 class="text-sm font-semibold text-gray-800">
                                                 Transaksi Penyaluran — {{ $lembaga->nama }}
                                             </h3>

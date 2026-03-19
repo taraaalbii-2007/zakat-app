@@ -154,7 +154,7 @@
                                     <div class="text-sm text-gray-600">{{ Str::limit($lembaga->alamat ?? '-', 50) }}</div>
                                 </td>
                                 <td class="px-6 py-3 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                                         {{ $lembaga->amils->count() }} Amil
                                     </span>
                                 </td>
@@ -182,7 +182,7 @@
                                                     $hasFoto     = $amil->foto && Storage::disk('public')->exists($amil->foto);
                                                     $initial     = strtoupper(substr($amil->nama_lengkap, 0, 1));
                                                     $avatarColors = [
-                                                        'ABCD' => 'bg-blue-500',
+                                                        'ABCD' => 'bg-primary-500',
                                                         'EFGH' => 'bg-green-500',
                                                         'IJKL' => 'bg-purple-500',
                                                         'MNOP' => 'bg-orange-500',
@@ -294,7 +294,7 @@
 
             // Badge jenis kelamin
             const jkHtml = amil.jenis_kelamin === 'L'
-                ? `<span class="px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">L</span>`
+                ? `<span class="px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">L</span>`
                 : `<span class="px-1.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-700">P</span>`;
 
             // Badge status
