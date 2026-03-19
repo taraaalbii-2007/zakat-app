@@ -306,11 +306,6 @@ class TransaksiPenerimaanController extends Controller
             ->byLembaga($this->lembaga->id)
             ->byMetodePenerimaan('daring');
 
-        // Filter per amil yang login (admin lembaga tetap lihat semua)
-        if ($this->user->isAmil() && $this->amil) {
-            $query->where('amil_id', $this->amil->id);
-        }
-
         if ($request->filled('q'))                 $query->search($request->q);
         if ($request->filled('start_date') && $request->filled('end_date'))
             $query->byPeriode($request->start_date, $request->end_date);

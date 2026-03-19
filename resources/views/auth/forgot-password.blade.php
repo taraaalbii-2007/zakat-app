@@ -297,10 +297,6 @@
 </form>
 @endsection
 
-@section('auth-footer')
-    Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
-@endsection
-
 @push('scripts')
 @if($recaptchaSiteKey)
     <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>

@@ -5,61 +5,6 @@
 @section('content')
     <div class="space-y-4 sm:space-y-6">
 
-        {{-- ===== HEADER STATS ===== --}}
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
-                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Total Amil</p>
-                    <p class="text-lg font-bold text-gray-900">{{ number_format($summary['total_amil']) }}</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
-                <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Total Muzaki</p>
-                    <p class="text-lg font-bold text-gray-900">{{ number_format($summary['total_muzakki']) }}</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
-                <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Total Transaksi</p>
-                    <p class="text-lg font-bold text-gray-900">{{ number_format($summary['total_transaksi']) }}</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3 animate-slide-up">
-                <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div>
-                    <p class="text-xs text-gray-500">Total Nominal</p>
-                    <p class="text-base font-bold text-gray-900">Rp {{ number_format($summary['total_nominal'], 0, ',', '.') }}</p>
-                </div>
-            </div>
-        </div>
-
         {{-- ===== TABEL UTAMA ===== --}}
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
 
@@ -71,24 +16,19 @@
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ number_format($summary['total_amil']) }} Amil</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <button type="button" onclick="expandAll()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
+
+                        {{-- Filter --}}
+                        <button type="button" onclick="toggleFilter()"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
+                            {{ request()->hasAny(['status']) ? 'ring-2 ring-primary' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                Buka Semua
-                            </span>
+                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
                         </button>
-                        <button type="button" onclick="collapseAll()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                            </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                Tutup Semua
-                            </span>
-                        </button>
+
+                        {{-- Search --}}
                         <div id="search-container" class="transition-all duration-300"
                             style="{{ request('search') ? 'min-width: 280px;' : '' }}">
                             <button type="button" onclick="toggleSearch()" id="search-button"
@@ -97,27 +37,63 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                    Cari
-                                </span>
+                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
                             </button>
                             {{-- Search inline (client-side filter) --}}
                             <div id="search-form" class="{{ request('search') ? '' : 'hidden' }}">
-                                <div class="relative flex-1">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                        </svg>
+                                <div class="flex items-center gap-2">
+                                    <div class="relative flex-1">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <input type="search" id="cari-amil" placeholder="Cari nama amil..."
+                                            oninput="filterAmil(this.value)"
+                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                     </div>
-                                    <input type="search" id="cari-amil" placeholder="Cari nama amil..."
-                                        oninput="filterAmil(this.value)"
-                                        class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                    <button type="button" onclick="toggleSearch()"
+                                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                                        Reset
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
+            </div>
+
+            {{-- Filter Panel --}}
+            <div id="filter-panel"
+                class="{{ request()->hasAny(['status']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                <form method="GET" action="{{ route('admin-lembaga.muzaki.index') }}" id="filter-form">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Amil</label>
+                            <select name="status"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                onchange="this.form.submit()">
+                                <option value="">Semua Status</option>
+                                <option value="aktif"    {{ request('status') == 'aktif'    ? 'selected' : '' }}>Aktif</option>
+                                <option value="cuti"     {{ request('status') == 'cuti'     ? 'selected' : '' }}>Cuti</option>
+                                <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                            </select>
+                        </div>
+                    </div>
+                    @if (request()->hasAny(['status']))
+                        <div class="mt-3 flex justify-end">
+                            <a href="{{ route('admin-lembaga.muzaki.index') }}"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                Reset Filter
+                            </a>
+                        </div>
+                    @endif
+                </form>
             </div>
 
             @if($amils->count() > 0)
@@ -128,26 +104,15 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="w-12 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Amil
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Muzaki
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Transaksi
-                                </th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Total Nominal
-                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amil</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Muzaki</th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Transaksi</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Nominal</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="tbody-amil">
                             @foreach($amils as $amil)
-                                {{-- Parent Row Amil --}}
                                 <tr class="amil-row hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
                                     data-target="detail-{{ $amil->id }}"
                                     data-amil-id="{{ $amil->id }}"
@@ -163,14 +128,11 @@
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-3">
                                             @if($amil->foto)
-                                                <img src="{{ asset('storage/' . $amil->foto) }}"
-                                                    alt="{{ $amil->nama_lengkap }}"
+                                                <img src="{{ asset('storage/' . $amil->foto) }}" alt="{{ $amil->nama_lengkap }}"
                                                     class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0">
                                             @else
                                                 <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                    <span class="text-sm font-semibold text-primary">
-                                                        {{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}
-                                                    </span>
+                                                    <span class="text-sm font-semibold text-primary">{{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}</span>
                                                 </div>
                                             @endif
                                             <div>
@@ -200,9 +162,7 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <span class="text-sm text-gray-700 font-medium">
-                                            {{ number_format($amil->jumlah_transaksi) }}
-                                        </span>
+                                        <span class="text-sm text-gray-700 font-medium">{{ number_format($amil->jumlah_transaksi) }}</span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
                                         <span class="text-sm font-semibold text-gray-900">
@@ -211,37 +171,29 @@
                                     </td>
                                 </tr>
 
-                                {{-- Expandable Detail Row: Sub-tabel Muzaki --}}
                                 <tr id="detail-{{ $amil->id }}" class="hidden amil-content-row expandable-content">
                                     <td colspan="6" class="px-0 py-0">
                                         <div class="bg-gray-50 border-y border-gray-100">
                                             <div class="px-6 py-4">
-
-                                                {{-- Sub-header --}}
                                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                                                     <div class="flex items-center gap-2">
                                                         <div class="w-1 h-5 bg-primary rounded-full"></div>
                                                         <h3 class="text-sm font-semibold text-gray-800">
-                                                            Muzaki diinput oleh
-                                                            <span class="text-primary">{{ $amil->nama_lengkap }}</span>
+                                                            Muzaki diinput oleh <span class="text-primary">{{ $amil->nama_lengkap }}</span>
                                                         </h3>
                                                     </div>
                                                     <div class="relative">
                                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                             </svg>
                                                         </div>
-                                                        <input type="search"
-                                                            placeholder="Cari muzaki..."
+                                                        <input type="search" placeholder="Cari muzaki..."
                                                             oninput="searchMuzaki({{ $amil->id }}, this.value)"
                                                             onclick="event.stopPropagation()"
                                                             class="pl-8 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary w-48 transition-all">
                                                     </div>
                                                 </div>
-
-                                                {{-- Konten muzaki (diisi via AJAX) --}}
                                                 <div id="muzaki-container-{{ $amil->id }}">
                                                     <div class="text-center py-8 text-sm text-gray-400">
                                                         <svg class="w-8 h-8 mx-auto mb-2 text-gray-300 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -267,27 +219,21 @@
                             data-nama="{{ strtolower($amil->nama_lengkap) }} {{ strtolower($amil->kode_amil) }}"
                             data-amil-id="{{ $amil->id }}">
 
-                            {{-- Card Header --}}
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                                 data-target="detail-mobile-{{ $amil->id }}"
                                 data-amil-id="{{ $amil->id }}">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center flex-1 min-w-0 gap-3">
                                         @if($amil->foto)
-                                            <img src="{{ asset('storage/' . $amil->foto) }}"
-                                                alt="{{ $amil->nama_lengkap }}"
+                                            <img src="{{ asset('storage/' . $amil->foto) }}" alt="{{ $amil->nama_lengkap }}"
                                                 class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0">
                                         @else
                                             <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                <span class="text-sm font-semibold text-primary">
-                                                    {{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}
-                                                </span>
+                                                <span class="text-sm font-semibold text-primary">{{ strtoupper(substr($amil->nama_lengkap, 0, 1)) }}</span>
                                             </div>
                                         @endif
                                         <div class="flex-1 min-w-0">
-                                            <h3 class="text-sm font-semibold text-gray-900 truncate">
-                                                {{ $amil->nama_lengkap }}
-                                            </h3>
+                                            <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $amil->nama_lengkap }}</h3>
                                             <div class="flex items-center flex-wrap gap-1.5 mt-1">
                                                 <span class="text-[10px] text-gray-400">{{ $amil->kode_amil }}</span>
                                                 <span class="text-[10px] text-gray-300">•</span>
@@ -317,8 +263,6 @@
                                         </svg>
                                     </div>
                                 </div>
-
-                                {{-- Stats row --}}
                                 <div class="flex items-center gap-4 mt-3 pl-12">
                                     <div class="text-center">
                                         <p class="text-xs text-gray-500">Transaksi</p>
@@ -331,10 +275,8 @@
                                 </div>
                             </div>
 
-                            {{-- Mobile Expandable Content --}}
                             <div id="detail-mobile-{{ $amil->id }}" class="hidden expandable-content-mobile">
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
-                                    {{-- Sub-header mobile --}}
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center gap-2">
                                             <div class="w-1 h-4 bg-primary rounded-full"></div>
@@ -346,15 +288,12 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                                 </svg>
                                             </div>
-                                            <input type="search"
-                                                placeholder="Cari muzaki..."
+                                            <input type="search" placeholder="Cari muzaki..."
                                                 oninput="searchMuzaki({{ $amil->id }}, this.value)"
                                                 onclick="event.stopPropagation()"
                                                 class="pl-7 pr-3 py-1 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary w-36 transition-all">
                                         </div>
                                     </div>
-
-                                    {{-- Konten muzaki (diisi via AJAX) --}}
                                     <div id="muzaki-container-mobile-{{ $amil->id }}">
                                         <div class="text-center py-6 text-xs text-gray-400">
                                             <svg class="w-6 h-6 mx-auto mb-1.5 text-gray-300 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -398,13 +337,11 @@
         document.querySelectorAll('.expandable-row').forEach(row => {
             row.addEventListener('click', function (e) {
                 if (e.target.closest('input')) return;
-
                 const targetId  = this.getAttribute('data-target');
                 const targetRow = document.getElementById(targetId);
                 const icon      = this.querySelector('.expand-icon');
                 const amilId    = this.getAttribute('data-amil-id');
                 const isHidden  = targetRow.classList.contains('hidden');
-
                 if (isHidden) {
                     targetRow.classList.remove('hidden');
                     icon.classList.add('rotate-90');
@@ -422,13 +359,11 @@
         document.querySelectorAll('.expandable-row-mobile').forEach(row => {
             row.addEventListener('click', function (e) {
                 if (e.target.closest('input')) return;
-
                 const targetId      = this.getAttribute('data-target');
                 const targetContent = document.getElementById(targetId);
                 const icon          = this.querySelector('.expand-icon-mobile');
                 const amilId        = this.getAttribute('data-amil-id');
                 const isHidden      = targetContent.classList.contains('hidden');
-
                 if (isHidden) {
                     targetContent.classList.remove('hidden');
                     icon.classList.add('rotate-180');
@@ -446,9 +381,7 @@
         function fetchMuzaki(amilId, search = '', page = 1) {
             const container = document.getElementById(`muzaki-container-${amilId}`);
             container.innerHTML = renderLoading();
-
             const params = new URLSearchParams({ search, page });
-
             fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
@@ -467,9 +400,7 @@
         function fetchMuzakiMobile(amilId, search = '', page = 1) {
             const container = document.getElementById(`muzaki-container-mobile-${amilId}`);
             container.innerHTML = renderLoadingSmall();
-
             const params = new URLSearchParams({ search, page });
-
             fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             })
@@ -488,9 +419,8 @@
         function searchMuzaki(amilId, keyword) {
             clearTimeout(searchTimers[amilId]);
             searchTimers[amilId] = setTimeout(() => {
-                // Detect if triggered from mobile container
-                const mobileContainer = document.getElementById(`muzaki-container-mobile-${amilId}`);
-                const desktopContainer= document.getElementById(`muzaki-container-${amilId}`);
+                const mobileContainer  = document.getElementById(`muzaki-container-mobile-${amilId}`);
+                const desktopContainer = document.getElementById(`muzaki-container-${amilId}`);
                 if (desktopContainer && document.getElementById(`detail-${amilId}`) &&
                     !document.getElementById(`detail-${amilId}`).classList.contains('hidden')) {
                     fetchMuzaki(amilId, keyword, 1);
@@ -503,7 +433,7 @@
         }
 
         // ============================================================
-        // FILTER AMIL — DESKTOP (client-side)
+        // FILTER AMIL — client-side
         // ============================================================
         function filterAmil(keyword) {
             const q = keyword.toLowerCase().trim();
@@ -516,7 +446,6 @@
                     next.style.display = show ? '' : 'none';
                 }
             });
-            // Mobile
             document.querySelectorAll('.amil-row-mobile').forEach(card => {
                 const nama = card.getAttribute('data-nama') || '';
                 card.style.display = (!q || nama.includes(q)) ? '' : 'none';
@@ -524,51 +453,13 @@
         }
 
         // ============================================================
-        // EXPAND / COLLAPSE ALL
-        // ============================================================
-        function expandAll() {
-            // Desktop
-            document.querySelectorAll('.expandable-row').forEach(row => {
-                const amilId    = row.getAttribute('data-amil-id');
-                const targetId  = row.getAttribute('data-target');
-                const targetRow = document.getElementById(targetId);
-                const icon      = row.querySelector('.expand-icon');
-                if (targetRow && targetRow.classList.contains('hidden')) {
-                    targetRow.classList.remove('hidden');
-                    if (icon) icon.classList.add('rotate-90');
-                    if (!loadedAmil[amilId]) fetchMuzaki(amilId, '');
-                }
-            });
-            // Mobile
-            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-                const amilId    = row.getAttribute('data-amil-id');
-                const targetId  = row.getAttribute('data-target');
-                const targetContent = document.getElementById(targetId);
-                const icon      = row.querySelector('.expand-icon-mobile');
-                if (targetContent && targetContent.classList.contains('hidden')) {
-                    targetContent.classList.remove('hidden');
-                    if (icon) icon.classList.add('rotate-180');
-                    if (!loadedAmilMobile[amilId]) fetchMuzakiMobile(amilId, '');
-                }
-            });
-        }
-
-        function collapseAll() {
-            document.querySelectorAll('.amil-content-row').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.expand-icon').forEach(el => el.classList.remove('rotate-90'));
-            document.querySelectorAll('.expandable-content-mobile').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.expand-icon-mobile').forEach(el => el.classList.remove('rotate-180'));
-        }
-
-        // ============================================================
-        // SEARCH TOGGLE (header)
+        // SEARCH TOGGLE
         // ============================================================
         function toggleSearch() {
             const searchButton    = document.getElementById('search-button');
             const searchForm      = document.getElementById('search-form');
             const searchInput     = document.getElementById('cari-amil');
             const searchContainer = document.getElementById('search-container');
-
             if (searchForm.classList.contains('hidden')) {
                 searchButton.classList.add('hidden');
                 searchForm.classList.remove('hidden');
@@ -584,6 +475,30 @@
         }
 
         // ============================================================
+        // TOGGLE FILTER PANEL
+        // ============================================================
+        function toggleFilter() {
+            document.getElementById('filter-panel').classList.toggle('hidden');
+        }
+
+        // ── ESC menutup search ────────────────────────────────────────────
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                const searchForm      = document.getElementById('search-form');
+                const searchButton    = document.getElementById('search-button');
+                const searchContainer = document.getElementById('search-container');
+                const searchInput     = document.getElementById('cari-amil');
+                if (!searchForm.classList.contains('hidden')) {
+                    if (searchInput) searchInput.value = '';
+                    filterAmil('');
+                    searchForm.classList.add('hidden');
+                    searchButton.classList.remove('hidden');
+                    searchContainer.style.minWidth = 'auto';
+                }
+            }
+        });
+
+        // ============================================================
         // RENDER: DESKTOP TABLE
         // ============================================================
         function renderMuzakiTable(pagination, amilId) {
@@ -596,7 +511,6 @@
                     <p class="text-sm text-gray-400">Belum ada muzaki yang diinput</p>
                 </div>`;
             }
-
             const rows = data.map(m => `
                 <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-4 py-3">
@@ -617,9 +531,7 @@
                         <span class="text-xs text-gray-500">${escHtml(m.muzakki_alamat ? m.muzakki_alamat.substring(0,40) + (m.muzakki_alamat.length > 40 ? '...' : '') : '-')}</span>
                     </td>
                     <td class="px-4 py-3 text-center">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
-                            ${m.total_transaksi}x
-                        </span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">${m.total_transaksi}x</span>
                     </td>
                     <td class="px-4 py-3 text-right hidden lg:table-cell">
                         <span class="text-sm font-semibold text-gray-900">Rp ${formatRupiah(m.total_nominal || 0)}</span>
@@ -629,7 +541,6 @@
                     </td>
                 </tr>
             `).join('');
-
             return `<div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-white">
@@ -656,7 +567,6 @@
             if (!data || data.length === 0) {
                 return `<div class="text-center py-6 text-xs text-gray-400">Belum ada muzaki yang diinput</div>`;
             }
-
             const cards = data.map(m => `
                 <div class="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
                     <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -669,17 +579,12 @@
                         </div>
                     </div>
                     <div class="text-right flex-shrink-0">
-                        <div class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-800">
-                            ${m.total_transaksi}x
-                        </div>
+                        <div class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-800">${m.total_transaksi}x</div>
                         <div class="text-[10px] text-gray-500 mt-0.5">Rp ${formatRupiah(m.total_nominal || 0)}</div>
                     </div>
                 </div>
             `).join('');
-
-            return `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden px-3 py-1">
-                ${cards}
-            </div>
+            return `<div class="bg-white rounded-xl border border-gray-200 overflow-hidden px-3 py-1">${cards}</div>
             ${renderPagination(pagination, amilId, true)}`;
         }
 
@@ -694,7 +599,6 @@
             const to          = pagination.to;
             const total       = pagination.total;
             const fn          = isMobile ? `fetchMuzakiMobile` : `fetchMuzaki`;
-
             let pages = '';
             for (let p = 1; p <= lastPage; p++) {
                 if (p === currentPage) {
@@ -703,7 +607,6 @@
                     pages += `<button onclick="${fn}(${amilId},'',${p})" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">${p}</button>`;
                 }
             }
-
             return `<div class="flex items-center justify-between mt-3">
                 <p class="text-xs text-gray-500">Menampilkan ${from}–${to} dari ${total} muzaki</p>
                 <div class="flex items-center gap-1">${pages}</div>
@@ -722,7 +625,6 @@
                 <p class="text-xs text-gray-400 mt-2">Memuat data muzaki...</p>
             </div>`;
         }
-
         function renderLoadingSmall() {
             return `<div class="text-center py-4">
                 <svg class="w-5 h-5 mx-auto animate-spin text-primary" fill="none" viewBox="0 0 24 24">
@@ -731,7 +633,6 @@
                 </svg>
             </div>`;
         }
-
         function renderError(amilId) {
             return `<div class="text-center py-8 text-sm text-red-400">
                 Gagal memuat data.
@@ -743,22 +644,14 @@
         // HELPERS
         // ============================================================
         function escHtml(str) {
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;');
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
-
         function formatRupiah(num) {
             return Number(num).toLocaleString('id-ID');
         }
-
         function formatDate(dateStr) {
             if (!dateStr) return '-';
-            return new Date(dateStr).toLocaleDateString('id-ID', {
-                day: '2-digit', month: 'short', year: 'numeric'
-            });
+            return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         }
     </script>
 @endpush
