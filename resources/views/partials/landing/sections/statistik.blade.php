@@ -1,33 +1,69 @@
 {{-- ============================================================
      SECTION: STATISTIK — Clean White BG + Mini Donut Charts
+     Disesuaikan dengan LandingController:
+       $totalLembaga  = Lembaga::where('is_active', true)->count()
+       $totalMuzaki   = COUNT(DISTINCT muzakki_nama-lembaga_id) di transaksi_penerimaan
+       $totalMustahik = Mustahik::count()
+       $totalDana     = TransaksiPenyaluran (disalurkan|disetujui) sum jumlah/nilai_barang
+       $totalProgram  = ProgramZakat::count()
      ============================================================ --}}
 
 @php
+    /* ── Format helper ── */
     $fmtStat = function(int $n): string {
-        if ($n >= 1_000_000) return number_format($n / 1_000_000, 1) . 'M';
+        if ($n >= 1_000_000) return number_format($n / 1_000_000, 1) . 'Jt';
         if ($n >= 1_000)     return number_format($n / 1_000, 0) . 'K+';
         return (string) $n;
     };
     $fmtDana = function(float $n): string {
-        if ($n >= 1_000_000_000) return number_format($n / 1_000_000_000, 1) . 'M';
-        if ($n >= 1_000_000)     return number_format($n / 1_000_000, 0) . 'M';
-        if ($n >= 1_000)         return number_format($n / 1_000, 0) . 'K';
-        return number_format($n, 0);
+        if ($n >= 1_000_000_000) return 'Rp ' . number_format($n / 1_000_000_000, 1) . ' M';
+        if ($n >= 1_000_000)     return 'Rp ' . number_format($n / 1_000_000, 0) . ' Jt';
+        if ($n >= 1_000)         return 'Rp ' . number_format($n / 1_000, 0) . ' Rb';
+        return 'Rp ' . number_format($n, 0);
     };
-    $statLembaga  = $fmtStat((int) ($totalLembaga ?? 0));
-    $statMuzaki   = $fmtStat((int) ($totalMuzaki ?? 0));
-    $statMustahik = $fmtStat((int) ($totalMustahik ?? 0));
-    $statDana     = $fmtDana((float) ($totalDana ?? 0));
-    $statProgram  = $fmtStat((int) ($totalProgram ?? 0));
-    $rawMuzaki    = max((int)($totalMuzaki ?? 1), 1);
-    $rawMustahik  = max((int)($totalMustahik ?? 1), 1);
-    $rawProgram   = max((int)($totalProgram ?? 1), 1);
-    $rawDana      = max((float)($totalDana ?? 1), 1);
-    $total4       = $rawMuzaki + $rawMustahik + $rawProgram + ($rawDana / 1_000_000);
-    $pMuzaki      = round($rawMuzaki / $total4 * 100, 1);
-    $pMustahik    = round($rawMustahik / $total4 * 100, 1);
-    $pProgram     = round($rawProgram / $total4 * 100, 1);
-    $pDana        = round(100 - $pMuzaki - $pMustahik - $pProgram, 1);
+
+    /* ── Nilai mentah (pastikan tidak nol agar tidak div/0) ── */
+    $rawLembaga  = max((int)($totalLembaga  ?? 0), 0);
+    $rawMuzaki   = max((int)($totalMuzaki   ?? 0), 0);
+    $rawMustahik = max((int)($totalMustahik ?? 0), 0);
+    $rawDana     = max((float)($totalDana   ?? 0), 0);
+    $rawProgram  = max((int)($totalProgram  ?? 0), 0);
+
+    /* ── Formatted untuk tampilan ── */
+    $statLembaga  = $rawLembaga  > 0 ? $fmtStat($rawLembaga)  : '0';
+    $statMuzaki   = $rawMuzaki   > 0 ? $fmtStat($rawMuzaki)   : '0';
+    $statMustahik = $rawMustahik > 0 ? $fmtStat($rawMustahik) : '0';
+    $statDana     = $rawDana     > 0 ? $fmtDana($rawDana)     : 'Rp 0';
+    $statProgram  = $rawProgram  > 0 ? $fmtStat($rawProgram)  : '0';
+
+    /*
+     * ── Persentase untuk mini donut ──
+     * Masing-masing mini donut menunjukkan seberapa "penuh" metrik tsb
+     * relatif terhadap semua metrik (normalisasi log-scale agar dana yang
+     * nilainya jauh lebih besar tidak mendominasi 99%).
+     *
+     * Strategi: normalisasi tiap nilai ke rentang [1..100] menggunakan
+     * log10, lalu hitung porsi masing-masing dari total log-sum.
+     * Ini murni visual — tujuannya agar ke-4 ring terlihat berbeda
+     * dan informatif, bukan sebagai kalkulasi keuangan.
+     */
+    $logMuzaki   = $rawMuzaki   > 0 ? log10($rawMuzaki   + 1) : 0;
+    $logMustahik = $rawMustahik > 0 ? log10($rawMustahik  + 1) : 0;
+    $logDana     = $rawDana     > 0 ? log10($rawDana      + 1) : 0;
+    $logProgram  = $rawProgram  > 0 ? log10($rawProgram   + 1) : 0;
+    $logTotal    = max($logMuzaki + $logMustahik + $logDana + $logProgram, 1);
+
+    $pMuzaki   = round($logMuzaki   / $logTotal * 100, 1);
+    $pMustahik = round($logMustahik / $logTotal * 100, 1);
+    $pDana     = round($logDana     / $logTotal * 100, 1);
+    $pProgram  = round(100 - $pMuzaki - $pMustahik - $pDana, 1);
+
+    /*
+     * ── Donut utama: proporsi kontribusi relatif 4 dimensi ──
+     * Sama dengan log-normalized di atas — dipakai sebagai segmen warna
+     * pada chart.js doughnut besar.
+     */
+    $donutData = [$pMuzaki, $pMustahik, $pDana, $pProgram];
 @endphp
 
 <style>
@@ -272,22 +308,31 @@
             </p>
         </div>
 
-        {{-- LAYOUT: donut utama + 4 mini donuts --}}
+        {{-- LAYOUT: ringkasan lembaga + 4 mini donuts --}}
         <div class="flex flex-col items-center gap-12">
 
-            {{-- Main donut --}}
+            {{--
+                Donut utama — menampilkan total LEMBAGA AKTIF di tengah.
+                Segmen 4 warna merepresentasikan proporsi log-normalized dari
+                muzaki, mustahik, dana tersalurkan, dan program zakat.
+                Tooltip menampilkan nilai riil masing-masing dimensi.
+            --}}
             <div class="stat-donut-outer" id="mainDonutOuter">
                 <canvas id="statsDonutChart" width="320" height="320"></canvas>
                 <div class="stat-donut-label">
                     <p class="text-5xl font-black text-green-600 leading-none stat-center-num" id="mainDonutNum">{{ $statLembaga }}</p>
-                    <p class="text-xs text-neutral-400 font-medium mt-2 tracking-wide stat-center-label" id="mainDonutLabel">Lembaga Terdaftar</p>
+                    <p class="text-xs text-neutral-400 font-medium mt-2 tracking-wide stat-center-label" id="mainDonutLabel">Lembaga Aktif</p>
                 </div>
             </div>
 
             {{-- 4 mini donuts --}}
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 md:gap-8 w-full max-w-3xl">
 
-                {{-- Muzaki --}}
+                {{--
+                    Muzaki — sumber dari:
+                    COUNT(DISTINCT CONCAT(muzakki_nama, '-', lembaga_id))
+                    di tabel transaksi_penerimaan (semua status).
+                --}}
                 <div class="mini-donut-card" data-card-index="0">
                     <span class="mini-donut-chip">Muzaki</span>
                     <div class="mini-ring-wrap w-24 h-24 mb-3">
@@ -298,7 +343,11 @@
                     <p class="text-xs text-neutral-400 mt-1.5 leading-snug">Muzaki Terdaftar</p>
                 </div>
 
-                {{-- Mustahik --}}
+                {{--
+                    Mustahik — sumber dari:
+                    Mustahik::count() (semua status, termasuk belum diverifikasi).
+                    Jika ingin hanya yang verified+aktif, sesuaikan di controller.
+                --}}
                 <div class="mini-donut-card" data-card-index="1">
                     <span class="mini-donut-chip" style="color:#059669;background:rgba(5,150,105,0.09);">Mustahik</span>
                     <div class="mini-ring-wrap w-24 h-24 mb-3">
@@ -309,18 +358,26 @@
                     <p class="text-xs text-neutral-400 mt-1.5 leading-snug">Mustahik Terbantu</p>
                 </div>
 
-                {{-- Dana --}}
+                {{--
+                    Dana Tersalurkan — sumber dari:
+                    TransaksiPenyaluran whereIn('status', ['disalurkan','disetujui'])
+                    sum: metode barang → nilai_barang, tunai → jumlah.
+                    Ditampilkan dengan prefix "Rp" sudah ada di $statDana.
+                --}}
                 <div class="mini-donut-card" data-card-index="2">
                     <span class="mini-donut-chip" style="color:#0d9488;background:rgba(13,148,136,0.09);">Dana</span>
                     <div class="mini-ring-wrap w-24 h-24 mb-3">
                         <canvas id="ringDana" width="96" height="96"></canvas>
                         <span class="mini-ring-pct" id="pctDana" style="color:#0d9488;">{{ $pDana }}%</span>
                     </div>
-                    <p class="text-xl font-black text-neutral-800 leading-none stat-num-anim">Rp {{ $statDana }}</p>
+                    <p class="text-xl font-black text-neutral-800 leading-none stat-num-anim">{{ $statDana }}</p>
                     <p class="text-xs text-neutral-400 mt-1.5 leading-snug">Dana Tersalurkan</p>
                 </div>
 
-                {{-- Program --}}
+                {{--
+                    Program Zakat — sumber dari:
+                    ProgramZakat::count() (semua program, tanpa filter status).
+                --}}
                 <div class="mini-donut-card" data-card-index="3">
                     <span class="mini-donut-chip" style="color:#65a30d;background:rgba(101,163,13,0.09);">Program</span>
                     <div class="mini-ring-wrap w-24 h-24 mb-3">
@@ -328,7 +385,7 @@
                         <span class="mini-ring-pct" id="pctProgram" style="color:#65a30d;">{{ $pProgram }}%</span>
                     </div>
                     <p class="text-xl font-black text-neutral-800 leading-none stat-num-anim">{{ $statProgram }}</p>
-                    <p class="text-xs text-neutral-400 mt-1.5 leading-snug">Program Aktif</p>
+                    <p class="text-xs text-neutral-400 mt-1.5 leading-snug">Program Zakat</p>
                 </div>
 
             </div>
@@ -341,10 +398,20 @@
 <script>
 (function () {
     var chartsCreated = false;
+
+    /* Nilai dari PHP — proporsi log-normalized untuk visual donut */
     var pMuzaki   = {{ $pMuzaki }};
     var pMustahik = {{ $pMustahik }};
     var pDana     = {{ $pDana }};
     var pProgram  = {{ $pProgram }};
+
+    /* Label tooltip pakai nilai formatted dari PHP */
+    var tooltipLabels = [
+        'Muzaki: {{ $statMuzaki }}',
+        'Mustahik: {{ $statMustahik }}',
+        'Dana: {{ $statDana }}',
+        'Program: {{ $statProgram }}'
+    ];
 
     function makeRing(id, pct, color, onDone) {
         var el = document.getElementById(id);
@@ -390,7 +457,7 @@
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Muzaki', 'Mustahik', 'Dana', 'Program'],
+                    labels: ['Muzaki', 'Mustahik', 'Dana Tersalurkan', 'Program Zakat'],
                     datasets: [{
                         data: [pMuzaki, pMustahik, pDana, pProgram],
                         backgroundColor: ['#16a34a', '#059669', '#0d9488', '#65a30d'],
@@ -408,12 +475,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(c) {
-                                    return '  ' + [
-                                        'Muzaki: {{ $statMuzaki }}',
-                                        'Mustahik: {{ $statMustahik }}',
-                                        'Dana: Rp {{ $statDana }}',
-                                        'Program: {{ $statProgram }}'
-                                    ][c.dataIndex];
+                                    return '  ' + tooltipLabels[c.dataIndex];
                                 }
                             },
                             backgroundColor: '#1a1a1a',

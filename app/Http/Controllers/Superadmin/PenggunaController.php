@@ -30,7 +30,9 @@ class PenggunaController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Pengguna::with('lembaga')->latest();
+        $query = Pengguna::with('lembaga')
+            ->orderByRaw("FIELD(peran, 'superadmin') DESC")
+            ->latest();
 
         if ($search = $request->get('q')) {
             $query->search($search);
@@ -362,7 +364,6 @@ class PenggunaController extends Controller
             return redirect()
                 ->route('pengguna.index')
                 ->with('success', 'Pengguna berhasil ditambahkan' . $suffix);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error store pengguna', [
@@ -415,11 +416,15 @@ class PenggunaController extends Controller
         $rules = [
             'peran'     => ['required', Rule::in(['superadmin', 'admin_d', 'amil', 'muzakki'])],
             'username'  => [
-                'nullable', 'string', 'max:255',
+                'nullable',
+                'string',
+                'max:255',
                 Rule::unique('pengguna', 'username')->ignore($pengguna->id),
             ],
             'email'     => [
-                'required', 'email', 'max:255',
+                'required',
+                'email',
+                'max:255',
                 Rule::unique('pengguna', 'email')->ignore($pengguna->id),
             ],
             'password'  => ['nullable', 'string', 'min:8', 'confirmed'],
@@ -481,7 +486,9 @@ class PenggunaController extends Controller
             $rules = array_merge($rules, [
                 'muzakki_nama'      => ['required', 'string', 'max:255'],
                 'muzakki_nik'       => [
-                    'nullable', 'string', 'size:16',
+                    'nullable',
+                    'string',
+                    'size:16',
                     Rule::unique('muzakki', 'nik')->ignore($existingMuzakkiId),
                 ],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
@@ -718,7 +725,6 @@ class PenggunaController extends Controller
             return redirect()
                 ->route('pengguna.show', $pengguna->uuid)
                 ->with('success', 'Data pengguna berhasil diperbarui.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error update pengguna', [

@@ -93,7 +93,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status Verifikasi</label>
                             <select name="status_verifikasi"
@@ -101,11 +100,10 @@
                                 onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
                                 <option value="verified" {{ request('status_verifikasi') == 'verified' ? 'selected' : '' }}>Verified</option>
-                                <option value="pending" {{ request('status_verifikasi') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="pending"  {{ request('status_verifikasi') == 'pending'  ? 'selected' : '' }}>Pending</option>
                                 <option value="rejected" {{ request('status_verifikasi') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Keaktifan</label>
                             <select name="is_active"
@@ -116,7 +114,6 @@
                                 <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
-
                         @if (isset($kategoriList))
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Kategori</label>
@@ -133,14 +130,12 @@
                             </div>
                         @endif
                     </div>
-
                     @if (request()->hasAny(['status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('mustahik.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
                             </a>
@@ -149,7 +144,7 @@
                 </form>
             </div>
 
-            {{-- Table --}}
+            {{-- Outer Table --}}
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -162,6 +157,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($lembagas as $lembaga)
+                            {{-- Baris Lembaga --}}
                             <tr class="lembaga-row cursor-pointer hover:bg-primary/5 transition-colors"
                                 data-nama="{{ strtolower($lembaga->nama) }}"
                                 onclick="toggleLembaga('mustahik-lembaga-{{ $lembaga->id }}', this)">
@@ -173,12 +169,6 @@
                                 </td>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                            </svg>
-                                        </div>
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat mustahik</div>
@@ -195,7 +185,7 @@
                                 </td>
                             </tr>
 
-                            {{-- Expandable Row --}}
+                            {{-- Expandable Row: Tabel Mustahik dengan JS Pagination --}}
                             <tr id="mustahik-lembaga-{{ $lembaga->id }}" class="hidden lembaga-content-row">
                                 <td colspan="4" class="p-0">
                                     <div class="bg-gradient-to-b from-green-50/50 to-gray-50 border-y border-green-200/50 px-6 py-4">
@@ -211,7 +201,26 @@
                                                 Belum ada data mustahik untuk lembaga ini
                                             </div>
                                         @else
+                                            {{-- Serialize data mustahik ke JSON untuk JS pagination --}}
+                                            @php
+                                                $mustahikData = $lembaga->mustahiks->map(function ($m) {
+                                                    return [
+                                                        'no_registrasi'    => $m->no_registrasi ?? '-',
+                                                        'tanggal'          => $m->tanggal_registrasi
+                                                                                ? $m->tanggal_registrasi->format('d M Y')
+                                                                                : '-',
+                                                        'nama'             => $m->nama_lengkap,
+                                                        'initial'          => strtoupper(substr($m->nama_lengkap, 0, 1)),
+                                                        'nik'              => $m->nik ?? null,
+                                                        'kategori'         => $m->kategoriMustahik->nama ?? null,
+                                                        'status_verifikasi'=> $m->status_verifikasi,
+                                                        'is_active'        => (bool) $m->is_active,
+                                                    ];
+                                                });
+                                            @endphp
+
                                             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                                {{-- Tabel --}}
                                                 <table class="min-w-full divide-y divide-gray-200">
                                                     <thead class="bg-white">
                                                         <tr>
@@ -221,54 +230,27 @@
                                                             <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="bg-white divide-y divide-gray-100">
-                                                        @foreach ($lembaga->mustahiks as $mustahik)
-                                                            <tr class="hover:bg-gray-50 transition-colors">
-                                                                <td class="px-4 py-3">
-                                                                    <div class="text-sm font-medium text-gray-900">{{ $mustahik->no_registrasi }}</div>
-                                                                    <div class="text-xs text-gray-400">{{ $mustahik->tanggal_registrasi->format('d M Y') }}</div>
-                                                                </td>
-                                                                <td class="px-4 py-3">
-                                                                    <div class="flex items-center gap-2">
-                                                                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                                            <span class="text-xs font-semibold text-primary">{{ strtoupper(substr($mustahik->nama_lengkap, 0, 1)) }}</span>
-                                                                        </div>
-                                                                        <div>
-                                                                            <div class="text-sm font-medium text-gray-900">{{ $mustahik->nama_lengkap }}</div>
-                                                                            @if($mustahik->nik)
-                                                                                <div class="text-xs text-gray-400">NIK: {{ $mustahik->nik }}</div>
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="px-4 py-3 hidden sm:table-cell">
-                                                                    @if($mustahik->kategoriMustahik)
-                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                                            {{ $mustahik->kategoriMustahik->nama }}
-                                                                        </span>
-                                                                    @endif
-                                                                </td>
-                                                                <td class="px-4 py-3">
-                                                                    <div class="space-y-1">
-                                                                        @if($mustahik->status_verifikasi == 'verified')
-                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Verified</span>
-                                                                        @elseif($mustahik->status_verifikasi == 'pending')
-                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
-                                                                        @else
-                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Rejected</span>
-                                                                        @endif
-                                                                        @if($mustahik->is_active)
-                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Aktif</span>
-                                                                        @else
-                                                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Nonaktif</span>
-                                                                        @endif
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
+                                                    <tbody id="mustahik-tbody-{{ $lembaga->id }}"
+                                                           class="bg-white divide-y divide-gray-100">
+                                                        {{-- Diisi oleh JavaScript --}}
                                                     </tbody>
                                                 </table>
+
+                                                {{-- Pagination bar --}}
+                                                <div class="bg-white border-t border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3">
+                                                    <span id="mustahik-info-{{ $lembaga->id }}"
+                                                          class="text-xs text-gray-500"></span>
+                                                    <div class="flex items-center gap-1"
+                                                         id="mustahik-pagination-{{ $lembaga->id }}">
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            {{-- Data JSON untuk JS --}}
+                                            <script>
+                                                window.mustahikData = window.mustahikData || {};
+                                                window.mustahikData[{{ $lembaga->id }}] = @json($mustahikData);
+                                            </script>
                                         @endif
                                     </div>
                                 </td>
@@ -290,20 +272,162 @@
 
 @push('scripts')
 <script>
-    // ── Expandable lembaga rows ────────────────────────────────────────────
+    const MUSTAHIK_PER_PAGE = 10;
+    const mustahikPages     = {};
+
+    // ── Render baris mustahik ke tbody ────────────────────────────────────
+    function renderMustahikPage(lembagaId, page) {
+        const data       = window.mustahikData?.[lembagaId] ?? [];
+        const total      = data.length;
+        const totalPages = Math.ceil(total / MUSTAHIK_PER_PAGE);
+        page = Math.max(1, Math.min(page, totalPages));
+        mustahikPages[lembagaId] = page;
+
+        const start = (page - 1) * MUSTAHIK_PER_PAGE;
+        const end   = Math.min(start + MUSTAHIK_PER_PAGE, total);
+        const slice = data.slice(start, end);
+
+        // ── Render rows ───────────────────────────────────────────────────
+        const tbody = document.getElementById(`mustahik-tbody-${lembagaId}`);
+        tbody.innerHTML = slice.map(m => {
+            // Badge status verifikasi
+            const verifikasiMap = {
+                verified: 'bg-green-100 text-green-800',
+                pending:  'bg-yellow-100 text-yellow-800',
+                rejected: 'bg-red-100 text-red-800',
+            };
+            const verifikasiLabel = { verified: 'Verified', pending: 'Pending', rejected: 'Rejected' };
+            const vClass = verifikasiMap[m.status_verifikasi] ?? 'bg-gray-100 text-gray-800';
+            const vLabel = verifikasiLabel[m.status_verifikasi] ?? m.status_verifikasi;
+
+            // Badge keaktifan
+            const activeHtml = m.is_active
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">Aktif</span>`
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Nonaktif</span>`;
+
+            // Badge kategori
+            const kategoriHtml = m.kategori
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${escHtml(m.kategori)}</span>`
+                : `<span class="text-xs text-gray-400">-</span>`;
+
+            // NIK
+            const nikHtml = m.nik
+                ? `<div class="text-xs text-gray-400">NIK: ${escHtml(m.nik)}</div>`
+                : '';
+
+            return `<tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3">
+                    <div class="text-sm font-medium text-gray-900">${escHtml(m.no_registrasi)}</div>
+                    <div class="text-xs text-gray-400">${escHtml(m.tanggal)}</div>
+                </td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <span class="text-xs font-semibold text-primary">${escHtml(m.initial)}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${escHtml(m.nama)}</div>
+                            ${nikHtml}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3 hidden sm:table-cell">${kategoriHtml}</td>
+                <td class="px-4 py-3">
+                    <div class="space-y-1">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${vClass}">${vLabel}</span>
+                        ${activeHtml}
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // ── Info ──────────────────────────────────────────────────────────
+        document.getElementById(`mustahik-info-${lembagaId}`).textContent =
+            `Menampilkan ${start + 1}–${end} dari ${total} mustahik`;
+
+        // ── Pagination ────────────────────────────────────────────────────
+        document.getElementById(`mustahik-pagination-${lembagaId}`).innerHTML =
+            buildMustahikPagination(lembagaId, page, totalPages);
+    }
+
+    // ── Buat tombol pagination ────────────────────────────────────────────
+    function buildMustahikPagination(lembagaId, current, total) {
+        if (total <= 1) return '';
+
+        const btnBase     = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
+        const btnActive   = `${btnBase} bg-primary text-white`;
+        const btnNormal   = `${btnBase} text-gray-600 hover:bg-gray-100`;
+        const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
+
+        const prevSvg = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>`;
+        const nextSvg = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+
+        let html = '';
+
+        // Prev
+        html += current > 1
+            ? `<button onclick="renderMustahikPage(${lembagaId}, ${current - 1})" class="${btnNormal}">${prevSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${prevSvg}</button>`;
+
+        // Nomor halaman
+        mustahikPageRange(current, total).forEach(p => {
+            if (p === '...') {
+                html += `<span class="${btnBase} text-gray-400">…</span>`;
+            } else {
+                const cls = p === current ? btnActive : btnNormal;
+                html += `<button onclick="renderMustahikPage(${lembagaId}, ${p})" class="${cls}">${p}</button>`;
+            }
+        });
+
+        // Next
+        html += current < total
+            ? `<button onclick="renderMustahikPage(${lembagaId}, ${current + 1})" class="${btnNormal}">${nextSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${nextSvg}</button>`;
+
+        return html;
+    }
+
+    // ── Rentang nomor halaman ─────────────────────────────────────────────
+    function mustahikPageRange(current, total) {
+        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+        if (current <= 4)          return [1, 2, 3, 4, 5, '...', total];
+        if (current >= total - 3)  return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+        return [1, '...', current - 1, current, current + 1, '...', total];
+    }
+
+    // ── HTML escape ───────────────────────────────────────────────────────
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // ── Toggle expandable lembaga rows ────────────────────────────────────
     function toggleLembaga(id, row) {
         const content = document.getElementById(id);
         const chevron = row.querySelector('.lembaga-chevron');
         const isHidden = content.classList.contains('hidden');
+
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
+
+        // Render halaman 1 pertama kali dibuka
+        if (isHidden) {
+            const lembagaId = parseInt(id.replace('mustahik-lembaga-', ''));
+            if (window.mustahikData?.[lembagaId] && !mustahikPages[lembagaId]) {
+                renderMustahikPage(lembagaId, 1);
+            }
+        }
     }
 
     // ── Toggle Search ─────────────────────────────────────────────────────
     function toggleSearch() {
-        var btn = document.getElementById('search-button');
-        var form = document.getElementById('search-form');
-        var input = document.getElementById('search-input');
+        var btn       = document.getElementById('search-button');
+        var form      = document.getElementById('search-form');
+        var input     = document.getElementById('search-input');
         var container = document.getElementById('search-container');
         if (form.classList.contains('hidden')) {
             btn.classList.add('hidden');
@@ -325,8 +449,8 @@
     // ── ESC menutup search form ───────────────────────────────────────────
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            var form = document.getElementById('search-form');
-            var btn = document.getElementById('search-button');
+            var form      = document.getElementById('search-form');
+            var btn       = document.getElementById('search-button');
             var container = document.getElementById('search-container');
             if (!form.classList.contains('hidden')) {
                 form.classList.add('hidden');

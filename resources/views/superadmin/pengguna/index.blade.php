@@ -20,9 +20,11 @@
                         <a href="{{ route('pengguna.create') }}"
                             class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                            <span
+                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                 Tambah Pengguna
                             </span>
                         </a>
@@ -34,7 +36,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                            <span
+                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                 Filter
                             </span>
                         </button>
@@ -48,18 +51,20 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
+                                <span
+                                    class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
                             </button>
                             <form method="GET" action="{{ route('pengguna.index') }}" id="search-form"
                                 class="{{ request('q') ? '' : 'hidden' }}">
-                                @foreach(['peran','status','lembaga_id'] as $f)
-                                    @if(request($f))
+                                @foreach (['peran', 'status', 'lembaga_id'] as $f)
+                                    @if (request($f))
                                         <input type="hidden" name="{{ $f }}" value="{{ request($f) }}">
                                     @endif
                                 @endforeach
                                 <div class="relative flex-1">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
@@ -76,9 +81,9 @@
 
             {{-- ── Filter Panel ── --}}
             <div id="filter-panel"
-                class="{{ (request('peran') || request('status') || request('lembaga_id')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                class="{{ request('peran') || request('status') || request('lembaga_id') ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('pengguna.index') }}" id="filter-form">
-                    @if(request('q'))
+                    @if (request('q'))
                         <input type="hidden" name="q" value="{{ request('q') }}">
                     @endif
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -89,10 +94,14 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Peran</option>
-                                <option value="superadmin"   {{ request('peran') === 'superadmin'   ? 'selected' : '' }}>Super Admin</option>
-                                <option value="admin_lembaga" {{ request('peran') === 'admin_lembaga' ? 'selected' : '' }}>Admin Lembaga</option>
-                                <option value="amil"         {{ request('peran') === 'amil'         ? 'selected' : '' }}>Amil</option>
-                                <option value="muzakki"      {{ request('peran') === 'muzakki'      ? 'selected' : '' }}>Muzakki</option>
+                                <option value="superadmin" {{ request('peran') === 'superadmin' ? 'selected' : '' }}>
+                                    Super Admin</option>
+                                <option value="admin_lembaga" {{ request('peran') === 'admin_lembaga' ? 'selected' : '' }}>
+                                    Admin Lembaga</option>
+                                <option value="amil" {{ request('peran') === 'amil' ? 'selected' : '' }}>Amil
+                                </option>
+                                <option value="muzakki" {{ request('peran') === 'muzakki' ? 'selected' : '' }}>Muzakki
+                                </option>
                             </select>
                         </div>
                         {{-- Filter Status --}}
@@ -102,8 +111,10 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
-                                <option value="aktif"    {{ request('status') === 'aktif'    ? 'selected' : '' }}>Aktif</option>
-                                <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif
+                                </option>
+                                <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif
+                                </option>
                             </select>
                         </div>
                         {{-- Filter Lembaga --}}
@@ -113,20 +124,22 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Lembaga</option>
-                                @foreach($lembagaList as $lembaga)
-                                    <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
+                                @foreach ($lembagaList as $lembaga)
+                                    <option value="{{ $lembaga->id }}"
+                                        {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
                                         {{ $lembaga->nama }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    @if(request('peran') || request('status') || request('lembaga_id'))
+                    @if (request('peran') || request('status') || request('lembaga_id'))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('pengguna.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
                             </a>
@@ -141,52 +154,73 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengguna</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peran</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembaga</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Pengguna</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Peran</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Lembaga</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Dibuat</th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($pengguna as $user)
                                 @php
-                                    $peranLabel = match($user->peran) {
-                                        'superadmin'   => 'Super Admin',
+                                    $peranLabel = match ($user->peran) {
+                                        'superadmin' => 'Super Admin',
                                         'admin_lembaga' => 'Admin Lembaga',
-                                        'amil'         => 'Amil',
-                                        'muzakki'      => 'Muzakki',
-                                        default        => ucfirst($user->peran)
+                                        'amil' => 'Amil',
+                                        'muzakki' => 'Muzakki',
+                                        default => ucfirst($user->peran),
                                     };
-                                    $peranColor = match($user->peran) {
-                                        'superadmin'   => 'bg-purple-100 text-purple-800',
+                                    $peranColor = match ($user->peran) {
+                                        'superadmin' => 'bg-purple-100 text-purple-800',
                                         'admin_lembaga' => 'bg-blue-100 text-blue-800',
-                                        'amil'         => 'bg-green-100 text-green-800',
-                                        'muzakki'      => 'bg-amber-100 text-amber-800',
-                                        default        => 'bg-gray-100 text-gray-800'
+                                        'amil' => 'bg-green-100 text-green-800',
+                                        'muzakki' => 'bg-amber-100 text-amber-800',
+                                        default => 'bg-gray-100 text-gray-800',
                                     };
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-4">
                                         <div class="flex items-center space-x-3">
-                                            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <div
+                                                class="flex-shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
                                                 <span class="text-sm font-semibold text-primary">
                                                     {{ strtoupper(substr($user->username ?? $user->email, 0, 1)) }}
                                                 </span>
                                             </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    {{ $user->username ?? '-' }}
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-sm font-medium text-gray-900">
+                                                        {{ $user->username ?? '-' }}
+                                                    </span>
+                                                    @if ($user->id === auth()->id())
+                                                        <span
+                                                            class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+                                                            Anda
+                                                        </span>
+                                                    @endif
                                                 </div>
                                                 <div class="text-xs text-gray-500">{{ $user->email }}</div>
-                                                @if($user->is_google_user)
+                                                @if ($user->is_google_user)
                                                     <span class="inline-flex items-center text-xs text-blue-600 mt-0.5">
-                                                        <svg class="w-3 h-3 mr-0.5" viewBox="0 0 24 24" fill="currentColor">
-                                                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                                        <svg class="w-3 h-3 mr-0.5" viewBox="0 0 24 24"
+                                                            fill="currentColor">
+                                                            <path
+                                                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                                            <path
+                                                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                                            <path
+                                                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                                            <path
+                                                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                                                         </svg>
                                                         Google
                                                     </span>
@@ -203,24 +237,26 @@
                                         <div class="text-sm text-gray-900">{{ $user->lembaga->nama ?? '-' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($user->is_active)
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
+                                        @if ($user->is_active)
+                                            <span
+                                                class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
                                         @else
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
+                                            <span
+                                                class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
                                         {{ $user->created_at->format('d M Y') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                        <button type="button"
-                                            data-dropdown-toggle="{{ $user->uuid }}"
+                                        <button type="button" data-dropdown-toggle="{{ $user->uuid }}"
                                             data-nama="{{ $user->username ?? $user->email }}"
                                             data-is-self="{{ $user->id === auth()->id() ? '1' : '0' }}"
                                             data-is-active="{{ $user->is_active ? '1' : '0' }}"
                                             class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                <path
+                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                             </svg>
                                         </button>
                                     </td>
@@ -234,53 +270,66 @@
                 <div class="md:hidden divide-y divide-gray-200">
                     @foreach ($pengguna as $user)
                         @php
-                            $peranLabel = match($user->peran) {
-                                'superadmin'   => 'Super Admin',
+                            $peranLabel = match ($user->peran) {
+                                'superadmin' => 'Super Admin',
                                 'admin_lembaga' => 'Admin Lembaga',
-                                'amil'         => 'Amil',
-                                'muzakki'      => 'Muzakki',
-                                default        => ucfirst($user->peran)
+                                'amil' => 'Amil',
+                                'muzakki' => 'Muzakki',
+                                default => ucfirst($user->peran),
                             };
-                            $peranColor = match($user->peran) {
-                                'superadmin'   => 'bg-purple-100 text-purple-800',
+                            $peranColor = match ($user->peran) {
+                                'superadmin' => 'bg-purple-100 text-purple-800',
                                 'admin_lembaga' => 'bg-blue-100 text-blue-800',
-                                'amil'         => 'bg-green-100 text-green-800',
-                                'muzakki'      => 'bg-amber-100 text-amber-800',
-                                default        => 'bg-gray-100 text-gray-800'
+                                'amil' => 'bg-green-100 text-green-800',
+                                'muzakki' => 'bg-amber-100 text-amber-800',
+                                default => 'bg-gray-100 text-gray-800',
                             };
                         @endphp
                         <div class="p-4 hover:bg-gray-50 transition-colors">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-3 flex-1 min-w-0">
-                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <div
+                                        class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                                         <span class="text-sm font-semibold text-primary">
                                             {{ strtoupper(substr($user->username ?? $user->email, 0, 1)) }}
                                         </span>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $user->username ?? '-' }}</h3>
-                                        <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
-                                        <div class="flex flex-wrap gap-1.5 mt-2">
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">{{ $peranLabel }}</span>
-                                            @if($user->is_active)
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
-                                            @else
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="text-sm font-semibold text-gray-900 truncate">
+                                                {{ $user->username ?? '-' }}</h3>
+                                            @if ($user->id === auth()->id())
+                                                <span
+                                                    class="flex-shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+                                                    Anda
+                                                </span>
                                             @endif
                                         </div>
-                                        @if($user->lembaga)
+                                        <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
+                                        <div class="flex flex-wrap gap-1.5 mt-2">
+                                            <span
+                                                class="px-2 py-1 text-xs font-medium rounded-full {{ $peranColor }}">{{ $peranLabel }}</span>
+                                            @if ($user->is_active)
+                                                <span
+                                                    class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Aktif</span>
+                                            @else
+                                                <span
+                                                    class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Nonaktif</span>
+                                            @endif
+                                        </div>
+                                        @if ($user->lembaga)
                                             <p class="text-xs text-gray-500 mt-1.5">{{ $user->lembaga->nama }}</p>
                                         @endif
                                     </div>
                                 </div>
-                                <button type="button"
-                                    data-dropdown-toggle="{{ $user->uuid }}"
+                                <button type="button" data-dropdown-toggle="{{ $user->uuid }}"
                                     data-nama="{{ $user->username ?? $user->email }}"
                                     data-is-self="{{ $user->id === auth()->id() ? '1' : '0' }}"
                                     data-is-active="{{ $user->is_active ? '1' : '0' }}"
                                     class="dropdown-toggle flex-shrink-0 ml-2 inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                        <path
+                                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                     </svg>
                                 </button>
                             </div>
@@ -293,20 +342,21 @@
                         {{ $pengguna->links() }}
                     </div>
                 @endif
-
             @else
                 {{-- ── Empty State ── --}}
                 <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div
+                        class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    @if(request('q') || request('peran') || request('status') || request('lembaga_id'))
+                    @if (request('q') || request('peran') || request('status') || request('lembaga_id'))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-sm text-gray-500 mb-6">
-                            @if(request('q'))
+                            @if (request('q'))
                                 Tidak ada pengguna yang cocok dengan "{{ request('q') }}"
                             @else
                                 Tidak ada pengguna yang sesuai dengan filter yang dipilih
@@ -322,7 +372,8 @@
                         <a href="{{ route('pengguna.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Tambah Pengguna
                         </a>
@@ -377,7 +428,8 @@
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
             <div class="flex justify-center mb-3 sm:mb-4">
-                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -402,176 +454,176 @@
 @endsection
 
 @push('scripts')
-<script>
-    let currentUuid = null;
-    let currentNama = null;
+    <script>
+        let currentUuid = null;
+        let currentNama = null;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const dropdownContainer = document.getElementById('dropdown-container');
-        const detailLink        = document.getElementById('dropdown-detail-link');
-        const editLink          = document.getElementById('dropdown-edit-link');
-        const toggleBtn         = document.getElementById('dropdown-toggle-btn');
-        const toggleLabel       = document.getElementById('dropdown-toggle-label');
-        const deleteBtn         = document.getElementById('dropdown-delete-btn');
-        const tableContainer    = document.getElementById('table-container');
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownContainer = document.getElementById('dropdown-container');
+            const detailLink = document.getElementById('dropdown-detail-link');
+            const editLink = document.getElementById('dropdown-edit-link');
+            const toggleBtn = document.getElementById('dropdown-toggle-btn');
+            const toggleLabel = document.getElementById('dropdown-toggle-label');
+            const deleteBtn = document.getElementById('dropdown-delete-btn');
+            const tableContainer = document.getElementById('table-container');
 
-        // ── Dropdown ──────────────────────────────────────────────────────────
-        document.addEventListener('click', function (e) {
-            const toggle = e.target.closest('.dropdown-toggle');
+            // ── Dropdown ──────────────────────────────────────────────────────────
+            document.addEventListener('click', function(e) {
+                const toggle = e.target.closest('.dropdown-toggle');
 
-            if (toggle) {
-                e.stopPropagation();
+                if (toggle) {
+                    e.stopPropagation();
 
-                const uuid     = toggle.getAttribute('data-dropdown-toggle');
-                const nama     = toggle.getAttribute('data-nama');
-                const isSelf   = toggle.getAttribute('data-is-self') === '1';
-                const isActive = toggle.getAttribute('data-is-active') === '1';
+                    const uuid = toggle.getAttribute('data-dropdown-toggle');
+                    const nama = toggle.getAttribute('data-nama');
+                    const isSelf = toggle.getAttribute('data-is-self') === '1';
+                    const isActive = toggle.getAttribute('data-is-active') === '1';
 
-                if (dropdownContainer.getAttribute('data-current-uuid') === uuid &&
-                    !dropdownContainer.classList.contains('hidden')) {
+                    if (dropdownContainer.getAttribute('data-current-uuid') === uuid &&
+                        !dropdownContainer.classList.contains('hidden')) {
+                        dropdownContainer.classList.add('hidden');
+                        dropdownContainer.removeAttribute('data-current-uuid');
+                        return;
+                    }
+
+                    currentUuid = uuid;
+                    currentNama = nama;
+                    dropdownContainer.setAttribute('data-current-uuid', uuid);
+
+                    const rect = toggle.getBoundingClientRect();
+                    const dropdownW = window.innerWidth < 640 ? 176 : 192;
+                    const dropdownH = 180;
+
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    const spaceAbove = rect.top;
+
+                    let top;
+                    if (spaceBelow >= dropdownH || spaceBelow >= spaceAbove) {
+                        top = rect.bottom + window.scrollY + 5;
+                    } else {
+                        top = rect.top + window.scrollY - dropdownH - 5;
+                    }
+
+                    let left = rect.right + window.scrollX - dropdownW;
+                    if (left < window.scrollX + 10) left = window.scrollX + 10;
+                    if (left + dropdownW > window.innerWidth + window.scrollX) {
+                        left = window.innerWidth + window.scrollX - dropdownW - 10;
+                    }
+
+                    dropdownContainer.style.top = top + 'px';
+                    dropdownContainer.style.left = left + 'px';
+
+                    detailLink.href = `/pengguna/${uuid}`;
+                    editLink.href = `/pengguna/${uuid}/edit`;
+
+                    toggleLabel.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
+                    toggleBtn.classList.toggle('hidden', isSelf);
+                    deleteBtn.classList.toggle('hidden', isSelf);
+
+                    dropdownContainer.classList.remove('hidden');
+
+                } else if (!dropdownContainer.contains(e.target)) {
                     dropdownContainer.classList.add('hidden');
                     dropdownContainer.removeAttribute('data-current-uuid');
-                    return;
                 }
+            });
 
-                currentUuid = uuid;
-                currentNama = nama;
-                dropdownContainer.setAttribute('data-current-uuid', uuid);
-
-                const rect      = toggle.getBoundingClientRect();
-                const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                const dropdownH = 180;
-
-                const spaceBelow = window.innerHeight - rect.bottom;
-                const spaceAbove = rect.top;
-
-                let top;
-                if (spaceBelow >= dropdownH || spaceBelow >= spaceAbove) {
-                    top = rect.bottom + window.scrollY + 5;
-                } else {
-                    top = rect.top + window.scrollY - dropdownH - 5;
-                }
-
-                let left = rect.right + window.scrollX - dropdownW;
-                if (left < window.scrollX + 10) left = window.scrollX + 10;
-                if (left + dropdownW > window.innerWidth + window.scrollX) {
-                    left = window.innerWidth + window.scrollX - dropdownW - 10;
-                }
-
-                dropdownContainer.style.top  = top + 'px';
-                dropdownContainer.style.left = left + 'px';
-
-                detailLink.href = `/pengguna/${uuid}`;
-                editLink.href   = `/pengguna/${uuid}/edit`;
-
-                toggleLabel.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
-                toggleBtn.classList.toggle('hidden', isSelf);
-                deleteBtn.classList.toggle('hidden', isSelf);
-
-                dropdownContainer.classList.remove('hidden');
-
-            } else if (!dropdownContainer.contains(e.target)) {
+            // ── Toggle Status ─────────────────────────────────────────────────────
+            toggleBtn.addEventListener('click', function() {
+                if (!currentUuid) return;
                 dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
-            }
-        });
 
-        // ── Toggle Status ─────────────────────────────────────────────────────
-        toggleBtn.addEventListener('click', function () {
-            if (!currentUuid) return;
-            dropdownContainer.classList.add('hidden');
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/pengguna/${currentUuid}/toggle-status`;
 
-            const form   = document.createElement('form');
-            form.method  = 'POST';
-            form.action  = `/pengguna/${currentUuid}/toggle-status`;
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
 
-            const csrf   = document.createElement('input');
-            csrf.type    = 'hidden';
-            csrf.name    = '_token';
-            csrf.value   = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'PATCH';
 
-            const method = document.createElement('input');
-            method.type  = 'hidden';
-            method.name  = '_method';
-            method.value = 'PATCH';
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            });
 
-            form.appendChild(csrf);
-            form.appendChild(method);
-            document.body.appendChild(form);
-            form.submit();
-        });
-
-        // ── Delete ────────────────────────────────────────────────────────────
-        deleteBtn.addEventListener('click', function () {
-            if (!currentUuid) return;
-            dropdownContainer.classList.add('hidden');
-            document.getElementById('modal-pengguna-name').textContent = currentNama;
-            document.getElementById('delete-modal').classList.remove('hidden');
-        });
-
-        document.getElementById('confirm-delete-btn').addEventListener('click', function () {
-            if (!currentUuid) return;
-            const form   = document.createElement('form');
-            form.method  = 'POST';
-            form.action  = `/pengguna/${currentUuid}`;
-
-            const csrf   = document.createElement('input');
-            csrf.type    = 'hidden';
-            csrf.name    = '_token';
-            csrf.value   = '{{ csrf_token() }}';
-
-            const method = document.createElement('input');
-            method.type  = 'hidden';
-            method.name  = '_method';
-            method.value = 'DELETE';
-
-            form.appendChild(csrf);
-            form.appendChild(method);
-            document.body.appendChild(form);
-            form.submit();
-        });
-
-        document.getElementById('cancel-delete-btn').addEventListener('click', () =>
-            document.getElementById('delete-modal').classList.add('hidden')
-        );
-        document.getElementById('delete-modal').addEventListener('click', function (e) {
-            if (e.target === this) this.classList.add('hidden');
-        });
-
-        // ── Close on scroll / resize ──────────────────────────────────────────
-        const closeDropdown = () => {
-            if (!dropdownContainer.classList.contains('hidden')) {
+            // ── Delete ────────────────────────────────────────────────────────────
+            deleteBtn.addEventListener('click', function() {
+                if (!currentUuid) return;
                 dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
+                document.getElementById('modal-pengguna-name').textContent = currentNama;
+                document.getElementById('delete-modal').classList.remove('hidden');
+            });
+
+            document.getElementById('confirm-delete-btn').addEventListener('click', function() {
+                if (!currentUuid) return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/pengguna/${currentUuid}`;
+
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            });
+
+            document.getElementById('cancel-delete-btn').addEventListener('click', () =>
+                document.getElementById('delete-modal').classList.add('hidden')
+            );
+            document.getElementById('delete-modal').addEventListener('click', function(e) {
+                if (e.target === this) this.classList.add('hidden');
+            });
+
+            // ── Close on scroll / resize ──────────────────────────────────────────
+            const closeDropdown = () => {
+                if (!dropdownContainer.classList.contains('hidden')) {
+                    dropdownContainer.classList.add('hidden');
+                    dropdownContainer.removeAttribute('data-current-uuid');
+                }
+            };
+            window.addEventListener('scroll', closeDropdown, true);
+            window.addEventListener('resize', closeDropdown);
+            tableContainer?.addEventListener('scroll', closeDropdown, true);
+        });
+
+        // ── Search / Filter helpers ───────────────────────────────────────────────
+        function toggleSearch() {
+            const btn = document.getElementById('search-button');
+            const form = document.getElementById('search-form');
+            const input = document.getElementById('search-input');
+            const container = document.getElementById('search-container');
+
+            if (form.classList.contains('hidden')) {
+                btn.classList.add('hidden');
+                form.classList.remove('hidden');
+                container.style.minWidth = '280px';
+                setTimeout(() => input.focus(), 50);
+            } else {
+                if (!'{{ request('q') }}') input.value = '';
+                form.classList.add('hidden');
+                btn.classList.remove('hidden');
+                container.style.minWidth = 'auto';
             }
-        };
-        window.addEventListener('scroll', closeDropdown, true);
-        window.addEventListener('resize', closeDropdown);
-        tableContainer?.addEventListener('scroll', closeDropdown, true);
-    });
-
-    // ── Search / Filter helpers ───────────────────────────────────────────────
-    function toggleSearch() {
-        const btn       = document.getElementById('search-button');
-        const form      = document.getElementById('search-form');
-        const input     = document.getElementById('search-input');
-        const container = document.getElementById('search-container');
-
-        if (form.classList.contains('hidden')) {
-            btn.classList.add('hidden');
-            form.classList.remove('hidden');
-            container.style.minWidth = '280px';
-            setTimeout(() => input.focus(), 50);
-        } else {
-            if (!'{{ request('q') }}') input.value = '';
-            form.classList.add('hidden');
-            btn.classList.remove('hidden');
-            container.style.minWidth = 'auto';
         }
-    }
 
-    function toggleFilter() {
-        document.getElementById('filter-panel').classList.toggle('hidden');
-    }
-</script>
+        function toggleFilter() {
+            document.getElementById('filter-panel').classList.toggle('hidden');
+        }
+    </script>
 @endpush

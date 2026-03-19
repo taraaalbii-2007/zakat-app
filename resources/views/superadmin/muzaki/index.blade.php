@@ -92,14 +92,12 @@
                             </select>
                         </div>
                     </div>
-
                     @if (request()->hasAny(['lembaga_id']))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('muzaki.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
                             </a>
@@ -108,7 +106,7 @@
                 </form>
             </div>
 
-            {{-- Table --}}
+            {{-- Outer Table --}}
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -122,6 +120,7 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="tbody-lembaga">
                         @forelse ($lembagas as $lembaga)
+                            {{-- Baris Lembaga --}}
                             <tr class="lembaga-row cursor-pointer hover:bg-primary/5 transition-colors"
                                 data-nama="{{ strtolower($lembaga->nama) }}"
                                 onclick="toggleLembaga('lembaga-{{ $lembaga->id }}', this)">
@@ -133,12 +132,7 @@
                                 </td>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                            </svg>
-                                        </div>
+                                        {{-- Hapus ikon lembaga, langsung teks --}}
                                         <div>
                                             <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat muzaki</div>
@@ -160,7 +154,7 @@
                                 </td>
                             </tr>
 
-                            {{-- Expandable Row: Tabel Muzaki --}}
+                            {{-- Expandable Row: Tabel Muzaki dengan JS Pagination --}}
                             <tr id="lembaga-{{ $lembaga->id }}" class="hidden lembaga-content-row">
                                 <td colspan="5" class="p-0">
                                     <div class="bg-gradient-to-b from-primary/5 to-gray-50 border-y border-primary/20 px-6 py-4">
@@ -176,70 +170,66 @@
                                                 Belum ada data muzaki untuk lembaga ini
                                             </div>
                                         @else
+                                            @php
+                                                $muzakiData = $lembaga->muzakkis->map(function ($m) use ($lembaga) {
+                                                    // Jenis zakat dari GROUP_CONCAT di controller
+                                                    $jenisZakat = collect(
+                                                        array_filter(explode(',', $m->jenis_zakat_list ?? ''))
+                                                    )->unique()->values();
+                                                    return [
+                                                        'nama'              => $m->muzakki_nama,
+                                                        'initial'           => strtoupper(substr($m->muzakki_nama, 0, 1)),
+                                                        'nik'               => $m->muzakki_nik ?? null,
+                                                        'telepon'           => $m->muzakki_telepon ?? null,
+                                                        'email'             => $m->muzakki_email ?? null,
+                                                        'jenis_zakat'       => $jenisZakat->toArray(),
+                                                        'total_transaksi'   => $m->total_transaksi,
+                                                        'total_nominal'     => (int) $m->total_nominal,
+                                                        'transaksi_terakhir'=> $m->transaksi_terakhir
+                                                            ? \Carbon\Carbon::parse($m->transaksi_terakhir)->translatedFormat('d M Y')
+                                                            : '-',
+                                                        'detail_url'        => route('muzaki.show', [
+                                                            'nama'       => $m->muzakki_nama,
+                                                            'lembaga_id' => $lembaga->id,
+                                                        ]),
+                                                    ];
+                                                });
+                                            @endphp
+
                                             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                                {{-- Tabel --}}
                                                 <table class="min-w-full divide-y divide-gray-200">
                                                     <thead class="bg-white">
                                                         <tr>
                                                             <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Muzaki</th>
-                                                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Kontak</th>
+                                                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Jenis Zakat</th>
                                                             <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Transaksi</th>
                                                             <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Total Nominal</th>
                                                             <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Terakhir</th>
                                                             <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="bg-white divide-y divide-gray-100">
-                                                        @foreach ($lembaga->muzakkis as $muzakki)
-                                                            <tr class="hover:bg-gray-50 transition-colors">
-                                                                <td class="px-4 py-3">
-                                                                    <div class="flex items-center gap-3">
-                                                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                                                                            <span class="text-sm font-semibold text-green-700">
-                                                                                {{ strtoupper(substr($muzakki->muzakki_nama, 0, 1)) }}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div>
-                                                                            <div class="text-sm font-medium text-gray-900">{{ $muzakki->muzakki_nama }}</div>
-                                                                            @if($muzakki->muzakki_nik)
-                                                                                <div class="text-xs text-gray-400">NIK: {{ $muzakki->muzakki_nik }}</div>
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="px-4 py-3 hidden sm:table-cell">
-                                                                    <div class="text-sm text-gray-700">{{ $muzakki->muzakki_telepon ?? '-' }}</div>
-                                                                    <div class="text-xs text-gray-400">{{ Str::limit($muzakki->muzakki_email ?? '-', 25) }}</div>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-center">
-                                                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-700 text-sm font-bold">
-                                                                        {{ $muzakki->total_transaksi }}
-                                                                    </span>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-right hidden md:table-cell">
-                                                                    <p class="text-sm font-semibold text-gray-800">
-                                                                        Rp {{ number_format($muzakki->total_nominal, 0, ',', '.') }}
-                                                                    </p>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-center hidden lg:table-cell">
-                                                                    <p class="text-xs text-gray-700">
-                                                                        {{ $muzakki->transaksi_terakhir ? \Carbon\Carbon::parse($muzakki->transaksi_terakhir)->translatedFormat('d M Y') : '-' }}
-                                                                    </p>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-center">
-                                                                    <a href="{{ route('muzaki.show', ['nama' => $muzakki->muzakki_nama, 'lembaga_id' => $lembaga->id]) }}"
-                                                                       class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#2d6a2d] bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
-                                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                                        </svg>
-                                                                        Detail
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
+                                                    <tbody id="muzaki-tbody-{{ $lembaga->id }}"
+                                                           class="bg-white divide-y divide-gray-100">
+                                                        {{-- Diisi oleh JavaScript --}}
                                                     </tbody>
                                                 </table>
+
+                                                {{-- Pagination bar --}}
+                                                <div class="bg-white border-t border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3">
+                                                    <span id="muzaki-info-{{ $lembaga->id }}"
+                                                          class="text-xs text-gray-500"></span>
+                                                    <div class="flex items-center gap-1"
+                                                         id="muzaki-pagination-{{ $lembaga->id }}">
+                                                    </div>
+                                                </div>
                                             </div>
+
+                                            {{-- Data JSON untuk JS --}}
+                                            <script>
+                                                window.muzakiData = window.muzakiData || {};
+                                                window.muzakiData[{{ $lembaga->id }}] = @json($muzakiData);
+                                            </script>
                                         @endif
                                     </div>
                                 </td>
@@ -261,20 +251,166 @@
 
 @push('scripts')
 <script>
-    // ── Expandable lembaga rows ────────────────────────────────────────────
+    const MUZAKI_PER_PAGE = 10;
+    const muzakiPages     = {};
+
+    // ── Render baris muzaki ke tbody ──────────────────────────────────────
+    function renderMuzakiPage(lembagaId, page) {
+        const data       = window.muzakiData?.[lembagaId] ?? [];
+        const total      = data.length;
+        const totalPages = Math.ceil(total / MUZAKI_PER_PAGE);
+        page = Math.max(1, Math.min(page, totalPages));
+        muzakiPages[lembagaId] = page;
+
+        const start = (page - 1) * MUZAKI_PER_PAGE;
+        const end   = Math.min(start + MUZAKI_PER_PAGE, total);
+        const slice = data.slice(start, end);
+
+        const tbody = document.getElementById(`muzaki-tbody-${lembagaId}`);
+        tbody.innerHTML = slice.map(m => {
+
+            // ── 1. Kolom Muzaki: nama + telepon + email di bawah nama ────
+            const teleponHtml = m.telepon
+                ? `<div class="text-xs text-gray-400 mt-0.5">${escHtml(m.telepon)}</div>`
+                : '';
+            const emailShort  = m.email && m.email.length > 28
+                ? m.email.substring(0, 28) + '…'
+                : (m.email ?? '');
+            const emailHtml   = emailShort
+                ? `<div class="text-xs text-gray-400">${escHtml(emailShort)}</div>`
+                : '';
+
+            // ── 2. Kolom Jenis Zakat ──────────────────────────────────────
+            let jenisHtml = '<span class="text-xs text-gray-400">-</span>';
+            if (m.jenis_zakat && m.jenis_zakat.length > 0) {
+                jenisHtml = m.jenis_zakat
+                    .map(j => `<span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">${escHtml(j)}</span>`)
+                    .join(' ');
+            }
+
+            // ── 3. Kolom Transaksi: plain text "2x" ──────────────────────
+            const trxHtml = `<span class="text-sm font-semibold text-gray-700">${m.total_transaksi}x</span>`;
+
+            // ── Total nominal ─────────────────────────────────────────────
+            const nominalFormatted = 'Rp ' + Number(m.total_nominal).toLocaleString('id-ID');
+
+            return `<tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                            <span class="text-sm font-semibold text-green-700">${escHtml(m.initial)}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${escHtml(m.nama)}</div>
+                            ${teleponHtml}
+                            ${emailHtml}
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-3 hidden sm:table-cell">
+                    <div class="flex flex-wrap gap-1">${jenisHtml}</div>
+                </td>
+                <td class="px-4 py-3 text-center">
+                    ${trxHtml}
+                </td>
+                <td class="px-4 py-3 text-right hidden md:table-cell">
+                    <p class="text-sm font-semibold text-gray-800">${nominalFormatted}</p>
+                </td>
+                <td class="px-4 py-3 text-center hidden lg:table-cell">
+                    <p class="text-xs text-gray-700">${escHtml(m.transaksi_terakhir)}</p>
+                </td>
+                <td class="px-4 py-3 text-center">
+                    <a href="${m.detail_url}"
+                       class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#2d6a2d] bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        Detail
+                    </a>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // ── Info ──────────────────────────────────────────────────────────
+        document.getElementById(`muzaki-info-${lembagaId}`).textContent =
+            `Menampilkan ${start + 1}–${end} dari ${total} muzaki`;
+
+        // ── Pagination ────────────────────────────────────────────────────
+        document.getElementById(`muzaki-pagination-${lembagaId}`).innerHTML =
+            buildMuzakiPagination(lembagaId, page, totalPages);
+    }
+
+    // ── Buat tombol pagination ────────────────────────────────────────────
+    function buildMuzakiPagination(lembagaId, current, total) {
+        if (total <= 1) return '';
+
+        const btnBase     = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
+        const btnActive   = `${btnBase} bg-primary text-white`;
+        const btnNormal   = `${btnBase} text-gray-600 hover:bg-gray-100`;
+        const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
+
+        const prevSvg = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>`;
+        const nextSvg = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+
+        let html = '';
+
+        html += current > 1
+            ? `<button onclick="renderMuzakiPage(${lembagaId}, ${current - 1})" class="${btnNormal}">${prevSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${prevSvg}</button>`;
+
+        muzakiPageRange(current, total).forEach(p => {
+            if (p === '...') {
+                html += `<span class="${btnBase} text-gray-400">…</span>`;
+            } else {
+                const cls = p === current ? btnActive : btnNormal;
+                html += `<button onclick="renderMuzakiPage(${lembagaId}, ${p})" class="${cls}">${p}</button>`;
+            }
+        });
+
+        html += current < total
+            ? `<button onclick="renderMuzakiPage(${lembagaId}, ${current + 1})" class="${btnNormal}">${nextSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${nextSvg}</button>`;
+
+        return html;
+    }
+
+    function muzakiPageRange(current, total) {
+        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+        if (current <= 4)         return [1, 2, 3, 4, 5, '...', total];
+        if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+        return [1, '...', current - 1, current, current + 1, '...', total];
+    }
+
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     function toggleLembaga(id, row) {
         const content = document.getElementById(id);
         const chevron = row.querySelector('.lembaga-chevron');
         const isHidden = content.classList.contains('hidden');
+
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
+
+        if (isHidden) {
+            const lembagaId = parseInt(id.replace('lembaga-', ''));
+            if (window.muzakiData?.[lembagaId] && !muzakiPages[lembagaId]) {
+                renderMuzakiPage(lembagaId, 1);
+            }
+        }
     }
 
-    // ── Toggle Search ─────────────────────────────────────────────────────
     function toggleSearch() {
-        var btn = document.getElementById('search-button');
-        var form = document.getElementById('search-form');
-        var input = document.getElementById('search-input');
+        var btn       = document.getElementById('search-button');
+        var form      = document.getElementById('search-form');
+        var input     = document.getElementById('search-input');
         var container = document.getElementById('search-container');
         if (form.classList.contains('hidden')) {
             btn.classList.add('hidden');
@@ -288,16 +424,14 @@
         }
     }
 
-    // ── Toggle Filter Panel ───────────────────────────────────────────────
     function toggleFilter() {
         document.getElementById('filter-panel').classList.toggle('hidden');
     }
 
-    // ── ESC menutup search form ───────────────────────────────────────────
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            var form = document.getElementById('search-form');
-            var btn = document.getElementById('search-button');
+            var form      = document.getElementById('search-form');
+            var btn       = document.getElementById('search-button');
             var container = document.getElementById('search-container');
             if (!form.classList.contains('hidden')) {
                 form.classList.add('hidden');

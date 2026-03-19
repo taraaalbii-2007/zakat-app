@@ -151,7 +151,6 @@
                                 @endforeach
                             </select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
                             <select name="status"
@@ -159,11 +158,10 @@
                                 onchange="this.form.submit()">
                                 <option value="">Semua Status</option>
                                 <option value="verified" {{ request('status') == 'verified' ? 'selected' : '' }}>Verified</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="pending"  {{ request('status') == 'pending'  ? 'selected' : '' }}>Pending</option>
                                 <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                             </select>
                         </div>
-
                         @if (isset($jenisZakatList))
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Jenis Zakat</label>
@@ -179,14 +177,12 @@
                                 </select>
                             </div>
                         @endif
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Mulai</label>
                             <input type="date" name="start_date" value="{{ request('start_date') }}"
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                         </div>
-
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Akhir</label>
                             <input type="date" name="end_date" value="{{ request('end_date') }}"
@@ -194,14 +190,12 @@
                                 onchange="this.form.submit()">
                         </div>
                     </div>
-
                     @if (request()->hasAny(['status', 'lembaga_id', 'jenis_zakat_id', 'start_date', 'end_date']))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('pemantauan-transaksi.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
                             </a>
@@ -210,7 +204,7 @@
                 </form>
             </div>
 
-            {{-- Table --}}
+            {{-- Outer Table --}}
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -226,9 +220,11 @@
                         @forelse ($lembagas as $lembaga)
                             @php
                                 $transaksiMasjid = $lembaga->transaksiPenerimaan ?? collect();
-                                $nominalTotal = $transaksiMasjid->sum('jumlah');
-                                $pendingCount = $transaksiMasjid->where('status', 'pending')->count();
+                                $nominalTotal    = $transaksiMasjid->sum('jumlah');
+                                $pendingCount    = $transaksiMasjid->where('status', 'pending')->count();
                             @endphp
+
+                            {{-- Baris Lembaga (ikon masjid dihapus) --}}
                             <tr class="lembaga-row cursor-pointer hover:bg-amber-50/50 transition-colors"
                                 data-nama="{{ strtolower($lembaga->nama) }}"
                                 onclick="toggleMasjid('trx-penerimaan-{{ $lembaga->id }}', this)">
@@ -239,18 +235,9 @@
                                     </svg>
                                 </td>
                                 <td class="px-6 py-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
-                                            <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat transaksi</div>
-                                        </div>
-                                    </div>
+                                    {{-- Ikon dihapus, langsung teks --}}
+                                    <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
+                                    <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat transaksi</div>
                                 </td>
                                 <td class="px-6 py-3 text-center">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
@@ -271,7 +258,7 @@
                                 </td>
                             </tr>
 
-                            {{-- Expandable: Tabel Transaksi --}}
+                            {{-- Expandable: Tabel Transaksi dengan JS Pagination --}}
                             <tr id="trx-penerimaan-{{ $lembaga->id }}" class="hidden lembaga-content-row">
                                 <td colspan="5" class="p-0">
                                     <div class="bg-gradient-to-b from-blue-50/50 to-gray-50 border-y border-blue-200/50 px-6 py-4">
@@ -287,6 +274,21 @@
                                                 Belum ada transaksi penerimaan untuk lembaga ini
                                             </div>
                                         @else
+                                            {{-- Serialize data transaksi ke JSON untuk JS pagination --}}
+                                            @php
+                                                $trxData = $transaksiMasjid->map(function ($trx) {
+                                                    return [
+                                                        'muzakki_nama'    => $trx->muzakki_nama ?? '-',
+                                                        'no_transaksi'    => $trx->no_transaksi ?? '-',
+                                                        'tanggal'         => optional($trx->tanggal_transaksi)->format('d/m/Y') ?? '-',
+                                                        'waktu'           => optional($trx->waktu_transaksi)->format('H:i') ?? '',
+                                                        'jenis_zakat'     => $trx->jenisZakat->nama ?? '-',
+                                                        'jumlah'          => (float) ($trx->jumlah ?? 0),
+                                                        'status'          => $trx->status ?? '-',
+                                                    ];
+                                                });
+                                            @endphp
+
                                             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
                                                 <table class="min-w-full divide-y divide-gray-200">
                                                     <thead class="bg-white">
@@ -298,44 +300,24 @@
                                                             <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody class="bg-white divide-y divide-gray-100">
-                                                        @foreach ($transaksiMasjid->take(20) as $trx)
-                                                            <tr class="hover:bg-gray-50 transition-colors">
-                                                                <td class="px-4 py-3">
-                                                                    <div class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</div>
-                                                                    <div class="text-xs text-gray-400">{{ $trx->no_transaksi }}</div>
-                                                                </td>
-                                                                <td class="px-4 py-3 hidden sm:table-cell">
-                                                                    <div class="text-sm text-gray-700">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</div>
-                                                                    <div class="text-xs text-gray-400">{{ $trx->waktu_transaksi->format('H:i') }}</div>
-                                                                </td>
-                                                                <td class="px-4 py-3 hidden md:table-cell">
-                                                                    <div class="text-sm text-gray-700">{{ $trx->jenisZakat->nama ?? '-' }}</div>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-right">
-                                                                    <div class="text-sm font-semibold text-green-700">
-                                                                        {{ $trx->jumlah > 0 ? 'Rp '.number_format($trx->jumlah, 0, ',', '.') : '-' }}
-                                                                    </div>
-                                                                </td>
-                                                                <td class="px-4 py-3 text-center">
-                                                                    @if($trx->status == 'verified')
-                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Verified</span>
-                                                                    @elseif($trx->status == 'pending')
-                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">Pending</span>
-                                                                    @else
-                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Rejected</span>
-                                                                    @endif
-                                                                </td>
-                                                            </tr>
-                                                        @endforeach
+                                                    <tbody id="trx-tbody-{{ $lembaga->id }}"
+                                                           class="bg-white divide-y divide-gray-100">
+                                                        {{-- Diisi oleh JavaScript --}}
                                                     </tbody>
                                                 </table>
-                                                @if ($transaksiMasjid->count() > 20)
-                                                    <div class="px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t border-gray-100">
-                                                        Menampilkan 20 dari {{ $transaksiMasjid->count() }} transaksi
-                                                    </div>
-                                                @endif
+
+                                                {{-- Pagination bar --}}
+                                                <div class="bg-white border-t border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3">
+                                                    <span id="trx-info-{{ $lembaga->id }}" class="text-xs text-gray-500"></span>
+                                                    <div class="flex items-center gap-1" id="trx-pagination-{{ $lembaga->id }}"></div>
+                                                </div>
                                             </div>
+
+                                            {{-- Data JSON untuk JS --}}
+                                            <script>
+                                                window.trxData = window.trxData || {};
+                                                window.trxData[{{ $lembaga->id }}] = @json($trxData);
+                                            </script>
                                         @endif
                                     </div>
                                 </td>
@@ -357,20 +339,144 @@
 
 @push('scripts')
 <script>
-    // ── Expandable masjid rows ─────────────────────────────────────────────
+    const TRX_PER_PAGE = 10;
+    const trxPages     = {};
+
+    // ── Render baris transaksi ke tbody ───────────────────────────────────
+    function renderTrxPage(lembagaId, page) {
+        const data       = window.trxData?.[lembagaId] ?? [];
+        const total      = data.length;
+        const totalPages = Math.ceil(total / TRX_PER_PAGE);
+        page = Math.max(1, Math.min(page, totalPages));
+        trxPages[lembagaId] = page;
+
+        const start = (page - 1) * TRX_PER_PAGE;
+        const end   = Math.min(start + TRX_PER_PAGE, total);
+        const slice = data.slice(start, end);
+
+        const tbody = document.getElementById(`trx-tbody-${lembagaId}`);
+        tbody.innerHTML = slice.map(t => {
+            // Badge status
+            const statusMap = {
+                verified: 'bg-green-100 text-green-800',
+                pending:  'bg-amber-100 text-amber-800',
+                rejected: 'bg-red-100 text-red-800',
+            };
+            const statusLabel = { verified: 'Verified', pending: 'Pending', rejected: 'Rejected' };
+            const sCls   = statusMap[t.status]   ?? 'bg-gray-100 text-gray-600';
+            const sLabel = statusLabel[t.status] ?? t.status;
+
+            // Jumlah
+            const jumlahHtml = t.jumlah > 0
+                ? `<span class="text-sm font-semibold text-green-700">Rp ${Number(t.jumlah).toLocaleString('id-ID')}</span>`
+                : `<span class="text-sm text-gray-400">-</span>`;
+
+            // Waktu (opsional)
+            const waktuHtml = t.waktu
+                ? `<div class="text-xs text-gray-400">${escHtml(t.waktu)}</div>`
+                : '';
+
+            return `<tr class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-3">
+                    <div class="text-sm font-medium text-gray-900">${escHtml(t.muzakki_nama)}</div>
+                    <div class="text-xs text-gray-400">${escHtml(t.no_transaksi)}</div>
+                </td>
+                <td class="px-4 py-3 hidden sm:table-cell">
+                    <div class="text-sm text-gray-700">${escHtml(t.tanggal)}</div>
+                    ${waktuHtml}
+                </td>
+                <td class="px-4 py-3 hidden md:table-cell">
+                    <div class="text-sm text-gray-700">${escHtml(t.jenis_zakat)}</div>
+                </td>
+                <td class="px-4 py-3 text-right">${jumlahHtml}</td>
+                <td class="px-4 py-3 text-center">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${sCls}">${sLabel}</span>
+                </td>
+            </tr>`;
+        }).join('');
+
+        // ── Info ──────────────────────────────────────────────────────────
+        document.getElementById(`trx-info-${lembagaId}`).textContent =
+            `Menampilkan ${start + 1}–${end} dari ${total} transaksi`;
+
+        // ── Pagination ────────────────────────────────────────────────────
+        document.getElementById(`trx-pagination-${lembagaId}`).innerHTML =
+            buildTrxPagination(lembagaId, page, totalPages);
+    }
+
+    // ── Buat tombol pagination ────────────────────────────────────────────
+    function buildTrxPagination(lembagaId, current, total) {
+        if (total <= 1) return '';
+
+        const btnBase     = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
+        const btnActive   = `${btnBase} bg-primary text-white`;
+        const btnNormal   = `${btnBase} text-gray-600 hover:bg-gray-100`;
+        const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
+        const prevSvg     = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>`;
+        const nextSvg     = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`;
+
+        let html = '';
+
+        html += current > 1
+            ? `<button onclick="renderTrxPage(${lembagaId}, ${current - 1})" class="${btnNormal}">${prevSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${prevSvg}</button>`;
+
+        trxPageRange(current, total).forEach(p => {
+            if (p === '...') {
+                html += `<span class="${btnBase} text-gray-400">…</span>`;
+            } else {
+                const cls = p === current ? btnActive : btnNormal;
+                html += `<button onclick="renderTrxPage(${lembagaId}, ${p})" class="${cls}">${p}</button>`;
+            }
+        });
+
+        html += current < total
+            ? `<button onclick="renderTrxPage(${lembagaId}, ${current + 1})" class="${btnNormal}">${nextSvg}</button>`
+            : `<button disabled class="${btnDisabled}">${nextSvg}</button>`;
+
+        return html;
+    }
+
+    // ── Rentang nomor halaman ─────────────────────────────────────────────
+    function trxPageRange(current, total) {
+        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+        if (current <= 4)         return [1, 2, 3, 4, 5, '...', total];
+        if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+        return [1, '...', current - 1, current, current + 1, '...', total];
+    }
+
+    // ── HTML escape ───────────────────────────────────────────────────────
+    function escHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    // ── Toggle expandable masjid rows ─────────────────────────────────────
     function toggleMasjid(id, row) {
         const content = document.getElementById(id);
         const chevron = row.querySelector('.lembaga-chevron');
         const isHidden = content.classList.contains('hidden');
+
         content.classList.toggle('hidden', !isHidden);
         chevron.classList.toggle('rotate-90', isHidden);
+
+        // Render halaman 1 pertama kali dibuka
+        if (isHidden) {
+            const lembagaId = parseInt(id.replace('trx-penerimaan-', ''));
+            if (window.trxData?.[lembagaId] && !trxPages[lembagaId]) {
+                renderTrxPage(lembagaId, 1);
+            }
+        }
     }
 
-    // ── Toggle Search ─────────────────────────────────────────────────────
     function toggleSearch() {
-        var btn = document.getElementById('search-button');
-        var form = document.getElementById('search-form');
-        var input = document.getElementById('search-input');
+        var btn       = document.getElementById('search-button');
+        var form      = document.getElementById('search-form');
+        var input     = document.getElementById('search-input');
         var container = document.getElementById('search-container');
         if (form.classList.contains('hidden')) {
             btn.classList.add('hidden');
@@ -384,16 +490,14 @@
         }
     }
 
-    // ── Toggle Filter Panel ───────────────────────────────────────────────
     function toggleFilter() {
         document.getElementById('filter-panel').classList.toggle('hidden');
     }
 
-    // ── ESC menutup search form ───────────────────────────────────────────
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            var form = document.getElementById('search-form');
-            var btn = document.getElementById('search-button');
+            var form      = document.getElementById('search-form');
+            var btn       = document.getElementById('search-button');
             var container = document.getElementById('search-container');
             if (!form.classList.contains('hidden')) {
                 form.classList.add('hidden');

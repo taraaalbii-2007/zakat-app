@@ -22,6 +22,7 @@ class MuzakiController extends Controller
         // Untuk setiap lembaga, ambil daftar muzaki (aggregated)
         $lembagas->each(function ($lembaga) {
             $muzakkis = DB::table('transaksi_penerimaan as tp')
+                ->leftJoin('jenis_zakat as jz', 'tp.jenis_zakat_id', '=', 'jz.id')
                 ->where('tp.lembaga_id', $lembaga->id)
                 ->whereNotNull('tp.muzakki_nama')
                 ->select([
@@ -36,6 +37,8 @@ class MuzakiController extends Controller
                     DB::raw('MIN(tp.tanggal_transaksi) as transaksi_pertama'),
                     DB::raw('COUNT(CASE WHEN tp.status = "verified" THEN 1 END) as total_verified'),
                     DB::raw('COUNT(CASE WHEN tp.status = "pending" THEN 1 END) as total_pending'),
+                    // Kumpulkan semua jenis zakat unik dalam satu string, pisah koma
+                    DB::raw('GROUP_CONCAT(DISTINCT jz.nama ORDER BY jz.nama SEPARATOR ",") as jenis_zakat_list'),
                 ])
                 ->groupBy([
                     'tp.muzakki_nama',
@@ -82,12 +85,11 @@ class MuzakiController extends Controller
 
     /**
      * Show riwayat transaksi lengkap seorang muzakki.
-     * Diidentifikasi berdasarkan muzakki_nama + lembaga_id dari query string.
      */
     public function show(Request $request)
     {
         $muzakkiNama = $request->query('nama');
-        $lembagaId    = $request->query('lembaga_id');
+        $lembagaId   = $request->query('lembaga_id');
 
         abort_if(!$muzakkiNama || !$lembagaId, 404);
 

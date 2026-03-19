@@ -1,8 +1,17 @@
 {{-- ============================================================
      SECTION: CARA KERJA
      resources/views/partials/landing/sections/cara-kerja.blade.php
-     Card hijau gradient (sama dengan fitur), tanpa nomor di card,
-     karakter ilustrasi unik per step.
+
+     Disesuaikan dengan alur controller:
+     Step 1 → LembagaController::store() + SuperAdmin::toggleStatus()
+              Daftar lembaga, superadmin verifikasi & aktifkan akun
+     Step 2 → AmilController, JenisZakatController, MustahikController,
+              RekeningLembagaController, KonfigurasiIntegrasiController
+              Setup amil, jenis zakat, data mustahik, rekening & QRIS
+     Step 3 → TransaksiPenerimaanController (3 mode: datang langsung,
+              daring, dijemput), TransaksiPenyaluranController,
+              LaporanKeuanganController::generate() + downloadPDF()
+              Catat penerimaan, salurkan ke mustahik, unduh laporan PDF
      ============================================================ --}}
 
 <style>
@@ -266,6 +275,27 @@
         line-height: 1.6;
     }
 
+    /* Tag detail kecil di dalam card */
+    .step-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 0.85rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .step-card-tag {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 99px;
+        padding: 2px 9px;
+        white-space: nowrap;
+    }
+
     /* Garis dekoratif bawah */
     .step-card-footer {
         margin-top: 1.25rem;
@@ -334,13 +364,16 @@
                     </svg>
                 </span>
             </h2>
-            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Mulai kelola zakat lembaga Anda hanya dalam 3 langkah
-            </p>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">Mulai kelola zakat lembaga Anda hanya dalam 3 langkah</p>
         </div>
 
         <div class="flex flex-col items-center space-y-12 md:space-y-0">
 
-            {{-- ─────────── Step 1 — badge kiri, card kanan ─────────── --}}
+            {{-- ─────────────────────────────────────────────────────────────
+                 Step 1 — badge kiri, card kanan
+                 Alur: LembagaController::store() → Superadmin verifikasi
+                       & toggleStatus() → akun aktif dalam 1×24 jam
+            ─────────────────────────────────────────────────────────────── --}}
             <div class="w-full flex flex-col md:flex-row items-center gap-4 md:gap-5" data-ck-step="1">
                 <div class="flex-shrink-0 flex flex-col items-center md:items-end ck-badge-slide-left">
                     <div class="flex items-center gap-3 md:flex-row-reverse">
@@ -353,47 +386,48 @@
                     </div>
                 </div>
 
-                {{-- Card 1 — Daftar & Verifikasi --}}
+                {{-- Card 1 — Daftar & Verifikasi Lembaga --}}
                 <div class="step-card ck-slide-right" style="width: 55%; min-width: 320px;">
 
-                    {{-- Dekorasi garis lengkung unik: step 1 — kurva besar kanan bawah + lingkaran & arc halus --}}
                     <div class="step-card-deco" aria-hidden="true">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Busur besar kanan bawah -->
                             <path d="M380,200 Q500,120 500,-10" stroke="rgba(255,255,255,0.10)" stroke-width="2.5"
                                 fill="none" />
-                            <!-- Kurva menengah kanan -->
                             <path d="M300,200 Q460,100 480,0" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"
                                 fill="none" />
-                            <!-- Lengkungan lembut dari kiri bawah ke kanan -->
                             <path d="M-10,170 Q160,110 340,190" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"
                                 fill="none" />
-                            <!-- Garis putus-putus tipis melengkung -->
                             <path d="M-10,140 Q200,80 500,130" stroke="rgba(255,255,255,0.07)" stroke-width="1"
                                 fill="none" stroke-dasharray="5 10" />
-                            <!-- Lingkaran dekoratif pojok kanan atas -->
                             <circle cx="460" cy="30" r="55" stroke="rgba(255,255,255,0.07)"
                                 stroke-width="1.5" fill="none" />
                             <circle cx="460" cy="30" r="35" stroke="rgba(255,255,255,0.05)"
                                 stroke-width="1" fill="none" />
-                            <!-- Arc kecil kiri bawah -->
                             <path d="M0,200 Q60,150 100,200" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"
                                 fill="none" />
                         </svg>
                     </div>
 
-                    {{-- Icon box --}}
+                    {{-- Icon: gedung/lembaga --}}
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                         </svg>
                     </div>
+
                     <div class="step-card-body">
-                        <h3 class="step-card-title">Daftar &amp; Verifikasi</h3>
-                        <p class="step-card-desc">Daftarkan lembaga atau masjid Anda. Tim kami akan memverifikasi dan
-                            mengaktifkan akun dalam 1&times;24 jam.</p>
+                        <h3 class="step-card-title">Daftar &amp; Verifikasi Lembaga</h3>
+                        <p class="step-card-desc">
+                            Daftarkan lembaga atau masjid Anda lengkap dengan data admin, alamat, dan foto.
+                        </p>
+                        {{-- Tag mencerminkan field yang ada di LembagaController::store() --}}
+                        <div class="step-card-tags">
+                            <span class="step-card-tag">Data lembaga &amp; admin</span>
+                            <span class="step-card-tag">Upload foto</span>
+                            <span class="step-card-tag">Verifikasi superadmin</span>
+                        </div>
                     </div>
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
@@ -406,7 +440,13 @@
                 <div class="w-px h-12 bg-gradient-to-b from-primary-300 to-primary-100 opacity-60"></div>
             </div>
 
-            {{-- ─────────── Step 2 — badge kanan, card kiri ─────────── --}}
+            {{-- ─────────────────────────────────────────────────────────────
+                 Step 2 — badge kanan, card kiri
+                 Alur: AmilController::store() → buat akun amil otomatis,
+                       JenisZakatController, MustahikController,
+                       RekeningLembagaController, KonfigurasiIntegrasiController
+                       (atur QRIS, rekening bank, kategori mustahik)
+            ─────────────────────────────────────────────────────────────── --}}
             <div class="w-full flex flex-col md:flex-row-reverse items-center gap-4 md:gap-5" data-ck-step="2">
                 <div class="flex-shrink-0 flex flex-col items-center md:items-start ck-badge-slide-right">
                     <div class="flex items-center gap-3">
@@ -419,34 +459,28 @@
                     </div>
                 </div>
 
-                {{-- Card 2 — Setup & Konfigurasi --}}
+                {{-- Card 2 — Setup Amil, Jenis Zakat & Konfigurasi --}}
                 <div class="step-card ck-slide-left" style="width: 55%; min-width: 320px;">
 
-                    {{-- Dekorasi garis lengkung unik: step 2 — gelombang S + lingkaran tersebar --}}
                     <div class="step-card-deco" aria-hidden="true">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Gelombang S besar dari kiri ke kanan -->
                             <path d="M-10,60 Q120,10 250,80 Q380,150 510,60" stroke="rgba(255,255,255,0.09)"
                                 stroke-width="2" fill="none" />
-                            <!-- Gelombang S kecil sejajar di bawah -->
                             <path d="M-10,110 Q120,65 250,120 Q380,175 510,110" stroke="rgba(255,255,255,0.06)"
                                 stroke-width="1.5" fill="none" stroke-dasharray="6 9" />
-                            <!-- Busur melingkar pojok kanan bawah -->
                             <path d="M420,200 Q510,140 510,30" stroke="rgba(255,255,255,0.08)" stroke-width="2"
                                 fill="none" />
-                            <!-- Lingkaran besar transparan kanan -->
                             <circle cx="480" cy="160" r="70" stroke="rgba(255,255,255,0.06)"
                                 stroke-width="1.5" fill="none" />
-                            <!-- Lingkaran kecil kiri atas -->
                             <circle cx="30" cy="25" r="22" stroke="rgba(255,255,255,0.08)"
                                 stroke-width="1" fill="none" />
-                            <!-- Titik dekoratif -->
                             <circle cx="80" cy="175" r="4" fill="rgba(255,255,255,0.10)" />
                             <circle cx="110" cy="165" r="2.5" fill="rgba(255,255,255,0.07)" />
                             <circle cx="60" cy="185" r="2" fill="rgba(255,255,255,0.07)" />
                         </svg>
                     </div>
 
+                    {{-- Icon: konfigurasi/roda gigi --}}
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor">
@@ -456,10 +490,20 @@
                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
+
                     <div class="step-card-body">
-                        <h3 class="step-card-title">Setup &amp; Konfigurasi</h3>
-                        <p class="step-card-desc">Atur jenis zakat, kategori mustahik, data amil, dan konfigurasi
-                            masjid sesuai kebutuhan lembaga Anda.</p>
+                        <h3 class="step-card-title">Setup Amil, Mustahik &amp; Konfigurasi</h3>
+                        <p class="step-card-desc">
+                            Tambahkan data amil — akun login dibuat otomatis &amp; notifikasi dikirim via email.
+                            Atur jenis zakat, kategori mustahik, rekening bank, dan aktifkan QRIS pembayaran online.
+                        </p>
+                        {{-- Tag mencerminkan controller yang terlibat di step ini --}}
+                        <div class="step-card-tags">
+                            <span class="step-card-tag">Tambah amil</span>
+                            <span class="step-card-tag">Jenis &amp; tipe zakat</span>
+                            <span class="step-card-tag">Data mustahik</span>
+                            <span class="step-card-tag">Rekening &amp; QRIS</span>
+                        </div>
                     </div>
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
@@ -472,7 +516,13 @@
                 <div class="w-px h-12 bg-gradient-to-b from-primary-300 to-primary-100 opacity-60"></div>
             </div>
 
-            {{-- ─────────── Step 3 — badge kiri, card kanan ─────────── --}}
+            {{-- ─────────────────────────────────────────────────────────────
+                 Step 3 — badge kiri, card kanan
+                 Alur: TransaksiPenerimaanController (3 mode: datang langsung,
+                       daring, dijemput) → AmilController set kas harian →
+                       TransaksiPenyaluranController + ApprovalPenyaluran →
+                       LaporanKeuanganController::generate() + downloadPDF()
+            ─────────────────────────────────────────────────────────────── --}}
             <div class="w-full flex flex-col md:flex-row items-center gap-4 md:gap-5" data-ck-step="3">
                 <div class="flex-shrink-0 flex flex-col items-center md:items-end ck-badge-slide-left">
                     <div class="flex items-center gap-3 md:flex-row-reverse">
@@ -485,39 +535,32 @@
                     </div>
                 </div>
 
-                {{-- Card 3 — Kelola & Laporkan --}}
+                {{-- Card 3 — Terima, Salurkan &amp; Laporan --}}
                 <div class="step-card ck-slide-right" style="width: 55%; min-width: 320px;">
 
-                    {{-- Dekorasi garis lengkung unik: step 3 — garis diagonal melengkung + grid dots --}}
                     <div class="step-card-deco" aria-hidden="true">
                         <svg viewBox="0 0 500 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Kurva diagonal lebar dari kiri atas ke kanan bawah -->
                             <path d="M-10,0 Q200,80 510,150" stroke="rgba(255,255,255,0.09)" stroke-width="2.5"
                                 fill="none" />
-                            <!-- Kurva paralel sedikit di bawahnya -->
                             <path d="M-10,30 Q200,110 510,180" stroke="rgba(255,255,255,0.06)" stroke-width="1.5"
                                 fill="none" stroke-dasharray="7 8" />
-                            <!-- Arc melingkar pojok kiri bawah -->
                             <path d="M0,120 Q-10,200 80,200" stroke="rgba(255,255,255,0.08)" stroke-width="2"
                                 fill="none" />
-                            <!-- Lingkaran besar transparan kiri -->
                             <circle cx="40" cy="170" r="65" stroke="rgba(255,255,255,0.06)"
                                 stroke-width="1.5" fill="none" />
-                            <!-- Busur kecil pojok kanan atas -->
                             <path d="M430,0 Q510,0 510,70" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"
                                 fill="none" />
                             <path d="M460,0 Q510,0 510,40" stroke="rgba(255,255,255,0.06)" stroke-width="1"
                                 fill="none" />
-                            <!-- Titik dekoratif kanan atas -->
                             <circle cx="420" cy="20" r="4" fill="rgba(255,255,255,0.10)" />
                             <circle cx="440" cy="35" r="2.5" fill="rgba(255,255,255,0.07)" />
                             <circle cx="405" cy="38" r="2" fill="rgba(255,255,255,0.07)" />
-                            <!-- Garis pendek melengkung kanan bawah -->
                             <path d="M400,200 Q460,170 510,190" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"
                                 fill="none" />
                         </svg>
                     </div>
 
+                    {{-- Icon: laporan/grafik batang --}}
                     <div class="step-icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor">
@@ -525,10 +568,22 @@
                                 d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
                         </svg>
                     </div>
+
                     <div class="step-card-body">
-                        <h3 class="step-card-title">Kelola &amp; Laporkan</h3>
-                        <p class="step-card-desc">Mulai catat penerimaan, salurkan ke mustahik, dan <em>generate</em>
-                            laporan konsolidasi kapan saja — transparan dan akuntabel.</p>
+                        <h3 class="step-card-title">Terima, Salurkan &amp; Unduh Laporan</h3>
+                        <p class="step-card-desc">
+                            Amil mencatat penerimaan zakat — datang langsung, transfer daring, atau dijemput.
+                            Admin lembaga menyetujui penyaluran ke mustahik, lalu <em>generate</em> laporan
+                            keuangan bulanan &amp; unduh PDF kapan saja.
+                        </p>
+                        {{-- Tag mencerminkan 3 mode penerimaan + penyaluran + laporan --}}
+                        <div class="step-card-tags">
+                            <span class="step-card-tag">Datang langsung</span>
+                            <span class="step-card-tag">Transfer daring</span>
+                            <span class="step-card-tag">Jemput zakat</span>
+                            <span class="step-card-tag">Salurkan ke mustahik</span>
+                            <span class="step-card-tag">Unduh laporan PDF</span>
+                        </div>
                     </div>
                     <div class="step-card-footer">
                         <div class="step-card-line" style="width:28px;"></div>
