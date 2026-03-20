@@ -109,7 +109,7 @@ class TransaksiZakatController extends Controller
             'total_infaq'    => (float) $statsRaw->total_infaq,
         ];
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
         ];
 
@@ -170,7 +170,7 @@ class TransaksiZakatController extends Controller
         $konfigurasiQris = \App\Models\KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
             ->where('is_active', true)
             ->first();
-        
+
         $breadcrumbs = [
             'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
             'Tambah Bayar Zakat' => route('transaksi-daring-muzakki.create')
@@ -304,7 +304,7 @@ class TransaksiZakatController extends Controller
             ->where('uuid', $uuid)
             ->where('muzakki_id', $this->muzakki->id)
             ->firstOrFail();
-        
+
         $breadcrumbs = [
             'Bayar Zakat Saya' => route('transaksi-daring-muzakki.index'),
             'Detail Bayar Zakat' => route('transaksi-daring-muzakki.show', $uuid)
@@ -335,7 +335,8 @@ class TransaksiZakatController extends Controller
         ];
 
         if ($isDijemput) {
-            $rules['amil_id']   = 'nullable|exists:amil,id';
+            $rules['amil_id']    = 'required|exists:amil,id';
+            $rules['keterangan'] = 'required|string|min:5|max:1000';
         }
 
         if ($isDaring) {
@@ -380,6 +381,10 @@ class TransaksiZakatController extends Controller
             'jumlah_dibayar.required'  => 'Jumlah dibayar wajib diisi.',
             'jumlah_dibayar.min'       => 'Jumlah dibayar harus lebih dari 0.',
             'metode_pembayaran.required' => 'Metode pembayaran wajib dipilih.',
+            'keterangan.required' => 'Keterangan wajib diisi.',
+            'keterangan.min'      => 'Keterangan minimal 5 karakter.',
+            'amil_id.required' => 'Amil penjemput wajib dipilih.',
+            'amil_id.exists'   => 'Amil yang dipilih tidak valid.',
         ];
     }
 

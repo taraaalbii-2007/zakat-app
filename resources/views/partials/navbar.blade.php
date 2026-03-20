@@ -53,10 +53,19 @@
                 ],
             );
 
+        // Ambil amil_id dari amil yang sedang login
+        $amilId = $authUser->amil->id;
+
         $dijemputPending = \App\Models\TransaksiPenerimaan::where('lembaga_id', $lembagaId)
             ->where('metode_penerimaan', 'dijemput')
             ->where('status', 'pending')
             ->where('status_penjemputan', 'menunggu')
+            ->where(function ($q) use ($amilId) {
+                // Masuk ke notif amil ini HANYA jika:
+                // 1. Muzakki memilih amil ini secara spesifik, ATAU
+                // 2. Muzakki tidak memilih amil (amil_id null) → notif ke semua amil se-lembaga
+                $q->where('amil_id', $amilId)->orWhereNull('amil_id');
+            })
             ->with('jenisZakat')
             ->latest('created_at')
             ->take(10)
@@ -65,7 +74,7 @@
                 fn($t) => [
                     'icon' => 'pickup',
                     'color' => 'amber',
-                    'title' => 'Request Penjemputan',
+                    'title' => $t->amil_id === $amilId ? 'Request Penjemputan (Anda Dipilih)' : 'Request Penjemputan',
                     'body' =>
                         $t->muzakki_nama .
                         ' — Menunggu dijemput di ' .

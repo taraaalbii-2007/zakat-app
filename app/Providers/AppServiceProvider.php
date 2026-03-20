@@ -62,19 +62,24 @@ class AppServiceProvider extends ServiceProvider
                     $sidebarCounts = [
                         'datang_langsung' => 0,
 
+                        // Daring: semua amil se-lembaga bisa konfirmasi, JANGAN filter by amil_id
                         'daring' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'daring')
+                            ->where('status', 'pending')
                             ->where('konfirmasi_status', 'menunggu_konfirmasi')
-                            ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                             ->count(),
 
+                        // Dijemput: hanya amil yang dipilih muzakki, atau jika tidak ada pilihan (amil_id null)
                         'dijemput' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
                             ->where('metode_penerimaan', 'dijemput')
-                            ->where(function ($q) {
-                                $q->where('status_penjemputan', 'menunggu')
-                                    ->orWhereNull('jenis_zakat_id');
+                            ->where('status', 'pending')
+                            ->where('status_penjemputan', 'menunggu')
+                            ->when($isAmil && $amilId, function ($q) use ($amilId) {
+                                $q->where(function ($sub) use ($amilId) {
+                                    $sub->where('amil_id', $amilId)
+                                        ->orWhereNull('amil_id');
+                                });
                             })
-                            ->when($isAmil && $amilId, fn($q) => $q->where('amil_id', $amilId))
                             ->count(),
                     ];
                 }
