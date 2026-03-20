@@ -129,85 +129,212 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     // INDEX — semua transaksi (atau filter per mode)
     // ================================================================
-    public function index(Request $request)
-    {
-        $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil'])
-            ->byLembaga($this->lembaga->id);
+   public function index(Request $request)
+{
+    $amil   = $this->amil;
+    $isAmil = $this->user->isAmil() && $amil;
 
-        // Filter per amil yang login (admin lembaga tetap lihat semua)
-        if ($this->user->isAmil() && $this->amil) {
-            $query->where('amil_id', $this->amil->id);
-        }
+    // ── Query utama tabel ─────────────────────────────────────────
+    $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil'])
+        ->byLembaga($this->lembaga->id);
 
-        if ($request->filled('q'))                 $query->search($request->q);
-        if ($request->filled('tanggal'))           $query->byTanggal($request->tanggal);
-        if ($request->filled('start_date') && $request->filled('end_date'))
-            $query->byPeriode($request->start_date, $request->end_date);
-        if ($request->filled('jenis_zakat_id'))    $query->byJenisZakat($request->jenis_zakat_id);
-        if ($request->filled('metode_pembayaran')) $query->byMetodePembayaran($request->metode_pembayaran);
-        if ($request->filled('status'))            $query->byStatus($request->status);
-        if ($request->filled('konfirmasi_status')) $query->byKonfirmasiStatus($request->konfirmasi_status);
-        if ($request->filled('tahun')) $query->whereYear('tanggal_transaksi', $request->tahun);
-        if ($request->filled('metode_penerimaan')) $query->byMetodePenerimaan($request->metode_penerimaan);
-
-        // Filter fidyah
-        if ($request->filled('fidyah_tipe')) {
-            $query->where('fidyah_tipe', $request->fidyah_tipe);
-        }
-
-        $query->orderBy('created_at', 'desc');
-
-        $transaksis       = $query->paginate(10)->withQueryString();
-        $jenisZakatList   = JenisZakat::orderBy('nama')->get();
-        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
-            ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
-        $amilList         = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
-
-        $amil = $this->amil;
-        $isAmil = $this->user->isAmil() && $amil;
-
-        $stats = [
-            'total'               => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->count(),
-            'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->verified()->count(),
-            'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->pending()->count(),
-            'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->menungguKonfirmasi()->count(),
-            'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->verified()->sum('jumlah'),
-            'total_hari_ini'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->byTanggal(now())->verified()->sum('jumlah'),
-            'total_infaq'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->verified()->sum('jumlah_infaq'),
-            'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)
-                ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id))
-                ->fidyah()->count(),
-        ];
-
-        $breadcrumbs = [
-            'Data Keseluruhan Metode Penerimaan' => route('pemantauan-transaksi.index')
-        ];
-
-        return view('amil.transaksi-penerimaan.index', compact(
-            'transaksis',
-            'jenisZakatList',
-            'programZakatList',
-            'amilList',
-            'stats',
-            'breadcrumbs'
-        ));
+    if ($isAmil) {
+        $query->where(function ($q) use ($amil) {
+            // datang_langsung & dijemput → strict per amil
+            $q->where(function ($q2) use ($amil) {
+                $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                   ->where('amil_id', $amil->id);
+            })
+            // daring → semua (termasuk amil_id null)
+            ->orWhere('metode_penerimaan', 'daring');
+        });
     }
 
-    // ================================================================
+    if ($request->filled('q'))                 $query->search($request->q);
+    if ($request->filled('tanggal'))           $query->byTanggal($request->tanggal);
+    if ($request->filled('start_date') && $request->filled('end_date'))
+        $query->byPeriode($request->start_date, $request->end_date);
+    if ($request->filled('jenis_zakat_id'))    $query->byJenisZakat($request->jenis_zakat_id);
+    if ($request->filled('metode_pembayaran')) $query->byMetodePembayaran($request->metode_pembayaran);
+    if ($request->filled('status'))            $query->byStatus($request->status);
+    if ($request->filled('konfirmasi_status')) $query->byKonfirmasiStatus($request->konfirmasi_status);
+    if ($request->filled('tahun'))             $query->whereYear('tanggal_transaksi', $request->tahun);
+    if ($request->filled('metode_penerimaan')) $query->byMetodePenerimaan($request->metode_penerimaan);
+    if ($request->filled('fidyah_tipe'))       $query->where('fidyah_tipe', $request->fidyah_tipe);
+
+    $query->orderBy('created_at', 'desc');
+
+    $transaksis       = $query->paginate(10)->withQueryString();
+    $jenisZakatList   = JenisZakat::orderBy('nama')->get();
+    $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
+        ->whereIn('status', ['aktif', 'draft'])->orderBy('nama_program')->get();
+    $amilList         = Amil::byLembaga($this->lembaga->id)->with('pengguna')->where('status', 'aktif')->get();
+
+    // ── Base query helper ─────────────────────────────────────────
+    // Untuk datang_langsung & dijemput: strict per amil
+    $baseStrict = fn() => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+        ->when($isAmil, fn($q) => $q->where('amil_id', $amil->id));
+
+    // Untuk daring: semua (tidak filter amil_id)
+    $baseDaring = fn() => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+        ->byMetodePenerimaan('daring');
+
+    // ── Stats ─────────────────────────────────────────────────────
+    $stats = [
+        // Total keseluruhan (mengikuti logika query utama)
+        'total'               => $query->toBase()->getCountForPagination(),
+
+        'total_verified'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->verified()->count(),
+
+        'total_pending'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->pending()->count(),
+
+        'menunggu_konfirmasi' => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->menungguKonfirmasi()->count(),
+
+        'total_nominal'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->verified()->sum('jumlah'),
+
+        'total_hari_ini'      => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->byTanggal(now())->verified()->sum('jumlah'),
+
+        'total_infaq'         => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->verified()->sum('jumlah_infaq'),
+
+        'total_fidyah'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->fidyah()->count(),
+
+        'total_beras_kg'      => $baseStrict()
+            ->byMetodePenerimaan('datang_langsung')
+            ->where('metode_pembayaran', 'beras')
+            ->where('status', 'verified')
+            ->sum('jumlah_beras_kg'),
+
+        'total_transaksi_beras' => $baseStrict()
+            ->byMetodePenerimaan('datang_langsung')
+            ->where('metode_pembayaran', 'beras')
+            ->where('status', 'verified')
+            ->count(),
+
+        // ── Breakdown per metode (DIPISAH) ────────────────────────
+        // datang_langsung: strict per amil
+        'datang_langsung'     => $baseStrict()
+            ->byMetodePenerimaan('datang_langsung')->count(),
+
+        // dijemput: strict per amil
+        'dijemput'            => $baseStrict()
+            ->byMetodePenerimaan('dijemput')->count(),
+
+        // daring: semua (tidak filter amil)
+        'daring'              => $baseDaring()->count(),
+
+        // ── Breakdown fidyah per tipe ──────────────────────────────
+        'fidyah_mentah'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->where('fidyah_tipe', 'mentah')->count(),
+
+        'fidyah_matang'       => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->where('fidyah_tipe', 'matang')->count(),
+
+        'fidyah_tunai'        => TransaksiPenerimaan::byLembaga($this->lembaga->id)
+            ->when($isAmil, function ($q) use ($amil) {
+                $q->where(function ($inner) use ($amil) {
+                    $inner->where(function ($q2) use ($amil) {
+                        $q2->whereIn('metode_penerimaan', ['datang_langsung', 'dijemput'])
+                           ->where('amil_id', $amil->id);
+                    })->orWhere('metode_penerimaan', 'daring');
+                });
+            })
+            ->where('fidyah_tipe', 'tunai')->count(),
+    ];
+
+    $breadcrumbs = [
+        'Data Keseluruhan Metode Penerimaan' => route('pemantauan-transaksi.index')
+    ];
+
+    return view('amil.transaksi-penerimaan.index', compact(
+        'transaksis',
+        'jenisZakatList',
+        'programZakatList',
+        'amilList',
+        'stats',
+        'breadcrumbs'
+    ));
+}
+
+// ================================================================
     // INDEX DATANG LANGSUNG — hanya mode datang_langsung
     // ================================================================
     public function indexDatangLangsung(Request $request)
@@ -1145,6 +1272,11 @@ class TransaksiPenerimaanController extends Controller
             if ($this->user->isMuzakki() && $this->user->muzakki) {
                 $transaksi->diinput_muzakki = true;
                 $transaksi->muzakki_id = $this->user->muzakki->id;
+            }
+
+            // Pasang amil_id jika yang input adalah amil
+            if ($this->user->isAmil() && $this->amil) {
+                $transaksi->amil_id = $this->amil->id;
             }
 
             $transaksi->save();
@@ -2213,15 +2345,22 @@ class TransaksiPenerimaanController extends Controller
         }
     }
 
-    // ================================================================
-    // EXPORT PDF
-    // ================================================================
-    public function exportPdf(Request $request)
+   public function exportPdf(Request $request)
     {
         try {
             $query = TransaksiPenerimaan::with(['jenisZakat', 'tipeZakat', 'programZakat', 'amil.pengguna'])
                 ->byLembaga($this->lembaga->id);
-
+ 
+            // Filter per amil — pakai orWhereNull sebagai fallback
+            // untuk transaksi daring lama yang amil_id-nya masih NULL
+            if ($this->user->isAmil() && $this->amil) {
+                $amilId = $this->amil->id;
+                $query->where(function ($q) use ($amilId) {
+                    $q->where('amil_id', $amilId)
+                      ->orWhereNull('amil_id');
+                });
+            }
+ 
             if ($request->filled('q'))                 $query->search($request->q);
             if ($request->filled('start_date') && $request->filled('end_date'))
                 $query->byPeriode($request->start_date, $request->end_date);
@@ -2229,38 +2368,38 @@ class TransaksiPenerimaanController extends Controller
             if ($request->filled('metode_pembayaran')) $query->byMetodePembayaran($request->metode_pembayaran);
             if ($request->filled('status'))            $query->byStatus($request->status);
             if ($request->filled('metode_penerimaan')) $query->byMetodePenerimaan($request->metode_penerimaan);
-
-            // Filter fidyah
+ 
             if ($request->filled('fidyah_tipe')) {
                 $query->where('fidyah_tipe', $request->fidyah_tipe);
             }
-
+ 
             $transaksis   = $query->orderBy('created_at', 'desc')->get();
             $totalNominal = $transaksis->where('status', 'verified')->sum('jumlah');
             $totalInfaq   = $transaksis->where('status', 'verified')->sum('jumlah_infaq');
-
+ 
             $pdf = PDF::loadView('amil.transaksi-penerimaan.exports.pdf', [
-                'transaksis'    => $transaksis,
+                'transaksis'     => $transaksis,
                 'lembaga'        => $this->lembaga,
-                'user'          => $this->user,
-                'filters'       => $request->all(),
+                'user'           => $this->user,
+                'amil'           => $this->amil,
+                'filters'        => $request->all(),
                 'jenisZakatList' => JenisZakat::all(),
-                'totalNominal'  => $totalNominal,
-                'totalInfaq'    => $totalInfaq,
-                'totalVerified' => $transaksis->where('status', 'verified')->count(),
-                'totalPending'  => $transaksis->where('status', 'pending')->count(),
+                'totalNominal'   => $totalNominal,
+                'totalInfaq'     => $totalInfaq,
+                'totalVerified'  => $transaksis->where('status', 'verified')->count(),
+                'totalPending'   => $transaksis->where('status', 'pending')->count(),
                 'totalTransaksi' => $transaksis->count(),
-                'tanggalExport' => now()->format('d/m/Y H:i:s'),
+                'tanggalExport'  => now()->format('d/m/Y H:i:s'),
             ]);
             $pdf->setPaper('A4', 'landscape');
-
+ 
             return $pdf->download('transaksi-penerimaan-' . date('Y-m-d-His') . '.pdf');
         } catch (\Exception $e) {
             Log::error('Export PDF error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal export PDF.');
         }
     }
-
+ 
     // ================================================================
     // EXPORT EXCEL
     // ================================================================
