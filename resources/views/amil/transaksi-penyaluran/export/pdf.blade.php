@@ -15,28 +15,9 @@
 
         /* Header */
         .header {
-            text-align: center;
             margin-bottom: 6px;
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 5px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #000;
-        }
-        .header h2 {
-            margin: 4px 0;
-            font-size: 14px;
-            font-weight: normal;
-            color: #636e72;
-        }
-        .header .subtitle {
-            margin: 2px 0;
-            font-size: 11px;
-            font-style: italic;
         }
 
         /* Info section */
@@ -104,7 +85,7 @@
             border-top: none;
         }
 
-        /* ── Tanda Tangan (konsisten dengan laporan tahunan) ── */
+        /* ── Tanda Tangan ── */
         .footer-container {
             margin-top: 10px;
             width: 100%;
@@ -120,13 +101,8 @@
             width: 250px;
             text-align: center;
         }
-        .signature-space {
-            height: 45px;
-        }
-        .signature-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+        .signature-space  { height: 45px; }
+        .signature-title  { font-weight: bold; margin-bottom: 5px; }
         .signature-line-table {
             width: 210px;
             margin: 0 auto;
@@ -162,16 +138,87 @@
 </head>
 <body>
 
-    {{-- ── Header ── --}}
+    {{-- ══════════ LOGO & HEADER ══════════ --}}
+    @php
+        // ── Logo Lembaga ───────────────────────────────────────────
+        $fotoLembaga    = $lembaga->foto ?? null;
+        $fotoLembagaArr = is_array($fotoLembaga)
+            ? $fotoLembaga
+            : (is_string($fotoLembaga) ? json_decode($fotoLembaga, true) : []);
+        $logoLembagaB64 = null;
+        if (!empty($fotoLembagaArr)) {
+            $lp = storage_path('app/public/' . $fotoLembagaArr[0]);
+            if (file_exists($lp)) {
+                $ext  = strtolower(pathinfo($lp, PATHINFO_EXTENSION));
+                $mime = in_array($ext, ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                $logoLembagaB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($lp));
+            }
+        }
+
+        // ── Logo Aplikasi ──────────────────────────────────────────
+        $logoAplikasiB64 = null;
+        try {
+            $konfigApp = \App\Models\KonfigurasiAplikasi::getConfig();
+            if ($konfigApp && $konfigApp->logo_aplikasi) {
+                foreach ([
+                    storage_path('app/public/' . $konfigApp->logo_aplikasi),
+                    public_path('storage/' . $konfigApp->logo_aplikasi),
+                    public_path($konfigApp->logo_aplikasi),
+                    base_path($konfigApp->logo_aplikasi),
+                ] as $cp) {
+                    if (file_exists($cp)) {
+                        $ext  = strtolower(pathinfo($cp, PATHINFO_EXTENSION));
+                        $mime = in_array($ext, ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                        $logoAplikasiB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cp));
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {}
+    @endphp
+
     <div class="header">
-        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENYALURAN ZAKAT') }}</h1>
-        <h2>Laporan Transaksi Penyaluran</h2>
-        <div class="subtitle">
-            {{ $lembaga->alamat ?? '' }}
-            {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
-            {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
-            {{ $lembaga->kota_nama      ? ', ' . $lembaga->kota_nama            : '' }}
-        </div>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                {{-- Logo Lembaga --}}
+                <td style="width:80px; text-align:center; vertical-align:middle;">
+                    @if ($logoLembagaB64)
+                        <img src="{{ $logoLembagaB64 }}"
+                             style="width:68px;height:68px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:3px;background:#fff;"
+                             alt="Logo Lembaga">
+                    @else
+                        <div style="width:68px;height:68px;display:inline-block;"></div>
+                    @endif
+                </td>
+
+                {{-- Teks Tengah --}}
+                <td style="text-align:center; vertical-align:middle; padding:0 10px;">
+                    <h1 style="margin:0; font-size:18px; font-weight:bold; letter-spacing:1px; color:#000;">
+                        {{ strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENYALURAN ZAKAT') }}
+                    </h1>
+                    <h2 style="margin:4px 0; font-size:14px; font-weight:normal; color:#636e72;">
+                        Laporan Transaksi Penyaluran
+                    </h2>
+                    <div style="margin:2px 0; font-size:11px; font-style:italic; color:#636e72;">
+                        {{ $lembaga->alamat ?? '' }}
+                        {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
+                        {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
+                        {{ $lembaga->kota_nama      ? ', ' . $lembaga->kota_nama            : '' }}
+                    </div>
+                </td>
+
+                {{-- Logo Aplikasi --}}
+                <td style="width:80px; text-align:center; vertical-align:middle;">
+                    @if ($logoAplikasiB64)
+                        <img src="{{ $logoAplikasiB64 }}"
+                             style="width:68px;height:68px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:3px;background:#fff;"
+                             alt="Logo Aplikasi">
+                    @else
+                        <div style="width:68px;height:68px;display:inline-block;"></div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- ── Info ── --}}
@@ -311,11 +358,11 @@
                 </tr>
 
                 @php
-                    $adaRincian  = $transaksi->detail_barang || $transaksi->keterangan;
+                    $adaRincian   = $transaksi->detail_barang || $transaksi->keterangan;
                     $rincianParts = [];
                     if ($transaksi->detail_barang) $rincianParts[] = 'Barang: ' . $transaksi->detail_barang;
                     if ($transaksi->keterangan)    $rincianParts[] = 'Ket: '    . $transaksi->keterangan;
-                    $rincianText = implode(' | ', $rincianParts);
+                    $rincianText  = implode(' | ', $rincianParts);
                 @endphp
                 @if($adaRincian)
                 <tr class="rincian-row">
@@ -344,7 +391,7 @@
         </tbody>
     </table>
 
-    {{-- ══════════════════ TANDA TANGAN (konsisten dengan laporan tahunan) ══════════════════ --}}
+    {{-- ── Tanda Tangan ── --}}
     <div class="footer-container">
         <div class="signature-wrapper">
             <div>{{ $lembaga->kota_nama ?? 'Bandung' }}, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}</div>

@@ -16,28 +16,9 @@
 
         /* ── Header ── */
         .header {
-            text-align: center;
             margin-bottom: 25px;
             border-bottom: 2.5px solid #2d3436;
             padding-bottom: 12px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            color: #000;
-        }
-        .header h2 {
-            margin: 4px 0;
-            font-size: 14px;
-            font-weight: normal;
-            color: #636e72;
-        }
-        .header .subtitle {
-            margin: 2px 0;
-            font-size: 11px;
-            font-style: italic;
         }
 
         /* ── Info Section ── */
@@ -258,16 +239,87 @@
 
 <body>
 
-    {{-- ══════════ HEADER ══════════ --}}
-    <div class="header">
-        <h1>{{ strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}</h1>
-        <h2>Laporan Detail Transaksi Penerimaan Zakat</h2>
-        <div class="subtitle">
-            {{ $lembaga->alamat ?? '' }}
-            {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
-            {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
-            {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
-        </div>
+    {{-- ══════════ LOGO & HEADER ══════════ --}}
+    @php
+        // ── Logo Lembaga ───────────────────────────────────────────
+        $fotoLembaga    = $lembaga->foto ?? null;
+        $fotoLembagaArr = is_array($fotoLembaga)
+            ? $fotoLembaga
+            : (is_string($fotoLembaga) ? json_decode($fotoLembaga, true) : []);
+        $logoLembagaB64 = null;
+        if (!empty($fotoLembagaArr)) {
+            $lp = storage_path('app/public/' . $fotoLembagaArr[0]);
+            if (file_exists($lp)) {
+                $ext  = strtolower(pathinfo($lp, PATHINFO_EXTENSION));
+                $mime = in_array($ext, ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                $logoLembagaB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($lp));
+            }
+        }
+
+        // ── Logo Aplikasi ──────────────────────────────────────────
+        $logoAplikasiB64 = null;
+        try {
+            $konfigApp = \App\Models\KonfigurasiAplikasi::getConfig();
+            if ($konfigApp && $konfigApp->logo_aplikasi) {
+                foreach ([
+                    storage_path('app/public/' . $konfigApp->logo_aplikasi),
+                    public_path('storage/' . $konfigApp->logo_aplikasi),
+                    public_path($konfigApp->logo_aplikasi),
+                    base_path($konfigApp->logo_aplikasi),
+                ] as $cp) {
+                    if (file_exists($cp)) {
+                        $ext  = strtolower(pathinfo($cp, PATHINFO_EXTENSION));
+                        $mime = in_array($ext, ['jpg', 'jpeg']) ? 'image/jpeg' : 'image/' . $ext;
+                        $logoAplikasiB64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($cp));
+                        break;
+                    }
+                }
+            }
+        } catch (\Exception $e) {}
+    @endphp
+
+    <div class="header" style="padding-bottom:12px; margin-bottom:25px; border-bottom:2.5px solid #2d3436;">
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                {{-- Logo Lembaga --}}
+                <td style="width:80px; text-align:center; vertical-align:middle;">
+                    @if ($logoLembagaB64)
+                        <img src="{{ $logoLembagaB64 }}"
+                             style="width:68px;height:68px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:3px;background:#fff;"
+                             alt="Logo Lembaga">
+                    @else
+                        <div style="width:68px;height:68px;display:inline-block;"></div>
+                    @endif
+                </td>
+
+                {{-- Teks Tengah --}}
+                <td style="text-align:center; vertical-align:middle; padding:0 10px;">
+                    <h1 style="margin:0; font-size:18px; font-weight:bold; letter-spacing:1px; color:#000;">
+                        {{ strtoupper($lembaga->nama ?? 'LAPORAN TRANSAKSI PENERIMAAN ZAKAT') }}
+                    </h1>
+                    <h2 style="margin:4px 0; font-size:14px; font-weight:normal; color:#636e72;">
+                        Laporan Detail Transaksi Penerimaan Zakat
+                    </h2>
+                    <div style="margin:2px 0; font-size:11px; font-style:italic; color:#636e72;">
+                        {{ $lembaga->alamat ?? '' }}
+                        {{ $lembaga->kelurahan_nama ? ', Kel. ' . $lembaga->kelurahan_nama : '' }}
+                        {{ $lembaga->kecamatan_nama ? ', Kec. ' . $lembaga->kecamatan_nama : '' }}
+                        {{ $lembaga->kota_nama ? ', ' . $lembaga->kota_nama : '' }}
+                    </div>
+                </td>
+
+                {{-- Logo Aplikasi --}}
+                <td style="width:80px; text-align:center; vertical-align:middle;">
+                    @if ($logoAplikasiB64)
+                        <img src="{{ $logoAplikasiB64 }}"
+                             style="width:68px;height:68px;object-fit:contain;border-radius:50%;border:2px solid #d1d5db;padding:3px;background:#fff;"
+                             alt="Logo Aplikasi">
+                    @else
+                        <div style="width:68px;height:68px;display:inline-block;"></div>
+                    @endif
+                </td>
+            </tr>
+        </table>
     </div>
 
     {{-- ══════════ INFO LAPORAN ══════════ --}}
@@ -570,49 +622,57 @@
                             default  => '',
                         };
                     } elseif ($transaksi->jumlah_beras_kg > 0) {
-                        // Zakat fitrah BERAS — tampilkan jiwa sebagai info utama, kg sebagai info tambahan
-                        $namaJiwa   = $transaksi->nama_jiwa_json;
-                        $jmlJiwa    = $transaksi->jumlah_jiwa > 0
-                                        ? $transaksi->jumlah_jiwa
-                                        : ($transaksi->jumlah_beras_kg > 0
-                                            ? (int) ceil($transaksi->jumlah_beras_kg / 2.5)
-                                            : 0);
+                        // Zakat fitrah BERAS
+                        $namaJiwa = $transaksi->nama_jiwa_json;
 
-                        // Tampilkan jumlah jiwa sebagai teks utama
+                        // Prioritas: count nama_jiwa_json > jumlah_jiwa field > ceil(kg÷2.5)
+                        if (!empty($namaJiwa) && is_array($namaJiwa) && count($namaJiwa) > 0) {
+                            $jmlJiwa = count($namaJiwa);
+                        } elseif ($transaksi->jumlah_jiwa > 0) {
+                            $jmlJiwa = $transaksi->jumlah_jiwa;
+                        } else {
+                            $jmlJiwa = (int) ceil($transaksi->jumlah_beras_kg / 2.5);
+                        }
+
                         $detailText  = $jmlJiwa . ' jiwa';
-                        // Tambahkan berat beras sebagai info tambahan
                         $detailExtra = $transaksi->jumlah_beras_kg . ' kg beras';
                         if ($transaksi->harga_beras_per_kg > 0) {
                             $detailExtra .= ' @ Rp' . number_format($transaksi->harga_beras_per_kg, 0, ',', '.');
                         }
 
-                        // Tampilkan nama jiwa jika ada
+                        // Tampilkan nama jiwa
                         if (!empty($namaJiwa) && is_array($namaJiwa)) {
-                            $limit       = min(count($namaJiwa), 3);
+                            $limit       = min(count($namaJiwa), 4);
                             $namaPreview = [];
                             for ($i = 0; $i < $limit; $i++) {
                                 $namaPreview[] = ($i + 1) . '. ' . $namaJiwa[$i];
                             }
-                            if (count($namaJiwa) > 3) {
-                                $namaPreview[] = '+' . (count($namaJiwa) - 3) . ' lainnya';
+                            if (count($namaJiwa) > 4) {
+                                $namaPreview[] = '+' . (count($namaJiwa) - 4) . ' lainnya';
                             }
                             $detailExtra .= ' | ' . implode(', ', $namaPreview);
                         }
                     } elseif ($transaksi->jumlah_jiwa > 0) {
                         // Zakat fitrah TUNAI
-                        $namaJiwa    = $transaksi->nama_jiwa_json;
-                        $detailText  = $transaksi->jumlah_jiwa . ' jiwa';
+                        $namaJiwa = $transaksi->nama_jiwa_json;
+
+                        // Prioritas: count nama_jiwa_json > jumlah_jiwa field
+                        $jmlJiwa = (!empty($namaJiwa) && is_array($namaJiwa) && count($namaJiwa) > 0)
+                            ? count($namaJiwa)
+                            : $transaksi->jumlah_jiwa;
+
+                        $detailText  = $jmlJiwa . ' jiwa';
                         if ($transaksi->nominal_per_jiwa > 0) {
                             $detailExtra = '@ Rp ' . number_format($transaksi->nominal_per_jiwa, 0, ',', '.');
                         }
                         if (!empty($namaJiwa) && is_array($namaJiwa)) {
-                            $limit       = min(count($namaJiwa), 3);
+                            $limit       = min(count($namaJiwa), 4);
                             $namaPreview = [];
                             for ($i = 0; $i < $limit; $i++) {
                                 $namaPreview[] = ($i + 1) . '. ' . $namaJiwa[$i];
                             }
-                            if (count($namaJiwa) > 3) {
-                                $namaPreview[] = '+' . (count($namaJiwa) - 3) . ' lainnya';
+                            if (count($namaJiwa) > 4) {
+                                $namaPreview[] = '+' . (count($namaJiwa) - 4) . ' lainnya';
                             }
                             $detailExtra = implode(', ', $namaPreview);
                         }
@@ -623,10 +683,15 @@
                     if ($transaksi->jumlah_dibayar > 0) {
                         $totalDibayarText = number_format($transaksi->jumlah_dibayar, 0, ',', '.');
                     } elseif ($transaksi->jumlah_beras_kg > 0) {
-                        // Tampilkan kg + jiwa untuk beras
-                        $jmlJiwaBayar = $transaksi->jumlah_jiwa > 0
-                            ? $transaksi->jumlah_jiwa
-                            : (int) ceil($transaksi->jumlah_beras_kg / 2.5);
+                        // Pakai logika yang sama: count nama_jiwa_json > jumlah_jiwa > ceil(kg÷2.5)
+                        $namaJiwaBayar = $transaksi->nama_jiwa_json;
+                        if (!empty($namaJiwaBayar) && is_array($namaJiwaBayar) && count($namaJiwaBayar) > 0) {
+                            $jmlJiwaBayar = count($namaJiwaBayar);
+                        } elseif ($transaksi->jumlah_jiwa > 0) {
+                            $jmlJiwaBayar = $transaksi->jumlah_jiwa;
+                        } else {
+                            $jmlJiwaBayar = (int) ceil($transaksi->jumlah_beras_kg / 2.5);
+                        }
                         $totalDibayarText = $transaksi->jumlah_beras_kg . ' kg (' . $jmlJiwaBayar . ' jiwa)';
                     } elseif ($isFidyah && $transaksi->fidyah_tipe !== 'tunai') {
                         if ($transaksi->fidyah_tipe === 'mentah') {
