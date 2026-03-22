@@ -1,21 +1,21 @@
 @extends('layouts.app')
 @section('title', 'Tambah Data Amil')
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
+    <div class="space-y-4 sm:space-y-5">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
                 <h2 class="text-base sm:text-lg font-semibold text-gray-900">Form Tambah Amil</h2>
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">Isi field yang diperlukan untuk menambahkan data amil</p>
             </div>
-            <form action="{{ route('amil.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
+            <form action="{{ route('amil.store') }}" method="POST" enctype="multipart/form-data" class="px-4 sm:px-6 pt-2 pb-4 sm:pb-6">
                 @csrf
-                <div class="space-y-6">
+                <div class="space-y-2">
                     
                     <!-- SECTION: INFO MASJID -->
                     @if(auth()->user()->peran === 'superadmin')
                         <!-- Superadmin memilih lembaga -->
-                        <div class="border-b border-gray-200 pb-6">
-                            <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                        <div class="border-b border-gray-200 pb-2">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1 border-b border-gray-200">
                                 <svg class="w-5 h-5 inline mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                 </svg>
@@ -42,9 +42,9 @@
                     @else
                         <!-- Admin Lembaga/Pengguna - otomatis dari lembaga user -->
                         <input type="hidden" name="lembaga_id" value="{{ auth()->user()->lembaga_id }}">
-                        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                        <div class="mb-0 p-3 bg-blue-50 border border-blue-200 rounded-xl">
                             <div class="flex items-center">
-                                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-blue-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                                 <p class="text-sm text-blue-700">
@@ -56,8 +56,8 @@
                     @endif
 
                     <!-- SECTION: DATA PRIBADI -->
-                    <div class="border-b border-gray-200 pb-6">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                    <div class="border-b border-gray-200 pb-2">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1 border-b border-gray-200">
                             <svg class="w-5 h-5 inline mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
@@ -137,8 +137,8 @@
                     </div>
 
                     <!-- SECTION: KONTAK & FOTO -->
-                    <div class="border-b border-gray-200 pb-6">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                    <div class="border-b border-gray-200 pb-2">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1 border-b border-gray-200">
                             <svg class="w-5 h-5 inline mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
@@ -224,8 +224,8 @@
                     </div>
 
                     <!-- SECTION: DATA TUGAS -->
-                    <div class="pb-6">
-                        <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
+                    <div class="pb-2">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1 border-b border-gray-200">
                             <svg class="w-5 h-5 inline mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
@@ -326,9 +326,9 @@
                     @endif
 
                     <!-- SECTION: CATATAN -->
-                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
                         <div class="flex items-center">
-                            <svg class="w-5 h-5 text-yellow-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-yellow-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             <p class="text-sm font-medium text-yellow-700">Catatan</p>
@@ -342,7 +342,7 @@
                 </div>
 
                 <!-- BUTTONS -->
-                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end space-y-3 space-y-reverse sm:space-y-0 sm:space-x-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-gray-200">
+                <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end space-y-3 space-y-reverse sm:space-y-0 sm:space-x-4 mt-4 sm:mt-6 pt-4 sm:pt-5 border-t border-gray-200">
                     <a href="{{ route('amil.index') }}"
                         class="inline-flex items-center justify-center px-4 sm:px-6 py-2 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,47 +366,31 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize form
         initForm();
     });
 
     function initForm() {
-        // Auto-focus first field on desktop
         if (window.innerWidth >= 768) {
             const firstField = document.getElementById('nama_lengkap') || 
                               document.getElementById('jenis_kelamin') || 
                               document.getElementById('tempat_lahir');
-            if (firstField) {
-                firstField.focus();
-            }
+            if (firstField) firstField.focus();
         }
-
-        // Setup foto preview
         setupFotoPreview();
-        
-        // Setup tanggal validation
         setupTanggalValidation();
     }
 
-    // ================================
-    // FUNGSI FOTO HANDLING
-    // ================================
     function setupFotoPreview() {
         const fotoInput = document.getElementById('foto');
         const fotoPreview = document.getElementById('foto-preview');
-        const fotoPreviewImage = document.getElementById('foto-preview-image');
         const removeFotoBtn = document.getElementById('remove-foto');
 
-        if (fotoInput) {
-            fotoInput.addEventListener('change', handleFotoSelection);
-        }
+        if (fotoInput) fotoInput.addEventListener('change', handleFotoSelection);
 
         if (removeFotoBtn) {
             removeFotoBtn.addEventListener('click', function() {
                 fotoInput.value = '';
-                if (fotoPreview) {
-                    fotoPreview.classList.add('hidden');
-                }
+                if (fotoPreview) fotoPreview.classList.add('hidden');
             });
         }
     }
@@ -418,7 +402,6 @@
 
         if (!file) return;
 
-        // Validate file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!validTypes.includes(file.type)) {
             alert('Format file tidak valid. Harap pilih file JPG, JPEG, atau PNG.');
@@ -426,75 +409,50 @@
             return;
         }
 
-        // Validate file size (2MB)
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 2 * 1024 * 1024;
         if (file.size > maxSize) {
             alert('File terlalu besar. Maksimal 2MB.');
             event.target.value = '';
             return;
         }
 
-        // Create preview
         const reader = new FileReader();
         reader.onload = function(e) {
-            if (fotoPreviewImage) {
-                fotoPreviewImage.src = e.target.result;
-            }
-            if (fotoPreview) {
-                fotoPreview.classList.remove('hidden');
-            }
+            if (fotoPreviewImage) fotoPreviewImage.src = e.target.result;
+            if (fotoPreview) fotoPreview.classList.remove('hidden');
         };
         reader.readAsDataURL(file);
     }
 
-    // ================================
-    // FUNGSI VALIDASI TANGGAL
-    // ================================
     function setupTanggalValidation() {
         const tanggalLahirInput = document.getElementById('tanggal_lahir');
         const mulaiTugasInput = document.getElementById('tanggal_mulai_tugas');
         const selesaiTugasInput = document.getElementById('tanggal_selesai_tugas');
+        const today = new Date().toISOString().split('T')[0];
         
-        // Set max date for tanggal lahir to today
-        if (tanggalLahirInput) {
-            const today = new Date().toISOString().split('T')[0];
-            tanggalLahirInput.max = today;
-        }
+        if (tanggalLahirInput) tanggalLahirInput.max = today;
         
-        // Set min date for tanggal mulai tugas to today
         if (mulaiTugasInput) {
-            const today = new Date().toISOString().split('T')[0];
             mulaiTugasInput.min = '1900-01-01';
             mulaiTugasInput.max = today;
         }
 
-        // Update min date for tanggal selesai tugas when tanggal mulai berubah
         if (mulaiTugasInput && selesaiTugasInput) {
             mulaiTugasInput.addEventListener('change', function() {
                 if (this.value) {
                     selesaiTugasInput.min = this.value;
-                    
-                    // If tanggal selesai lebih kecil dari tanggal mulai, reset
                     if (selesaiTugasInput.value && selesaiTugasInput.value < this.value) {
                         selesaiTugasInput.value = '';
                     }
                 }
             });
-
-            // Set initial min date for tanggal selesai tugas
-            if (mulaiTugasInput.value) {
-                selesaiTugasInput.min = mulaiTugasInput.value;
-            }
+            if (mulaiTugasInput.value) selesaiTugasInput.min = mulaiTugasInput.value;
         }
     }
 
-    // ================================
-    // FORM VALIDATION BEFORE SUBMIT
-    // ================================
     const form = document.querySelector('form');
     if (form) {
         form.addEventListener('submit', function(event) {
-            // Validasi tanggal lahir
             const tanggalLahirInput = document.getElementById('tanggal_lahir');
             if (tanggalLahirInput && tanggalLahirInput.value) {
                 const tanggalLahir = new Date(tanggalLahirInput.value);
@@ -507,7 +465,6 @@
                     event.preventDefault();
                     return;
                 }
-                
                 if (tanggalLahir < minDate) {
                     alert('❌ Tanggal lahir tidak valid.');
                     tanggalLahirInput.focus();
@@ -516,7 +473,6 @@
                 }
             }
             
-            // Validasi email format
             const emailInput = document.getElementById('email');
             if (emailInput && emailInput.value) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -528,7 +484,6 @@
                 }
             }
             
-            // Validasi telepon
             const teleponInput = document.getElementById('telepon');
             if (teleponInput && teleponInput.value) {
                 const teleponRegex = /^[0-9]{10,13}$/;
@@ -540,7 +495,6 @@
                 }
             }
             
-            // Validasi untuk superadmin - lembaga harus dipilih
             const userRole = "{{ auth()->user()->peran }}";
             if (userRole === 'superadmin') {
                 const lembagaSelect = document.getElementById('lembaga_id');
@@ -552,7 +506,6 @@
                 }
             }
             
-            // Show loading state
             const submitButton = form.querySelector('button[type="submit"]');
             if (submitButton) {
                 submitButton.disabled = true;
@@ -561,9 +514,6 @@
         });
     }
     
-    // ================================
-    // REAL-TIME VALIDATION
-    // ================================
     const emailInput = document.getElementById('email');
     if (emailInput) {
         emailInput.addEventListener('blur', function() {
@@ -571,7 +521,6 @@
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(this.value)) {
                     this.classList.add('border-red-500');
-                    // Add error message
                     let errorElement = this.nextElementSibling;
                     if (!errorElement || !errorElement.classList.contains('text-red-600')) {
                         errorElement = document.createElement('p');
@@ -581,7 +530,6 @@
                     }
                 } else {
                     this.classList.remove('border-red-500');
-                    // Remove error message
                     const errorElement = this.nextElementSibling;
                     if (errorElement && errorElement.classList.contains('text-red-600')) {
                         errorElement.remove();

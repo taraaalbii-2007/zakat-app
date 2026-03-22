@@ -3,19 +3,19 @@
 @section('title', 'Edit Setoran Kas')
 
 @section('content')
-<div class="space-y-4 sm:space-y-6">
+<div class="space-y-4 sm:space-y-5">
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
         <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
             <h2 class="text-base sm:text-lg font-semibold text-gray-900">Edit Setoran Kas</h2>
             <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Perbarui detail setoran kas <span class="font-medium text-gray-700">{{ $setorKas->no_setor }}</span></p>
         </div>
 
-        <form action="{{ route('amil.setor-kas.update', $setorKas->uuid) }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6 space-y-6">
+        <form action="{{ route('amil.setor-kas.update', $setorKas->uuid) }}" method="POST" enctype="multipart/form-data" class="px-4 sm:px-6 pt-2 pb-4 sm:pb-6 space-y-3">
             @csrf
             @method('PUT')
 
             {{-- Info Amil --}}
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-3">
                 <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
@@ -28,11 +28,11 @@
 
             {{-- SECTION 1: Info Setoran --}}
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">1</span>
                     Informasi Setoran
                 </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {{-- Tanggal Setor --}}
                     <div>
                         <label for="tanggal_setor" class="block text-sm font-medium text-gray-700 mb-1.5">
@@ -75,7 +75,7 @@
                 </div>
 
                 {{-- Tombol hitung rekap --}}
-                <div class="mt-3">
+                <div class="mt-2">
                     <button type="button" id="btn-hitung-rekap"
                         class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition-colors">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,41 +88,41 @@
 
             {{-- SECTION 2: Rekap & Jumlah --}}
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">2</span>
                     Rekap Kas & Jumlah Disetor
                 </h3>
 
                 {{-- Rekap dari Kas Harian --}}
-                <div id="rekap-kas-container" class="{{ $rekapKas ? '' : 'hidden' }} mb-4">
-                    <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-                        <p class="text-xs font-semibold text-green-900 mb-3 flex items-center gap-1.5">
+                <div id="rekap-kas-container" class="{{ $rekapKas ? '' : 'hidden' }} mb-3">
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-3">
+                        <p class="text-xs font-semibold text-green-900 mb-2 flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             Rekap Kas Periode
                         </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div class="bg-white rounded-lg p-3 border border-green-100">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <div class="bg-white rounded-lg p-2.5 border border-green-100">
                                 <p class="text-xs text-gray-500">Datang Langsung</p>
                                 <p class="text-base font-bold text-gray-800" id="rekap-datang-langsung">
                                     {{ $rekapKas ? 'Rp '.number_format($rekapKas['datang_langsung'],0,',','.') : '-' }}
                                 </p>
                             </div>
-                            <div class="bg-white rounded-lg p-3 border border-green-100">
+                            <div class="bg-white rounded-lg p-2.5 border border-green-100">
                                 <p class="text-xs text-gray-500">Dijemput</p>
                                 <p class="text-base font-bold text-gray-800" id="rekap-dijemput">
                                     {{ $rekapKas ? 'Rp '.number_format($rekapKas['dijemput'],0,',','.') : '-' }}
                                 </p>
                             </div>
-                            <div class="bg-white rounded-lg p-3 border border-green-100">
+                            <div class="bg-white rounded-lg p-2.5 border border-green-100">
                                 <p class="text-xs text-gray-500 font-semibold">Total</p>
                                 <p class="text-base font-bold text-primary" id="rekap-total">
                                     {{ $rekapKas ? $rekapKas['total_fmt'] : '-' }}
                                 </p>
                             </div>
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-2">
                             <button type="button" onclick="pakaiRekap()"
                                 class="text-xs font-medium text-green-700 hover:text-green-900 underline">
                                 Gunakan total rekap sebagai jumlah disetor
@@ -152,11 +152,11 @@
 
             {{-- SECTION 3: Bukti & Tanda Tangan --}}
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">3</span>
                     Bukti & Tanda Tangan
                 </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {{-- Foto Bukti --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Foto Uang / Bukti Setor</label>
@@ -197,7 +197,6 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanda Tangan Amil</label>
                         <div class="space-y-2">
-                            {{-- Tanda tangan existing --}}
                             @if($setorKas->tanda_tangan_amil_url)
                                 <div id="existing-ttd-container" class="h-40 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
                                     <img src="{{ $setorKas->tanda_tangan_amil_url }}" class="h-full object-contain" alt="Tanda tangan saat ini">
@@ -226,7 +225,7 @@
 
             {{-- SECTION 4: Keterangan --}}
             <div>
-                <h3 class="text-sm font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+                <h3 class="text-sm font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-200 flex items-center gap-2">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">4</span>
                     Keterangan Tambahan
                 </h3>
@@ -237,7 +236,7 @@
             </div>
 
             {{-- Actions --}}
-            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-gray-200">
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-3 border-t border-gray-200">
                 <a href="{{ route('amil.setor-kas.show', $setorKas->uuid) }}"
                     class="inline-flex items-center justify-center px-5 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                     Batal
