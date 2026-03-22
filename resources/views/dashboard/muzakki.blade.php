@@ -893,7 +893,7 @@
                                 <div style="margin-bottom:1rem;">
                                     <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
                                         <span style="font-size:.73rem;font-weight:600;color:var(--primary-800);">Penyaluran
-                                            vs Penerimaan</span>
+                                            dan Penerimaan</span>
                                         <span
                                             style="font-size:.73rem;font-weight:700;color:var(--primary-800);">{{ $statsLembaga['rasio_penyaluran'] }}%</span>
                                     </div>
