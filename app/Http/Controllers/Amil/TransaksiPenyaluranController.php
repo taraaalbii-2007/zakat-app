@@ -790,33 +790,51 @@ class TransaksiPenyaluranController extends Controller
      * Membutuhkan package: phpoffice/phpspreadsheet
      * Install: composer require phpoffice/phpspreadsheet
      */
+    /**
+     * Export Excel laporan transaksi penyaluran
+     * Membutuhkan package: phpoffice/phpspreadsheet
+     * Install: composer require phpoffice/phpspreadsheet
+     */
     public function exportExcel(Request $request)
     {
-        $user     = Auth::user();
+        $user      = Auth::user();
         $lembaga   = $user->amil->lembaga ?? $user->lembaga;
         $lembagaId = $lembaga->id;
 
         $transaksis = $this->buildExportQuery($request, $lembagaId)->get();
+
+        // ── Hitung ringkasan (konsisten dengan Blade template) ────────────────
+        $totalTransaksi  = $transaksis->count();
+        $totalDisalurkan = $transaksis->where('status', 'disalurkan')->count();
+        $totalDiSetujui  = $transaksis->where('status', 'disetujui')->count();
+        $totalDraft      = $transaksis->where('status', 'draft')->count();
+        $totalDibatalkan = $transaksis->where('status', 'dibatalkan')->count();
+        $totalNominal    = $transaksis
+            ->whereIn('status', ['disetujui', 'disalurkan'])
+            ->sum(fn($t) => $t->metode_penyaluran === 'barang'
+                ? ($t->nilai_barang ?? 0)
+                : ($t->jumlah ?? 0));
 
         // ── Buat spreadsheet ──────────────────────────────────────────────────
         $spreadsheet = new Spreadsheet();
         $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Laporan Penyaluran');
 
-        // Lebar kolom
-        $sheet->getColumnDimension('A')->setWidth(5);
-        $sheet->getColumnDimension('B')->setWidth(22);
-        $sheet->getColumnDimension('C')->setWidth(14);
-        $sheet->getColumnDimension('D')->setWidth(28);
-        $sheet->getColumnDimension('E')->setWidth(20);
-        $sheet->getColumnDimension('F')->setWidth(18);
-        $sheet->getColumnDimension('G')->setWidth(22);
-        $sheet->getColumnDimension('H')->setWidth(20);
-        $sheet->getColumnDimension('I')->setWidth(18);
-        $sheet->getColumnDimension('J')->setWidth(14);
-        $sheet->getColumnDimension('K')->setWidth(13);
-        $sheet->getColumnDimension('L')->setWidth(22);
-        $sheet->getColumnDimension('M')->setWidth(35);
+        // Lebar kolom (11 kolom, sesuai Blade template)
+        $sheet->getColumnDimension('A')->setWidth(5);   // No
+        $sheet->getColumnDimension('B')->setWidth(22);  // No. Transaksi
+        $sheet->getColumnDimension('C')->setWidth(14);  // Tanggal
+        $sheet->getColumnDimension('D')->setWidth(28);  // Mustahik
+        $sheet->getColumnDimension('E')->setWidth(22);  // Kategori Mustahik
+        $sheet->getColumnDimension('F')->setWidth(18);  // Jenis Zakat
+        $sheet->getColumnDimension('G')->setWidth(22);  // Program Zakat
+        $sheet->getColumnDimension('H')->setWidth(20);  // Jumlah (Rp)
+        $sheet->getColumnDimension('I')->setWidth(13);  // Metode
+        $sheet->getColumnDimension('J')->setWidth(13);  // Status
+        $sheet->getColumnDimension('K')->setWidth(22);  // Amil
+        // Kolom tambahan hanya di Excel (tidak tampil di PDF tapi tetap berguna)
+        $sheet->getColumnDimension('L')->setWidth(30);  // Detail Barang
+        $sheet->getColumnDimension('M')->setWidth(35);  // Keterangan
 
         // ── Baris 1: Judul ────────────────────────────────────────────────────
         $sheet->mergeCells('A1:M1');
@@ -828,7 +846,7 @@ class TransaksiPenyaluranController extends Controller
 
         // ── Baris 2: Sub judul ────────────────────────────────────────────────
         $sheet->mergeCells('A2:M2');
-        $sheet->setCellValue('A2', 'Laporan Transaksi Penyaluran Zakat');
+        $sheet->setCellValue('A2', 'Laporan Transaksi Penyaluran');
         $sheet->getStyle('A2')->applyFromArray([
             'font'      => ['size' => 11, 'italic' => true],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
@@ -847,41 +865,61 @@ class TransaksiPenyaluranController extends Controller
             'font'      => ['size' => 9, 'italic' => true],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
-
-        // Garis pemisah header
         $sheet->getStyle('A3:M3')->getBorders()->getBottom()->setBorderStyle(Border::BORDER_MEDIUM);
 
-        // ── Baris 5-8: Info ekspor ────────────────────────────────────────────
+        // ── Baris 5–9: Info ekspor (konsisten dengan Blade template) ──────────
         $filters   = $request->only(['q', 'status', 'metode_penyaluran', 'jenis_zakat_id', 'periode', 'start_date', 'end_date']);
         $filterStr = [];
+
+        if (!empty($filters['q'])) {
+            $filterStr[] = "Pencarian: '{$filters['q']}'";
+        }
+        if (!empty($filters['start_date']) && !empty($filters['end_date'])) {
+            $filterStr[] = 'Periode: '
+                . Carbon::parse($filters['start_date'])->format('d/m/Y')
+                . ' - '
+                . Carbon::parse($filters['end_date'])->format('d/m/Y');
+        } elseif (!empty($filters['start_date'])) {
+            $filterStr[] = 'Dari: ' . Carbon::parse($filters['start_date'])->format('d/m/Y');
+        } elseif (!empty($filters['end_date'])) {
+            $filterStr[] = 'Sampai: ' . Carbon::parse($filters['end_date'])->format('d/m/Y');
+        }
         if (!empty($filters['status'])) {
-            $filterStr[] = 'Status: ' . ucfirst($filters['status']);
+            $statusLabel = match ($filters['status']) {
+                'draft'      => 'Draft',
+                'disetujui'  => 'Disetujui',
+                'disalurkan' => 'Disalurkan',
+                'dibatalkan' => 'Dibatalkan',
+                default      => $filters['status'],
+            };
+            $filterStr[] = 'Status: ' . $statusLabel;
         }
         if (!empty($filters['metode_penyaluran'])) {
             $filterStr[] = 'Metode: ' . ucfirst($filters['metode_penyaluran']);
         }
         if (!empty($filters['jenis_zakat_id'])) {
-            $jenis = JenisZakat::find($filters['jenis_zakat_id']);
+            $jenis       = JenisZakat::find($filters['jenis_zakat_id']);
             $filterStr[] = 'Jenis Zakat: ' . ($jenis->nama ?? '-');
-        }
-        if (!empty($filters['start_date'])) {
-            $filterStr[] = 'Dari: ' . Carbon::parse($filters['start_date'])->format('d/m/Y');
-        }
-        if (!empty($filters['end_date'])) {
-            $filterStr[] = 'Sampai: ' . Carbon::parse($filters['end_date'])->format('d/m/Y');
         }
         if (!empty($filters['periode'])) {
             $filterStr[] = 'Periode: ' . $filters['periode'];
         }
-        if (!empty($filters['q'])) {
-            $filterStr[] = "Pencarian: '{$filters['q']}'";
-        }
+
+        // Ringkasan statistik (sesuai Blade)
+        $ringkasan = implode(' | ', [
+            number_format($totalTransaksi, 0, ',', '.') . ' Total',
+            $totalDisalurkan . ' Disalurkan',
+            $totalDiSetujui  . ' Disetujui',
+            $totalDraft      . ' Draft',
+            $totalDibatalkan . ' Dibatalkan',
+            'Rp ' . number_format($totalNominal, 0, ',', '.'),
+        ]);
 
         $infoRows = [
-            ['Tanggal Ekspor', Carbon::now()->locale('id')->translatedFormat('l, d F Y H:i') . ' WIB'],
-            ['Filter',         count($filterStr) ? implode(' | ', $filterStr) : 'Semua Data'],
-            ['Total Data',     $transaksis->count() . ' transaksi'],
-            ['Petugas',        $user->name ?? $user->username ?? 'System'],
+            ['Hari / Tanggal',    Carbon::now()->locale('id')->translatedFormat('l, d F Y') . ', ' . Carbon::now()->format('H:i') . ' WIB'],
+            ['Filter Berdasarkan', count($filterStr) ? implode(' | ', $filterStr) : 'Semua Data'],
+            ['Ringkasan Data',    $ringkasan],
+            ['Petugas Ekspor',    $user->name ?? $user->username ?? 'System'],
         ];
 
         $row = 5;
@@ -894,21 +932,22 @@ class TransaksiPenyaluranController extends Controller
         }
 
         // ── Header tabel (baris 10) ───────────────────────────────────────────
+        // Kolom A–K sesuai urutan Blade template, L–M sebagai kolom tambahan Excel
         $headerRow = 10;
         $headers   = [
             'A' => 'No',
             'B' => 'No. Transaksi',
             'C' => 'Tanggal',
             'D' => 'Mustahik',
-            'E' => 'Kategori Mustahik',
+            'E' => 'Kategori',
             'F' => 'Jenis Zakat',
-            'G' => 'Program Zakat',
+            'G' => 'Program',
             'H' => 'Jumlah (Rp)',
-            'I' => 'Detail Barang',
-            'J' => 'Metode',
-            'K' => 'Status',
-            'L' => 'Amil',
-            'M' => 'Keterangan',
+            'I' => 'Metode',
+            'J' => 'Status',
+            'K' => 'Amil',
+            'L' => 'Detail Barang',  // kolom tambahan (tidak ada di PDF)
+            'M' => 'Keterangan',     // kolom tambahan (tidak ada di PDF)
         ];
 
         foreach ($headers as $col => $label) {
@@ -918,23 +957,25 @@ class TransaksiPenyaluranController extends Controller
         $headerStyle = [
             'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1a7a4a']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER, 'wrapText' => true],
-            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
+                'wrapText'   => true,
+            ],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]],
         ];
         $sheet->getStyle("A{$headerRow}:M{$headerRow}")->applyFromArray($headerStyle);
         $sheet->getRowDimension($headerRow)->setRowHeight(20);
 
         // ── Data rows ─────────────────────────────────────────────────────────
-        $dataRow   = $headerRow + 1;
-        $no        = 1;
-        $grandTotal = 0;
+        $dataRow = $headerRow + 1;
+        $no      = 1;
 
         foreach ($transaksis as $transaksi) {
+            // Logika nominal konsisten dengan Blade template
             $nominal = $transaksi->metode_penyaluran === 'barang'
                 ? ($transaksi->nilai_barang ?? 0)
                 : ($transaksi->jumlah ?? 0);
-
-            $grandTotal += $nominal;
 
             $statusText = match ($transaksi->status) {
                 'draft'      => 'Draft',
@@ -950,6 +991,7 @@ class TransaksiPenyaluranController extends Controller
                 default    => '-',
             };
 
+            // Urutan kolom A–K sesuai Blade template
             $sheet->setCellValue("A{$dataRow}", $no++);
             $sheet->setCellValue("B{$dataRow}", $transaksi->no_transaksi);
             $sheet->setCellValue("C{$dataRow}", $transaksi->tanggal_penyaluran->format('d/m/Y'));
@@ -958,28 +1000,31 @@ class TransaksiPenyaluranController extends Controller
             $sheet->setCellValue("F{$dataRow}", $transaksi->jenisZakat->nama ?? '-');
             $sheet->setCellValue("G{$dataRow}", $transaksi->programZakat->nama_program ?? '-');
             $sheet->setCellValue("H{$dataRow}", $nominal > 0 ? $nominal : 0);
-            $sheet->setCellValue("I{$dataRow}", $transaksi->detail_barang ?? '-');
-            $sheet->setCellValue("J{$dataRow}", $metodeText);
-            $sheet->setCellValue("K{$dataRow}", $statusText);
-            $sheet->setCellValue("L{$dataRow}", $transaksi->amil->pengguna->name ?? $transaksi->amil->nama_lengkap ?? '-');
+            $sheet->setCellValue("I{$dataRow}", $metodeText);
+            $sheet->setCellValue("J{$dataRow}", $statusText);
+            $sheet->setCellValue("K{$dataRow}", $transaksi->amil->pengguna->name ?? $transaksi->amil->nama_lengkap ?? '-');
+            // Kolom tambahan (hanya di Excel)
+            $sheet->setCellValue("L{$dataRow}", $transaksi->detail_barang ?? '-');
             $sheet->setCellValue("M{$dataRow}", $transaksi->keterangan ?? '-');
 
             // Format angka
             $sheet->getStyle("H{$dataRow}")->getNumberFormat()->setFormatCode('#,##0');
+
+            // Alignment
             $sheet->getStyle("A{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("C{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("J{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle("K{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("H{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle("I{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("J{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Warna status
+            // Warna status (konsisten dengan Blade: sesuai nilai status)
             $statusColor = match ($transaksi->status) {
-                'disalurkan' => 'd4edda',
-                'disetujui'  => 'cce5ff',
-                'dibatalkan' => 'f8d7da',
-                default      => 'fff3cd', // draft
+                'disalurkan' => 'd4edda', // hijau
+                'disetujui'  => 'cce5ff', // biru
+                'dibatalkan' => 'f8d7da', // merah
+                default      => 'fff3cd', // kuning (draft)
             };
-            $sheet->getStyle("K{$dataRow}")->getFill()
+            $sheet->getStyle("J{$dataRow}")->getFill()
                 ->setFillType(Fill::FILL_SOLID)
                 ->getStartColor()->setRGB($statusColor);
 
@@ -988,9 +1033,10 @@ class TransaksiPenyaluranController extends Controller
                 'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
             ]);
 
-            // Warna baris selang-seling
+            // Warna baris selang-seling (sesuai Blade: #f8f9fa untuk even)
+            // Catatan: cek $no karena sudah di-increment, jadi baris genap = $no ganjil
             if ($no % 2 === 0) {
-                foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'L', 'M'] as $col) {
+                foreach (['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M'] as $col) {
                     $sheet->getStyle("{$col}{$dataRow}")->getFill()
                         ->setFillType(Fill::FILL_SOLID)
                         ->getStartColor()->setRGB('f8f9fa');
@@ -1000,13 +1046,12 @@ class TransaksiPenyaluranController extends Controller
             $dataRow++;
         }
 
-        // ── Baris total ───────────────────────────────────────────────────────
+        // ── Baris total (konsisten dengan Blade: hanya disetujui & disalurkan) ─
         $sheet->mergeCells("A{$dataRow}:G{$dataRow}");
-        $sheet->setCellValue("A{$dataRow}", 'TOTAL NOMINAL (Disalurkan & Disetujui)');
-        $sheet->setCellValue("H{$dataRow}", $transaksis
-            ->whereIn('status', ['disetujui', 'disalurkan'])
-            ->sum(fn($t) => $t->metode_penyaluran === 'barang' ? ($t->nilai_barang ?? 0) : ($t->jumlah ?? 0)));
+        $sheet->setCellValue("A{$dataRow}", 'Total Nominal (Disetujui & Disalurkan):');
+        $sheet->setCellValue("H{$dataRow}", $totalNominal); // pakai variabel yang sudah dihitung di atas
         $sheet->getStyle("H{$dataRow}")->getNumberFormat()->setFormatCode('#,##0');
+
         $totalStyle = [
             'font'      => ['bold' => true],
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'e8f5e9']],
@@ -1019,10 +1064,9 @@ class TransaksiPenyaluranController extends Controller
         $sheet->getStyle("A{$dataRow}:M{$dataRow}")->applyFromArray($totalStyle);
         $sheet->getStyle("A{$dataRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-        // ── Freeze header ─────────────────────────────────────────────────────
+        // ── Freeze pane & Auto-filter ─────────────────────────────────────────
         $sheet->freezePane('A11');
 
-        // ── Auto-filter ───────────────────────────────────────────────────────
         $lastDataRow = $dataRow - 1;
         if ($lastDataRow >= $headerRow + 1) {
             $sheet->setAutoFilter("A{$headerRow}:M{$lastDataRow}");
@@ -1030,8 +1074,7 @@ class TransaksiPenyaluranController extends Controller
 
         // ── Output ────────────────────────────────────────────────────────────
         $filename = 'laporan-penyaluran-' . Carbon::now()->format('Ymd-His') . '.xlsx';
-
-        $writer = new Xlsx($spreadsheet);
+        $writer   = new Xlsx($spreadsheet);
 
         return response()->streamDownload(function () use ($writer) {
             $writer->save('php://output');
