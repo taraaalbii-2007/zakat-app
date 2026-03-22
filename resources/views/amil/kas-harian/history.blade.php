@@ -238,10 +238,36 @@
                 {{-- ═══════════════════════════════════════════════════════ --}}
                 <div id="content-grafik" class="tab-content hidden mt-6">
                     <div class="space-y-4">
-                        <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Grafik Saldo 30 Hari Terakhir</h4>
-                        <div class="p-4 sm:p-6 bg-gray-50 rounded-xl border border-gray-100">
-                            <canvas id="chartSaldo" height="100" style="max-height: 350px;"></canvas>
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">
+                                Grafik Saldo 30 Hari Terakhir
+                            </h4>
+                            <span class="text-xs font-semibold px-3 py-1 rounded-full"
+                                  style="color:#17a34a; background:#f0fdf4; border:1px solid #dcfce7;">
+                                30 Hari Terakhir
+                            </span>
                         </div>
+
+                        {{-- Panel chart — sama persis struktur .panel dari dashboard --}}
+                        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden"
+                             style="box-shadow: 0 4px 14px 0 rgba(23,163,74,.08);">
+                            <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between"
+                                 style="background:#f9fafb;">
+                                <p class="text-sm font-bold text-gray-900" style="letter-spacing:-.01em;">
+                                    Trend Saldo, Penerimaan &amp; Penyaluran
+                                </p>
+                                <span class="text-xs font-bold px-3 py-1 rounded-full"
+                                      style="color:#15803d; background:#f0fdf4; border:1px solid #dcfce7; letter-spacing:.08em; text-transform:uppercase;">
+                                    Kas Harian
+                                </span>
+                            </div>
+                            <div class="p-5">
+                                <div style="height: 280px; position: relative;">
+                                    <canvas id="chartSaldo"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
                         <p class="text-xs text-gray-400 text-center">
                             Menampilkan data 30 hari terakhir. Gunakan filter untuk rentang tertentu.
                         </p>
@@ -374,10 +400,11 @@
                 {{-- TAB: Filter                                             --}}
                 {{-- ═══════════════════════════════════════════════════════ --}}
                 <div id="content-filter" class="tab-content hidden mt-6">
-                    <div class="max-w-2xl">
+                    <div class="w-full">
                         <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Filter Data</h4>
                         <form method="GET" action="{{ route('kas-harian.history') }}" id="filter-form">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {{-- Tanggal: tetap 2 kolom tapi full width --}}
+                            <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-xs font-medium text-gray-700 mb-1.5">Tanggal Mulai</label>
                                     <input type="date" name="start_date" value="{{ request('start_date') }}"
@@ -388,18 +415,21 @@
                                     <input type="date" name="end_date" value="{{ request('end_date') }}"
                                         class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                 </div>
-                                <div class="sm:col-span-2">
-                                    <label class="block text-xs font-medium text-gray-700 mb-1.5">Status Kas</label>
-                                    <select name="status" onchange="this.form.submit()"
-                                        class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                        <option value="">Semua Status</option>
-                                        <option value="open"   {{ request('status') === 'open'   ? 'selected' : '' }}>Open</option>
-                                        <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
-                                    </select>
-                                </div>
                             </div>
 
-                            <div class="flex items-center gap-3 mt-6">
+                            {{-- Status Kas: 1 kolom full width --}}
+                            <div class="mb-6">
+                                <label class="block text-xs font-medium text-gray-700 mb-1.5">Status Kas</label>
+                                <select name="status" onchange="this.form.submit()"
+                                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                    <option value="">Semua Status</option>
+                                    <option value="open"   {{ request('status') === 'open'   ? 'selected' : '' }}>Open</option>
+                                    <option value="closed" {{ request('status') === 'closed' ? 'selected' : '' }}>Closed</option>
+                                </select>
+                            </div>
+
+                            {{-- Tombol: center --}}
+                            <div class="flex items-center justify-center gap-3">
                                 <button type="submit"
                                     class="inline-flex items-center px-5 py-2.5 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -475,9 +505,12 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+{{-- CDN sama dengan dashboard amil --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // ── Tab switching ─────────────────────────────────────────────────────
+    let chartInitialized = false;
+
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
         document.querySelectorAll('.tab-button').forEach(b => {
@@ -488,6 +521,12 @@
         const activeTab = document.getElementById('tab-' + tabName);
         activeTab.classList.add('border-primary', 'text-primary');
         activeTab.classList.remove('border-transparent', 'text-gray-500');
+
+        // Init chart hanya saat tab grafik dibuka pertama kali
+        if (tabName === 'grafik' && !chartInitialized) {
+            chartInitialized = true;
+            initChart();
+        }
     }
 
     // ── Auto switch tab jika ada param ?tab= ─────────────────────────────
@@ -500,17 +539,12 @@
             switchTab(activeTab);
         }
 
-        // Jika ada filter aktif, buka tab filter secara otomatis
         @if(request('start_date') || request('end_date') || request('status'))
             if (!activeTab) switchTab('filter');
         @endif
-
-        // Init chart langsung saat DOM ready — sebelum tab grafik dibuka
-        // agar ukuran canvas sudah terhitung dengan benar (tidak hidden saat init)
-        initChart();
     });
 
-    // ── Chart Saldo ───────────────────────────────────────────────────────
+    // ── Chart Saldo ── identik gaya dengan chartTrend dashboard amil ──────
     function initChart() {
         const chartData = @json($chart30Hari);
         const canvas    = document.getElementById('chartSaldo');
@@ -518,10 +552,38 @@
         if (!canvas) return;
 
         if (!chartData || chartData.length === 0) {
-            canvas.closest('.p-4, .p-6, .bg-gray-50').innerHTML =
+            canvas.closest('.p-5').innerHTML =
                 '<p class="text-center text-sm text-gray-400 py-8">Belum ada data untuk ditampilkan.</p>';
             return;
         }
+
+        // ── Global font defaults (sama dengan dashboard) ──────────────────
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+        Chart.defaults.font.size   = 11;
+        Chart.defaults.font.weight = '500';
+
+        // ── Palet warna ───────────────────────────────────────────────────
+        const C_SALDO  = '#7c3aed';   // ungu  — Saldo Akhir
+        const C_MASUK  = '#17a34a';   // hijau — Penerimaan  (warna primary dashboard)
+        const C_KELUAR = '#ea580c';   // oranye — Penyaluran
+        const GRID     = '#f3f4f6';
+        const TICK     = '#9ca3af';
+
+        // ── Tooltip gelap — sama persis dengan dashboard ──────────────────
+        const tooltipCfg = {
+            backgroundColor : '#111827',
+            titleColor      : '#ffffff',
+            bodyColor       : 'rgba(255,255,255,.65)',
+            borderColor     : 'rgba(23,163,74,.25)',
+            borderWidth     : 1,
+            padding         : 10,
+            cornerRadius    : 8,
+            titleFont : { family: "'Poppins', sans-serif", weight: '700', size: 12 },
+            bodyFont  : { family: "'Poppins', sans-serif", size: 11 },
+            callbacks : {
+                label: ctx => ' ' + ctx.dataset.label + ': Rp ' + ctx.parsed.y.toLocaleString('id-ID')
+            }
+        };
 
         const labels     = chartData.map(d => {
             const date = new Date(d.tanggal);
@@ -533,85 +595,113 @@
 
         const ctx = canvas.getContext('2d');
 
+        // ── Gradient fill — teknik sama dengan dashboard ──────────────────
+        const gradSaldo = ctx.createLinearGradient(0, 0, 0, 280);
+        gradSaldo.addColorStop(0, 'rgba(124,58,237,.18)');
+        gradSaldo.addColorStop(1, 'rgba(124,58,237,0)');
+
+        const gradMasuk = ctx.createLinearGradient(0, 0, 0, 280);
+        gradMasuk.addColorStop(0, 'rgba(23,163,74,.18)');
+        gradMasuk.addColorStop(1, 'rgba(23,163,74,0)');
+
+        const gradKeluar = ctx.createLinearGradient(0, 0, 0, 280);
+        gradKeluar.addColorStop(0, 'rgba(234,88,12,.15)');
+        gradKeluar.addColorStop(1, 'rgba(234,88,12,0)');
+
         new Chart(ctx, {
             type: 'line',
             data: {
                 labels,
                 datasets: [
                     {
-                        label: 'Saldo Akhir',
-                        data: saldoAkhir,
-                        borderColor: '#7c3aed',
-                        backgroundColor: 'rgba(124, 58, 237, 0.05)',
-                        borderWidth: 2.5,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#7c3aed',
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
+                        label                : 'Saldo Akhir',
+                        data                 : saldoAkhir,
+                        borderColor          : C_SALDO,
+                        backgroundColor      : gradSaldo,
+                        fill                 : true,
+                        tension              : 0.42,
+                        borderWidth          : 2.5,
+                        pointRadius          : 5,
+                        pointBackgroundColor : '#fff',
+                        pointBorderColor     : C_SALDO,
+                        pointBorderWidth     : 2.5,
+                        pointHoverRadius     : 7,
                     },
                     {
-                        label: 'Penerimaan',
-                        data: penerimaan,
-                        borderColor: '#16a34a',
-                        backgroundColor: 'transparent',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.4,
-                        pointBackgroundColor: '#16a34a',
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                        borderDash: [4, 4],
+                        label                : 'Penerimaan',
+                        data                 : penerimaan,
+                        borderColor          : C_MASUK,
+                        backgroundColor      : gradMasuk,
+                        fill                 : true,
+                        tension              : 0.42,
+                        borderWidth          : 2.5,
+                        pointRadius          : 5,
+                        pointBackgroundColor : '#fff',
+                        pointBorderColor     : C_MASUK,
+                        pointBorderWidth     : 2.5,
+                        pointHoverRadius     : 7,
                     },
                     {
-                        label: 'Penyaluran',
-                        data: penyaluran,
-                        borderColor: '#ea580c',
-                        backgroundColor: 'transparent',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.4,
-                        pointBackgroundColor: '#ea580c',
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
-                        borderDash: [4, 4],
+                        label                : 'Penyaluran',
+                        data                 : penyaluran,
+                        borderColor          : C_KELUAR,
+                        backgroundColor      : gradKeluar,
+                        fill                 : true,
+                        tension              : 0.42,
+                        borderWidth          : 2.5,
+                        pointRadius          : 5,
+                        pointBackgroundColor : '#fff',
+                        pointBorderColor     : C_KELUAR,
+                        pointBorderWidth     : 2.5,
+                        pointHoverRadius     : 7,
                     },
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                animation: { duration: 0 },       // ← matikan animasi agar tidak "gerak-gerak"
+                responsive          : true,
+                maintainAspectRatio : false,   // ikut tinggi div parent 280px
+
+                // ── Matikan SEMUA animasi ─────────────────────────────────
+                animation  : false,
+                animations : false,
+                transitions: {
+                    active : { animation: { duration: 0 } },
+                    resize : { animation: { duration: 0 } },
+                    show   : { animation: { duration: 0 } },
+                    hide   : { animation: { duration: 0 } },
+                },
+
                 interaction: { mode: 'index', intersect: false },
+
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (ctx) {
-                                return ctx.dataset.label + ': Rp ' + ctx.raw.toLocaleString('id-ID');
-                            }
+                    tooltip: tooltipCfg,
+                    legend : {
+                        labels: {
+                            color        : TICK,
+                            font         : { family: "'Poppins', sans-serif", size: 11, weight: '600' },
+                            usePointStyle: true,
+                            pointStyle   : 'circle',
+                            padding      : 20,
                         }
                     }
                 },
+
                 scales: {
+                    x: {
+                        grid : { display: false },
+                        ticks: { color: TICK }
+                    },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            callback: function (val) {
+                        grid       : { color: GRID },
+                        ticks      : {
+                            color   : TICK,
+                            callback: val => {
                                 if (val >= 1000000) return 'Rp ' + (val / 1000000).toFixed(1) + 'jt';
                                 if (val >= 1000)    return 'Rp ' + (val / 1000).toFixed(0) + 'rb';
                                 return 'Rp ' + val;
-                            },
-                            font: { size: 11 }
-                        },
-                        grid: { color: 'rgba(0,0,0,0.05)' }
-                    },
-                    x: {
-                        ticks: { font: { size: 11 } },
-                        grid: { display: false }
+                            }
+                        }
                     }
                 }
             }
