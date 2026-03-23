@@ -11,9 +11,6 @@
                     <h2 class="text-base sm:text-lg font-semibold text-gray-900">Edit Tipe Zakat</h2>
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Mengubah data tipe zakat: {{ $tipeZakat->nama }}</p>
                 </div>
-                <div class="mt-2 sm:mt-0">
-                    <span class="text-xs text-gray-400">UUID: {{ $tipeZakat->uuid }}</span>
-                </div>
             </div>
         </div>
 
@@ -428,6 +425,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initForm();
 
+    // ------------------------------------------------------------------
+    // Init — restore tampilan sesuai data DB tanpa mereset nilai field
+    // ------------------------------------------------------------------
     function initForm() {
         if (window.innerWidth >= 768) document.getElementById('jenis_zakat_id')?.focus();
         setupKetentuanCounter();
@@ -435,15 +435,19 @@ document.addEventListener('DOMContentLoaded', function () {
         setupSubtypeToggle();
         setupFormValidation();
 
-        // Restore state dari data existing
         const currentSubtype = '{{ old('zakat_mal_type', $tipeZakat->zakat_mal_type) }}';
         const currentJenis   = '{{ old('jenis_zakat_id', $tipeZakat->jenis_zakat_id) }}';
 
+        // Saat pertama load: tampilkan section yang relevan
+        // tapi JANGAN reset nilai — nilai sudah ada dari DB via old()/value=""
         if (currentJenis == zakatMalId && currentSubtype) {
-            applySubtypeConfig(currentSubtype);
+            showSubtypeSections(currentSubtype, false);
         }
     }
 
+    // ------------------------------------------------------------------
+    // Toggle section Zakat Mal berdasarkan jenis zakat yang dipilih
+    // ------------------------------------------------------------------
     function setupJenisZakatToggle() {
         const jenisSelect     = document.getElementById('jenis_zakat_id');
         const zakatMalSection = document.getElementById('zakat-mal-section');
@@ -451,28 +455,46 @@ document.addEventListener('DOMContentLoaded', function () {
         jenisSelect?.addEventListener('change', function () {
             if (this.value == zakatMalId) {
                 zakatMalSection.classList.remove('hidden');
+                // Jika sudah ada sub-tipe terpilih, tampilkan section-nya
+                const subtype = document.getElementById('zakat_mal_type').value;
+                if (subtype) showSubtypeSections(subtype, false);
             } else {
                 zakatMalSection.classList.add('hidden');
-                resetAllNisabFields();
                 hideAllNisabSections();
+                resetAllNisabFields();
             }
         });
     }
 
+    // ------------------------------------------------------------------
+    // Toggle field nisab berdasarkan sub-tipe yang dipilih oleh user
+    // ------------------------------------------------------------------
     function setupSubtypeToggle() {
         document.getElementById('zakat_mal_type')?.addEventListener('change', function () {
-            applySubtypeConfig(this.value);
+            // User aktif mengganti sub-tipe → reset nilai lama, tampilkan section baru
+            showSubtypeSections(this.value, true);
         });
     }
 
-    function applySubtypeConfig(subtype) {
+    // ------------------------------------------------------------------
+    // Fungsi utama: tampilkan/sembunyikan section sesuai sub-tipe
+    //
+    // @param {string}  subtype      - key sub-tipe (misal 'emas_perak')
+    // @param {boolean} resetValues  - true  → kosongkan semua field nisab dulu
+    //                                 false → biarkan nilai field apa adanya (dari DB)
+    // ------------------------------------------------------------------
+    function showSubtypeSections(subtype, resetValues) {
         const cfg = subtypeConfig[subtype];
 
         hideAllNisabSections();
-        resetAllNisabFields();
+
+        // Hanya reset nilai jika user aktif mengganti sub-tipe,
+        // bukan saat halaman pertama kali dimuat
+        if (resetValues) resetAllNisabFields();
 
         if (!cfg) return;
 
+        // Tampilkan info panduan sub-tipe
         const infoBox = document.getElementById('subtipe-info');
         if (cfg.info) {
             infoBox.innerHTML = cfg.info;
@@ -481,33 +503,41 @@ document.addEventListener('DOMContentLoaded', function () {
             infoBox.classList.add('hidden');
         }
 
+        // Tampilkan section nisab yang relevan untuk sub-tipe ini
         cfg.nisab.forEach(function (n) {
             const el = document.getElementById('nisab-' + n + '-section');
             if (el) el.classList.remove('hidden');
         });
 
+        // Tampilkan/sembunyikan field perak
         const perakWrap = document.getElementById('nisab-perak-wrap');
         if (perakWrap) {
             perakWrap.style.display = cfg.perak ? '' : 'none';
-            if (!cfg.perak) document.getElementById('nisab_perak_gram').value = '';
+            // Hanya kosongkan field perak jika user aktif mengganti sub-tipe
+            if (!cfg.perak && resetValues) {
+                document.getElementById('nisab_perak_gram').value = '';
+            }
         }
 
+        // Tampilkan section persentase & haul
         document.getElementById('persentase-section').classList.remove('hidden');
         document.getElementById('haul-section').classList.remove('hidden');
 
+        // Update hint persentase sesuai sub-tipe
         document.getElementById('persentase-hint').textContent = cfg.persentaseHint;
 
+        // Tampilkan/sembunyikan persentase alternatif
         const altWrap = document.getElementById('persentase-alternatif-wrap');
         if (altWrap) altWrap.style.display = cfg.altPersentase ? '' : 'none';
 
+        // Haul: hanya override nilai checkbox jika user aktif mengganti sub-tipe.
+        // Saat load halaman, biarkan nilai dari DB yang tampil.
         const haulCheck = document.getElementById('requires_haul');
-        // Pada edit, hormati nilai yang tersimpan di DB — jangan override
-        // kecuali sub-tipe baru dipilih (berbeda dari data existing)
-        const savedSubtype = '{{ $tipeZakat->zakat_mal_type }}';
-        if (subtype !== savedSubtype) {
-            if (haulCheck) haulCheck.checked = cfg.haul;
+        if (haulCheck && resetValues) {
+            haulCheck.checked = cfg.haul;
         }
 
+        // Update teks deskripsi haul
         const haulDesc = document.getElementById('haul-desc');
         if (haulDesc) {
             haulDesc.textContent = cfg.haul
@@ -516,6 +546,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Alias untuk dipanggil dari setupFormValidation
+    function applySubtypeConfig(subtype) {
+        showSubtypeSections(subtype, true);
+    }
+
+    // ------------------------------------------------------------------
+    // Sembunyikan semua section nisab
+    // ------------------------------------------------------------------
     function hideAllNisabSections() {
         ['nisab-emas-perak-section', 'nisab-pertanian-section', 'nisab-peternakan-section',
          'persentase-section', 'haul-section', 'subtipe-info']
@@ -525,16 +563,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ------------------------------------------------------------------
+    // Kosongkan semua field nisab (dipanggil saat user ganti sub-tipe)
+    // ------------------------------------------------------------------
     function resetAllNisabFields() {
-        ['nisab_emas_gram','nisab_perak_gram','nisab_pertanian_kg',
-         'nisab_kambing_min','nisab_sapi_min','nisab_unta_min',
-         'persentase_zakat','persentase_alternatif','keterangan_persentase']
+        ['nisab_emas_gram', 'nisab_perak_gram', 'nisab_pertanian_kg',
+         'nisab_kambing_min', 'nisab_sapi_min', 'nisab_unta_min',
+         'persentase_zakat', 'persentase_alternatif', 'keterangan_persentase']
         .forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.value = '';
         });
     }
 
+    // ------------------------------------------------------------------
+    // Counter karakter ketentuan khusus
+    // ------------------------------------------------------------------
     function setupKetentuanCounter() {
         const textarea    = document.getElementById('ketentuan_khusus');
         const counterSpan = document.getElementById('ketentuan-counter');
@@ -557,6 +601,9 @@ document.addEventListener('DOMContentLoaded', function () {
         counterSpan.className   = remaining < 0 ? 'text-red-500' : remaining < 50 ? 'text-yellow-500' : 'text-gray-500';
     }
 
+    // ------------------------------------------------------------------
+    // Validasi form sebelum submit
+    // ------------------------------------------------------------------
     function setupFormValidation() {
         document.getElementById('tipe-zakat-form')?.addEventListener('submit', function (e) {
             const jenisId = document.getElementById('jenis_zakat_id').value;

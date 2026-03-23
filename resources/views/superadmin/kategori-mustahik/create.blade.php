@@ -51,7 +51,7 @@
                             </div>
 
                             {{-- Persentase Default --}}
-                            <div>
+                            <div class="md:col-span-2">
                                 <label for="persentase_default" class="block text-sm font-medium text-gray-700 mb-2">
                                     Persentase Default (%)
                                 </label>
