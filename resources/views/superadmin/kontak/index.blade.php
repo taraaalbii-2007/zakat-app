@@ -129,17 +129,6 @@
                     </div>
                 </form>
             </div>
-
-            {{-- Alert --}}
-            @if (session('success'))
-                <div class="mx-4 sm:mx-6 mt-4 rounded-xl bg-emerald-50 border border-emerald-200 p-3 flex items-center gap-2 text-sm text-emerald-800">
-                    <svg class="w-4 h-4 flex-shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    {{ session('success') }}
-                </div>
-            @endif
-
             @if ($kontaks->count() > 0)
                 {{-- Desktop Table --}}
                 <div class="hidden md:block overflow-x-auto">
@@ -319,7 +308,7 @@
         if (!currentUuid) return;
         const form    = document.createElement('form');
         form.method   = 'POST';
-        form.action   = `/superadmin/kontak/${currentUuid}`;
+        form.action = `/superadmin-kontak/${currentUuid}`;
         form.innerHTML = `
             <input type="hidden" name="_token" value="{{ csrf_token() }}">
             <input type="hidden" name="_method" value="DELETE">

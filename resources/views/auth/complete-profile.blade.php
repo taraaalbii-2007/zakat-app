@@ -203,7 +203,7 @@
             background: #fff;
             border: 1.5px solid #e5e7eb;
             border-radius: 10px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: .82rem;
             font-weight: 400;
             color: #111827;
@@ -421,7 +421,7 @@
             border: 1.5px solid #e5e7eb;
             border-radius: 10px;
             background: #fff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: .82rem;
             font-weight: 600;
             color: #6b7280;
@@ -694,7 +694,7 @@
             padding: 0 1.25rem;
             background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
             color: #fff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: .88rem;
             font-weight: 700;
             border: none;
@@ -797,7 +797,7 @@
             font-size: .78rem;
             color: #6b7280;
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 @endpush

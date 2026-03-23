@@ -209,7 +209,7 @@
     background: #ffffff;
     border: 1.5px solid #e5e7eb;
     border-radius: 10px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: .83rem;
     font-weight: 400;
     color: #111827;
@@ -281,7 +281,7 @@
     padding: 0 1.25rem;
     background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
     color: #fff;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: .85rem; font-weight: 700;
     border: none; border-radius: 10px; cursor: pointer;
     white-space: nowrap;
@@ -337,7 +337,7 @@
     height: 44px; /* Reduced from 46px to match */
     padding: 0 1.25rem;
     background: #fff; border: 1.5px solid #e5e7eb; border-radius: 10px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: .8rem; font-weight: 700;
     color: #374151; text-decoration: none; cursor: pointer;
     transition: border-color .2s, background .2s, transform .18s, box-shadow .2s;

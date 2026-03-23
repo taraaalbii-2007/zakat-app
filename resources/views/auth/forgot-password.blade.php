@@ -82,7 +82,7 @@
         background: #ffffff;
         border: 1.5px solid #e5e7eb;
         border-radius: 10px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: .83rem;
         font-weight: 400;
         color: #111827;
@@ -126,7 +126,7 @@
         width: 100%; height: 48px; padding: 0 1.25rem;
         background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
         color: #fff;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: .88rem; font-weight: 700;
         border: none; border-radius: 10px; cursor: pointer;
         white-space: nowrap;
@@ -167,7 +167,7 @@
         background: #ffffff;
         border: 1.5px solid #e5e7eb;
         border-radius: 10px;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: .84rem; font-weight: 600;
         color: #374151;
         text-decoration: none; cursor: pointer;

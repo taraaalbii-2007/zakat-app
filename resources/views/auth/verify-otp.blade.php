@@ -90,7 +90,7 @@
         width: 46px;
         height: 52px;
         text-align: center;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: 1.35rem;
         font-weight: 700;
         color: #111827;
@@ -147,7 +147,7 @@
         width: 100%; height: 48px; padding: 0 1.25rem;
         background: linear-gradient(135deg, #22c55e 0%, #16a34a 60%, #15803d 100%);
         color: #fff;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: .88rem; font-weight: 700;
         border: none; border-radius: 10px; cursor: pointer;
         white-space: nowrap;
