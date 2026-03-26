@@ -526,4 +526,9 @@ class Pengguna extends Authenticatable
     {
         return $this->hasOne(\App\Models\Muzakki::class, 'pengguna_id');
     }
+
+    public function scopeByPeran($query, string $peran)
+    {
+        return $query->where('peran', $peran);
+    }
 }

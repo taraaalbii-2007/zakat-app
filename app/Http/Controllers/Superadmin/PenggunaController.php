@@ -23,6 +23,7 @@ use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 use Illuminate\Support\Facades\Log;
+use App\Mail\PenggunaUpdatedMail;
 
 class PenggunaController extends Controller
 {
@@ -43,8 +44,8 @@ class PenggunaController extends Controller
         if ($request->filled('status')) {
             $query->where('is_active', $request->get('status') === 'aktif');
         }
-        if ($dId = $request->get('d_id')) {
-            $query->where('d_id', $dId);
+        if ($dId = $request->get('lembaga_id')) {
+            $query->where('lembaga_id', $dId);
         }
 
         $pengguna   = $query->paginate(10);
@@ -77,7 +78,7 @@ class PenggunaController extends Controller
     {
         // ── Validasi Dasar ────────────────────────────────────────────────────
         $rules = [
-            'peran'     => ['required', Rule::in(['superadmin', 'admin_d', 'amil', 'muzakki'])],
+            'peran'     => ['required', Rule::in(['superadmin', 'admin_lembaga', 'amil', 'muzakki'])],
             'username'  => ['nullable', 'string', 'max:255', 'unique:pengguna,username'],
             'email'     => ['required', 'email', 'max:255', 'unique:pengguna,email'],
             'password'  => ['required', 'string', 'min:8', 'confirmed'],
@@ -85,7 +86,7 @@ class PenggunaController extends Controller
         ];
 
         // ── Validasi Tambahan: Admin Lembaga → Buat Lembaga Baru ────────────────
-        if ($request->peran === 'admin_d') {
+        if ($request->peran === 'admin_lembaga') {
             $rules = array_merge($rules, [
                 'admin_nama'       => ['required', 'string', 'max:255'],
                 'admin_telepon'    => ['required', 'string', 'max:20'],
@@ -113,7 +114,7 @@ class PenggunaController extends Controller
         // ── Validasi Tambahan: Amil → Pilih Lembaga yang Ada ───────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'd_id'                  => ['required', 'exists:d,id'],
+                'lembaga_id'                  => ['required', 'exists:d,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -136,13 +137,13 @@ class PenggunaController extends Controller
                 'muzakki_nik'       => ['nullable', 'string', 'size:16', 'unique:muzakki,nik'],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_d_id' => ['nullable', 'exists:d,id'],
+                'muzakki_lembaga_id' => ['nullable', 'exists:d,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             ]);
         }
 
         $request->validate($rules, [
-            'd_id.required'                => 'Lembaga wajib dipilih untuk peran Amil.',
+            'lembaga_id.required'                => 'Lembaga wajib dipilih untuk peran Amil.',
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
@@ -178,7 +179,7 @@ class PenggunaController extends Controller
             // ══════════════════════════════════════════════════════
             // ADMIN MASJID: Buat Lembaga Baru
             // ══════════════════════════════════════════════════════
-            if ($request->peran === 'admin_d') {
+            if ($request->peran === 'admin_lembaga') {
                 $namaUser = $request->admin_nama;
 
                 $adminFotoPath = null;
@@ -255,9 +256,9 @@ class PenggunaController extends Controller
             // ══════════════════════════════════════════════════════
             $pengguna = Pengguna::create([
                 'peran'             => $request->peran,
-                'd_id'         => match ($request->peran) {
-                    'admin_d' => $d->id,
-                    'amil'         => $request->d_id,
+                'lembaga_id'         => match ($request->peran) {
+                    'admin_lembaga' => $d->id,
+                    'amil'         => $request->lembaga_id,
                     default        => null,
                 },
                 'username'          => $request->username ?: null,
@@ -271,7 +272,7 @@ class PenggunaController extends Controller
             // AMIL: Buat record Amil
             // ══════════════════════════════════════════════════════
             if ($request->peran === 'amil') {
-                $d   = Lembaga::findOrFail($request->d_id);
+                $d   = Lembaga::findOrFail($request->lembaga_id);
                 $namaUser = $request->amil_nama_lengkap;
 
                 $fotoPath = null;
@@ -281,8 +282,8 @@ class PenggunaController extends Controller
 
                 Amil::create([
                     'pengguna_id'           => $pengguna->id,
-                    'd_id'             => $request->d_id,
-                    'kode_amil'             => $this->generateKodeAmil($request->d_id),
+                    'lembaga_id'             => $request->lembaga_id,
+                    'kode_amil'             => $this->generateKodeAmil($request->lembaga_id),
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
                     'tempat_lahir'          => $request->amil_tempat_lahir,
@@ -312,7 +313,7 @@ class PenggunaController extends Controller
 
                 Muzakki::create([
                     'pengguna_id' => $pengguna->id,
-                    'd_id'   => $request->muzakki_d_id ?: null,
+                    'lembaga_id'   => $request->muzakki_lembaga_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -414,7 +415,7 @@ class PenggunaController extends Controller
 
         // ── Validasi Dasar ────────────────────────────────────────────────────
         $rules = [
-            'peran'     => ['required', Rule::in(['superadmin', 'admin_d', 'amil', 'muzakki'])],
+            'peran'     => ['required', Rule::in(['superadmin', 'admin_lembaga', 'amil', 'muzakki'])],
             'username'  => [
                 'nullable',
                 'string',
@@ -432,9 +433,9 @@ class PenggunaController extends Controller
         ];
 
         // ── Validasi Tambahan: Admin Lembaga ───────────────────────────────────
-        if ($request->peran === 'admin_d') {
+        if ($request->peran === 'admin_lembaga') {
             $rules = array_merge($rules, [
-                'd_id'        => ['required', 'exists:d,id'],
+                'lembaga_id'        => ['required', 'exists:d,id'],
                 'admin_nama'       => ['required', 'string', 'max:255'],
                 'admin_telepon'    => ['required', 'string', 'max:20'],
                 'admin_email'      => ['required', 'email', 'max:255'],
@@ -463,7 +464,7 @@ class PenggunaController extends Controller
         // ── Validasi Tambahan: Amil ───────────────────────────────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'd_id'                  => ['required', 'exists:d,id'],
+                'lembaga_id'                  => ['required', 'exists:d,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -493,14 +494,14 @@ class PenggunaController extends Controller
                 ],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_d_id' => ['nullable', 'exists:d,id'],
+                'muzakki_lembaga_id' => ['nullable', 'exists:d,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
                 'hapus_muzakki_foto' => ['nullable', 'boolean'],
             ]);
         }
 
         $request->validate($rules, [
-            'd_id.required'                => 'Lembaga wajib dipilih.',
+            'lembaga_id.required'                => 'Lembaga wajib dipilih.',
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
@@ -534,9 +535,9 @@ class PenggunaController extends Controller
                 'username'  => $request->username ?: null,
                 'email'     => $request->email,
                 'is_active' => $request->boolean('is_active', true),
-                'd_id' => match ($request->peran) {
-                    'admin_d' => $request->d_id,
-                    'amil'         => $request->d_id,
+                'lembaga_id' => match ($request->peran) {
+                    'admin_lembaga' => $request->lembaga_id,
+                    'amil'         => $request->lembaga_id,
                     default        => null,
                 },
             ];
@@ -550,8 +551,8 @@ class PenggunaController extends Controller
             // ══════════════════════════════════════════════════════
             // ADMIN MASJID: Update data Lembaga
             // ══════════════════════════════════════════════════════
-            if ($request->peran === 'admin_d') {
-                $d = Lembaga::findOrFail($request->d_id);
+            if ($request->peran === 'admin_lembaga') {
+                $d = Lembaga::findOrFail($request->lembaga_id);
 
                 // Handle hapus foto admin
                 $adminFotoPath = $d->admin_foto;
@@ -659,7 +660,7 @@ class PenggunaController extends Controller
 
                 $amilData = [
                     'pengguna_id'           => $pengguna->id,
-                    'd_id'             => $request->d_id,
+                    'lembaga_id'             => $request->lembaga_id,
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
                     'tempat_lahir'          => $request->amil_tempat_lahir,
@@ -678,7 +679,7 @@ class PenggunaController extends Controller
                 if ($amil) {
                     $amil->update($amilData);
                 } else {
-                    $amilData['kode_amil'] = $this->generateKodeAmil($request->d_id);
+                    $amilData['kode_amil'] = $this->generateKodeAmil($request->lembaga_id);
                     Amil::create($amilData);
                 }
             }
@@ -703,7 +704,7 @@ class PenggunaController extends Controller
 
                 $muzakkiData = [
                     'pengguna_id' => $pengguna->id,
-                    'd_id'   => $request->muzakki_d_id ?: null,
+                    'lembaga_id'   => $request->muzakki_lembaga_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -721,6 +722,46 @@ class PenggunaController extends Controller
             }
 
             DB::commit();
+
+            // ── Kirim Email Notifikasi Update ─────────────────────────────────────
+            $namaUser = match ($pengguna->peran) {
+                'admin_lembaga' => $request->admin_nama,
+                'amil'          => $request->amil_nama_lengkap,
+                'muzakki'       => $request->muzakki_nama,
+                default         => $pengguna->username ?? $pengguna->email,
+            };
+
+            $lembagaNama = null;
+            if (in_array($pengguna->peran, ['admin_lembaga', 'amil'])) {
+                $lembagaNama = Lembaga::find($request->lembaga_id)?->nama;
+            }
+
+            $passwordBerubah = !empty($request->password);
+
+            try {
+                $mailConfig = MailConfig::first();
+                if ($mailConfig && $mailConfig->isComplete()) {
+                    config($mailConfig->toConfigArray());
+                    Mail::purge('smtp');
+
+                    Mail::mailer('smtp')
+                        ->to($pengguna->email)
+                        ->send(new PenggunaUpdatedMail(
+                            namaLengkap: $namaUser,
+                            email: $pengguna->email,
+                            username: $pengguna->username ?? $pengguna->email,
+                            peran: $pengguna->peran,
+                            namaLembaga: $lembagaNama,
+                            passwordChanged: $passwordBerubah,
+                            newPassword: $passwordBerubah ? $request->password : null,
+                        ));
+                }
+            } catch (\Exception $mailEx) {
+                Log::error('Gagal kirim email notifikasi update pengguna', [
+                    'pengguna_id' => $pengguna->id,
+                    'error'       => $mailEx->getMessage(),
+                ]);
+            }
 
             return redirect()
                 ->route('pengguna.show', $pengguna->uuid)
@@ -774,19 +815,53 @@ class PenggunaController extends Controller
 
     public function resetPassword(Request $request, string $uuid): RedirectResponse
     {
-        $pengguna = Pengguna::where('uuid', $uuid)->firstOrFail();
+        $pengguna = Pengguna::with(['lembaga', 'amil', 'muzakki'])->where('uuid', $uuid)->firstOrFail();
 
         $request->validate([
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $plainPassword = $request->password;
+
         $pengguna->update([
-            'password'                        => Hash::make($request->password),
+            'password'                        => Hash::make($plainPassword),
             'password_reset_token'            => null,
             'password_reset_token_expires_at' => null,
         ]);
 
-        return back()->with('success', 'Password pengguna berhasil direset.');
+        // ── Kirim Email Notifikasi Reset Password ─────────────────────────────
+        $namaUser = match ($pengguna->peran) {
+            'amil'    => $pengguna->amil?->nama_lengkap,
+            'muzakki' => $pengguna->muzakki?->nama,
+            default   => $pengguna->username ?? $pengguna->email,
+        } ?? ($pengguna->username ?? $pengguna->email);
+
+        try {
+            $mailConfig = MailConfig::first();
+            if ($mailConfig && $mailConfig->isComplete()) {
+                config($mailConfig->toConfigArray());
+                Mail::purge('smtp');
+
+                Mail::mailer('smtp')
+                    ->to($pengguna->email)
+                    ->send(new PenggunaUpdatedMail(
+                        namaLengkap: $namaUser,
+                        email: $pengguna->email,
+                        username: $pengguna->username ?? $pengguna->email,
+                        peran: $pengguna->peran,
+                        namaLembaga: $pengguna->lembaga?->nama,
+                        passwordChanged: true,
+                        newPassword: $plainPassword,
+                    ));
+            }
+        } catch (\Exception $mailEx) {
+            Log::error('Gagal kirim email notifikasi reset password', [
+                'pengguna_id' => $pengguna->id,
+                'error'       => $mailEx->getMessage(),
+            ]);
+        }
+
+        return back()->with('success', 'Password pengguna berhasil direset dan notifikasi telah dikirim ke email.');
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
