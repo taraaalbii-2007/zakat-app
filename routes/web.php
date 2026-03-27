@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Superadmin\KonfigurasiGlobalController;
-use App\Http\Controllers\LembagaController;
+use App\Http\Controllers\Superadmin\LembagaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Api\WilayahController;
 use App\Http\Controllers\Superadmin\JenisZakatController;

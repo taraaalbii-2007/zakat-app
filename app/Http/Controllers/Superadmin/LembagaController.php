@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Superadmin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Lembaga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -24,8 +25,8 @@ class LembagaController extends Controller
         }
 
         // Filter status aktif menggunakan scope
-        if ($request->has('status') && in_array($request->status, ['active', 'inactive'])) {
-            $query->where('is_active', $request->status === 'active');
+        if ($request->has('status') && in_array($request->status, ['aktif', 'nonaktif'])) {
+            $query->where('is_active', $request->status === 'aktif');
         }
 
         // Filter wilayah menggunakan scope
@@ -44,7 +45,7 @@ class LembagaController extends Controller
             'Kelola Lembaga' => route('lembaga.index'),
         ];
 
-        return view('lembaga.index', compact('lembagas', 'provinces', 'breadcrumbs'));
+        return view('superadmin.lembaga.index', compact('lembagas', 'provinces', 'breadcrumbs'));
     }
 
     public function create()
@@ -55,7 +56,7 @@ class LembagaController extends Controller
             'Kelola Lembaga' => route('lembaga.index'),
             'Tambah Lembaga' => route('lembaga.create')
         ];
-        return view('lembaga.create', compact('provinces', 'breadcrumbs'));
+        return view('superadmin.lembaga.create', compact('provinces', 'breadcrumbs'));
     }
 
     public function store(Request $request)
@@ -130,7 +131,7 @@ class LembagaController extends Controller
             'Kelola Lembaga' => route('lembaga.index'),
             'Detail Lembaga' => route('lembaga.show', $lembaga)
         ];
-        return view('lembaga.show', compact('lembaga', 'breadcrumbs'));
+        return view('superadmin.lembaga.show', compact('lembaga', 'breadcrumbs'));
     }
 
     public function edit(Lembaga $lembaga)
@@ -155,7 +156,7 @@ class LembagaController extends Controller
             'Edit Lembaga' => route('lembaga.edit', $lembaga)
         ];
 
-        return view('lembaga.edit', compact('lembaga', 'provinces', 'cities', 'districts', 'villages', 'breadcrumbs'));
+        return view('superadmin.lembaga.edit', compact('lembaga', 'provinces', 'cities', 'districts', 'villages', 'breadcrumbs'));
     }
 
     public function update(Request $request, Lembaga $lembaga)
