@@ -14,18 +14,38 @@ class MuzakiController extends Controller
      */
     public function index(Request $request)
     {
-        // Ambil semua lembaga aktif
-        $lembagas = Lembaga::where('is_active', true)
-            ->orderBy('nama')
-            ->get(['id', 'nama', 'kode_lembaga', 'alamat']);
+        // Query untuk lembaga aktif dengan filter
+        $query = Lembaga::where('is_active', true);
+        
+        // Filter lembaga berdasarkan ID
+        if ($request->has('lembaga_id') && $request->lembaga_id) {
+            $query->where('id', $request->lembaga_id);
+        }
+        
+        // Filter pencarian nama lembaga
+        if ($request->has('q') && $request->q) {
+            $query->where('nama', 'like', '%' . $request->q . '%');
+        }
+        
+        // Urutkan lembaga berdasarkan nama
+        $query->orderBy('nama');
+        
+        $lembagas = $query->get(['id', 'nama', 'kode_lembaga', 'alamat']);
 
         // Untuk setiap lembaga, ambil daftar muzaki (aggregated)
-        $lembagas->each(function ($lembaga) {
-            $muzakkis = DB::table('transaksi_penerimaan as tp')
+        foreach ($lembagas as $lembaga) {
+            // Query untuk muzaki dengan filter pencarian
+            $muzakiQuery = DB::table('transaksi_penerimaan as tp')
                 ->leftJoin('jenis_zakat as jz', 'tp.jenis_zakat_id', '=', 'jz.id')
                 ->where('tp.lembaga_id', $lembaga->id)
-                ->whereNotNull('tp.muzakki_nama')
-                ->select([
+                ->whereNotNull('tp.muzakki_nama');
+            
+            // Filter pencarian nama muzaki
+            if ($request->has('q') && $request->q) {
+                $muzakiQuery->where('tp.muzakki_nama', 'like', '%' . $request->q . '%');
+            }
+            
+            $muzakkis = $muzakiQuery->select([
                     'tp.muzakki_nama',
                     'tp.muzakki_telepon',
                     'tp.muzakki_email',
@@ -37,7 +57,6 @@ class MuzakiController extends Controller
                     DB::raw('MIN(tp.tanggal_transaksi) as transaksi_pertama'),
                     DB::raw('COUNT(CASE WHEN tp.status = "verified" THEN 1 END) as total_verified'),
                     DB::raw('COUNT(CASE WHEN tp.status = "pending" THEN 1 END) as total_pending'),
-                    // Kumpulkan semua jenis zakat unik dalam satu string, pisah koma
                     DB::raw('GROUP_CONCAT(DISTINCT jz.nama ORDER BY jz.nama SEPARATOR ",") as jenis_zakat_list'),
                 ])
                 ->groupBy([
@@ -53,7 +72,7 @@ class MuzakiController extends Controller
             $lembaga->muzakkis      = $muzakkis;
             $lembaga->muzakkiCount  = $muzakkis->count();
             $lembaga->totalNominal  = $muzakkis->sum('total_nominal');
-        });
+        }
 
         // Summary stats global
         $stats = [
@@ -79,6 +98,55 @@ class MuzakiController extends Controller
                 ->whereMonth('tanggal_transaksi', now()->month)
                 ->count(),
         ];
+        
+        // Jika request AJAX, return JSON
+        if ($request->ajax() || $request->wantsJson()) {
+            try {
+                // Siapkan data muzaki untuk JavaScript
+                $muzakiData = [];
+                foreach ($lembagas as $lembaga) {
+                    $muzakiData[$lembaga->id] = $lembaga->muzakkis->map(function ($m) use ($lembaga) {
+                        $jenisZakat = collect(
+                            array_filter(explode(',', $m->jenis_zakat_list ?? ''))
+                        )->unique()->values();
+                        
+                        return [
+                            'nama'              => $m->muzakki_nama,
+                            'initial'           => strtoupper(substr($m->muzakki_nama, 0, 1)),
+                            'nik'               => $m->muzakki_nik ?? null,
+                            'telepon'           => $m->muzakki_telepon ?? null,
+                            'email'             => $m->muzakki_email ?? null,
+                            'jenis_zakat'       => $jenisZakat->toArray(),
+                            'total_transaksi'   => $m->total_transaksi,
+                            'total_nominal'     => (int) $m->total_nominal,
+                            'transaksi_terakhir'=> $m->transaksi_terakhir
+                                ? \Carbon\Carbon::parse($m->transaksi_terakhir)->translatedFormat('d M Y')
+                                : '-',
+                            'detail_url'        => route('muzaki.show', [
+                                'nama'       => $m->muzakki_nama,
+                                'lembaga_id' => $lembaga->id,
+                            ]),
+                        ];
+                    })->toArray();
+                }
+                
+                // Render HTML untuk tabel
+                $html = view('superadmin.muzaki.partials.table', compact('lembagas'))->render();
+                
+                return response()->json([
+                    'success' => true,
+                    'html' => $html,
+                    'totalMuzaki' => $stats['total_muzakki_unik'],
+                    'totalLembaga' => $lembagas->count(),
+                    'muzakiData' => $muzakiData
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }
 
         return view('superadmin.muzaki.index', compact('lembagas', 'stats'));
     }
