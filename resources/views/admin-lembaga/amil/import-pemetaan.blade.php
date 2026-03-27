@@ -268,7 +268,6 @@
             <p style="font-size:13px; color:#374151; margin:0 0 8px;">
                 Akun login akan dibuat otomatis.
             </p>
-            <p style="font-size:12px; color:#9ca3af; margin:0;">Tindakan ini tidak dapat dibatalkan.</p>
         </div>
 
         <div style="padding:0 28px 24px; display:flex; gap:10px; justify-content:flex-end;">

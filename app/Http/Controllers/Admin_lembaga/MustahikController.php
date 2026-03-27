@@ -68,7 +68,7 @@ class MustahikController extends Controller
             $query->where('jenis_kelamin', $request->jenis_kelamin);
         }
 
-        $mustahiks = $query->latest()->paginate(15);
+        $mustahiks = $query->latest()->paginate(10);
 
         $kategoris = KategoriMustahik::orderBy('nama')->get();
 

@@ -48,8 +48,13 @@ class AmilController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filter berdasarkan jenis kelamin
+        if ($request->has('jenis_kelamin') && in_array($request->jenis_kelamin, ['L', 'P'])) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+
         // Filter berdasarkan pencarian
-        if ($request->has('q')) {
+        if ($request->has('q') && $request->q) {
             $search = $request->q;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
@@ -60,7 +65,7 @@ class AmilController extends Controller
         }
 
         // Filter berdasarkan lembaga (untuk superadmin)
-        if ($user->peran === 'superadmin' && $request->has('lembaga_id')) {
+        if ($user->peran === 'superadmin' && $request->has('lembaga_id') && $request->lembaga_id) {
             $query->where('lembaga_id', $request->lembaga_id);
         }
 
@@ -70,7 +75,64 @@ class AmilController extends Controller
         $lembagas = $user->peran === 'superadmin'
             ? Lembaga::where('is_active', true)->get()
             : collect();
-        
+
+        // Jika request AJAX, return JSON
+        if ($request->ajax() || $request->wantsJson()) {
+            try {
+                // Siapkan data untuk JavaScript (untuk expandable content)
+                $amilData = [];
+                foreach ($amils as $amil) {
+                    $colors = [
+                        'bg-blue-500',
+                        'bg-green-500',
+                        'bg-yellow-500',
+                        'bg-red-500',
+                        'bg-purple-500',
+                        'bg-pink-500',
+                        'bg-indigo-500',
+                        'bg-orange-500'
+                    ];
+                    $initial = strtoupper(substr($amil->nama_lengkap, 0, 1));
+                    $bgColor = $colors[$initial ? (ord($initial) - 65) % count($colors) : 0];
+
+                    $amilData[$amil->uuid] = [
+                        'nama_lengkap' => $amil->nama_lengkap,
+                        'kode_amil' => $amil->kode_amil,
+                        'jenis_kelamin' => $amil->jenis_kelamin,
+                        'tempat_lahir' => $amil->tempat_lahir,
+                        'tanggal_lahir' => $amil->tanggal_lahir ? $amil->tanggal_lahir->format('d F Y') : '-',
+                        'telepon' => $amil->telepon,
+                        'email' => $amil->email,
+                        'alamat' => $amil->alamat,
+                        'wilayah_tugas' => $amil->wilayah_tugas,
+                        'status' => $amil->status,
+                        'tanggal_mulai_tugas' => $amil->tanggal_mulai_tugas ? \Carbon\Carbon::parse($amil->tanggal_mulai_tugas)->format('d/m/Y') : '-',
+                        'tanggal_selesai_tugas' => $amil->tanggal_selesai_tugas ? \Carbon\Carbon::parse($amil->tanggal_selesai_tugas)->format('d/m/Y') : '-',
+                        'created_at' => $amil->created_at->format('d/m/Y'),
+                        'foto' => $amil->foto ? Storage::url($amil->foto) : null,
+                        'initial' => $initial,
+                        'bg_color' => $bgColor,
+                    ];
+                }
+
+                // Render HTML untuk tabel
+                $html = view('admin-lembaga.amil.partials.table', compact('amils'))->render();
+
+                return response()->json([
+                    'success' => true,
+                    'html' => $html,
+                    'amilData' => $amilData,
+                    'pagination' => (string) $amils->links(),
+                    'total' => $amils->total()
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }
+
         $breadcrumbs = [
             'Kelola Amil' => route('amil.index'),
         ];
@@ -340,7 +402,7 @@ class AmilController extends Controller
             $lembagas = Lembaga::where('is_active', true)->get();
         }
 
-         $breadcrumbs = [
+        $breadcrumbs = [
             'Kelola Amil' => route('amil.index'),
             'Edit Amil' => route('amil.edit', $amil)
         ];
@@ -552,11 +614,11 @@ class AmilController extends Controller
 
         return response()->json($amils);
     }
-    
-// ═══════════════════════════════════════════════════════════════
-// TAMBAHKAN METHOD-METHOD INI KE DALAM AmilController.php
-// Letakkan sebelum closing brace } terakhir dari class
-// ═══════════════════════════════════════════════════════════════
+
+    // ═══════════════════════════════════════════════════════════════
+    // TAMBAHKAN METHOD-METHOD INI KE DALAM AmilController.php
+    // Letakkan sebelum closing brace } terakhir dari class
+    // ═══════════════════════════════════════════════════════════════
 
     // ─────────────────────────────────────────────────────────────
     // EXPORT EXCEL
@@ -584,9 +646,9 @@ class AmilController extends Controller
             $q = $request->q;
             $query->where(function ($sq) use ($q) {
                 $sq->where('nama_lengkap', 'like', "%{$q}%")
-                   ->orWhere('kode_amil',  'like', "%{$q}%")
-                   ->orWhere('email',      'like', "%{$q}%")
-                   ->orWhere('telepon',    'like', "%{$q}%");
+                    ->orWhere('kode_amil',  'like', "%{$q}%")
+                    ->orWhere('email',      'like', "%{$q}%")
+                    ->orWhere('telepon',    'like', "%{$q}%");
             });
         }
 
@@ -606,7 +668,7 @@ class AmilController extends Controller
         $textFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT;
         foreach (['D', 'E', 'F', 'G'] as $col) {       // D=Tgl Lahir, E=Telepon, F=Email, G=KTP (jika ada)
             $sheet->getStyle($col . $dataStart . ':' . $col . ($dataStart + $totalData + 5))
-                  ->getNumberFormat()->setFormatCode($textFormat);
+                ->getNumberFormat()->setFormatCode($textFormat);
         }
 
         // ── Baris 1: Judul ───────────────────────────────────────
@@ -673,7 +735,7 @@ class AmilController extends Controller
 
         foreach ($amils as $amil) {
             $bg         = ($no % 2 === 0) ? 'EFF6FF' : 'FFFFFF';
-            $statusAmil = match($amil->status) {
+            $statusAmil = match ($amil->status) {
                 'aktif'    => 'Aktif',
                 'nonaktif' => 'Nonaktif',
                 'cuti'     => 'Cuti',
@@ -727,7 +789,7 @@ class AmilController extends Controller
             ]);
 
             // Warna badge status
-            $statusStyle = match($statusAmil) {
+            $statusStyle = match ($statusAmil) {
                 'Aktif'    => ['bg' => 'DCFCE7', 'font' => '166534'],
                 'Cuti'     => ['bg' => 'FEF9C3', 'font' => '713F12'],
                 'Nonaktif' => ['bg' => 'FEE2E2', 'font' => '991B1B'],
@@ -817,7 +879,7 @@ class AmilController extends Controller
         $textFormat = \PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT;
         foreach (['D', 'F', 'J', 'K'] as $col) {
             $sheet->getStyle($col . '1:' . $col . '1000')
-                  ->getNumberFormat()->setFormatCode($textFormat);
+                ->getNumberFormat()->setFormatCode($textFormat);
         }
 
         // Baris contoh
@@ -1022,8 +1084,10 @@ class AmilController extends Controller
         foreach ($importSession['excel_headers'] as $idx => $excelHeader) {
             $normalized = strtolower(trim(preg_replace('/[^a-z0-9]/i', '_', $excelHeader)));
             foreach (array_keys($systemColumns) as $fieldKey) {
-                if ($normalized === $fieldKey || str_contains($normalized, $fieldKey)
-                    || str_contains($fieldKey, explode('_', $normalized)[0])) {
+                if (
+                    $normalized === $fieldKey || str_contains($normalized, $fieldKey)
+                    || str_contains($fieldKey, explode('_', $normalized)[0])
+                ) {
                     if (!in_array($fieldKey, $autoMapping)) {
                         $autoMapping[$idx] = $fieldKey;
                         break;
@@ -1038,7 +1102,10 @@ class AmilController extends Controller
         ];
 
         return view('admin-lembaga.amil.import-pemetaan', compact(
-            'importSession', 'systemColumns', 'autoMapping', 'breadcrumbs'
+            'importSession',
+            'systemColumns',
+            'autoMapping',
+            'breadcrumbs'
         ));
     }
 
@@ -1063,8 +1130,17 @@ class AmilController extends Controller
         ]);
 
         $mapping        = $request->input('mapping');
-        $requiredFields = ['nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir',
-                           'alamat', 'telepon', 'email', 'status', 'tanggal_mulai_tugas'];
+        $requiredFields = [
+            'nama_lengkap',
+            'jenis_kelamin',
+            'tempat_lahir',
+            'tanggal_lahir',
+            'alamat',
+            'telepon',
+            'email',
+            'status',
+            'tanggal_mulai_tugas'
+        ];
         $mappedFields   = array_values(array_filter($mapping));
 
         foreach ($requiredFields as $rf) {
@@ -1210,7 +1286,6 @@ class AmilController extends Controller
             }
 
             DB::commit();
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Import gagal: ' . $e->getMessage());
@@ -1250,23 +1325,23 @@ class AmilController extends Controller
         if (empty($row['nama_lengkap']))    $errors[] = 'nama_lengkap kosong';
         if (empty($row['jenis_kelamin']))   $errors[] = 'jenis_kelamin kosong';
         elseif (!in_array(strtoupper($row['jenis_kelamin']), ['L', 'P']))
-                                           $errors[] = 'jenis_kelamin harus L atau P';
+            $errors[] = 'jenis_kelamin harus L atau P';
         if (empty($row['tempat_lahir']))    $errors[] = 'tempat_lahir kosong';
         if (empty($row['tanggal_lahir']))   $errors[] = 'tanggal_lahir kosong';
         elseif (!$this->parseDateAmil($row['tanggal_lahir']))
-                                           $errors[] = 'format tanggal_lahir tidak valid (YYYY-MM-DD)';
+            $errors[] = 'format tanggal_lahir tidak valid (YYYY-MM-DD)';
         if (empty($row['alamat']))          $errors[] = 'alamat kosong';
         if (empty($row['telepon']))         $errors[] = 'telepon kosong';
         if (empty($row['email']))           $errors[] = 'email kosong';
         elseif (!filter_var($row['email'], FILTER_VALIDATE_EMAIL))
-                                           $errors[] = 'format email tidak valid';
+            $errors[] = 'format email tidak valid';
         if (empty($row['status']))          $errors[] = 'status kosong';
         elseif (!in_array(strtolower($row['status']), ['aktif', 'nonaktif', 'cuti']))
-                                           $errors[] = 'status harus: aktif / nonaktif / cuti';
+            $errors[] = 'status harus: aktif / nonaktif / cuti';
         if (empty($row['tanggal_mulai_tugas']))
-                                           $errors[] = 'tanggal_mulai_tugas kosong';
+            $errors[] = 'tanggal_mulai_tugas kosong';
         elseif (!$this->parseDateAmil($row['tanggal_mulai_tugas']))
-                                           $errors[] = 'format tanggal_mulai_tugas tidak valid (YYYY-MM-DD)';
+            $errors[] = 'format tanggal_mulai_tugas tidak valid (YYYY-MM-DD)';
 
         return $errors;
     }
@@ -1279,7 +1354,9 @@ class AmilController extends Controller
             try {
                 $date = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $value);
                 return $date->format('Y-m-d');
-            } catch (\Exception $e) { return null; }
+            } catch (\Exception $e) {
+                return null;
+            }
         }
 
         $formats = ['Y-m-d', 'Y/m/d', 'd/m/Y', 'd-m-Y', 'm/d/Y'];

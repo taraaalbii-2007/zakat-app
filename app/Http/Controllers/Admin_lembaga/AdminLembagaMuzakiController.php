@@ -16,9 +16,25 @@ class AdminLembagaMuzakiController extends Controller
         $user     = Auth::user();
         $lembagaId = $user->lembaga_id;
 
-        // Ambil semua amil aktif di lembaga ini beserta jumlah muzakki uniknya
-        $amils = Amil::where('lembaga_id', $lembagaId)
-            ->withCount([
+        // Query dasar untuk amil
+        $amilQuery = Amil::where('lembaga_id', $lembagaId);
+        
+        // Filter status amil (jika ada)
+        if ($request->filled('status')) {
+            $amilQuery->where('status', $request->status);
+        }
+        
+        // Filter pencarian amil
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $amilQuery->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('kode_amil', 'like', "%{$search}%");
+            });
+        }
+        
+        // Ambil amil dengan pagination (10 data per halaman)
+        $amils = $amilQuery->withCount([
                 'transaksiPenerimaan as jumlah_muzakki' => function ($q) {
                     $q->select(DB::raw('COUNT(DISTINCT muzakki_nama)'));
                 },
@@ -33,23 +49,36 @@ class AdminLembagaMuzakiController extends Controller
                 },
             ], 'jumlah')
             ->orderBy('nama_lengkap')
-            ->get();
+            ->paginate(10)
+            ->withQueryString(); // Menjaga query string saat pagination
 
-        // Filter pencarian amil
-        if ($request->filled('q')) {
-            $q     = strtolower($request->q);
-            $amils = $amils->filter(fn($a) => str_contains(strtolower($a->nama_lengkap), $q)
-                || str_contains(strtolower($a->kode_amil), $q));
+        // Summary keseluruhan lembaga (dengan filter status dan search)
+        $summaryQuery = TransaksiPenerimaan::where('lembaga_id', $lembagaId);
+        
+        // Jika ada filter status, ambil amil yang sesuai untuk summary
+        if ($request->filled('status')) {
+            $amilIds = Amil::where('lembaga_id', $lembagaId)
+                ->where('status', $request->status)
+                ->pluck('id');
+            $summaryQuery->whereIn('amil_id', $amilIds);
         }
-
-        // Summary keseluruhan lembaga
+        
+        // Jika ada pencarian amil
+        if ($request->filled('search')) {
+            $amilIds = Amil::where('lembaga_id', $lembagaId)
+                ->where(function($q) use ($request) {
+                    $q->where('nama_lengkap', 'like', "%{$request->search}%")
+                      ->orWhere('kode_amil', 'like', "%{$request->search}%");
+                })
+                ->pluck('id');
+            $summaryQuery->whereIn('amil_id', $amilIds);
+        }
+        
         $summary = [
-            'total_amil'      => Amil::where('lembaga_id', $lembagaId)->where('status', 'aktif')->count(),
-            'total_muzakki'   => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-                                    ->select('muzakki_nama')->distinct()->count(),
-            'total_transaksi' => TransaksiPenerimaan::where('lembaga_id', $lembagaId)->count(),
-            'total_nominal'   => TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-                                    ->where('status', 'verified')->sum('jumlah'),
+            'total_amil'      => $amilQuery->where('status', 'aktif')->count(),
+            'total_muzakki'   => $summaryQuery->clone()->select('muzakki_nama')->distinct()->count(),
+            'total_transaksi' => $summaryQuery->clone()->count(),
+            'total_nominal'   => $summaryQuery->clone()->where('status', 'verified')->sum('jumlah'),
         ];
 
         $breadcrumbs = [

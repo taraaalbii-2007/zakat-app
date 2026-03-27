@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="space-y-4 sm:space-y-6">
-
         {{-- ===== TABEL UTAMA ===== --}}
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
 
@@ -13,34 +12,38 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Data Muzaki per Amil</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ number_format($summary['total_amil']) }} Amil</p>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1">
+                            @if($amils->total() > 0)
+                                Menampilkan {{ $amils->firstItem() }}-{{ $amils->lastItem() }} dari {{ $amils->total() }} Amil
+                            @else
+                                Tidak ada data Amil
+                            @endif
+                        </p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
 
                         {{-- Filter --}}
                         <button type="button" onclick="toggleFilter()"
                             class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
-                            {{ request()->hasAny(['status']) ? 'ring-2 ring-primary' : '' }}">
+                            {{ request()->hasAny(['status', 'search']) ? 'ring-2 ring-primary' : '' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
+                            <span class="hidden sm:inline-block sm:ml-2">Filter</span>
                         </button>
 
-                        {{-- Search --}}
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('search') ? 'min-width: 280px;' : '' }}">
+                        {{-- Search inline (client-side filter untuk tampilan saja) --}}
+                        <div id="search-container" class="transition-all duration-300">
                             <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('search') ? 'hidden' : '' }}">
+                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
+                                <span class="hidden sm:inline-block sm:ml-2">Cari Cepat</span>
                             </button>
-                            {{-- Search inline (client-side filter) --}}
-                            <div id="search-form" class="{{ request('search') ? '' : 'hidden' }}">
+                            <div id="search-form" class="hidden">
                                 <div class="flex items-center gap-2">
                                     <div class="relative flex-1">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -55,7 +58,7 @@
                                     </div>
                                     <button type="button" onclick="toggleSearch()"
                                         class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                                        Reset
+                                        Tutup
                                     </button>
                                 </div>
                             </div>
@@ -67,23 +70,30 @@
 
             {{-- Filter Panel --}}
             <div id="filter-panel"
-                class="{{ request()->hasAny(['status']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                class="{{ request()->hasAny(['status', 'search']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('admin-lembaga.muzaki.index') }}" id="filter-form">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status Amil</label>
                             <select name="status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="this.form.submit()">
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                 <option value="">Semua Status</option>
                                 <option value="aktif"    {{ request('status') == 'aktif'    ? 'selected' : '' }}>Aktif</option>
                                 <option value="cuti"     {{ request('status') == 'cuti'     ? 'selected' : '' }}>Cuti</option>
                                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Cari Amil</label>
+                            <input type="text" name="search" value="{{ request('search') }}"
+                                placeholder="Nama atau kode amil..."
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                        </div>
                     </div>
-                    @if (request()->hasAny(['status']))
-                        <div class="mt-3 flex justify-end">
+                    
+                    <div class="mt-3 flex justify-end gap-2">
+                        @if (request()->hasAny(['status', 'search']))
                             <a href="{{ route('admin-lembaga.muzaki.index') }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -91,8 +101,15 @@
                                 </svg>
                                 Reset Filter
                             </a>
-                        </div>
-                    @endif
+                        @endif
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-1.5 text-xs font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Terapkan
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -309,6 +326,11 @@
                     @endforeach
                 </div>
 
+                {{-- Pagination --}}
+                <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50">
+                    {{ $amils->links() }}
+                </div>
+
             @else
                 <div class="p-8 sm:p-12 text-center">
                     <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
@@ -380,6 +402,7 @@
         // ============================================================
         function fetchMuzaki(amilId, search = '', page = 1) {
             const container = document.getElementById(`muzaki-container-${amilId}`);
+            if (!container) return;
             container.innerHTML = renderLoading();
             const params = new URLSearchParams({ search, page });
             fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
@@ -391,7 +414,9 @@
                 loadedAmil[amilId] = true;
                 container.innerHTML = renderMuzakiTable(data.muzakkis, amilId, false);
             })
-            .catch(() => { container.innerHTML = renderError(amilId); });
+            .catch(() => { 
+                if (container) container.innerHTML = renderError(amilId); 
+            });
         }
 
         // ============================================================
@@ -399,6 +424,7 @@
         // ============================================================
         function fetchMuzakiMobile(amilId, search = '', page = 1) {
             const container = document.getElementById(`muzaki-container-mobile-${amilId}`);
+            if (!container) return;
             container.innerHTML = renderLoadingSmall();
             const params = new URLSearchParams({ search, page });
             fetch(`/admin-lembaga-muzaki/amil/${amilId}/muzaki?${params}`, {
@@ -410,7 +436,9 @@
                 loadedAmilMobile[amilId] = true;
                 container.innerHTML = renderMuzakiCards(data.muzakkis, amilId);
             })
-            .catch(() => { container.innerHTML = renderError(amilId); });
+            .catch(() => { 
+                if (container) container.innerHTML = renderError(amilId); 
+            });
         }
 
         // ============================================================
@@ -463,14 +491,14 @@
             if (searchForm.classList.contains('hidden')) {
                 searchButton.classList.add('hidden');
                 searchForm.classList.remove('hidden');
-                searchContainer.style.minWidth = '280px';
+                if (searchContainer) searchContainer.style.minWidth = '280px';
                 setTimeout(() => searchInput && searchInput.focus(), 50);
             } else {
                 if (searchInput) searchInput.value = '';
                 filterAmil('');
                 searchForm.classList.add('hidden');
                 searchButton.classList.remove('hidden');
-                searchContainer.style.minWidth = 'auto';
+                if (searchContainer) searchContainer.style.minWidth = 'auto';
             }
         }
 
@@ -478,7 +506,8 @@
         // TOGGLE FILTER PANEL
         // ============================================================
         function toggleFilter() {
-            document.getElementById('filter-panel').classList.toggle('hidden');
+            const panel = document.getElementById('filter-panel');
+            if (panel) panel.classList.toggle('hidden');
         }
 
         // ── ESC menutup search ────────────────────────────────────────────
@@ -488,12 +517,12 @@
                 const searchButton    = document.getElementById('search-button');
                 const searchContainer = document.getElementById('search-container');
                 const searchInput     = document.getElementById('cari-amil');
-                if (!searchForm.classList.contains('hidden')) {
+                if (searchForm && !searchForm.classList.contains('hidden')) {
                     if (searchInput) searchInput.value = '';
                     filterAmil('');
                     searchForm.classList.add('hidden');
                     searchButton.classList.remove('hidden');
-                    searchContainer.style.minWidth = 'auto';
+                    if (searchContainer) searchContainer.style.minWidth = 'auto';
                 }
             }
         });
@@ -598,16 +627,31 @@
             const from        = pagination.from;
             const to          = pagination.to;
             const total       = pagination.total;
-            const fn          = isMobile ? `fetchMuzakiMobile` : `fetchMuzaki`;
+            const fn          = isMobile ? 'fetchMuzakiMobile' : 'fetchMuzaki';
+            
             let pages = '';
+            // Previous button
+            if (currentPage > 1) {
+                pages += `<button onclick="${fn}(${amilId},'',${currentPage - 1})" class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">&laquo;</button>`;
+            }
+            
+            // Page numbers
             for (let p = 1; p <= lastPage; p++) {
                 if (p === currentPage) {
                     pages += `<span class="px-3 py-1 text-xs font-semibold text-white bg-primary rounded-md">${p}</span>`;
-                } else {
+                } else if (Math.abs(p - currentPage) <= 2 || p === 1 || p === lastPage) {
                     pages += `<button onclick="${fn}(${amilId},'',${p})" class="px-3 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">${p}</button>`;
+                } else if (Math.abs(p - currentPage) === 3) {
+                    pages += `<span class="px-2 py-1 text-xs text-gray-400">...</span>`;
                 }
             }
-            return `<div class="flex items-center justify-between mt-3">
+            
+            // Next button
+            if (currentPage < lastPage) {
+                pages += `<button onclick="${fn}(${amilId},'',${currentPage + 1})" class="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-md transition-colors">&raquo;</button>`;
+            }
+            
+            return `<div class="flex items-center justify-between mt-3 pt-2">
                 <p class="text-xs text-gray-500">Menampilkan ${from}–${to} dari ${total} muzaki</p>
                 <div class="flex items-center gap-1">${pages}</div>
             </div>`;
@@ -625,6 +669,7 @@
                 <p class="text-xs text-gray-400 mt-2">Memuat data muzaki...</p>
             </div>`;
         }
+        
         function renderLoadingSmall() {
             return `<div class="text-center py-4">
                 <svg class="w-5 h-5 mx-auto animate-spin text-primary" fill="none" viewBox="0 0 24 24">
@@ -633,6 +678,7 @@
                 </svg>
             </div>`;
         }
+        
         function renderError(amilId) {
             return `<div class="text-center py-8 text-sm text-red-400">
                 Gagal memuat data.
@@ -644,14 +690,19 @@
         // HELPERS
         // ============================================================
         function escHtml(str) {
+            if (!str) return '';
             return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
+        
         function formatRupiah(num) {
             return Number(num).toLocaleString('id-ID');
         }
+        
         function formatDate(dateStr) {
             if (!dateStr) return '-';
-            return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return '-';
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         }
     </script>
 @endpush

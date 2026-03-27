@@ -325,11 +325,8 @@
         {{-- Body --}}
         <div style="padding:20px 28px;">
             <p style="font-size:13px; color:#374151; margin:0 0 8px;">
-                Anda akan mengimport <strong id="konfirm-total">0</strong> data mustahik.
-                Data akan tersimpan dengan status
-                <strong id="konfirm-status-text">diverifikasi otomatis</strong>.
+                Data anda akan tersimpan.
             </p>
-            <p style="font-size:12px; color:#9ca3af; margin:0;">Tindakan ini tidak dapat dibatalkan.</p>
         </div>
 
         {{-- Footer Tombol --}}
@@ -420,15 +417,6 @@
 
     /* ── Modal Konfirmasi ───────────────────────────────────────── */
     window.openModalKonfirmasi = function () {
-        document.getElementById('konfirm-total').textContent = TOTAL_ROWS;
-
-        var statusText = document.getElementById('konfirm-status-text');
-        if (statusText) {
-            statusText.textContent = USER_PERAN === 'admin_lembaga'
-                ? 'diverifikasi otomatis'
-                : 'menunggu verifikasi admin';
-        }
-
         modalKonfirmasi.style.display = 'flex';
         document.body.style.overflow  = 'hidden';
     };
@@ -598,12 +586,19 @@
                 var rawVal = String(td.dataset.val == null ? '' : td.dataset.val).trim();
                 var empty  = rawVal === '' || rawVal === 'null';
                 td.style.background = '';
-                if (requiredCols.has(col) && empty)
+                
+                // Kosong wajib
+                if (requiredCols.has(col) && empty) {
                     td.style.background = '#fee2e2';
-                else if (dupBadMap.has(col) && !empty && dupBadMap.get(col).has(rawVal))
+                } 
+                // Duplikat di DB (NIK)
+                else if (dupBadMap.has(col) && !empty && dupBadMap.get(col).has(rawVal)) {
                     td.style.background = '#f3e8ff';
-                else if (fkBadMap.has(col) && !empty && fkBadMap.get(col).has(rawVal.toLowerCase()))
+                } 
+                // Tidak ada di DB (kategori)
+                else if (fkBadMap.has(col) && !empty && fkBadMap.get(col).has(rawVal.toLowerCase())) {
                     td.style.background = '#fef3c7';
+                }
             });
         });
     }
@@ -722,14 +717,16 @@
         /* Cek kategori & NIK secara paralel */
         var checks = [];
 
+        // Validasi Kategori
         if (mapping['kategori_mustahik'] !== undefined) {
             var colK = mapping['kategori_mustahik'];
             var valsK = uniqueValsInCol(colK);
             if (valsK.length) {
+                console.log('Mengecek kategori:', valsK);
                 checks.push(
                     postJson(AJAX.kategori, { values: valsK }).then(function (res) {
-                        if (res.not_found && res.not_found.length) {
-                            /* ★ Kategori tidak ditemukan → ERROR (blokir) */
+                        console.log('Response kategori:', res);
+                        if (res.not_found && res.not_found.length > 0) {
                             notFoundCount = res.not_found.length;
                             var badSet = new Set(res.not_found.map(function (v) { return v.toLowerCase(); }));
                             fkBadMap.set(colK, badSet);
@@ -746,23 +743,28 @@
                                 + '<ul style="margin:6px 0 0 12px; padding:0; list-style:none;">' + details.join('') + '</ul>'
                             );
                         }
-                    }).catch(function () {
-                        warnings.push('Tidak dapat memverifikasi kategori ke database.');
+                    }).catch(function (error) {
+                        console.error('Error cek kategori:', error);
+                        warnings.push('Tidak dapat memverifikasi kategori ke database. Periksa koneksi internet Anda.');
                     })
                 );
             }
         }
 
+        // Validasi NIK
         if (mapping['nik'] !== undefined) {
             var colN = mapping['nik'];
             var valsN = uniqueValsInCol(colN).filter(function (v) {
-                return /^\d{10,16}$/.test(v.replace(/\D/g, ''));
+                // Filter hanya yang berupa angka (NIK harus 16 digit)
+                var cleaned = v.replace(/\D/g, '');
+                return cleaned.length >= 10; // Minimal 10 digit
             });
             if (valsN.length) {
+                console.log('Mengecek NIK:', valsN);
                 checks.push(
                     postJson(AJAX.nik, { values: valsN }).then(function (res) {
-                        if (res.duplicates && res.duplicates.length) {
-                            /* ★ NIK duplikat → ERROR (blokir) */
+                        console.log('Response NIK:', res);
+                        if (res.duplicates && res.duplicates.length > 0) {
                             duplikatCount = res.duplicates.length;
                             var dupSet = new Set(res.duplicates);
                             dupBadMap.set(colN, dupSet);
@@ -779,13 +781,15 @@
                                 + '<ul style="margin:6px 0 0 12px; padding:0; list-style:none;">' + details.join('') + '</ul>'
                             );
                         }
-                    }).catch(function () {
-                        warnings.push('Tidak dapat memverifikasi NIK ke database.');
+                    }).catch(function (error) {
+                        console.error('Error cek NIK:', error);
+                        warnings.push('Tidak dapat memverifikasi NIK ke database. Periksa koneksi internet Anda.');
                     })
                 );
             }
         }
 
+        // Tunggu semua validasi selesai
         Promise.all(checks).then(function () {
             var html = buildBannerHTML(errors, warnings);
 
