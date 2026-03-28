@@ -23,6 +23,18 @@ use App\Models\KunjunganMustahik;
 
 class MustahikController extends Controller
 {
+   private function getPendingCount()
+    {
+        $user = auth()->user();
+        if ($user->peran !== 'admin_lembaga') {
+            return 0;
+        }
+        
+        return Mustahik::where('lembaga_id', $user->lembaga_id)
+            ->where('status_verifikasi', 'pending')
+            ->count();
+    }
+
     public function index(Request $request)
     {
         $query = Mustahik::with(['lembaga', 'kategoriMustahik', 'creator']);
@@ -73,9 +85,14 @@ class MustahikController extends Controller
         $kategoris = KategoriMustahik::orderBy('nama')->get();
 
         $userRole = $user->peran;
+        $pendingCount = $this->getPendingCount();
+        
         $permissions = [
-            'canCreate' => in_array($userRole, ['admin_lembaga', 'amil']),
-            'userRole'  => $userRole,
+            'canCreate'       => in_array($userRole, ['admin_lembaga', 'amil']),
+            'userRole'        => $userRole,
+            'canVerifyAll'    => $userRole === 'admin_lembaga' && $pendingCount > 0,
+            'canBulkVerify'   => $userRole === 'admin_lembaga',
+            'pendingCount'    => $pendingCount,
         ];
 
         $breadcrumbs = [
@@ -84,6 +101,112 @@ class MustahikController extends Controller
 
         return view('admin-lembaga.mustahik.index', compact('mustahiks', 'kategoris', 'permissions', 'breadcrumbs'));
     }
+
+    /**
+     * Bulk verify multiple mustahik at once
+     */
+    public function bulkVerify(Request $request)
+    {
+        // Only Admin Lembaga can bulk verify
+        if (auth()->user()->peran !== 'admin_lembaga') {
+            return response()->json(['success' => false, 'message' => 'Tidak memiliki akses'], 403);
+        }
+
+        $request->validate([
+            'uuids' => 'required|array',
+            'uuids.*' => 'string|uuid'
+        ]);
+
+        $uuids = $request->uuids;
+        $userId = auth()->id();
+        $lembagaId = auth()->user()->lembaga_id;
+
+        // Get only pending mustahik that belong to this lembaga
+        $mustahiks = Mustahik::whereIn('uuid', $uuids)
+            ->where('lembaga_id', $lembagaId)
+            ->where('status_verifikasi', 'pending')
+            ->get();
+
+        if ($mustahiks->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada mustahik dengan status pending yang dapat diverifikasi'
+            ], 400);
+        }
+
+        $verifiedCount = 0;
+        
+        DB::beginTransaction();
+        try {
+            foreach ($mustahiks as $mustahik) {
+                $mustahik->verify($userId);
+                $verifiedCount++;
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil memverifikasi {$verifiedCount} mustahik",
+            'verified_count' => $verifiedCount
+        ]);
+    }
+
+    /**
+     * Verify all pending mustahik in one click
+     */
+    public function verifyAllPending()
+    {
+        // Only Admin Lembaga can do this
+        if (auth()->user()->peran !== 'admin_lembaga') {
+            return response()->json(['success' => false, 'message' => 'Tidak memiliki akses'], 403);
+        }
+
+        $lembagaId = auth()->user()->lembaga_id;
+        $userId = auth()->id();
+
+        // Get all pending mustahik in this lembaga
+        $mustahiks = Mustahik::where('lembaga_id', $lembagaId)
+            ->where('status_verifikasi', 'pending')
+            ->get();
+
+        if ($mustahiks->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ada mustahik dengan status pending'
+            ], 400);
+        }
+
+        $verifiedCount = 0;
+        
+        DB::beginTransaction();
+        try {
+            foreach ($mustahiks as $mustahik) {
+                $mustahik->verify($userId);
+                $verifiedCount++;
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil memverifikasi semua {$verifiedCount} mustahik yang pending",
+            'verified_count' => $verifiedCount
+        ]);
+    }
+    
     public function create()
     {
         // Amil & Admin Lembaga Both can create

@@ -790,6 +790,8 @@ Route::middleware(['auth', 'active.user', 'role:admin_lembaga', 'lembaga.access'
         Route::patch('/{mustahik:uuid}/verify', [MustahikController::class, 'verify'])->name('verify');
         Route::patch('/{mustahik:uuid}/reject', [MustahikController::class, 'reject'])->name('reject');
         Route::patch('/{mustahik:uuid}/toggle-active', [MustahikController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/bulk-verify', [MustahikController::class, 'bulkVerify'])->name('bulk-verify');
+        Route::post('/verify-all-pending', [MustahikController::class, 'verifyAllPending'])->name('verify-all-pending');
     });
 
 // ============================================
