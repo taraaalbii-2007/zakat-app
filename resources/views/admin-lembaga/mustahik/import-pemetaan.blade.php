@@ -5,356 +5,371 @@
 @section('title', 'Pemetaan Kolom Import Mustahik')
 
 @section('content')
-<div class="space-y-5">
+    <div class="space-y-5">
 
-    {{-- ── Info File ──────────────────────────────────────────────── --}}
-    <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-3">
-        <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <div class="text-sm text-blue-800">
-            <p>File berhasil dibaca. Ditemukan
-                <strong>{{ count($importSession['excel_headers']) }} kolom</strong> dan
-                <strong>{{ $importSession['total_rows'] }} baris</strong> data.
-            </p>
-            <p class="text-blue-600 text-xs mt-0.5">
-                Petakan kolom Excel ke kolom sistem, lalu klik
-                <strong>"Cek Pemetaan &amp; Preview"</strong> sebelum import.
-            </p>
-        </div>
-    </div>
-
-    {{-- ── Form Utama ─────────────────────────────────────────────── --}}
-    <form method="POST" action="{{ route('mustahik.import.proses') }}" id="form-import">
-        @csrf
-
-        {{-- Card Pemetaan Kolom --}}
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-
-            <div class="px-6 py-4 border-b border-gray-200 flex items-center gap-3">
-                <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-xs font-bold shrink-0">1</span>
-                <div>
-                    <h2 class="text-sm font-semibold text-gray-900">Pemetaan Kolom</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">
-                        Pasangkan kolom Excel ke kolom sistem.
-                        Kolom <span class="text-red-500">*</span> wajib dipetakan.
-                    </p>
-                </div>
+        {{-- ── Info File ──────────────────────────────────────────────── --}}
+        <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-3">
+            <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div class="text-sm text-blue-800">
+                <p>File berhasil dibaca. Ditemukan
+                    <strong>{{ count($importSession['excel_headers']) }} kolom</strong> dan
+                    <strong>{{ $importSession['total_rows'] }} baris</strong> data.
+                </p>
+                <p class="text-blue-600 text-xs mt-0.5">
+                    Petakan kolom Excel ke kolom sistem, lalu klik
+                    <strong>"Cek Pemetaan &amp; Preview"</strong> sebelum import.
+                </p>
             </div>
+        </div>
 
-            <div class="px-6 py-5">
-                @php
-                    $allFields = array_keys($systemColumns);
-                    $pairs     = array_chunk($allFields, 2);
-                @endphp
+        {{-- ── Form Utama ─────────────────────────────────────────────── --}}
+        <form method="POST" action="{{ route('mustahik.import.proses') }}" id="form-import">
+            @csrf
 
-                <div class="space-y-4">
-                    @foreach ($pairs as $pair)
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-                            @foreach ($pair as $fieldKey)
-                                @php
-                                    $fieldInfo    = $systemColumns[$fieldKey];
-                                    $sysIdx       = array_search($fieldKey, $allFields);
-                                    $autoExcelIdx = null;
-                                    foreach ($autoMapping as $eIdx => $mField) {
-                                        if ($mField === $fieldKey) { $autoExcelIdx = $eIdx; break; }
-                                    }
-                                    $autoHeader = $autoExcelIdx !== null
-                                        ? ($importSession['excel_headers'][$autoExcelIdx] ?? null)
-                                        : null;
-                                @endphp
+            {{-- Card Pemetaan Kolom --}}
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 
-                                <div>
-                                    <label for="map_{{ $fieldKey }}"
-                                           class="block text-sm font-medium text-gray-700 mb-1.5">
-                                        {{ $fieldInfo['label'] }}
-                                        @if ($fieldInfo['required'])
-                                            <span class="text-red-500">*</span>
-                                        @endif
-                                    </label>
+                <div class="px-6 py-4 border-b border-gray-200 flex items-center gap-3">
+                    <span
+                        class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white text-xs font-bold shrink-0">1</span>
+                    <div>
+                        <h2 class="text-sm font-semibold text-gray-900">Pemetaan Kolom</h2>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Pasangkan kolom Excel ke kolom sistem.
+                            Kolom <span class="text-red-500">*</span> wajib dipetakan.
+                        </p>
+                    </div>
+                </div>
 
-                                    <select
-                                        name="mapping[{{ $sysIdx }}]"
-                                        id="map_{{ $fieldKey }}"
-                                        data-field="{{ $fieldKey }}"
-                                        data-required="{{ $fieldInfo['required'] ? '1' : '0' }}"
-                                        data-sysidx="{{ $sysIdx }}"
-                                        class="mapping-select block w-full px-3 py-2 text-sm border rounded-lg
+                <div class="px-6 py-5">
+                    @php
+                        $allFields = array_keys($systemColumns);
+                        $pairs = array_chunk($allFields, 2);
+                    @endphp
+
+                    <div class="space-y-4">
+                        @foreach ($pairs as $pair)
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+                                @foreach ($pair as $fieldKey)
+                                    @php
+                                        $fieldInfo = $systemColumns[$fieldKey];
+                                        $sysIdx = array_search($fieldKey, $allFields);
+                                        $autoExcelIdx = null;
+                                        foreach ($autoMapping as $eIdx => $mField) {
+                                            if ($mField === $fieldKey) {
+                                                $autoExcelIdx = $eIdx;
+                                                break;
+                                            }
+                                        }
+                                        $autoHeader =
+                                            $autoExcelIdx !== null
+                                                ? ($importSession['excel_headers'][$autoExcelIdx] ?? null)
+                                                : null;
+                                    @endphp
+
+                                    <div>
+                                        <label for="map_{{ $fieldKey }}"
+                                            class="block text-sm font-medium text-gray-700 mb-1.5">
+                                            {{ $fieldInfo['label'] }}
+                                            @if ($fieldInfo['required'])
+                                                <span class="text-red-500">*</span>
+                                            @endif
+                                        </label>
+
+                                        <select name="mapping[{{ $sysIdx }}]" id="map_{{ $fieldKey }}"
+                                            data-field="{{ $fieldKey }}"
+                                            data-required="{{ $fieldInfo['required'] ? '1' : '0' }}"
+                                            data-sysidx="{{ $sysIdx }}"
+                                            class="mapping-select block w-full px-3 py-2 text-sm border rounded-lg
                                                bg-white focus:outline-none focus:ring-2 focus:ring-primary/20
                                                focus:border-primary transition-all
                                                {{ $fieldInfo['required'] && !$autoHeader ? 'border-orange-300' : 'border-gray-300' }}">
-                                        <option value="">— Abaikan / Tidak dipetakan —</option>
-                                        @foreach ($importSession['excel_headers'] as $idx => $header)
-                                            <option value="{{ $idx }}" @selected($autoExcelIdx === $idx)>
-                                                {{ $header }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                            <option value="">— Abaikan / Tidak dipetakan —</option>
+                                            @foreach ($importSession['excel_headers'] as $idx => $header)
+                                                <option value="{{ $idx }}" @selected($autoExcelIdx === $idx)>
+                                                    {{ $header }}
+                                                </option>
+                                            @endforeach
+                                        </select>
 
-                                    @if ($autoHeader)
-                                        <p class="mt-1 flex items-center gap-1 text-xs text-green-600">
-                                            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                            </svg>
-                                            Auto-detected: <em>"{{ $autoHeader }}"</em>
-                                        </p>
-                                    @elseif ($fieldInfo['required'])
-                                        <p class="mt-1 text-xs text-orange-500">Wajib — pilih kolom yang sesuai</p>
-                                    @else
-                                        <p class="mt-1 text-xs text-gray-400">Opsional</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endforeach
+                                        @if ($autoHeader)
+                                            <p class="mt-1 flex items-center gap-1 text-xs text-green-600">
+                                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                        d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Auto-detected: <em>"{{ $autoHeader }}"</em>
+                                            </p>
+                                        @elseif ($fieldInfo['required'])
+                                            <p class="mt-1 text-xs text-orange-500">Wajib — pilih kolom yang sesuai</p>
+                                        @else
+                                            <p class="mt-1 text-xs text-gray-400">Opsional</p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
 
-            {{-- Validation Banner --}}
-            <div id="validation-banner" class="hidden px-6 pb-5">
-                <div id="validation-banner-inner"></div>
-            </div>
+                {{-- Validation Banner --}}
+                <div id="validation-banner" class="hidden px-6 pb-5">
+                    <div id="validation-banner-inner"></div>
+                </div>
 
-        </div>{{-- /card --}}
+            </div>{{-- /card --}}
 
-    </form>{{-- /form-import — ditutup di sini agar action buttons tidak nested --}}
+        </form>{{-- /form-import --}}
 
-    {{-- Form batal — standalone, tidak nested dalam form-import --}}
-    <form method="POST" action="{{ route('mustahik.import.batal') }}" id="form-batal" style="display:none;">
-        @csrf
-    </form>
+        {{-- Form batal — standalone --}}
+        <form method="POST" action="{{ route('mustahik.import.batal') }}" id="form-batal" style="display:none;">
+            @csrf
+        </form>
 
-    {{-- Action Buttons — di luar form-import --}}
-    <div class="flex items-center justify-end mt-5 pt-5 border-t border-gray-200 gap-3">
+        {{-- Action Buttons --}}
+        <div class="flex items-center justify-end mt-5 pt-5 border-t border-gray-200 gap-3">
 
-        {{-- Batal Import: submit form-batal standalone --}}
-        <button type="button" onclick="document.getElementById('form-batal').submit()"
-            class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300
+            <button type="button" onclick="document.getElementById('form-batal').submit()"
+                class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300
                    text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-all">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-            Batal Import
-        </button>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Batal Import
+            </button>
 
-        {{-- Cek Pemetaan --}}
-        <button type="button" id="btn-cek-pemetaan"
-            class="inline-flex items-center gap-2 px-5 py-2.5 border border-primary
+            <button type="button" id="btn-cek-pemetaan"
+                class="inline-flex items-center gap-2 px-5 py-2.5 border border-primary
                    text-sm font-medium text-primary bg-white hover:bg-primary/5
                    rounded-lg shadow-sm transition-all">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7
-                       -1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            <span id="btn-cek-label">Cek Pemetaan &amp; Preview</span>
-            <svg id="cek-spinner" class="hidden animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-            </svg>
-        </button>
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span id="btn-cek-label">Cek Pemetaan &amp; Preview</span>
+                <svg id="cek-spinner" class="hidden animate-spin w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+            </button>
 
-        {{-- Import Data Mustahik --}}
-        <button type="button" id="btn-import" disabled
-            onclick="openModalKonfirmasi()"
-            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white rounded-lg
+            <button type="button" id="btn-import" disabled onclick="openModalKonfirmasi()"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white rounded-lg
                    bg-gradient-to-r from-primary to-primary-600 shadow-md shadow-primary/30 transition-all
                    disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
                    enabled:hover:shadow-lg enabled:hover:shadow-primary/40">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-            </svg>
-            Import Data Mustahik
-        </button>
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Import Data Mustahik
+            </button>
 
+        </div>
     </div>
-</div>
 
-{{-- ══════════════════════════════════════════════════════════════
-     MODAL 1 — PREVIEW DATA
-════════════════════════════════════════════════════════════════ --}}
-<div id="modal-preview"
-     style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); padding:24px;"
-     class="flex items-center justify-center">
+    {{-- ══════════════════════════════════════════════════════════════
+         MODAL 1 — PREVIEW DATA
+    ══════════════════════════════════════════════════════════════ --}}
+    <div id="modal-preview"
+        style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.6);
+               backdrop-filter:blur(4px); padding:24px;"
+        class="flex items-center justify-center">
 
-    <div style="background:#fff; border-radius:16px; width:100%; max-width:1200px;
-                height:85vh; display:flex; flex-direction:column; overflow:hidden;
-                box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+        <div style="background:#fff; border-radius:20px; width:100%; max-width:1200px;
+                    height:88vh; display:flex; flex-direction:column; overflow:hidden;
+                    box-shadow:0 25px 80px rgba(0,0,0,0.25);">
 
-        {{-- Modal Header --}}
-        <div style="padding:18px 24px; border-bottom:1px solid #e5e7eb; display:flex;
-                    align-items:center; justify-content:space-between; flex-shrink:0; gap:16px;">
+            {{-- Modal Header --}}
+            <div style="padding:20px 28px; border-bottom:1px solid #f1f5f9; display:flex;
+                        align-items:center; justify-content:space-between; flex-shrink:0; gap:16px; background:#fff;">
 
-            <div style="display:flex; align-items:center; gap:12px;">
-                <span style="display:inline-flex; align-items:center; justify-content:center;
-                             width:28px; height:28px; border-radius:50%;
-                             background:var(--color-primary,#16a34a);
-                             color:#fff; font-size:12px; font-weight:700; flex-shrink:0;">2</span>
-                <div>
-                    <h2 style="font-size:15px; font-weight:600; color:#111827; margin:0;">Preview Data</h2>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div style="display:inline-flex; align-items:center; justify-content:center;
+                                width:36px; height:36px; border-radius:10px;
+                                background:linear-gradient(135deg,#16a34a,#15803d);
+                                color:#fff; font-size:14px; font-weight:700; flex-shrink:0;
+                                box-shadow:0 2px 8px rgba(22,163,74,0.35);">2</div>
+                    <div>
+                        <h2 style="font-size:16px; font-weight:700; color:#0f172a; margin:0 0 2px;">Preview Data Import</h2>
+                        <p style="font-size:12px; color:#64748b; margin:0;" id="modal-subtitle">Memeriksa data...</p>
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
+                    {{-- Legenda --}}
+                    <div id="legend-area" style="display:flex; align-items:center; gap:12px;">
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; color:#475569; font-weight:500;">
+                            <span style="width:12px;height:12px;border-radius:4px;background:#fecaca;display:inline-block;border:1px solid #fca5a5;"></span>
+                            Kosong wajib
+                        </span>
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; color:#475569; font-weight:500;">
+                            <span style="width:12px;height:12px;border-radius:4px;background:#fef08a;display:inline-block;border:1px solid #fde047;"></span>
+                            Tidak ada di DB
+                        </span>
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; color:#475569; font-weight:500;">
+                            <span style="width:12px;height:12px;border-radius:4px;background:#e9d5ff;display:inline-block;border:1px solid #d8b4fe;"></span>
+                            Duplikat di DB
+                        </span>
+                    </div>
+
+                    <button onclick="closeModal()"
+                        style="width:34px; height:34px; border-radius:10px; border:1px solid #e2e8f0;
+                               background:#f8fafc; cursor:pointer; display:flex; align-items:center;
+                               justify-content:center; flex-shrink:0; transition:all 0.15s;"
+                        onmouseover="this.style.background='#fee2e2';this.style.borderColor='#fca5a5'"
+                        onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0'">
+                        <svg width="14" height="14" fill="none" stroke="#64748b" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:20px; flex-shrink:0;">
-                {{-- Legenda --}}
-                <div style="display:flex; align-items:center; gap:14px; font-size:11px; color:#6b7280;">
-                    <span style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:10px;height:10px;border-radius:2px;background:#fee2e2;display:inline-block;"></span>
-                        Kosong wajib
-                    </span>
-                    <span style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:10px;height:10px;border-radius:2px;background:#fef3c7;display:inline-block;"></span>
-                        Tidak ada di DB
-                    </span>
-                    <span style="display:flex; align-items:center; gap:5px;">
-                        <span style="width:10px;height:10px;border-radius:2px;background:#f3e8ff;display:inline-block;"></span>
-                        Duplikat di DB
-                    </span>
-                </div>
-
-                <button onclick="closeModal()"
-                    style="width:32px; height:32px; border-radius:8px; border:1px solid #e5e7eb;
-                           background:#f9fafb; cursor:pointer; display:flex; align-items:center;
-                           justify-content:center; flex-shrink:0; transition:background 0.15s;"
-                    onmouseover="this.style.background='#f3f4f6'"
-                    onmouseout="this.style.background='#f9fafb'">
-                    <svg width="14" height="14" fill="none" stroke="#6b7280" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+            {{-- Validation Result Panel --}}
+            <div id="modal-validation"
+                style="flex-shrink:0; display:none; max-height:260px; overflow-y:auto;
+                       padding:0; border-bottom:1px solid #f1f5f9; background:#fafafa;">
+                <div id="modal-validation-inner"></div>
             </div>
-        </div>
 
-        {{-- Validation Result — scrollable, clean, no border box --}}
-        <div id="modal-validation"
-             style="flex-shrink:0; display:none; max-height:220px; overflow-y:auto;
-                    padding:16px 24px; border-bottom:1px solid #e5e7eb; background:#fafafa;">
-            <div id="modal-validation-inner"></div>
-        </div>
-
-        {{-- Tabel Preview --}}
-        <div style="flex:1; overflow:auto; min-height:0;">
-            <table id="preview-table"
-                   style="table-layout:fixed; width:max-content; min-width:100%; border-collapse:collapse;">
-                <thead style="position:sticky; top:0; z-index:20;">
-                    <tr style="background:#f8fafc; border-bottom:2px solid #e5e7eb;">
-                        <th style="position:sticky; left:0; z-index:30; background:#f8fafc;
-                                   width:56px; min-width:56px; padding:14px 16px;
-                                   text-align:center; font-size:11px; font-weight:700;
-                                   letter-spacing:0.05em; text-transform:uppercase; color:#9ca3af;
-                                   border-right:1px solid #e5e7eb;">#</th>
-                        @foreach ($importSession['excel_headers'] as $colIdx => $header)
-                            <th class="preview-th" data-col="{{ $colIdx }}"
-                                style="width:160px; min-width:160px; max-width:160px;
-                                       padding:10px 16px 8px; text-align:left;
-                                       border-right:1px solid #eef0f3; vertical-align:top;">
-                                <div style="font-size:11px; font-weight:700; letter-spacing:0.04em;
-                                            text-transform:uppercase; color:#374151; white-space:nowrap;
-                                            overflow:hidden; text-overflow:ellipsis;"
-                                     title="{{ $header }}">{{ $header }}</div>
-                                <div class="col-mapped-label" data-col="{{ $colIdx }}"
-                                     style="font-size:10px; color:#9ca3af; margin-top:4px;
-                                            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    tidak dipetakan
-                                </div>
-                            </th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody id="preview-tbody">
-                    @foreach ($importSession['preview_rows'] as $rowIdx => $row)
-                        <tr style="border-bottom:1px solid #f3f4f6;"
-                            onmouseover="this.style.background='#f9fafb'"
-                            onmouseout="this.style.background=''">
-                            <td style="position:sticky; left:0; z-index:10; background:#fff;
+            {{-- Tabel Preview --}}
+            <div style="flex:1; overflow:auto; min-height:0;">
+                <table id="preview-table"
+                    style="table-layout:fixed; width:max-content; min-width:100%; border-collapse:collapse;">
+                    <thead style="position:sticky; top:0; z-index:20;">
+                        <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0;">
+                            <th style="position:sticky; left:0; z-index:30; background:#f8fafc;
                                        width:56px; min-width:56px; padding:14px 16px;
-                                       text-align:center; color:#9ca3af; font-size:13px; font-weight:500;
-                                       border-right:1px solid #e5e7eb;">{{ $rowIdx + 1 }}</td>
+                                       text-align:center; font-size:11px; font-weight:700;
+                                       letter-spacing:0.06em; text-transform:uppercase; color:#94a3b8;
+                                       border-right:2px solid #e2e8f0;">#</th>
                             @foreach ($importSession['excel_headers'] as $colIdx => $header)
-                                @php $val = $row[$colIdx] ?? null; @endphp
-                                <td class="preview-cell"
-                                    data-col="{{ $colIdx }}"
-                                    data-val="{{ $val }}"
-                                    style="width:160px; min-width:160px; max-width:160px;
-                                           padding:14px 16px; border-right:1px solid #f9fafb; overflow:hidden;">
-                                    @if ($val === null || $val === '')
-                                        <span style="color:#d1d5db; font-size:13px;">—</span>
-                                    @else
-                                        <span style="display:block; overflow:hidden; text-overflow:ellipsis;
-                                                     white-space:nowrap; color:#374151; font-size:13px;"
-                                              title="{{ $val }}">{{ Str::limit((string) $val, 20) }}</span>
-                                    @endif
-                                </td>
+                                <th class="preview-th" data-col="{{ $colIdx }}"
+                                    style="width:180px; min-width:180px; max-width:180px;
+                                           padding:12px 16px 10px; text-align:left;
+                                           border-right:1px solid #eef0f3; vertical-align:top;
+                                           transition:background 0.2s;">
+                                    <div style="font-size:11px; font-weight:700; letter-spacing:0.05em;
+                                                text-transform:uppercase; color:#334155; white-space:nowrap;
+                                                overflow:hidden; text-overflow:ellipsis;"
+                                        title="{{ $header }}">{{ $header }}</div>
+                                    <div class="col-mapped-label" data-col="{{ $colIdx }}"
+                                        style="font-size:10px; color:#94a3b8; margin-top:4px;
+                                               white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+                                               font-weight:500;">tidak dipetakan</div>
+                                </th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody id="preview-tbody">
+                        @foreach ($importSession['preview_rows'] as $rowIdx => $row)
+                            <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.1s;"
+                                onmouseover="this.style.background='#f8fafc'"
+                                onmouseout="this.style.background=''">
+                                <td style="position:sticky; left:0; z-index:10; background:inherit;
+                                           width:56px; min-width:56px; padding:14px 16px;
+                                           text-align:center; color:#94a3b8; font-size:13px; font-weight:600;
+                                           border-right:2px solid #e2e8f0;">{{ $rowIdx + 1 }}</td>
+                                @foreach ($importSession['excel_headers'] as $colIdx => $header)
+                                    @php $val = $row[$colIdx] ?? null; @endphp
+                                    <td class="preview-cell"
+                                        data-col="{{ $colIdx }}"
+                                        data-val="{{ $val }}"
+                                        style="width:180px; min-width:180px; max-width:180px;
+                                               padding:14px 16px; border-right:1px solid #f8fafc;
+                                               overflow:hidden; transition:background 0.2s;">
+                                        @if ($val === null || $val === '')
+                                            <span style="color:#cbd5e1; font-size:13px;">—</span>
+                                        @else
+                                            <span style="display:block; overflow:hidden; text-overflow:ellipsis;
+                                                         white-space:nowrap; color:#334155; font-size:13px;"
+                                                title="{{ $val }}">{{ Str::limit((string) $val, 22) }}</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-        {{-- Pagination Footer --}}
-        <div id="preview-pagination"
-             style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
-                    padding:12px 20px; border-top:1px solid #e5e7eb; background:#f9fafb;
-                    font-size:12px; color:#6b7280;">
-        </div>
+            {{-- Pagination Footer --}}
+            <div id="preview-pagination"
+                style="flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+                       padding:14px 24px; border-top:1px solid #f1f5f9; background:#fafafa;">
+            </div>
 
+        </div>
     </div>
-</div>
 
-{{-- ══════════════════════════════════════════════════════════════
-     MODAL 2 — KONFIRMASI IMPORT
-════════════════════════════════════════════════════════════════ --}}
-<div id="modal-konfirmasi"
-     style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,0.5); padding:24px;"
-     class="flex items-center justify-center">
+    {{-- ══════════════════════════════════════════════════════════════
+         MODAL 2 — KONFIRMASI IMPORT
+    ══════════════════════════════════════════════════════════════ --}}
+    <div id="modal-konfirmasi"
+        style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(15,23,42,0.6);
+               backdrop-filter:blur(4px); padding:24px;"
+        class="flex items-center justify-center">
 
-    <div style="background:#fff; border-radius:16px; width:100%; max-width:480px;
-                box-shadow:0 20px 60px rgba(0,0,0,0.2); overflow:hidden;">
+        <div style="background:#fff; border-radius:20px; width:100%; max-width:480px;
+                    box-shadow:0 25px 80px rgba(0,0,0,0.2); overflow:hidden;">
 
-        {{-- Header --}}
-        <div style="padding:24px 28px 20px; border-bottom:1px solid #f3f4f6;">
-            <h3 style="font-size:15px; font-weight:700; color:#111827; margin:0 0 4px;">Konfirmasi Import</h3>
-            <p style="font-size:12px; color:#6b7280; margin:0;">Periksa ringkasan data sebelum melanjutkan.</p>
+            <div style="padding:28px 28px 20px; border-bottom:1px solid #f1f5f9;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                    <div style="width:40px; height:40px; border-radius:12px;
+                                background:linear-gradient(135deg,#16a34a,#15803d);
+                                display:flex; align-items:center; justify-content:center;
+                                box-shadow:0 4px 12px rgba(22,163,74,0.3);">
+                        <svg width="20" height="20" fill="none" stroke="#fff" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin:0 0 2px;">Konfirmasi Import</h3>
+                        <p style="font-size:12px; color:#64748b; margin:0;">Periksa ringkasan data sebelum melanjutkan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding:20px 28px;">
+                <p style="font-size:13px; color:#374151; margin:0 0 8px;">
+                    Data yang valid akan tersimpan ke database lembaga Anda.
+                </p>
+            </div>
+
+            <div style="padding:0 28px 24px; display:flex; gap:10px; justify-content:flex-end;">
+                <button type="button" onclick="closeModalKonfirmasi()"
+                    style="padding:10px 22px; border-radius:10px; border:1px solid #e2e8f0;
+                           background:#fff; color:#374151; font-size:13px; font-weight:500;
+                           cursor:pointer; transition:all 0.15s;"
+                    onmouseover="this.style.background='#f8fafc'"
+                    onmouseout="this.style.background='#fff'">
+                    Batal
+                </button>
+                <button type="button" id="btn-konfirm-lanjut" onclick="submitImport()"
+                    style="padding:10px 24px; border-radius:10px; border:none;
+                           background:linear-gradient(135deg,#16a34a,#15803d); color:#fff;
+                           font-size:13px; font-weight:600; cursor:pointer;
+                           display:flex; align-items:center; gap:8px;
+                           box-shadow:0 4px 12px rgba(22,163,74,0.35); transition:all 0.15s;"
+                    onmouseover="this.style.opacity='0.88'"
+                    onmouseout="this.style.opacity='1'">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Ya, Import Sekarang
+                </button>
+            </div>
+
         </div>
-
-        {{-- Body --}}
-        <div style="padding:20px 28px;">
-            <p style="font-size:13px; color:#374151; margin:0 0 8px;">
-                Data anda akan tersimpan.
-            </p>
-        </div>
-
-        {{-- Footer Tombol --}}
-        <div style="padding:0 28px 24px; display:flex; gap:10px; justify-content:flex-end;">
-            <button type="button" onclick="closeModalKonfirmasi()"
-                style="padding:9px 20px; border-radius:8px; border:1px solid #d1d5db;
-                       background:#fff; color:#374151; font-size:13px; font-weight:500;
-                       cursor:pointer; transition:background 0.15s;"
-                onmouseover="this.style.background='#f9fafb'"
-                onmouseout="this.style.background='#fff'">
-                Batal
-            </button>
-            <button type="button" id="btn-konfirm-lanjut" onclick="submitImport()"
-                style="padding:9px 22px; border-radius:8px; border:none;
-                       background:#16a34a; color:#fff; font-size:13px; font-weight:600;
-                       cursor:pointer; display:flex; align-items:center; gap:7px;
-                       transition:opacity 0.15s;"
-                onmouseover="this.style.opacity='0.85'"
-                onmouseout="this.style.opacity='1'">
-                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                </svg>
-                Ya, Import Sekarang
-            </button>
-        </div>
-
     </div>
-</div>
 
 @endsection
 
@@ -369,11 +384,10 @@
     const PREVIEW_ROWS    = @json($importSession['preview_rows']);
     const TOTAL_ROWS      = {{ $importSession['total_rows'] }};
     const ROWS_PER_PAGE   = 20;
-    const USER_PERAN      = '{{ auth()->user()->peran }}';
 
     const AJAX = {
-        kategori : '{{ route("mustahik.import.cekKategori") }}',
-        nik      : '{{ route("mustahik.import.cekNik") }}',
+        kategori : '{{ route('mustahik.import.cekKategori') }}',
+        nik      : '{{ route('mustahik.import.cekNik') }}',
     };
 
     /* ── Elemen DOM ─────────────────────────────────────────────── */
@@ -389,10 +403,9 @@
     const spinner         = document.getElementById('cek-spinner');
     const btnLabel        = document.getElementById('btn-cek-label');
     const pagEl           = document.getElementById('preview-pagination');
+    const modalSubtitle   = document.getElementById('modal-subtitle');
 
-    let currentPage   = 1;
-    let duplikatCount = 0;
-    let notFoundCount = 0;
+    let currentPage = 1;
 
     /* ── Modal Preview ──────────────────────────────────────────── */
     window.openModal = function () {
@@ -418,12 +431,12 @@
     /* ── Modal Konfirmasi ───────────────────────────────────────── */
     window.openModalKonfirmasi = function () {
         modalKonfirmasi.style.display = 'flex';
-        document.body.style.overflow  = 'hidden';
+        document.body.style.overflow = 'hidden';
     };
 
     window.closeModalKonfirmasi = function () {
         modalKonfirmasi.style.display = 'none';
-        document.body.style.overflow  = '';
+        document.body.style.overflow = '';
     };
 
     modalKonfirmasi.addEventListener('click', function (e) {
@@ -433,8 +446,9 @@
     /* ── Submit form ────────────────────────────────────────────── */
     window.submitImport = function () {
         var btn = document.getElementById('btn-konfirm-lanjut');
-        btn.disabled  = true;
-        btn.innerHTML = '<svg class="animate-spin" width="15" height="15" fill="none" viewBox="0 0 24 24">'
+        btn.disabled = true;
+        btn.innerHTML =
+            '<svg class="animate-spin" width="15" height="15" fill="none" viewBox="0 0 24 24">'
             + '<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>'
             + '<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>'
             + ' Mengimport...';
@@ -475,38 +489,49 @@
         var start = (currentPage - 1) * ROWS_PER_PAGE + 1;
         var end   = Math.min(currentPage * ROWS_PER_PAGE, totalRows);
 
-        var pageButtons = Array.from({ length: totalPages }, function (_, i) {
-            var p      = i + 1;
-            var active = p === currentPage;
-            return '<button onclick="goPage(' + p + ')"'
-                + ' style="padding:4px 9px; border-radius:6px; cursor:pointer; font-size:12px;'
-                + 'border:1px solid ' + (active ? '#374151' : '#e5e7eb') + ';'
-                + 'background:' + (active ? '#374151' : '#fff') + ';'
-                + 'color:' + (active ? '#fff' : '#6b7280') + ';'
-                + 'font-weight:' + (active ? '600' : '400') + ';">'
-                + p + '</button>';
-        }).join('');
+        var pageButtons = '';
+        var maxVisible  = 5;
+        var startPage   = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        var endPage     = Math.min(totalPages, startPage + maxVisible - 1);
+        if (endPage - startPage < maxVisible - 1) startPage = Math.max(1, endPage - maxVisible + 1);
 
+        for (var p = startPage; p <= endPage; p++) {
+            var active = p === currentPage;
+            pageButtons += '<button onclick="goPage(' + p + ')"'
+                + ' style="min-width:34px; height:34px; padding:0 10px; border-radius:8px; cursor:pointer; font-size:12px;'
+                + 'border:1.5px solid ' + (active ? '#16a34a' : '#e2e8f0') + ';'
+                + 'background:' + (active ? '#16a34a' : '#fff') + ';'
+                + 'color:' + (active ? '#fff' : '#64748b') + ';'
+                + 'font-weight:' + (active ? '700' : '500') + '; transition:all 0.15s;">'
+                + p + '</button>';
+        }
+
+        var btnBase = 'height:34px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:500;'
+            + 'border:1.5px solid #e2e8f0; transition:all 0.15s; display:inline-flex; align-items:center; gap:4px;';
         var prevDis = currentPage === 1;
         var nextDis = currentPage === totalPages;
 
-        var btnStyle = function (disabled) {
-            return 'padding:4px 10px; border-radius:6px; font-size:12px;'
-                + 'border:1px solid #e5e7eb;'
-                + 'background:' + (disabled ? '#f9fafb' : '#fff') + ';'
-                + 'color:' + (disabled ? '#d1d5db' : '#374151') + ';'
-                + 'cursor:' + (disabled ? 'not-allowed' : 'pointer') + ';';
-        };
-
         pagEl.innerHTML =
-            '<span style="color:#6b7280;">Menampilkan <strong style="color:#374151;">' + start + '–' + end + '</strong>'
-            + ' dari <strong style="color:#374151;">' + totalRows + '</strong> baris</span>'
-            + '<div style="display:flex; gap:5px; align-items:center;">'
+            '<span style="font-size:12px; color:#64748b; font-weight:500;">'
+            + 'Menampilkan <strong style="color:#0f172a;">' + start + '–' + end + '</strong>'
+            + ' dari <strong style="color:#0f172a;">' + totalRows + '</strong> baris preview'
+            + (TOTAL_ROWS > totalRows ? ' <span style="color:#94a3b8;">(total ' + TOTAL_ROWS + ' baris)</span>' : '')
+            + '</span>'
+            + '<div style="display:flex; gap:6px; align-items:center;">'
             + '<button onclick="goPage(' + (currentPage - 1) + ')"' + (prevDis ? ' disabled' : '')
-            + ' style="' + btnStyle(prevDis) + '">← Prev</button>'
+            + ' style="' + btnBase + 'cursor:' + (prevDis ? 'not-allowed' : 'pointer') + ';'
+            + 'background:' + (prevDis ? '#f8fafc' : '#fff') + ';'
+            + 'color:' + (prevDis ? '#cbd5e1' : '#374151') + ';">'
+            + '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>'
+            + 'Prev</button>'
             + pageButtons
             + '<button onclick="goPage(' + (currentPage + 1) + ')"' + (nextDis ? ' disabled' : '')
-            + ' style="' + btnStyle(nextDis) + '">Next →</button>'
+            + ' style="' + btnBase + 'cursor:' + (nextDis ? 'not-allowed' : 'pointer') + ';'
+            + 'background:' + (nextDis ? '#f8fafc' : '#fff') + ';'
+            + 'color:' + (nextDis ? '#cbd5e1' : '#374151') + ';">'
+            + 'Next'
+            + '<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>'
+            + '</button>'
             + '</div>';
     }
 
@@ -527,11 +552,22 @@
         return map;
     }
 
+    /**
+     * Ambil nilai unik dari kolom tertentu di PREVIEW_ROWS.
+     * FIX: tolak object/array, kosong, dan "null"/"undefined" string.
+     */
     function uniqueValsInCol(colIdx) {
         return Array.from(new Set(
             PREVIEW_ROWS
-                .map(function (row) { return String(row[colIdx] == null ? '' : row[colIdx]).trim(); })
-                .filter(function (v) { return v !== '' && v !== 'null'; })
+                .map(function (row) {
+                    var v = row[colIdx];
+                    if (v === null || v === undefined) return '';
+                    if (typeof v === 'object') return '';   // tolak rich-text object dari PhpSpreadsheet
+                    var str = String(v).trim();
+                    if (str === 'null' || str === 'undefined') return '';
+                    return str;
+                })
+                .filter(function (v) { return v !== ''; })
         ));
     }
 
@@ -567,86 +603,160 @@
                 el.style.fontWeight = '600';
             } else {
                 el.textContent      = 'tidak dipetakan';
-                el.style.color      = '#9ca3af';
-                el.style.fontWeight = '400';
+                el.style.color      = '#94a3b8';
+                el.style.fontWeight = '500';
             }
         });
 
         document.querySelectorAll('.preview-th').forEach(function (th) {
             var col = parseInt(th.dataset.col);
-            th.style.background = colToLabel[col] ? '#f0f9ff' : '';
+            th.style.background   = colToLabel[col] ? '#f0fdf4' : '';
+            th.style.borderBottom = '';
         });
     }
 
     /* ── Sorot sel preview ──────────────────────────────────────── */
-    function highlightPreview(requiredCols, fkBadMap, dupBadMap) {
+    function highlightPreview(requiredCols, fkBadMap, dupBadMap, errorRowsByCol) {
         document.querySelectorAll('#preview-tbody tr').forEach(function (tr) {
             tr.querySelectorAll('.preview-cell').forEach(function (td) {
                 var col    = parseInt(td.dataset.col);
                 var rawVal = String(td.dataset.val == null ? '' : td.dataset.val).trim();
                 var empty  = rawVal === '' || rawVal === 'null';
                 td.style.background = '';
-                
-                // Kosong wajib
+                td.style.outline    = '';
+
                 if (requiredCols.has(col) && empty) {
-                    td.style.background = '#fee2e2';
-                } 
-                // Duplikat di DB (NIK)
-                else if (dupBadMap.has(col) && !empty && dupBadMap.get(col).has(rawVal)) {
-                    td.style.background = '#f3e8ff';
-                } 
-                // Tidak ada di DB (kategori)
-                else if (fkBadMap.has(col) && !empty && fkBadMap.get(col).has(rawVal.toLowerCase())) {
-                    td.style.background = '#fef3c7';
+                    td.style.background = '#fef2f2';
+                } else if (dupBadMap.has(col) && !empty && dupBadMap.get(col).has(rawVal)) {
+                    td.style.background = '#faf5ff';
+                } else if (fkBadMap.has(col) && !empty && fkBadMap.get(col).has(rawVal.toLowerCase())) {
+                    td.style.background = '#fefce8';
                 }
             });
         });
+
+        document.querySelectorAll('.preview-th').forEach(function (th) {
+            var col = parseInt(th.dataset.col);
+            if (errorRowsByCol && errorRowsByCol.has(col)) {
+                var lbl = th.querySelector('.col-mapped-label');
+                if (lbl) lbl.style.color = '#ef4444';
+            }
+        });
     }
 
-    /* ── Banner: clean, scrollable, no colorful borders ─────────── */
-    function buildBannerHTML(errors, warnings) {
+    /* ── Build validation HTML ──────────────────────────────────── */
+    function buildValidationHTML(errors, warnings) {
         if (errors.length === 0 && warnings.length === 0) {
-            return '<div style="padding:12px 0; display:flex; align-items:center; gap:10px;">'
-                + '<svg width="16" height="16" fill="none" stroke="#16a34a" viewBox="0 0 24 24">'
+            return '<div style="display:flex; align-items:center; gap:12px; padding:16px 24px;">'
+                + '<svg width="18" height="18" fill="none" stroke="#16a34a" viewBox="0 0 24 24">'
                 + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>'
                 + '</svg>'
-                + '<span style="font-size:13px; color:#374151; font-weight:500;">Semua pemeriksaan lolos. Klik <strong>Import Data Mustahik</strong> untuk melanjutkan.</span>'
+                + '<span style="font-size:13px; font-weight:600; color:#16a34a;">Semua pemeriksaan lolos — klik <em>Import Data Mustahik</em> untuk melanjutkan.</span>'
                 + '</div>';
         }
 
         var html = '';
 
         if (errors.length > 0) {
-            var errorItems = errors.map(function (e) {
-                return '<li style="padding:6px 0; border-bottom:1px solid #f3f4f6; line-height:1.6;">' + e + '</li>';
+            var errorItems = errors.map(function (e, idx) {
+                return '<div style="padding:12px 0;'
+                    + (idx < errors.length - 1 ? 'border-bottom:1px solid #f3f4f6;' : '') + '">'
+                    + '<div style="font-size:12px; color:#374151; line-height:1.8;">' + e + '</div>'
+                    + '</div>';
             }).join('');
 
-            html += '<div style="margin-bottom:' + (warnings.length ? '16px' : '0') + ';">'
-                + '<p style="font-size:12px; font-weight:600; color:#dc2626; margin:0 0 8px;">'
-                + errors.length + ' masalah ditemukan — import diblokir hingga diperbaiki</p>'
-                + '<ul style="list-style:none; margin:0; padding:0; font-size:12px; color:#374151;'
-                + ' max-height:200px; overflow-y:auto;">'
+            html += '<div style="padding:14px 24px;">'
+                + '<div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">'
+                + '<svg width="13" height="13" fill="none" stroke="#dc2626" viewBox="0 0 24 24">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>'
+                + '</svg>'
+                + '<span style="font-size:12px; font-weight:700; color:#dc2626;">'
+                + errors.length + ' masalah ditemukan — import diblokir hingga diperbaiki</span>'
+                + '</div>'
                 + errorItems
-                + '</ul>'
                 + '</div>';
         }
 
         if (warnings.length > 0) {
-            var warnItems = warnings.map(function (w) {
-                return '<li style="padding:6px 0; border-bottom:1px solid #f3f4f6; line-height:1.6;">' + w + '</li>';
+            var warnItems = warnings.map(function (w, idx) {
+                return '<div style="padding:10px 0;'
+                    + (idx < warnings.length - 1 ? 'border-bottom:1px solid #f3f4f6;' : '') + '">'
+                    + '<div style="font-size:12px; color:#374151; line-height:1.7;">' + w + '</div>'
+                    + '</div>';
             }).join('');
 
-            html += '<div>'
-                + '<p style="font-size:12px; font-weight:600; color:#92400e; margin:0 0 8px;">'
-                + warnings.length + ' peringatan</p>'
-                + '<ul style="list-style:none; margin:0; padding:0; font-size:12px; color:#374151;'
-                + ' max-height:200px; overflow-y:auto;">'
+            html += '<div style="padding:14px 24px;'
+                + (errors.length > 0 ? 'border-top:1px solid #f3f4f6;' : '') + '">'
+                + '<div style="display:flex; align-items:center; gap:6px; margin-bottom:10px;">'
+                + '<svg width="13" height="13" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/>'
+                + '</svg>'
+                + '<span style="font-size:12px; font-weight:700; color:#92400e;">'
+                + warnings.length + ' peringatan</span>'
+                + '</div>'
                 + warnItems
-                + '</ul>'
                 + '</div>';
         }
 
         return html;
+    }
+
+    /* ── Update subtitle modal ──────────────────────────────────── */
+    function updateSubtitle(errors, warnings, totalRows) {
+        if (errors.length === 0 && warnings.length === 0) {
+            modalSubtitle.innerHTML = '<span style="color:#16a34a; font-weight:600;">✓ Siap diimport</span>'
+                + ' — ' + totalRows + ' baris data';
+        } else if (errors.length > 0) {
+            modalSubtitle.innerHTML = '<span style="color:#dc2626; font-weight:600;">'
+                + errors.length + ' masalah ditemukan</span>'
+                + (warnings.length > 0 ? ', ' + warnings.length + ' peringatan' : '')
+                + ' — ' + totalRows + ' baris';
+        } else {
+            modalSubtitle.innerHTML = '<span style="color:#f59e0b; font-weight:600;">'
+                + warnings.length + ' peringatan</span>'
+                + ' — ' + totalRows + ' baris data';
+        }
+    }
+
+    /* ── Cari nomor baris yang berisi nilai tertentu ────────────── */
+    function findRowsWithVal(colIdx, badVals, exact) {
+        var result = [];
+        PREVIEW_ROWS.forEach(function (row, i) {
+            var v     = String(row[colIdx] == null ? '' : row[colIdx]).trim();
+            var match = exact ? badVals.has(v) : badVals.has(v.toLowerCase());
+            if (v && match) result.push(i + 1);
+        });
+        return result;
+    }
+
+    function colLabel(fieldKey) {
+        var el = document.querySelector('label[for="map_' + fieldKey + '"]');
+        return el ? el.textContent.replace('*', '').trim() : fieldKey;
+    }
+
+    /* ── Banner ringkas di card ──────────────────────────────────── */
+    function buildBannerSummary(errors, warnings) {
+        if (errors.length > 0) {
+            return '<div style="display:flex; align-items:center; gap:8px; padding:10px 14px;'
+                + ' background:#fef2f2; border-radius:8px;">'
+                + '<svg width="13" height="13" fill="none" stroke="#dc2626" viewBox="0 0 24 24">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>'
+                + '</svg>'
+                + '<span style="font-size:12px; font-weight:600; color:#dc2626;">'
+                + errors.length + ' masalah ditemukan — klik "Cek Pemetaan &amp; Preview" untuk melihat detail</span>'
+                + '</div>';
+        }
+        if (warnings.length > 0) {
+            return '<div style="display:flex; align-items:center; gap:8px; padding:10px 14px;'
+                + ' background:#fffbeb; border-radius:8px;">'
+                + '<svg width="13" height="13" fill="none" stroke="#f59e0b" viewBox="0 0 24 24">'
+                + '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/>'
+                + '</svg>'
+                + '<span style="font-size:12px; font-weight:600; color:#92400e;">'
+                + warnings.length + ' peringatan</span>'
+                + '</div>';
+        }
+        return '';
     }
 
     /* ── Validasi utama ─────────────────────────────────────────── */
@@ -656,21 +766,20 @@
         spinner.classList.remove('hidden');
         btnLabel.textContent = 'Memeriksa...';
 
-        duplikatCount = 0;
-        notFoundCount = 0;
+        var mapping        = getMapping();
+        var errors         = [];
+        var warnings       = [];
+        var errorRowsByCol = new Map();
 
-        var mapping  = getMapping();
-        var errors   = [];
-        var warnings = [];
-
-        /* Kolom wajib */
+        /* 1. Cek kolom wajib terpetakan & tidak kosong */
         REQUIRED_FIELDS.forEach(function (rf) {
             var sel = document.querySelector('[data-field="' + rf + '"]');
             if (mapping[rf] === undefined) {
-                var label = (document.querySelector('label[for="map_' + rf + '"]') || {}).textContent;
-                label = label ? label.replace('*', '').trim() : rf;
-                errors.push('Kolom <strong>"' + label + '"</strong> wajib dipetakan namun belum dipilih.');
-                if (sel) { sel.style.borderColor = '#ef4444'; sel.style.boxShadow = '0 0 0 2px #fee2e2'; }
+                errors.push('Kolom <strong>"' + colLabel(rf) + '"</strong> wajib dipetakan namun belum dipilih. Silakan pilih kolom yang sesuai dari dropdown di atas.');
+                if (sel) {
+                    sel.style.borderColor = '#ef4444';
+                    sel.style.boxShadow   = '0 0 0 3px rgba(239,68,68,0.15)';
+                }
             } else {
                 var col       = mapping[rf];
                 var emptyRows = [];
@@ -679,130 +788,152 @@
                     if (v === '' || v === 'null') emptyRows.push(i + 1);
                 });
                 if (emptyRows.length > 0) {
-                    var labelE = (document.querySelector('label[for="map_' + rf + '"]') || {}).textContent;
-                    labelE = labelE ? labelE.replace('*', '').trim() : rf;
-                    errors.push('Kolom <strong>"' + labelE + '"</strong> wajib diisi — baris kosong: <strong>' + emptyRows.join(', ') + '</strong>');
+                    var rowsDisplay = emptyRows.length > 10
+                        ? emptyRows.slice(0, 10).join(', ') + '... (+' + (emptyRows.length - 10) + ' lainnya)'
+                        : emptyRows.join(', ');
+                    errors.push(
+                        'Kolom <strong>"' + colLabel(rf) + '"</strong> wajib diisi, namun <strong>'
+                        + emptyRows.length + ' baris kosong</strong>.'
+                        + '<br><span style="color:#9ca3af; font-size:11px; margin-top:2px; display:block;">Baris: ' + rowsDisplay + '</span>'
+                    );
+                    if (!errorRowsByCol.has(col)) errorRowsByCol.set(col, emptyRows);
                 }
-                if (sel) { sel.style.borderColor = ''; sel.style.boxShadow = ''; }
+                if (sel) {
+                    sel.style.borderColor = '';
+                    sel.style.boxShadow   = '';
+                }
             }
         });
 
-        /* Duplikat pemetaan */
+        /* 2. Cek duplikat pemetaan kolom Excel */
         var usedCols = {};
         selects.forEach(function (sel) {
             if (!sel.value) return;
             if (usedCols[sel.value]) {
-                errors.push('Kolom Excel <strong>"' + (sel.options[sel.selectedIndex] || {}).text + '"</strong> dipetakan ke lebih dari satu field.');
-            } else { usedCols[sel.value] = sel; }
+                var optText = (sel.options[sel.selectedIndex] || {}).text || sel.value;
+                errors.push('Kolom Excel <strong>"' + optText + '"</strong> dipetakan ke lebih dari satu field sistem. Setiap kolom Excel hanya boleh dipetakan ke satu field.');
+            } else {
+                usedCols[sel.value] = sel;
+            }
         });
 
         var fkBadMap  = new Map();
         var dupBadMap = new Map();
+        var checks    = [];
 
-        function findRowsWithVal(colIdx, badVals, exact) {
-            var result = [];
-            PREVIEW_ROWS.forEach(function (row, i) {
-                var v     = String(row[colIdx] == null ? '' : row[colIdx]).trim();
-                var match = exact ? badVals.has(v) : badVals.has(v.toLowerCase());
-                if (v && match) result.push(i + 1);
-            });
-            return result;
-        }
-
-        function colLabel(fieldKey) {
-            var el = document.querySelector('label[for="map_' + fieldKey + '"]');
-            return el ? el.textContent.replace('*', '').trim() : fieldKey;
-        }
-
-        /* Cek kategori & NIK secara paralel */
-        var checks = [];
-
-        // Validasi Kategori
+        /* 3. Validasi Kategori — AJAX ke DB */
         if (mapping['kategori_mustahik'] !== undefined) {
             var colK = mapping['kategori_mustahik'];
-            var valsK = uniqueValsInCol(colK);
-            if (valsK.length) {
-                console.log('Mengecek kategori:', valsK);
-                checks.push(
-                    postJson(AJAX.kategori, { values: valsK }).then(function (res) {
-                        console.log('Response kategori:', res);
-                        if (res.not_found && res.not_found.length > 0) {
-                            notFoundCount = res.not_found.length;
-                            var badSet = new Set(res.not_found.map(function (v) { return v.toLowerCase(); }));
-                            fkBadMap.set(colK, badSet);
-                            var details = res.not_found.map(function (badVal) {
-                                var rows = findRowsWithVal(colK, new Set([badVal.toLowerCase()]), false);
-                                return '<li style="padding:3px 0;">'
-                                    + '<code style="font-size:11px; background:#f3f4f6; padding:1px 5px; border-radius:4px;">' + badVal + '</code>'
-                                    + ' <span style="color:#9ca3af;">— baris: ' + rows.join(', ') + '</span>'
-                                    + '</li>';
-                            });
-                            errors.push(
-                                'Kolom <strong>"' + colLabel('kategori_mustahik') + '"</strong> — '
-                                + res.not_found.length + ' kategori tidak ditemukan di database. Perbaiki data Excel terlebih dahulu:'
-                                + '<ul style="margin:6px 0 0 12px; padding:0; list-style:none;">' + details.join('') + '</ul>'
-                            );
-                        }
-                    }).catch(function (error) {
-                        console.error('Error cek kategori:', error);
-                        warnings.push('Tidak dapat memverifikasi kategori ke database. Periksa koneksi internet Anda.');
-                    })
-                );
-            }
-        }
 
-        // Validasi NIK
-        if (mapping['nik'] !== undefined) {
-            var colN = mapping['nik'];
-            var valsN = uniqueValsInCol(colN).filter(function (v) {
-                // Filter hanya yang berupa angka (NIK harus 16 digit)
-                var cleaned = v.replace(/\D/g, '');
-                return cleaned.length >= 10; // Minimal 10 digit
+            // FIX: filter bersih sebelum kirim ke server
+            var valsKClean = uniqueValsInCol(colK).filter(function (v) {
+                return typeof v === 'string' && v.trim() !== '' && v !== 'null';
             });
-            if (valsN.length) {
-                console.log('Mengecek NIK:', valsN);
+
+            if (valsKClean.length > 0) {
                 checks.push(
-                    postJson(AJAX.nik, { values: valsN }).then(function (res) {
-                        console.log('Response NIK:', res);
-                        if (res.duplicates && res.duplicates.length > 0) {
-                            duplikatCount = res.duplicates.length;
-                            var dupSet = new Set(res.duplicates);
-                            dupBadMap.set(colN, dupSet);
-                            var details = res.duplicates.map(function (nik) {
-                                var rows = findRowsWithVal(colN, new Set([nik]), true);
-                                return '<li style="padding:3px 0;">'
-                                    + '<code style="font-size:11px; background:#f3f4f6; padding:1px 5px; border-radius:4px;">' + nik + '</code>'
-                                    + ' <span style="color:#9ca3af;">— baris: ' + rows.join(', ') + '</span>'
-                                    + '</li>';
-                            });
-                            errors.push(
-                                'Kolom <strong>"NIK"</strong> — '
-                                + res.duplicates.length + ' NIK sudah terdaftar di database. Hapus atau perbaiki baris berikut sebelum import:'
-                                + '<ul style="margin:6px 0 0 12px; padding:0; list-style:none;">' + details.join('') + '</ul>'
-                            );
-                        }
-                    }).catch(function (error) {
-                        console.error('Error cek NIK:', error);
-                        warnings.push('Tidak dapat memverifikasi NIK ke database. Periksa koneksi internet Anda.');
-                    })
+                    postJson(AJAX.kategori, { values: valsKClean })
+                        .then(function (res) {
+                            if (res.not_found && res.not_found.length > 0) {
+                                var badSet = new Set(res.not_found.map(function (v) { return v.toLowerCase(); }));
+                                fkBadMap.set(colK, badSet);
+
+                                var notFoundItems = res.not_found.map(function (badVal) {
+                                    var rows = findRowsWithVal(colK, new Set([badVal.toLowerCase()]), false);
+                                    var rowsDisplay = rows.length > 10
+                                        ? rows.slice(0, 10).join(', ') + ' ... (+' + (rows.length - 10) + ' lainnya)'
+                                        : rows.join(', ');
+                                    return '<div style="display:flex; align-items:baseline; gap:8px; padding:5px 0; border-bottom:1px solid #f3f4f6;">'
+                                        + '<span style="font-size:12px; color:#111827; font-weight:500; flex-shrink:0;">"' + badVal + '"</span>'
+                                        + '<span style="font-size:11px; color:#9ca3af;">— baris: ' + rowsDisplay + '</span>'
+                                        + '</div>';
+                                }).join('');
+
+                                var validList = (res.all_kategori || []).map(function (k) {
+                                    return '<span style="display:inline-block; font-size:11px; color:#374151;'
+                                        + ' background:#f3f4f6; border-radius:5px; padding:2px 8px; margin:2px 2px;">'
+                                        + k + '</span>';
+                                }).join('');
+
+                                errors.push(
+                                    'Kolom <strong>"' + colLabel('kategori_mustahik') + '"</strong> — '
+                                    + '<strong>' + res.not_found.length + ' nilai tidak ditemukan</strong> di database:<br>'
+                                    + '<div style="margin-top:8px;">' + notFoundItems + '</div>'
+                                    + '<div style="margin-top:10px; padding-top:10px; border-top:1px solid #f3f4f6;">'
+                                    + '<p style="font-size:11px; font-weight:600; color:#6b7280; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">Kategori yang tersedia di sistem:</p>'
+                                    + '<div style="line-height:2;">'
+                                    + (validList || '<span style="font-size:11px; color:#9ca3af;">Tidak ada kategori terdaftar</span>')
+                                    + '</div></div>'
+                                );
+                                if (!errorRowsByCol.has(colK)) errorRowsByCol.set(colK, []);
+                            }
+                        })
+                        .catch(function () {
+                            warnings.push('Tidak dapat memverifikasi kategori ke database. Periksa koneksi internet Anda.');
+                        })
                 );
             }
         }
 
-        // Tunggu semua validasi selesai
-        Promise.all(checks).then(function () {
-            var html = buildBannerHTML(errors, warnings);
+        /* 4. Validasi NIK — AJAX ke DB */
+        if (mapping['nik'] !== undefined) {
+            var colN  = mapping['nik'];
+            var valsN = uniqueValsInCol(colN).filter(function (v) {
+                return v.replace(/\D/g, '').length >= 10;
+            });
 
-            /* Banner di card */
+            if (valsN.length > 0) {
+                checks.push(
+                    postJson(AJAX.nik, { values: valsN })
+                        .then(function (res) {
+                            if (res.duplicates && res.duplicates.length > 0) {
+                                var dupSet = new Set(res.duplicates);
+                                dupBadMap.set(colN, dupSet);
+
+                                var details = res.duplicates.map(function (nik) {
+                                    var rows = findRowsWithVal(colN, new Set([nik]), true);
+                                    var rowsDisplay = rows.length > 8
+                                        ? rows.slice(0, 8).join(', ') + '... (+' + (rows.length - 8) + ')'
+                                        : rows.join(', ');
+                                    return '<div style="display:flex; align-items:baseline; gap:6px; margin:3px 0;">'
+                                        + '<code style="font-size:11px; background:#f3e8ff; color:#7c3aed;'
+                                        + ' padding:1px 7px; border-radius:5px; font-weight:600; flex-shrink:0;">'
+                                        + nik + '</code>'
+                                        + '<span style="color:#94a3b8; font-size:11px;">baris: ' + rowsDisplay + '</span>'
+                                        + '</div>';
+                                }).join('');
+
+                                errors.push(
+                                    'Kolom <strong>"NIK"</strong> — <strong>' + res.duplicates.length
+                                    + ' NIK sudah terdaftar</strong> di database.'
+                                    + ' Hapus atau perbaiki baris berikut sebelum import:<br>'
+                                    + '<div style="margin-top:6px; padding:8px 10px; background:#fdf4ff; border-radius:8px; border:1px solid #e9d5ff;">'
+                                    + details + '</div>'
+                                );
+                                if (!errorRowsByCol.has(colN)) errorRowsByCol.set(colN, []);
+                            }
+                        })
+                        .catch(function () {
+                            warnings.push('Tidak dapat memverifikasi NIK ke database. Periksa koneksi internet Anda.');
+                        })
+                );
+            }
+        }
+
+        /* 5. Setelah semua AJAX selesai, render hasil */
+        Promise.all(checks).then(function () {
+            var validationHTML = buildValidationHTML(errors, warnings);
+
+            // Banner di card utama
             if (errors.length > 0 || warnings.length > 0) {
-                bannerInner.innerHTML = html;
+                bannerInner.innerHTML = buildBannerSummary(errors, warnings);
                 banner.classList.remove('hidden');
             } else {
                 banner.classList.add('hidden');
             }
 
-            /* Banner di modal */
-            modalValInner.innerHTML       = html;
+            // Panel di dalam modal
+            modalValInner.innerHTML       = validationHTML;
             modalValidation.style.display = (errors.length > 0 || warnings.length > 0) ? 'block' : 'none';
 
             var requiredCols = new Set(
@@ -810,10 +941,11 @@
                     .filter(function (rf) { return mapping[rf] !== undefined; })
                     .map(function (rf) { return mapping[rf]; })
             );
-            highlightPreview(requiredCols, fkBadMap, dupBadMap);
-            updateTableHeaders(mapping);
 
-            /* Import hanya bisa jika tidak ada error sama sekali */
+            highlightPreview(requiredCols, fkBadMap, dupBadMap, errorRowsByCol);
+            updateTableHeaders(mapping);
+            updateSubtitle(errors, warnings, PREVIEW_ROWS.length);
+
             btnImport.disabled   = errors.length > 0;
             btnCek.disabled      = false;
             spinner.classList.add('hidden');
@@ -837,6 +969,7 @@
 
     /* ── Init ───────────────────────────────────────────────────── */
     updateTableHeaders(getMapping());
+
 })();
 </script>
 @endpush

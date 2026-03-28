@@ -671,123 +671,108 @@
     {{-- ════════════════════════════════════════════════════════════════
          MODAL — IMPORT DATA DARI EXCEL
     ════════════════════════════════════════════════════════════════ --}}
-    <div id="modal-import"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-md">
-
-            {{-- Header --}}
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 11l3 3m0 0l3-3m-3 3V4" />
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-semibold text-gray-900">Import Data Mustahik</h3>
-                </div>
-                <button type="button" onclick="closeImportModal()"
-                    class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+<div id="modal-import"
+    class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-md">
+ 
+        {{-- Header — TANPA tombol X --}}
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 11l3 3m0 0l3-3m-3 3V4" />
                     </svg>
-                </button>
-            </div>
-
-            {{-- Body --}}
-            <form method="POST" action="{{ route('mustahik.import.upload') }}" enctype="multipart/form-data"
-                id="form-upload-import">
-                @csrf
-                <div class="px-6 py-5 space-y-4">
-
-                    {{-- Panduan --}}
-                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3.5 text-xs text-blue-700 space-y-1">
-                        <p class="font-semibold text-blue-800">Panduan Import:</p>
-                        <p>• Download template terlebih dahulu, isi data, lalu upload.</p>
-                        <p>• Format file: .xlsx atau .xls (maks. 500 MB).</p>
-                        <p>• Setelah upload, Anda akan diarahkan ke halaman pemetaan kolom.</p>
-                    </div>
-
-                    {{-- Drop Zone --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            File Excel <span class="text-red-500">*</span>
-                        </label>
-                        <div id="import-drop-zone"
-                            class="relative flex flex-col items-center justify-center w-full h-36
-                                   border-2 border-dashed border-gray-300 rounded-xl
-                                   hover:border-green-400 hover:bg-green-50/50
-                                   transition-all cursor-pointer bg-gray-50"
-                            onclick="document.getElementById('file-input-import').click()">
-                            <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                           a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <p class="text-sm text-gray-500 text-center px-4">Klik atau seret file Excel ke sini</p>
-                            <p class="text-xs text-gray-400 mt-1">.xlsx / .xls — maks. 500 MB</p>
-                            <input type="file" name="file_import" id="file-input-import" accept=".xlsx,.xls"
-                                class="hidden" required onchange="onImportFileSelected(this)">
-                        </div>
-
-                        {{-- File preview --}}
-                        <div id="import-file-preview"
-                            class="hidden mt-2 flex items-center gap-2 text-sm text-green-700 font-medium
-                                   bg-green-50 border border-green-100 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span id="import-file-name" class="truncate"></span>
-                            <button type="button" onclick="clearImportFile()"
-                                class="ml-auto text-gray-400 hover:text-red-500 transition-colors shrink-0">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Error validasi upload --}}
-                    @error('file_import')
-                        <p class="text-xs text-red-600">{{ $message }}</p>
-                    @enderror
                 </div>
-
-                {{-- Footer --}}
-                <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between gap-3">
-                    <a href="{{ route('mustahik.import.template') }}"
-                        class="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                <h3 class="text-base font-semibold text-gray-900">Import Data Mustahik</h3>
+            </div>
+        </div>
+ 
+        {{-- Body --}}
+        <form method="POST" action="{{ route('mustahik.import.upload') }}" enctype="multipart/form-data"
+            id="form-upload-import">
+            @csrf
+            <div class="px-6 py-5 space-y-4">
+ 
+                {{-- Panduan --}}
+                <div class="bg-blue-50 border border-blue-100 rounded-xl p-3.5 text-xs text-blue-700 space-y-1">
+                    <p class="font-semibold text-blue-800">Panduan Import:</p>
+                    <p>• Download template terlebih dahulu dari tombol <strong>Template</strong> di halaman ini.</p>
+                    <p>• Isi data sesuai format, lalu upload file di sini.</p>
+                    <p>• Format file: .xlsx atau .xls (maks. 500 MB).</p>
+                    <p>• Setelah upload, Anda akan diarahkan ke halaman pemetaan kolom.</p>
+                </div>
+ 
+                {{-- Drop Zone --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        File Excel <span class="text-red-500">*</span>
+                    </label>
+                    <div id="import-drop-zone"
+                        class="relative flex flex-col items-center justify-center w-full h-36
+                               border-2 border-dashed border-gray-300 rounded-xl
+                               hover:border-green-400 hover:bg-green-50/50
+                               transition-all cursor-pointer bg-gray-50"
+                        onclick="document.getElementById('file-input-import').click()">
+                        <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
                                        a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        Download Template
-                    </a>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="closeImportModal()"
-                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300
-                                   rounded-xl hover:bg-gray-50 transition-colors">
-                            Batal
-                        </button>
-                        <button type="submit" id="btn-upload-submit"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white
-                                   bg-green-600 hover:bg-green-700 rounded-xl shadow-sm transition-all
-                                   disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled>
+                        <p class="text-sm text-gray-500 text-center px-4">Klik atau seret file Excel ke sini</p>
+                        <p class="text-xs text-gray-400 mt-1">.xlsx / .xls — maks. 500 MB</p>
+                        <input type="file" name="file_import" id="file-input-import" accept=".xlsx,.xls"
+                            class="hidden" required onchange="onImportFileSelected(this)">
+                    </div>
+ 
+                    {{-- File preview --}}
+                    <div id="import-file-preview"
+                        class="hidden mt-2 flex items-center gap-2 text-sm text-green-700 font-medium
+                               bg-green-50 border border-green-100 rounded-lg px-3 py-2">
+                        <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span id="import-file-name" class="truncate"></span>
+                        <button type="button" onclick="clearImportFile()"
+                            class="ml-auto text-gray-400 hover:text-red-500 transition-colors shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    d="M6 18L18 6M6 6l12 12" />
                             </svg>
-                            Lanjut
                         </button>
                     </div>
                 </div>
-            </form>
-        </div>
+ 
+                {{-- Error validasi upload --}}
+                @error('file_import')
+                    <p class="text-xs text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+ 
+            {{-- Footer — TANPA link Download Template --}}
+            <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3">
+                <button type="button" onclick="closeImportModal()"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300
+                           rounded-xl hover:bg-gray-50 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" id="btn-upload-submit"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white
+                           bg-green-600 hover:bg-green-700 rounded-xl shadow-sm transition-all
+                           disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    Lanjut
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
 @endsection
 
