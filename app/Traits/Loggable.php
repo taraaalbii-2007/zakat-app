@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes; // Tambahkan ini
 
 trait Loggable
 {
+     public static $disableLogging = false;
     protected static function bootLoggable()
     {
         // Log Create

@@ -44,8 +44,8 @@ class PenggunaController extends Controller
         if ($request->filled('status')) {
             $query->where('is_active', $request->get('status') === 'aktif');
         }
-        if ($dId = $request->get('lembaga_id')) {
-            $query->where('lembaga_id', $dId);
+        if ($lembagaId = $request->get('lembaga_id')) {
+            $query->where('lembaga_id', $lembagaId);
         }
 
         $pengguna   = $query->paginate(10);
@@ -92,29 +92,29 @@ class PenggunaController extends Controller
                 'admin_telepon'    => ['required', 'string', 'max:20'],
                 'admin_email'      => ['required', 'email', 'max:255'],
                 'admin_foto'       => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'nama_d'      => ['required', 'string', 'max:255'],
+                'nama_lembaga'     => ['required', 'string', 'max:255'],
                 'alamat'           => ['required', 'string'],
                 'provinsi_kode'    => ['required', 'string', 'exists:indonesia_provinces,code'],
                 'kota_kode'        => ['required', 'string', 'exists:indonesia_cities,code'],
                 'kecamatan_kode'   => ['required', 'string', 'exists:indonesia_districts,code'],
                 'kelurahan_kode'   => ['required', 'string', 'exists:indonesia_villages,code'],
                 'kode_pos'         => ['nullable', 'string', 'max:5'],
-                'telepon_d'   => ['required', 'string', 'max:20'],
-                'email_d'     => ['required', 'email', 'max:255'],
-                'deskripsi_d' => ['nullable', 'string'],
+                'telepon_lembaga'  => ['required', 'string', 'max:20'],
+                'email_lembaga'    => ['required', 'email', 'max:255'],
+                'deskripsi_lembaga' => ['nullable', 'string'],
                 'sejarah'          => ['nullable', 'string'],
                 'tahun_berdiri'    => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
                 'pendiri'          => ['nullable', 'string', 'max:255'],
                 'kapasitas_jamaah' => ['nullable', 'integer', 'min:1'],
-                'foto_d'      => ['nullable', 'array'],
-                'foto_d.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'foto_lembaga'     => ['nullable', 'array'],
+                'foto_lembaga.*'   => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
             ]);
         }
 
         // ── Validasi Tambahan: Amil → Pilih Lembaga yang Ada ───────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'lembaga_id'                  => ['required', 'exists:d,id'],
+                'lembaga_id'                  => ['required', 'exists:lembaga,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -137,7 +137,7 @@ class PenggunaController extends Controller
                 'muzakki_nik'       => ['nullable', 'string', 'size:16', 'unique:muzakki,nik'],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_lembaga_id' => ['nullable', 'exists:d,id'],
+                'muzakki_lembaga_id' => ['nullable', 'exists:lembaga,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
             ]);
         }
@@ -147,14 +147,14 @@ class PenggunaController extends Controller
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
-            'nama_d.required'              => 'Nama d wajib diisi.',
-            'alamat.required'                   => 'Alamat d wajib diisi.',
+            'nama_lembaga.required'             => 'Nama lembaga wajib diisi.',
+            'alamat.required'                   => 'Alamat lembaga wajib diisi.',
             'provinsi_kode.required'            => 'Provinsi wajib dipilih.',
             'kota_kode.required'                => 'Kota/Kabupaten wajib dipilih.',
             'kecamatan_kode.required'           => 'Kecamatan wajib dipilih.',
             'kelurahan_kode.required'           => 'Kelurahan wajib dipilih.',
-            'telepon_d.required'           => 'Telepon d wajib diisi.',
-            'email_d.required'             => 'Email d wajib diisi.',
+            'telepon_lembaga.required'          => 'Telepon lembaga wajib diisi.',
+            'email_lembaga.required'            => 'Email lembaga wajib diisi.',
             'amil_nama_lengkap.required'        => 'Nama lengkap amil wajib diisi.',
             'amil_jenis_kelamin.required'       => 'Jenis kelamin amil wajib dipilih.',
             'amil_tempat_lahir.required'        => 'Tempat lahir amil wajib diisi.',
@@ -173,11 +173,11 @@ class PenggunaController extends Controller
         DB::beginTransaction();
 
         try {
-            $d   = null;
+            $lembaga = null;
             $namaUser = $request->username ?? $request->email;
 
             // ══════════════════════════════════════════════════════
-            // ADMIN MASJID: Buat Lembaga Baru
+            // ADMIN LEMBAGA: Buat Lembaga Baru
             // ══════════════════════════════════════════════════════
             if ($request->peran === 'admin_lembaga') {
                 $namaUser = $request->admin_nama;
@@ -188,15 +188,15 @@ class PenggunaController extends Controller
                 }
 
                 $fotoLembagaArray = [];
-                if ($request->hasFile('foto_d')) {
-                    $files = $request->file('foto_d');
+                if ($request->hasFile('foto_lembaga')) {
+                    $files = $request->file('foto_lembaga');
                     if (count($files) > Lembaga::MAX_FOTO) {
                         DB::rollBack();
                         return back()->withInput()
-                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto d yang diperbolehkan.');
+                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto lembaga yang diperbolehkan.');
                     }
                     foreach ($files as $foto) {
-                        $fotoLembagaArray[] = $foto->store('d-fotos', 'public');
+                        $fotoLembagaArray[] = $foto->store('lembaga-fotos', 'public');
                     }
                 }
 
@@ -215,24 +215,24 @@ class PenggunaController extends Controller
                     $kodePos = $kelurahan->meta['postal_code'] ?? null;
                 }
 
-                if (Lembaga::where('nama', $request->nama_d)->where('kelurahan_kode', $request->kelurahan_kode)->exists()) {
+                if (Lembaga::where('nama', $request->nama_lembaga)->where('kelurahan_kode', $request->kelurahan_kode)->exists()) {
                     DB::rollBack();
                     return back()->withInput()
-                        ->with('error', 'Lembaga dengan nama "' . $request->nama_d . '" sudah terdaftar di kelurahan ' . $kelurahan->name . '.');
+                        ->with('error', 'Lembaga dengan nama "' . $request->nama_lembaga . '" sudah terdaftar di kelurahan ' . $kelurahan->name . '.');
                 }
 
-                $d = Lembaga::create([
+                $lembaga = Lembaga::create([
                     'uuid'             => (string) Str::uuid(),
-                    'kode_lembaga'      => $this->generateKodeLembaga(),
+                    'kode_lembaga'     => $this->generateKodeLembaga(),
                     'admin_nama'       => $request->admin_nama,
                     'admin_telepon'    => $request->admin_telepon,
                     'admin_email'      => $request->admin_email,
                     'admin_foto'       => $adminFotoPath,
-                    'nama'             => $request->nama_d,
+                    'nama'             => $request->nama_lembaga,
                     'alamat'           => $request->alamat,
-                    'telepon'          => $request->telepon_d,
-                    'email'            => $request->email_d,
-                    'deskripsi'        => $request->deskripsi_d,
+                    'telepon'          => $request->telepon_lembaga,
+                    'email'            => $request->email_lembaga,
+                    'deskripsi'        => $request->deskripsi_lembaga,
                     'provinsi_kode'    => $request->provinsi_kode,
                     'provinsi_nama'    => $provinsi->name,
                     'kota_kode'        => $request->kota_kode,
@@ -256,10 +256,10 @@ class PenggunaController extends Controller
             // ══════════════════════════════════════════════════════
             $pengguna = Pengguna::create([
                 'peran'             => $request->peran,
-                'lembaga_id'         => match ($request->peran) {
-                    'admin_lembaga' => $d->id,
-                    'amil'         => $request->lembaga_id,
-                    default        => null,
+                'lembaga_id'        => match ($request->peran) {
+                    'admin_lembaga' => $lembaga?->id,
+                    'amil'          => $request->lembaga_id,
+                    default         => null,
                 },
                 'username'          => $request->username ?: null,
                 'email'             => $request->email,
@@ -272,7 +272,7 @@ class PenggunaController extends Controller
             // AMIL: Buat record Amil
             // ══════════════════════════════════════════════════════
             if ($request->peran === 'amil') {
-                $d   = Lembaga::findOrFail($request->lembaga_id);
+                $lembaga = Lembaga::findOrFail($request->lembaga_id);
                 $namaUser = $request->amil_nama_lengkap;
 
                 $fotoPath = null;
@@ -282,7 +282,7 @@ class PenggunaController extends Controller
 
                 Amil::create([
                     'pengguna_id'           => $pengguna->id,
-                    'lembaga_id'             => $request->lembaga_id,
+                    'lembaga_id'            => $request->lembaga_id,
                     'kode_amil'             => $this->generateKodeAmil($request->lembaga_id),
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
@@ -313,7 +313,7 @@ class PenggunaController extends Controller
 
                 Muzakki::create([
                     'pengguna_id' => $pengguna->id,
-                    'lembaga_id'   => $request->muzakki_lembaga_id ?: null,
+                    'lembaga_id'  => $request->muzakki_lembaga_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -346,7 +346,7 @@ class PenggunaController extends Controller
                         username: $pengguna->username ?? $pengguna->email,
                         password: $plainPassword,
                         peran: $pengguna->peran,
-                        namaLembaga: $d?->nama,
+                        namaLembaga: $lembaga?->nama,
                     ));
 
                 $emailSuccess = true;
@@ -435,36 +435,36 @@ class PenggunaController extends Controller
         // ── Validasi Tambahan: Admin Lembaga ───────────────────────────────────
         if ($request->peran === 'admin_lembaga') {
             $rules = array_merge($rules, [
-                'lembaga_id'        => ['required', 'exists:d,id'],
-                'admin_nama'       => ['required', 'string', 'max:255'],
-                'admin_telepon'    => ['required', 'string', 'max:20'],
-                'admin_email'      => ['required', 'email', 'max:255'],
-                'admin_foto'       => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'nama_d'      => ['required', 'string', 'max:255'],
-                'alamat'           => ['required', 'string'],
-                'provinsi_kode'    => ['required', 'string', 'exists:indonesia_provinces,code'],
-                'kota_kode'        => ['required', 'string', 'exists:indonesia_cities,code'],
-                'kecamatan_kode'   => ['required', 'string', 'exists:indonesia_districts,code'],
-                'kelurahan_kode'   => ['required', 'string', 'exists:indonesia_villages,code'],
-                'kode_pos'         => ['nullable', 'string', 'max:5'],
-                'telepon_d'   => ['required', 'string', 'max:20'],
-                'email_d'     => ['required', 'email', 'max:255'],
-                'deskripsi_d' => ['nullable', 'string'],
-                'sejarah'          => ['nullable', 'string'],
-                'tahun_berdiri'    => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
-                'pendiri'          => ['nullable', 'string', 'max:255'],
-                'kapasitas_jamaah' => ['nullable', 'integer', 'min:1'],
-                'foto_d'      => ['nullable', 'array'],
-                'foto_d.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
-                'hapus_foto_d' => ['nullable', 'array'],
-                'hapus_admin_foto' => ['nullable', 'boolean'],
+                'lembaga_id'        => ['required', 'exists:lembaga,id'],
+                'admin_nama'        => ['required', 'string', 'max:255'],
+                'admin_telepon'     => ['required', 'string', 'max:20'],
+                'admin_email'       => ['required', 'email', 'max:255'],
+                'admin_foto'        => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'nama_lembaga'      => ['required', 'string', 'max:255'],
+                'alamat'            => ['required', 'string'],
+                'provinsi_kode'     => ['required', 'string', 'exists:indonesia_provinces,code'],
+                'kota_kode'         => ['required', 'string', 'exists:indonesia_cities,code'],
+                'kecamatan_kode'    => ['required', 'string', 'exists:indonesia_districts,code'],
+                'kelurahan_kode'    => ['required', 'string', 'exists:indonesia_villages,code'],
+                'kode_pos'          => ['nullable', 'string', 'max:5'],
+                'telepon_lembaga'   => ['required', 'string', 'max:20'],
+                'email_lembaga'     => ['required', 'email', 'max:255'],
+                'deskripsi_lembaga' => ['nullable', 'string'],
+                'sejarah'           => ['nullable', 'string'],
+                'tahun_berdiri'     => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
+                'pendiri'           => ['nullable', 'string', 'max:255'],
+                'kapasitas_jamaah'  => ['nullable', 'integer', 'min:1'],
+                'foto_lembaga'      => ['nullable', 'array'],
+                'foto_lembaga.*'    => ['image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'hapus_foto_lembaga' => ['nullable', 'array'],
+                'hapus_admin_foto'  => ['nullable', 'boolean'],
             ]);
         }
 
         // ── Validasi Tambahan: Amil ───────────────────────────────────────────
         if ($request->peran === 'amil') {
             $rules = array_merge($rules, [
-                'lembaga_id'                  => ['required', 'exists:d,id'],
+                'lembaga_id'                  => ['required', 'exists:lembaga,id'],
                 'amil_nama_lengkap'          => ['required', 'string', 'max:255'],
                 'amil_jenis_kelamin'         => ['required', Rule::in(['L', 'P'])],
                 'amil_tempat_lahir'          => ['required', 'string', 'max:100'],
@@ -494,7 +494,7 @@ class PenggunaController extends Controller
                 ],
                 'muzakki_telepon'   => ['nullable', 'string', 'max:20'],
                 'muzakki_alamat'    => ['nullable', 'string'],
-                'muzakki_lembaga_id' => ['nullable', 'exists:d,id'],
+                'muzakki_lembaga_id' => ['nullable', 'exists:lembaga,id'],
                 'muzakki_foto'      => ['nullable', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
                 'hapus_muzakki_foto' => ['nullable', 'boolean'],
             ]);
@@ -505,14 +505,14 @@ class PenggunaController extends Controller
             'admin_nama.required'               => 'Nama admin wajib diisi.',
             'admin_telepon.required'            => 'Telepon admin wajib diisi.',
             'admin_email.required'              => 'Email admin wajib diisi.',
-            'nama_d.required'              => 'Nama d wajib diisi.',
-            'alamat.required'                   => 'Alamat d wajib diisi.',
+            'nama_lembaga.required'             => 'Nama lembaga wajib diisi.',
+            'alamat.required'                   => 'Alamat lembaga wajib diisi.',
             'provinsi_kode.required'            => 'Provinsi wajib dipilih.',
             'kota_kode.required'                => 'Kota/Kabupaten wajib dipilih.',
             'kecamatan_kode.required'           => 'Kecamatan wajib dipilih.',
             'kelurahan_kode.required'           => 'Kelurahan wajib dipilih.',
-            'telepon_d.required'           => 'Telepon d wajib diisi.',
-            'email_d.required'             => 'Email d wajib diisi.',
+            'telepon_lembaga.required'          => 'Telepon lembaga wajib diisi.',
+            'email_lembaga.required'            => 'Email lembaga wajib diisi.',
             'amil_nama_lengkap.required'        => 'Nama lengkap amil wajib diisi.',
             'amil_jenis_kelamin.required'       => 'Jenis kelamin amil wajib dipilih.',
             'amil_tempat_lahir.required'        => 'Tempat lahir amil wajib diisi.',
@@ -537,8 +537,8 @@ class PenggunaController extends Controller
                 'is_active' => $request->boolean('is_active', true),
                 'lembaga_id' => match ($request->peran) {
                     'admin_lembaga' => $request->lembaga_id,
-                    'amil'         => $request->lembaga_id,
-                    default        => null,
+                    'amil'          => $request->lembaga_id,
+                    default         => null,
                 },
             ];
 
@@ -549,13 +549,13 @@ class PenggunaController extends Controller
             $pengguna->update($penggunaData);
 
             // ══════════════════════════════════════════════════════
-            // ADMIN MASJID: Update data Lembaga
+            // ADMIN LEMBAGA: Update data Lembaga
             // ══════════════════════════════════════════════════════
             if ($request->peran === 'admin_lembaga') {
-                $d = Lembaga::findOrFail($request->lembaga_id);
+                $lembaga = Lembaga::findOrFail($request->lembaga_id);
 
                 // Handle hapus foto admin
-                $adminFotoPath = $d->admin_foto;
+                $adminFotoPath = $lembaga->admin_foto;
                 if ($request->boolean('hapus_admin_foto') && $adminFotoPath) {
                     Storage::disk('public')->delete($adminFotoPath);
                     $adminFotoPath = null;
@@ -567,12 +567,12 @@ class PenggunaController extends Controller
                     $adminFotoPath = $request->file('admin_foto')->store('admin-fotos', 'public');
                 }
 
-                // Handle foto d
-                $currentFotos = (array) ($d->foto ?? []);
+                // Handle foto lembaga
+                $currentFotos = (array) ($lembaga->foto ?? []);
 
                 // Hapus foto yang dicentang untuk dihapus
-                if ($request->filled('hapus_foto_d')) {
-                    $hapusIndeks = $request->input('hapus_foto_d', []);
+                if ($request->filled('hapus_foto_lembaga')) {
+                    $hapusIndeks = $request->input('hapus_foto_lembaga', []);
                     foreach ($hapusIndeks as $idx) {
                         if (isset($currentFotos[$idx])) {
                             Storage::disk('public')->delete($currentFotos[$idx]);
@@ -583,16 +583,16 @@ class PenggunaController extends Controller
                 }
 
                 // Upload foto baru
-                if ($request->hasFile('foto_d')) {
-                    $newFotos = $request->file('foto_d');
+                if ($request->hasFile('foto_lembaga')) {
+                    $newFotos = $request->file('foto_lembaga');
                     $totalFotos = count($currentFotos) + count($newFotos);
                     if ($totalFotos > Lembaga::MAX_FOTO) {
                         DB::rollBack();
                         return back()->withInput()
-                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto d yang diperbolehkan.');
+                            ->with('error', 'Maksimal ' . Lembaga::MAX_FOTO . ' foto lembaga yang diperbolehkan.');
                     }
                     foreach ($newFotos as $foto) {
-                        $currentFotos[] = $foto->store('d-fotos', 'public');
+                        $currentFotos[] = $foto->store('lembaga-fotos', 'public');
                     }
                 }
 
@@ -612,16 +612,16 @@ class PenggunaController extends Controller
                     $kodePos = $kelurahan->meta['postal_code'] ?? null;
                 }
 
-                $d->update([
+                $lembaga->update([
                     'admin_nama'       => $request->admin_nama,
                     'admin_telepon'    => $request->admin_telepon,
                     'admin_email'      => $request->admin_email,
                     'admin_foto'       => $adminFotoPath,
-                    'nama'             => $request->nama_d,
+                    'nama'             => $request->nama_lembaga,
                     'alamat'           => $request->alamat,
-                    'telepon'          => $request->telepon_d,
-                    'email'            => $request->email_d,
-                    'deskripsi'        => $request->deskripsi_d,
+                    'telepon'          => $request->telepon_lembaga,
+                    'email'            => $request->email_lembaga,
+                    'deskripsi'        => $request->deskripsi_lembaga,
                     'provinsi_kode'    => $request->provinsi_kode,
                     'provinsi_nama'    => $provinsi->name,
                     'kota_kode'        => $request->kota_kode,
@@ -660,7 +660,7 @@ class PenggunaController extends Controller
 
                 $amilData = [
                     'pengguna_id'           => $pengguna->id,
-                    'lembaga_id'             => $request->lembaga_id,
+                    'lembaga_id'            => $request->lembaga_id,
                     'nama_lengkap'          => $request->amil_nama_lengkap,
                     'jenis_kelamin'         => $request->amil_jenis_kelamin,
                     'tempat_lahir'          => $request->amil_tempat_lahir,
@@ -704,7 +704,7 @@ class PenggunaController extends Controller
 
                 $muzakkiData = [
                     'pengguna_id' => $pengguna->id,
-                    'lembaga_id'   => $request->muzakki_lembaga_id ?: null,
+                    'lembaga_id'  => $request->muzakki_lembaga_id ?: null,
                     'nama'        => $request->muzakki_nama,
                     'nik'         => $request->muzakki_nik ?: null,
                     'telepon'     => $request->muzakki_telepon ?: null,
@@ -891,10 +891,10 @@ class PenggunaController extends Controller
         });
     }
 
-    private function generateKodeAmil(int $dId): string
+    private function generateKodeAmil(int $lembagaId): string
     {
-        $d = Lembaga::findOrFail($dId);
-        $prefix = 'AMIL-' . $d->kode_lembaga . '-';
+        $lembaga = Lembaga::findOrFail($lembagaId);
+        $prefix = 'AMIL-' . $lembaga->kode_lembaga . '-';
 
         $lastAmil = Amil::where('kode_amil', 'like', $prefix . '%')
             ->orderBy('kode_amil', 'desc')

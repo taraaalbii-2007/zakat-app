@@ -15,7 +15,8 @@ use App\Traits\Loggable;
 class Lembaga extends Model
 {
     use HasFactory;
-    use Loggable;
+    // use Loggable;
+    public static $disableLogging = false;
 
     protected $table = 'lembaga';
 

@@ -11,7 +11,9 @@ use App\Traits\Loggable;
 class Pengguna extends Authenticatable
 {
     use HasFactory, Notifiable;
-    use Loggable;
+    // use Loggable;
+
+     public static $disableLogging = false;
 
     /**
      * The table associated with the model.

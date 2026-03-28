@@ -314,7 +314,7 @@ class AuthController extends Controller
 
         $validator = Validator::make($request->all(), [
             'email'           => 'required|email|unique:pengguna,email',
-'role.required' => 'Pilih peran Anda terlebih dahulu',
+            'role.required' => 'Pilih peran Anda terlebih dahulu',
             'recaptcha_token' => 'nullable|string',
         ], [
             'email.required'  => 'Email wajib diisi',
@@ -452,6 +452,9 @@ class AuthController extends Controller
         ));
     }
 
+    /**
+     * VERIFY OTP
+     */
     public function verifyOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -470,6 +473,7 @@ class AuthController extends Controller
                 ->with('email', $request->email);
         }
 
+        // Verifikasi reCAPTCHA
         if (!$this->verifyRecaptcha($request->recaptcha_token, 'verify_otp')) {
             return redirect()->back()
                 ->with('email', $request->email)
@@ -491,13 +495,13 @@ class AuthController extends Controller
                 ->withErrors(['otp' => 'Kode OTP tidak valid.']);
         }
 
-        // ← BACA ROLE DARI CACHE (dengan fallback ke session, lalu default)
-$role = $otpData['role'] ?? session('otp_role');
-
+        // Ambil role dari cache
+        $role = $otpData['role'] ?? session('otp_role', 'admin_lembaga');
 
         DB::beginTransaction();
 
         try {
+            // Cari pengguna berdasarkan email
             $pengguna = Pengguna::where('email', $request->email)->first();
 
             if (!$pengguna) {
@@ -506,50 +510,52 @@ $role = $otpData['role'] ?? session('otp_role');
                     'uuid'              => (string) Str::uuid(),
                     'email'             => $request->email,
                     'email_verified_at' => now(),
-                    'peran'             => $role,  // ← PAKAI ROLE DARI CACHE
+                    'peran'             => $role,
                     'is_active'         => false,
                 ]);
             } else {
-                // Update jika belum diverifikasi
+                // Update pengguna yang sudah ada
                 $updateData = [];
+
                 if (!$pengguna->email_verified_at) {
                     $updateData['email_verified_at'] = now();
                 }
-                // Update role juga jika belum aktif (belum complete profile)
+
                 if (!$pengguna->is_active) {
                     $updateData['peran'] = $role;
                 }
+
                 if (!empty($updateData)) {
                     $pengguna->update($updateData);
                 }
             }
 
-            // Hapus cache OTP
+            // Hapus semua cache OTP
             Cache::forget($cacheKey);
             Cache::forget('otp_cooldown_' . $request->email);
             session()->forget('otp_role');
+            session()->forget('otp_email');
+            session()->forget('email');
+            session()->forget('otp_session_start');
 
             // Buat token untuk complete profile
             $profileToken = (string) Str::uuid();
-            $cacheData    = [
+
+            $cacheData = [
                 'email'       => $request->email,
                 'pengguna_id' => $pengguna->id,
                 'token'       => $profileToken,
-                'role'        => $role,           // ← SIMPAN ROLE DI SINI JUGA
+                'role'        => $role,
                 'created_at'  => now()->toDateTimeString(),
             ];
 
+            // Simpan ke cache dengan waktu 1 jam
             Cache::put('complete_profile_' . $request->email, $cacheData, 3600);
             Cache::put('token_map_' . $profileToken, $request->email, 3600);
 
             DB::commit();
 
-            $this->logAuth('verify_otp', 'Email berhasil diverifikasi via OTP', [
-                'email' => $request->email,
-                'role'  => $role,
-            ], $pengguna->id);
-
-            // ← REDIRECT SESUAI ROLE
+            // Tentukan route redirect berdasarkan role
             $redirectRoute = $role === 'muzakki'
                 ? 'complete-profile-muzakki'
                 : 'complete-profile';
@@ -558,11 +564,17 @@ $role = $otpData['role'] ?? session('otp_role');
                 ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('OTP Verification Error: ' . $e->getMessage());
+
+            // Log error untuk debugging
+            Log::error('OTP Verification Error: ' . $e->getMessage(), [
+                'email' => $request->email,
+                'role' => $role,
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return redirect()->back()
                 ->with('email', $request->email)
-                ->withErrors(['otp' => 'Terjadi kesalahan. Silakan coba lagi.']);
+                ->withErrors(['otp' => 'Terjadi kesalahan: ' . $e->getMessage()]);
         }
     }
 
@@ -604,7 +616,7 @@ $role = $otpData['role'] ?? session('otp_role');
 
             $cacheKey = 'otp_registration_' . $email;
             $existingData = Cache::get($cacheKey);
-            
+
             Cache::put($cacheKey, [
                 'email' => $email,
                 'otp' => $otp,
@@ -1195,7 +1207,7 @@ $role = $otpData['role'] ?? session('otp_role');
             'kapasitas_jamaah' => 'required|integer|min:1',
 
             // Foto Lembaga
-            'foto_lembaga.*' => 'required|image|mimes:jpeg,jpg,png|max:2048',
+            'foto_lembaga.*' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
 
             // reCAPTCHA
             'recaptcha_token' => 'nullable|string',
@@ -1239,6 +1251,7 @@ $role = $otpData['role'] ?? session('otp_role');
                     'admin-fotos'
                 );
             }
+
             // STEP 3: Upload foto lembaga (multiple)
             $fotoLembagaArray = [];
             if ($request->hasFile('foto_lembaga')) {
@@ -1270,7 +1283,7 @@ $role = $otpData['role'] ?? session('otp_role');
                     ->withInput();
             }
 
-            // STEP 5: Generate kode pos (auto-fill dari wilayah jika kosong)
+            // STEP 5: Generate kode pos
             $kodePos = $request->kode_pos;
             if (!$kodePos && $kelurahan->meta && is_array($kelurahan->meta)) {
                 $kodePos = $kelurahan->meta['postal_code'] ?? null;
@@ -1279,7 +1292,7 @@ $role = $otpData['role'] ?? session('otp_role');
             // STEP 6: Generate kode lembaga otomatis
             $kodeLembaga = $this->generateKodeLembaga();
 
-            // STEP 7: Cek duplikasi nama lembaga di kelurahan yang sama
+            // STEP 7: Cek duplikasi nama lembaga
             $existingLembaga = Lembaga::where('nama', $request->nama_lembaga)
                 ->where('kelurahan_kode', $request->kelurahan_kode)
                 ->first();
@@ -1291,9 +1304,7 @@ $role = $otpData['role'] ?? session('otp_role');
                     ->withInput();
             }
 
-            // =====================================================
-            // STEP 8: CREATE DATA MASJID
-            // =====================================================
+            // STEP 8: CREATE DATA LEMBAGA
             $lembaga = Lembaga::create([
                 'uuid' => (string) Str::uuid(),
                 'kode_lembaga' => $kodeLembaga,
@@ -1334,7 +1345,7 @@ $role = $otpData['role'] ?? session('otp_role');
                 'is_active' => true,
             ]);
 
-
+            // STEP 9: Update pengguna dengan lembaga_id
             $pengguna->update([
                 'lembaga_id' => $lembaga->id,
             ]);
@@ -1342,7 +1353,9 @@ $role = $otpData['role'] ?? session('otp_role');
             // STEP 10: Cleanup cache registrasi
             $this->cleanupRegistrationCache($pengguna->email, $token);
 
-            // STEP 11: Kirim email sukses (optional, bisa gagal tanpa rollback)
+            DB::commit();
+
+            // STEP 11: Kirim email sukses (opsional, di luar transaction)
             try {
                 $this->loadMailConfig();
 
@@ -1359,30 +1372,17 @@ $role = $otpData['role'] ?? session('otp_role');
                         ->subject('Registrasi Berhasil - Niat Zakat');
                 });
             } catch (\Exception $mailEx) {
-                // Silent fail untuk email - tidak perlu rollback
                 Log::warning('Email registrasi gagal dikirim: ' . $mailEx->getMessage());
             }
-
-            // =====================================================
-            // COMMIT TRANSAKSI - SEMUA DATA TERSIMPAN
-            // =====================================================
-            DB::commit();
-            $this->logRegistrasi('Registrasi akun dan data lembaga berhasil', [
-                'username'    => $penggunaData['username'],
-                'nama_lembaga' => $request->nama_lembaga,
-                'kode_lembaga' => $kodeLembaga,
-                'via_google'  => $isGoogleUser,
-            ], $pengguna->id);
 
             return redirect()->route('login')
                 ->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
         } catch (\Exception $e) {
-            // =====================================================
-            // ROLLBACK JIKA ADA ERROR
-            // =====================================================
             DB::rollBack();
 
-            Log::error('Complete Profile Error: ' . $e->getMessage());
+            Log::error('Complete Profile Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
@@ -1498,7 +1498,7 @@ $role = $otpData['role'] ?? session('otp_role');
             'password.required'       => 'Password wajib diisi',
             'password.min'            => 'Password minimal 8 karakter',
             'password.confirmed'      => 'Konfirmasi password tidak cocok',
-            'alamat.required'         => 'Alamat tempat tinggal wajib diisi', 
+            'alamat.required'         => 'Alamat tempat tinggal wajib diisi',
             'alamat.max'              => 'Alamat maksimal 500 karakter',
             'admin_telepon.regex' => 'Nomor telepon admin hanya boleh berisi angka',
             'telepon.regex'       => 'Nomor telepon lembaga hanya boleh berisi angka',
