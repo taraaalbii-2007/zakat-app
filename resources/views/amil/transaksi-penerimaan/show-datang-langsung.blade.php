@@ -23,7 +23,7 @@
             <p class="text-sm text-yellow-800 mb-4">
                 Muzakki telah melakukan pembayaran via
                 <strong>{{ $transaksi->metode_pembayaran === 'qris' ? 'QRIS' : 'Transfer Bank' }}</strong>.
-                Silakan periksa rekening masjid dan konfirmasi penerimaan dana.
+                Silakan periksa rekening lembaga dan konfirmasi penerimaan dana.
             </p>
 
             @if($transaksi->bukti_transfer)

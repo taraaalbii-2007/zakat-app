@@ -62,7 +62,7 @@
         <div>
             <p class="text-sm font-semibold text-green-800">Pembayaran Telah Dikonfirmasi</p>
             <p class="text-xs text-green-700 mt-1">
-                Terima kasih atas pembayaran zakat Anda. Dana telah diterima dan dicatat oleh masjid.
+                Terima kasih atas pembayaran zakat Anda. Dana telah diterima dan dicatat oleh lembaga.
             </p>
             @if($transaksi->konfirmasi_at)
             <p class="text-xs text-green-600 mt-1">
@@ -85,7 +85,7 @@
             <p class="text-xs text-red-700 mt-1">Alasan: {{ $transaksi->catatan_konfirmasi }}</p>
             @endif
             <p class="text-xs text-red-600 mt-2">
-                Silakan hubungi amil atau pengurus masjid untuk informasi lebih lanjut.
+                Silakan hubungi amil atau pengurus lembaga untuk informasi lebih lanjut.
             </p>
         </div>
     </div>

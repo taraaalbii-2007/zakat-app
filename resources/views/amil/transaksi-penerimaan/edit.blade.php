@@ -11,6 +11,8 @@
     8. Tipe fidyah langsung dari dropdown tipe zakat (tanpa radio button)
     9. Semua panel border netral (putih/abu-abu), tidak berwarna
     10. Gambar QRIS diperbesar
+    11. [BARU] Nama jiwa baris pertama auto-isi dari nama muzakki & readonly
+    12. [BARU] Panel Mal: tambah input Jumlah Jiwa
 --}}
 
 @extends('layouts.app')
@@ -68,7 +70,7 @@
                 <input type="hidden" name="waktu_transaksi" value="{{ $transaksi->waktu_transaksi->format('H:i:s') }}">
                 <input type="hidden" name="metode_penerimaan" id="hdnMode" value="{{ $defaultMode }}">
                 <input type="hidden" name="is_pembayaran_beras" id="hdnBeras" value="0">
-                <input type="hidden" name="muzakki_nama" value="{{ $transaksi->muzakki_nama }}">
+                <input type="hidden" name="muzakki_nama" id="hdnMuzakkiNama" value="{{ $transaksi->muzakki_nama }}">
                 <input type="hidden" name="muzakki_telepon" value="{{ $transaksi->muzakki_telepon }}">
                 <input type="hidden" name="muzakki_email" value="{{ $transaksi->muzakki_email }}">
                 <input type="hidden" name="muzakki_alamat" value="{{ $transaksi->muzakki_alamat }}">
@@ -335,6 +337,39 @@
                                 <p class="text-xs font-medium text-gray-700 mb-1">Informasi Nisab</p>
                                 <div id="nisabIsi" class="text-xs text-gray-600 space-y-0.5"></div>
                             </div>
+
+                            {{-- [BARU] Jumlah Jiwa untuk Mal --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Jiwa yang Dizakati</label>
+                                <div class="flex items-center gap-3">
+                                    <input type="number" name="jumlah_jiwa" id="malJiwa"
+                                        value="{{ old('jumlah_jiwa', $transaksi->jumlah_jiwa ?? 1) }}"
+                                        min="1" step="1"
+                                        class="w-full sm:w-36 px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
+                                    <span class="text-sm text-gray-500">jiwa</span>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">Berapa jiwa yang akan dizakati dari harta ini. Nama jiwa akan tampil di bawah.</p>
+                            </div>
+
+                            {{-- Daftar Nama per Jiwa - Mal --}}
+                            <div id="wrapNamaMalJiwa" class="hidden">
+                                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                                    <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-700">Daftar Nama per Jiwa</span>
+                                                <span class="text-xs text-gray-400 ml-2">Opsional, tapi disarankan</span>
+                                            </div>
+                                            <span class="text-xs text-gray-400" id="counterNamaMal">0 diisi</span>
+                                        </div>
+                                    </div>
+                                    <div id="listNamaMal" class="p-4 space-y-2 bg-white"></div>
+                                    <div class="px-4 py-2 bg-gray-50 border-t border-gray-200">
+                                        <p class="text-xs text-gray-400">Jumlah baris nama akan otomatis menyesuaikan dengan jumlah jiwa di atas.</p>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Total Nilai Harta (Rp) <span class="text-red-500">*</span></label>
                                 <div class="relative">
@@ -406,15 +441,6 @@
                         </div>
 
                         {{-- ══ PANEL FIDYAH ══ --}}
-                        {{--
-                            PERUBAHAN: Tidak ada lagi radio button "Cara Pembayaran Fidyah".
-                            Tipe fidyah (mentah/matang/tunai) ditentukan otomatis dari nama tipe zakat
-                            yang dipilih di dropdown "Tipe / Jenis Spesifik".
-                            Nama tipe mengandung kata kunci:
-                              - "mentah" / "bahan" / "pokok" → tipe mentah
-                              - "matang" / "siap" / "makanan" / "box" → tipe matang
-                              - "tunai" / "uang" → tipe tunai
-                        --}}
                         <div id="panelFidyah" class="hidden space-y-4">
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="flex items-center gap-2 mb-2">
@@ -427,7 +453,6 @@
                                     Fidyah: 1 mud ({{ $fidyahInfo['berat_per_hari_gram'] }} gram) bahan pokok per hari,
                                     atau makanan siap santap sekali makan, atau uang senilai makanan.
                                 </p>
-                                {{-- Label tipe aktif --}}
                                 <p class="text-xs text-gray-500 mt-2">Cara pembayaran: <strong id="labelTipeFidyah" class="text-gray-700">-</strong></p>
                             </div>
 
@@ -439,7 +464,7 @@
                                     placeholder="Jumlah hari puasa yang ditinggalkan">
                             </div>
 
-                            {{-- Sub-panel MENTAH — border netral --}}
+                            {{-- Sub-panel MENTAH --}}
                             <div id="fidyahPanelMentah" class="hidden space-y-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Nama Bahan Pokok <span class="text-red-500">*</span></label>
@@ -469,7 +494,7 @@
                                 </div>
                             </div>
 
-                            {{-- Sub-panel MATANG — border netral --}}
+                            {{-- Sub-panel MATANG --}}
                             <div id="fidyahPanelMatang" class="hidden space-y-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -516,7 +541,7 @@
                                 </div>
                             </div>
 
-                            {{-- Sub-panel TUNAI — border netral --}}
+                            {{-- Sub-panel TUNAI --}}
                             <div id="fidyahPanelTunai" class="hidden space-y-4 bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -680,7 +705,7 @@
                             </div>
                         </div>
 
-                        {{-- Info QRIS — gambar diperbesar --}}
+                        {{-- Info QRIS --}}
                         <div id="infoQrisSec" class="{{ $transaksi->metode_pembayaran === 'qris' ? '' : 'hidden' }} space-y-3">
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <p class="text-sm font-medium text-gray-800 mb-4">QRIS {{ $lembaga->nama }}</p>
@@ -688,7 +713,6 @@
                                 @if ($qrisImageUrl)
                                     <div class="flex justify-center">
                                         <div class="bg-white p-5 rounded-xl border border-gray-200 inline-flex flex-col items-center gap-4">
-                                            {{-- PERUBAHAN: ukuran gambar diperbesar dari w-48 h-48 → w-80 h-80 --}}
                                             <img src="{{ $qrisImageUrl }}" class="w-80 h-80 object-contain" alt="QRIS {{ $lembaga->nama }}" loading="lazy">
                                             <div class="text-center">
                                                 <p class="text-sm font-semibold text-gray-800">{{ $lembaga->nama }}</p>
@@ -756,11 +780,14 @@ const FIDYAH_BERAT_DEFAULT = {{ $fidyahInfo['berat_per_hari_gram'] }};
 const TIPE_DATA   = @json($tipeZakatList ?? []);
 const TRANSaksi   = @json($transaksi);
 
-let activePanelZ    = null; // 'beras' | 'tunaiF' | 'mal' | 'fidyah' | null
+// Nama muzakki dari data transaksi (untuk auto-isi baris pertama)
+const MUZAKKI_NAMA = '{{ addslashes($transaksi->muzakki_nama) }}';
+
+let activePanelZ     = null; // 'beras' | 'tunaiF' | 'mal' | 'fidyah' | null
 let activeFidyahTipe = null; // 'mentah' | 'matang' | 'tunai' | null
 
 // ══════════════════════════════════════════════════════════════
-// FIX #3: FORMAT RIBUAN (1.000)
+// FORMAT RIBUAN
 // ══════════════════════════════════════════════════════════════
 function formatRibuan(n) {
     if (!n && n !== 0) return '';
@@ -776,7 +803,6 @@ function bindRibuanInput(displayId, hiddenId) {
     const display = document.getElementById(displayId);
     const hidden  = document.getElementById(hiddenId);
     if (!display || !hidden) return;
-
     display.addEventListener('input', function() {
         const raw = parseRibuan(this.value);
         hidden.value = raw || '';
@@ -786,7 +812,6 @@ function bindRibuanInput(displayId, hiddenId) {
         const newLen = this.value.length;
         this.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
     });
-
     display.addEventListener('blur', function() {
         const raw = parseRibuan(this.value);
         hidden.value = raw || '';
@@ -794,9 +819,6 @@ function bindRibuanInput(displayId, hiddenId) {
     });
 }
 
-// ══════════════════════════════════════════════════════════════
-// FORMAT TAMPILAN
-// ══════════════════════════════════════════════════════════════
 function fmt(n) {
     return new Intl.NumberFormat('id-ID').format(Math.round(n || 0));
 }
@@ -808,16 +830,13 @@ function goToStep3() {
     if (!validateStep(2)) return;
     document.getElementById('step2').classList.add('hidden');
     document.getElementById('step3').classList.remove('hidden');
-
     const dot2 = document.getElementById('dot2');
     dot2.classList.remove('bg-primary-600');
     dot2.classList.add('bg-green-600');
     dot2.textContent = '✓';
-
     const dot3 = document.getElementById('dot3');
     dot3.classList.remove('bg-gray-200', 'text-gray-500');
     dot3.classList.add('bg-primary-600', 'text-white');
-
     document.getElementById('line23').classList.add('bg-green-600');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -825,16 +844,13 @@ function goToStep3() {
 function goToStep2() {
     document.getElementById('step3').classList.add('hidden');
     document.getElementById('step2').classList.remove('hidden');
-
     const dot3 = document.getElementById('dot3');
     dot3.classList.remove('bg-primary-600', 'text-white');
     dot3.classList.add('bg-gray-200', 'text-gray-500');
-
     const dot2 = document.getElementById('dot2');
     dot2.classList.remove('bg-green-600');
     dot2.classList.add('bg-primary-600', 'text-white');
     dot2.textContent = '2';
-
     document.getElementById('line23').classList.remove('bg-green-600');
     document.getElementById('line23').classList.add('bg-gray-200');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -845,48 +861,32 @@ function goToStep2() {
 // ══════════════════════════════════════════════════════════════
 function validateStep(step) {
     if (step !== 2) return true;
-
-    if (!document.getElementById('jenisId').value) {
-        alert('Pilih jenis zakat.');
-        return false;
-    }
-    if (!document.getElementById('tipeId').value) {
-        alert('Pilih tipe zakat.');
-        return false;
-    }
-
+    if (!document.getElementById('jenisId').value) { alert('Pilih jenis zakat.'); return false; }
+    if (!document.getElementById('tipeId').value)  { alert('Pilih tipe zakat.'); return false; }
     if (activePanelZ === 'beras') {
         if ((parseFloat(document.getElementById('berasKg').value) || 0) <= 0) {
-            alert('Jumlah beras harus > 0.');
-            return false;
+            alert('Jumlah beras harus > 0.'); return false;
         }
     } else if (activePanelZ === 'fidyah') {
         const hari = parseInt(document.getElementById('fidyahHari').value) || 0;
         if (hari <= 0) { alert('Jumlah hari fidyah harus > 0.'); return false; }
-
         if (!activeFidyahTipe) { alert('Tipe fidyah tidak dikenali dari pilihan tipe zakat.'); return false; }
-
-        if (activeFidyahTipe === 'mentah') {
-            if (!document.getElementById('fidyahNamaBahan').value.trim()) {
-                alert('Nama bahan pokok harus diisi.'); return false;
-            }
-        } else if (activeFidyahTipe === 'matang') {
+        if (activeFidyahTipe === 'mentah' && !document.getElementById('fidyahNamaBahan').value.trim()) {
+            alert('Nama bahan pokok harus diisi.'); return false;
+        }
+        if (activeFidyahTipe === 'matang') {
             if ((parseInt(document.getElementById('fidyahJumlahBox').value) || 0) <= 0) {
                 alert('Jumlah box harus > 0.'); return false;
             }
             if (!document.getElementById('fidyahCaraSerah').value) {
                 alert('Pilih cara penyerahan fidyah.'); return false;
             }
-        } else if (activeFidyahTipe === 'tunai') {
-            if ((parseRibuan(document.getElementById('fidyahHargaPerHariDisplay').value) || 0) <= 0) {
-                alert('Harga per hari fidyah tunai harus diisi.'); return false;
-            }
+        }
+        if (activeFidyahTipe === 'tunai' && (parseRibuan(document.getElementById('fidyahHargaPerHariDisplay').value) || 0) <= 0) {
+            alert('Harga per hari fidyah tunai harus diisi.'); return false;
         }
     } else {
-        if (getJumlahZakat() <= 0) {
-            alert('Jumlah zakat tidak valid.');
-            return false;
-        }
+        if (getJumlahZakat() <= 0) { alert('Jumlah zakat tidak valid.'); return false; }
     }
     return true;
 }
@@ -900,7 +900,8 @@ function getJumlahZakat() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// FIX #2: RENDER DAFTAR NAMA JIWA dengan tombol hapus
+// RENDER DAFTAR NAMA JIWA
+// Baris pertama: auto-isi nama muzakki & readonly
 // ══════════════════════════════════════════════════════════════
 function renderNamaJiwa(listId, counterId, wrapId, jumlah, existingNames) {
     existingNames = existingNames || [];
@@ -914,74 +915,104 @@ function renderNamaJiwa(listId, counterId, wrapId, jumlah, existingNames) {
     }
 
     wrap.classList.remove('hidden');
-    const oldInputs = listEl.querySelectorAll('input[name="nama_jiwa_json[]"]');
+
+    // Simpan nilai input yang sudah ada (kecuali baris pertama = readonly)
+    const oldInputs = listEl.querySelectorAll('input[name="nama_jiwa_json[]"]:not([readonly])');
     const oldValues = [];
     oldInputs.forEach(inp => oldValues.push(inp.value));
 
     listEl.innerHTML = '';
 
     for (let i = 0; i < jumlah; i++) {
-        const val = oldValues[i] !== undefined ? oldValues[i]
-                    : (existingNames[i] || '');
-        const row = document.createElement('div');
-        row.className = 'flex items-center gap-2';
-        row.innerHTML = `
-            <div class="flex-shrink-0 w-6 text-xs font-medium text-gray-400">${i + 1}.</div>
-            <input type="text"
-                name="nama_jiwa_json[]"
-                value="${val.replace(/"/g, '&quot;')}"
-                placeholder="Nama jiwa ke-${i + 1}"
-                maxlength="100"
-                autocomplete="off"
-                class="flex-1 px-3 py-2 text-sm border border-gray-200 bg-white rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all">
-            <button type="button"
-                onclick="hapusNamaJiwa(this, '${listId}', '${counterId}', ${jumlah})"
-                class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+        const isFirst  = i === 0;
+        // Baris pertama selalu nama muzakki (readonly)
+        // Baris berikutnya: pakai nilai lama atau dari existingNames
+        const val = isFirst
+            ? MUZAKKI_NAMA
+            : (oldValues[i - 1] !== undefined ? oldValues[i - 1] : (existingNames[i] || ''));
+
+        buatBaris(listEl, listId, counterId, i, jumlah, val, isFirst);
+    }
+
+    updateNamaCounter(listId, counterId, jumlah);
+}
+
+function buatBaris(listEl, listId, counterId, idx, total, nilaiAwal, isReadonly) {
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-2 nama-jiwa-row';
+
+    const roAttr  = isReadonly ? 'readonly' : '';
+    const roCls   = isReadonly ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : 'bg-white';
+    const badge   = isReadonly
+        ? `<span class="flex-shrink-0 text-xs text-gray-400 italic whitespace-nowrap">(muzakki)</span>`
+        : '';
+    const hapus   = !isReadonly
+        ? `<button type="button"
+                class="flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all hapus-btn"
                 title="Hapus baris ini">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-            </button>`;
-        listEl.appendChild(row);
+           </button>`
+        : `<div class="w-7 flex-shrink-0"></div>`;
+
+    row.innerHTML = `
+        <div class="flex-shrink-0 w-6 text-xs font-medium text-gray-400 text-right row-num">${idx + 1}.</div>
+        <input type="text" name="nama_jiwa_json[]"
+            value="${(nilaiAwal || '').replace(/"/g, '&quot;')}"
+            placeholder="Nama jiwa ke-${idx + 1}"
+            maxlength="100" autocomplete="off" ${roAttr}
+            class="flex-1 px-3 py-2 text-sm border border-gray-200 ${roCls} rounded-lg focus:outline-none ${isReadonly ? '' : 'focus:border-blue-500 focus:ring-1 focus:ring-blue-200'} transition-all">
+        ${badge}
+        ${hapus}
+    `;
+
+    if (!isReadonly) {
+        row.querySelector('input').addEventListener('input', () => {
+            const tot = listEl.querySelectorAll('.nama-jiwa-row').length;
+            updateNamaCounter(listId, counterId, tot);
+        });
+        row.querySelector('.hapus-btn')?.addEventListener('click', () => {
+            const semua = listEl.querySelectorAll('.nama-jiwa-row');
+            if (semua.length <= 2) {
+                row.querySelector('input').value = '';
+                updateNamaCounter(listId, counterId, semua.length);
+                return;
+            }
+            row.remove();
+            renomorBaris(listEl);
+            updateNamaCounter(listId, counterId, listEl.querySelectorAll('.nama-jiwa-row').length);
+        });
     }
 
-    updateNamaCounter(listId, counterId, jumlah);
-    listEl.querySelectorAll('input').forEach(inp => {
-        inp.addEventListener('input', () => updateNamaCounter(listId, counterId, jumlah));
-    });
+    listEl.appendChild(row);
 }
 
-function hapusNamaJiwa(btn, listId, counterId, total) {
-    const row = btn.closest('div.flex');
-    row.remove();
-    const listEl = document.getElementById(listId);
-    listEl.querySelectorAll('div.flex').forEach((r, i) => {
-        const numEl = r.querySelector('div.flex-shrink-0');
-        if (numEl) numEl.textContent = (i + 1) + '.';
-        const inp = r.querySelector('input');
-        if (inp) inp.placeholder = `Nama jiwa ke-${i + 1}`;
+function renomorBaris(listEl) {
+    listEl.querySelectorAll('.nama-jiwa-row').forEach((row, idx) => {
+        const numEl = row.querySelector('.row-num');
+        if (numEl) numEl.textContent = (idx + 1) + '.';
+        const inp = row.querySelector('input');
+        if (inp && !inp.readOnly) inp.placeholder = `Nama jiwa ke-${idx + 1}`;
     });
-    updateNamaCounter(listId, counterId, total);
 }
 
 function updateNamaCounter(listId, counterId, total) {
     const filled = [...document.getElementById(listId).querySelectorAll('input')].filter(i => i.value.trim() !== '').length;
     const el = document.getElementById(counterId);
-    if (el) el.textContent = filled > 0 ? `${filled}/${total} diisi` : '0 diisi';
+    if (el) el.textContent = `${filled}/${total} diisi`;
 }
 
 // ══════════════════════════════════════════════════════════════
-// STEP 2: JENIS & TIPE ZAKAT
+// JENIS & TIPE ZAKAT
 // ══════════════════════════════════════════════════════════════
 document.getElementById('jenisId').addEventListener('change', function() {
-    const jenisId = this.value;
-    const tipeEl  = document.getElementById('tipeId');
+    const jenisId  = this.value;
+    const tipeEl   = document.getElementById('tipeId');
     const wrapTipe = document.getElementById('wrapTipe');
     tipeEl.innerHTML = '<option value="">-- Pilih Tipe --</option>';
     resetPanelZakat();
-
     if (!jenisId) { wrapTipe.classList.add('hidden'); return; }
-
     const list = TIPE_DATA[jenisId] || [];
     if (list.length > 0) {
         list.forEach(t => {
@@ -1002,7 +1033,6 @@ document.getElementById('tipeId').addEventListener('change', function() {
     const jenisEl   = document.getElementById('jenisId');
     const namaJenis = (jenisEl.options[jenisEl.selectedIndex]?.dataset.nama || '').toLowerCase();
     const namaTipe  = (this.options[this.selectedIndex]?.dataset.nama || '').toLowerCase();
-
     resetPanelZakat();
     if (!this.value) return;
 
@@ -1014,7 +1044,7 @@ document.getElementById('tipeId').addEventListener('change', function() {
     if (isFitrah && isBeras)    tampilPanelBeras();
     else if (isFitrah)          tampilPanelFitrahTunai();
     else if (isMal)             tampilPanelMal(this.options[this.selectedIndex]);
-    else if (isFidyah)          tampilPanelFidyah(namaTipe); // kirim namaTipe untuk deteksi otomatis
+    else if (isFidyah)          tampilPanelFidyah(namaTipe);
 });
 
 function resetPanelZakat() {
@@ -1030,7 +1060,7 @@ function resetPanelZakat() {
     activeFidyahTipe = null;
 }
 
-// ─── PANEL BERAS ──────────────────────────────────────────────
+// ─── Panel Beras ──────────────────────────────────────────────
 function tampilPanelBeras() {
     activePanelZ = 'beras';
     document.getElementById('hdnBeras').value = '1';
@@ -1038,7 +1068,6 @@ function tampilPanelBeras() {
     document.getElementById('btnBerasSave').classList.remove('hidden');
     document.getElementById('btnS2Next').classList.add('hidden');
     document.getElementById('btnBerasSaveLabel').textContent = 'Simpan Transaksi Beras';
-
     hitungTotalBeras();
     const jiwa = parseInt(document.getElementById('berasJiwa').value) || 1;
     renderNamaJiwa('listNamaBeras', 'counterNamaBeras', 'wrapNamaBerasJiwa', jiwa, TRANSaksi?.nama_jiwa_json || []);
@@ -1051,22 +1080,19 @@ document.getElementById('berasJiwa')?.addEventListener('input', function() {
 });
 
 function hitungTotalBeras() {
-    const jiwa = parseInt(document.getElementById('berasJiwa').value) || 0;
+    const jiwa    = parseInt(document.getElementById('berasJiwa').value) || 0;
     const totalKg = jiwa * BAZNAS.berasKgPerJiwa;
     const berasKgEl = document.getElementById('berasKg');
     if (berasKgEl) berasKgEl.value = totalKg > 0 ? totalKg.toFixed(1) : '';
-
     const infoEl = document.getElementById('infoBeras');
     if (infoEl) {
-        if (jiwa >= 2) {
-            infoEl.textContent = `${jiwa} jiwa × ${BAZNAS.berasKgPerJiwa} kg = ${totalKg.toFixed(1)} kg`;
-        } else {
-            infoEl.textContent = '';
-        }
+        infoEl.textContent = jiwa >= 2
+            ? `${jiwa} jiwa × ${BAZNAS.berasKgPerJiwa} kg = ${totalKg.toFixed(1)} kg`
+            : '';
     }
 }
 
-// ─── PANEL FITRAH TUNAI ───────────────────────────────────────
+// ─── Panel Fitrah Tunai ───────────────────────────────────────
 function tampilPanelFitrahTunai() {
     activePanelZ = 'tunaiF';
     document.getElementById('panelFitrahTunai').classList.remove('hidden');
@@ -1087,7 +1113,6 @@ document.getElementById('tunaiNominalDisplay')?.addEventListener('input', functi
     this.value = raw ? formatRibuan(raw) : '';
     hitungFitrahTunai();
 });
-
 document.getElementById('tunaiNominalDisplay')?.addEventListener('blur', function() {
     const raw = parseRibuan(this.value);
     document.getElementById('tunaiNominal').value = raw || '';
@@ -1099,8 +1124,7 @@ function hitungFitrahTunai() {
     const nominal = parseRibuan(document.getElementById('tunaiNominalDisplay').value) || 0;
     const total   = jiwa * nominal;
     document.getElementById('hdnJumlahTunai').value = Math.round(total);
-
-    const infoBox = document.getElementById('infoTotalFitrahTunai');
+    const infoBox  = document.getElementById('infoTotalFitrahTunai');
     const infoTeks = document.getElementById('teksInfoTotalFitrah');
     if (infoBox && infoTeks) {
         if (jiwa >= 2 && nominal > 0) {
@@ -1112,7 +1136,7 @@ function hitungFitrahTunai() {
     }
 }
 
-// ─── PANEL MAL ────────────────────────────────────────────────
+// ─── Panel Mal ────────────────────────────────────────────────
 function tampilPanelMal(tipeOpt) {
     activePanelZ = 'mal';
     document.getElementById('panelMal').classList.remove('hidden');
@@ -1120,18 +1144,13 @@ function tampilPanelMal(tipeOpt) {
 
     const nisabGram = parseFloat(tipeOpt.dataset.nisabEmasGram) || 0;
     const nisabCbx  = document.getElementById('sudahNisab');
-    if (nisabCbx) {
-        nisabCbx.checked = nisabGram > 0;
-    }
-    const keteranganEl = document.getElementById('keteranganNisab');
-    if (keteranganEl) {
-        keteranganEl.textContent = nisabGram > 0 ? `(Nisab: ${nisabGram} gram emas)` : '';
-    }
+    if (nisabCbx) nisabCbx.checked = nisabGram > 0;
+    const keterEl = document.getElementById('keteranganNisab');
+    if (keterEl) keterEl.textContent = nisabGram > 0 ? `(Nisab: ${nisabGram} gram emas)` : '';
 
     let nisabHtml = '';
-    if (nisabGram > 0) nisabHtml += `<p>Nisab emas: ${nisabGram} gram</p>`;
-    if (tipeOpt.dataset.requireHaul === '1') nisabHtml += `<p><strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
-
+    if (nisabGram > 0)                        nisabHtml += `<p>Nisab emas: ${nisabGram} gram</p>`;
+    if (tipeOpt.dataset.requireHaul === '1')  nisabHtml += `<p><strong>Membutuhkan haul</strong> (1 tahun hijriyah)</p>`;
     const box = document.getElementById('nisabBox');
     if (nisabHtml) {
         document.getElementById('nisabIsi').innerHTML = nisabHtml;
@@ -1141,7 +1160,17 @@ function tampilPanelMal(tipeOpt) {
     }
 
     hitungMal();
+
+    // Render nama jiwa jika sudah ada data
+    const jiwa = parseInt(document.getElementById('malJiwa').value) || 1;
+    renderNamaJiwa('listNamaMal', 'counterNamaMal', 'wrapNamaMalJiwa', jiwa, TRANSaksi?.nama_jiwa_json || []);
 }
+
+// [BARU] Listener jumlah jiwa mal
+document.getElementById('malJiwa')?.addEventListener('input', function() {
+    const jiwa = parseInt(this.value) || 1;
+    renderNamaJiwa('listNamaMal', 'counterNamaMal', 'wrapNamaMalJiwa', jiwa, TRANSaksi?.nama_jiwa_json || []);
+});
 
 document.getElementById('malHartaDisplay')?.addEventListener('input', function() {
     const raw = parseRibuan(this.value);
@@ -1181,13 +1210,11 @@ document.getElementById('sudahHaul')?.addEventListener('change', function() {
     document.getElementById('wrapHaul').classList.toggle('hidden', !this.checked);
 });
 
-// ─── PANEL FIDYAH ─────────────────────────────────────────────
-// PERUBAHAN: namaTipe dikirim dari event tipeId change, dipakai untuk deteksi otomatis tipe fidyah
+// ─── Panel Fidyah ─────────────────────────────────────────────
 function tampilPanelFidyah(namaTipe) {
     activePanelZ = 'fidyah';
     document.getElementById('panelFidyah').classList.remove('hidden');
 
-    // Deteksi tipe fidyah dari nama tipe zakat yang dipilih
     let tipeOtomatis = null;
     if (namaTipe) {
         if (namaTipe.includes('mentah') || namaTipe.includes('bahan') || namaTipe.includes('pokok')) {
@@ -1198,33 +1225,17 @@ function tampilPanelFidyah(namaTipe) {
             tipeOtomatis = 'tunai';
         }
     }
-
-    // Fallback ke data transaksi lama jika mode edit
     if (!tipeOtomatis && TRANSaksi?.fidyah_tipe) {
         tipeOtomatis = TRANSaksi.fidyah_tipe;
     }
-
-    if (tipeOtomatis) {
-        pilihTipeFidyah(tipeOtomatis);
-    }
-
+    if (tipeOtomatis) pilihTipeFidyah(tipeOtomatis);
     hitungFidyah();
 }
 
-// ══════════════════════════════════════════════════════════════
-// PERUBAHAN: pilihTipeFidyah tidak lagi mengatur visual radio card
-// (radio card sudah dihapus), hanya mengatur panel dan hidden input
-// ══════════════════════════════════════════════════════════════
 function pilihTipeFidyah(tipe) {
     activeFidyahTipe = tipe;
     document.getElementById('hdnFidyahTipe').value = tipe;
-
-    // Update label tipe aktif
-    const labelMap = {
-        mentah: 'Bahan Makanan Mentah',
-        matang: 'Makanan Siap Santap',
-        tunai:  'Tunai / Uang',
-    };
+    const labelMap = { mentah: 'Bahan Makanan Mentah', matang: 'Makanan Siap Santap', tunai: 'Tunai / Uang' };
     const labelEl = document.getElementById('labelTipeFidyah');
     if (labelEl) labelEl.textContent = labelMap[tipe] || '-';
 
@@ -1262,25 +1273,20 @@ document.getElementById('fidyahHari')?.addEventListener('input', function() {
     }
     hitungFidyah();
 });
-
 document.getElementById('fidyahBeratPerHari')?.addEventListener('input', function() {
     document.getElementById('hdnFidyahBeratPerHari').value = this.value;
     hitungFidyahMentah();
 });
-
 document.getElementById('fidyahNamaBahan')?.addEventListener('input', function() {
     document.getElementById('hdnFidyahNamaBahan').value = this.value;
 });
-
 document.getElementById('fidyahJumlahBox')?.addEventListener('input', function() {
     document.getElementById('hdnFidyahJumlahBox').value = this.value;
     hitungFidyahMatang();
 });
-
 document.getElementById('fidyahMenu')?.addEventListener('input', function() {
     document.getElementById('hdnFidyahMenu').value = this.value;
 });
-
 document.getElementById('fidyahHargaBoxDisplay')?.addEventListener('input', function() {
     const raw = parseRibuan(this.value);
     document.getElementById('fidyahHargaBox').value = raw || 0;
@@ -1294,11 +1300,9 @@ document.getElementById('fidyahHargaBoxDisplay')?.addEventListener('blur', funct
     document.getElementById('hdnFidyahHargaBox').value = raw || 0;
     this.value = raw ? formatRibuan(raw) : '';
 });
-
 document.getElementById('fidyahCaraSerah')?.addEventListener('change', function() {
     document.getElementById('hdnFidyahCaraSerah').value = this.value;
 });
-
 document.getElementById('fidyahHargaPerHariDisplay')?.addEventListener('input', function() {
     const raw = parseRibuan(this.value);
     document.getElementById('fidyahHargaPerHari').value = raw || 0;
@@ -1318,23 +1322,18 @@ function hitungFidyah() {
     if (activeFidyahTipe === 'matang') hitungFidyahMatang();
     if (activeFidyahTipe === 'tunai')  hitungFidyahTunai();
 }
-
 function hitungFidyahMentah() {
     const hari  = parseInt(document.getElementById('fidyahHari').value) || 0;
     const berat = parseInt(document.getElementById('fidyahBeratPerHari').value) || FIDYAH_BERAT_DEFAULT;
-    const totalKg = ((hari * berat) / 1000).toFixed(2);
-    document.getElementById('fidyahTotalBeratDisp').textContent = totalKg + ' kg';
+    document.getElementById('fidyahTotalBeratDisp').textContent = ((hari * berat) / 1000).toFixed(2) + ' kg';
     document.getElementById('hdnFidyahBeratPerHari').value = berat;
 }
-
 function hitungFidyahMatang() {
     const box = parseInt(document.getElementById('fidyahJumlahBox').value) || 0;
     document.getElementById('fidyahTotalMatangDisp').textContent = box + ' box';
     document.getElementById('hdnFidyahJumlahBox').value = box;
-    const harga = parseFloat(document.getElementById('fidyahHargaBox').value) || 0;
-    document.getElementById('hdnFidyahHargaBox').value = harga;
+    document.getElementById('hdnFidyahHargaBox').value  = parseFloat(document.getElementById('fidyahHargaBox').value) || 0;
 }
-
 function hitungFidyahTunai() {
     const hari  = parseInt(document.getElementById('fidyahHari').value) || 0;
     const harga = parseFloat(document.getElementById('fidyahHargaPerHari').value) || 0;
@@ -1344,8 +1343,8 @@ function hitungFidyahTunai() {
 }
 
 function syncHiddenFidyah() {
-    document.getElementById('hdnFidyahHari').value  = document.getElementById('fidyahHari').value || 0;
-    document.getElementById('hdnFidyahTipe').value  = activeFidyahTipe || '';
+    document.getElementById('hdnFidyahHari').value = document.getElementById('fidyahHari').value || 0;
+    document.getElementById('hdnFidyahTipe').value = activeFidyahTipe || '';
     if (activeFidyahTipe === 'mentah') {
         document.getElementById('hdnFidyahNamaBahan').value    = document.getElementById('fidyahNamaBahan').value;
         document.getElementById('hdnFidyahBeratPerHari').value = document.getElementById('fidyahBeratPerHari').value;
@@ -1363,20 +1362,16 @@ function syncHiddenFidyah() {
 document.querySelectorAll('.pay-radio').forEach(r => {
     r.addEventListener('change', function() {
         const val = this.value;
-
         document.querySelectorAll('.pay-card').forEach(c => {
             const chk = c.querySelector('input').checked;
             c.classList.toggle('border-blue-500', chk);
             c.classList.toggle('bg-primary-50', chk);
             c.classList.toggle('border-gray-200', !chk);
         });
-
         ['infoTunaiSec', 'infoTransferSec', 'infoQrisSec'].forEach(id =>
             document.getElementById(id).classList.add('hidden')
         );
-
         document.getElementById('wrapJmlDibayar').classList.remove('hidden');
-
         if (val === 'tunai')         document.getElementById('infoTunaiSec').classList.remove('hidden');
         else if (val === 'transfer') document.getElementById('infoTransferSec').classList.remove('hidden');
         else if (val === 'qris')     document.getElementById('infoQrisSec').classList.remove('hidden');
@@ -1387,7 +1382,6 @@ document.querySelectorAll('.pay-radio').forEach(r => {
             document.getElementById('jmlDibayar').value = jz;
             document.getElementById('jmlDibayarDisplay').value = formatRibuan(jz);
         }
-
         hitungKalkulasiInfaq();
     });
 });
@@ -1412,18 +1406,14 @@ document.getElementById('jmlDibayarDisplay')?.addEventListener('blur', function(
 });
 
 function hitungKalkulasiInfaq() {
-    const jz  = getJumlahZakat();
-    const jd  = parseFloat(document.getElementById('jmlDibayar').value) || 0;
+    const jz   = getJumlahZakat();
+    const jd   = parseFloat(document.getElementById('jmlDibayar').value) || 0;
     const box  = document.getElementById('boxKalkulasiInfaq');
     const teks = document.getElementById('teksInfaq');
-
     if (jz <= 0 || jd <= 0) { box.classList.add('hidden'); return; }
-
-    const infaq = Math.max(0, jd - jz);
+    const infaq  = Math.max(0, jd - jz);
     const kurang = Math.max(0, jz - jd);
-
     box.classList.remove('hidden', 'bg-amber-50', 'border-amber-200', 'bg-red-50', 'border-red-200', 'bg-green-50', 'border-green-200');
-
     if (infaq > 0) {
         box.classList.add('bg-amber-50', 'border-amber-200');
         teks.innerHTML = `Kelebihan <strong>Rp ${fmt(infaq)}</strong> otomatis dicatat sebagai <strong>infaq sukarela</strong>.`;
@@ -1446,33 +1436,25 @@ document.getElementById('mainForm').addEventListener('submit', function(e) {
         }
         spinBtn(document.getElementById('btnBerasSave'), 'Menyimpan...'); return true;
     }
-
     if (activePanelZ === 'fidyah' && activeFidyahTipe !== 'tunai') {
         if (!validateStep(2)) { e.preventDefault(); return false; }
         syncHiddenFidyah();
         spinBtn(document.getElementById('btnBerasSave'), 'Menyimpan...'); return true;
     }
-
     if (!document.getElementById('jenisId').value) {
         e.preventDefault(); alert('Pilih jenis zakat.'); return false;
     }
     if (!document.getElementById('tipeId').value) {
         e.preventDefault(); alert('Pilih tipe zakat.'); return false;
     }
-
     if (activePanelZ !== 'fidyah' && getJumlahZakat() <= 0) {
         e.preventDefault(); alert('Jumlah zakat tidak valid.'); return false;
     }
-
     const bayarRadio = document.querySelector('.pay-radio:checked');
     if (!bayarRadio) {
         e.preventDefault(); alert('Pilih metode pembayaran.'); return false;
     }
-
-    if (activePanelZ === 'fidyah' && activeFidyahTipe === 'tunai') {
-        syncHiddenFidyah();
-    }
-
+    if (activePanelZ === 'fidyah' && activeFidyahTipe === 'tunai') syncHiddenFidyah();
     spinBtn(document.getElementById('btnFinalSave'), 'Menyimpan...'); return true;
 });
 
