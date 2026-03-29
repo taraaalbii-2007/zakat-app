@@ -665,17 +665,94 @@ class TransaksiPenerimaanController extends Controller
     // ================================================================
     // CREATE DIJEMPUT — shortcut
     // ================================================================
+    // ================================================================
+    // CREATE DIJEMPUT — shortcut
+    // ================================================================
     public function createDijemput(Request $request)
     {
-        $request->merge([
-            'mode' => 'dijemput',
-            'breadcrumbs' => [
-                'Kelola Dijemput' => route('transaksi-dijemput.index'),
-                'Tambah Data Dijemput' => route('transaksi-dijemput.create'),
-            ],
-        ]);
+        // Tentukan default mode
+        $mode = 'dijemput';
 
-        return $this->create($request);
+        // Data untuk form
+        $rekeningList = \App\Models\RekeningLembaga::where('lembaga_id', $this->lembaga->id)
+            ->where('is_active', true)->get();
+
+        $jenisZakatList   = JenisZakat::orderBy('nama')->get();
+        $programZakatList = ProgramZakat::byLembaga($this->lembaga->id)
+            ->whereIn('status', ['aktif'])->orderBy('nama_program')->get();
+
+        // Dapatkan daftar amil (untuk admin lembaga)
+        $amilList = Amil::byLembaga($this->lembaga->id)
+            ->with('pengguna')
+            ->where('status', 'aktif')
+            ->get();
+
+        $noTransaksiPreview = TransaksiPenerimaan::generateNoTransaksi($this->lembaga->id);
+        $tanggalHariIni     = now()->format('Y-m-d');
+
+        $tipeZakatList = [];
+        foreach ($jenisZakatList as $jenis) {
+            $tipeZakatList[$jenis->id] = TipeZakat::where('jenis_zakat_id', $jenis->id)
+                ->orderBy('nama')->get()->makeVisible(['id']);
+        }
+
+        $zakatFitrahInfo = [
+            'nominal_per_jiwa' => self::NOMINAL_ZAKAT_FITRAH_PER_JIWA,
+            'beras_kg'         => self::BERAS_KG_PER_JIWA,
+            'beras_liter'      => self::BERAS_LITER_PER_JIWA,
+        ];
+
+        $fidyahInfo = [
+            'berat_per_hari_gram' => self::FIDYAH_BERAT_PER_HARI_GRAM,
+        ];
+
+        $qrisConfig = KonfigurasiQris::where('lembaga_id', $this->lembaga->id)
+            ->where('is_active', true)
+            ->first();
+
+        $muzakkiData = null;
+        if ($this->user->isMuzakki() && $this->user->muzakki) {
+            $m           = $this->user->muzakki;
+            $muzakkiData = [
+                'nama'    => $m->nama,
+                'telepon' => $m->telepon,
+                'email'   => $m->email,
+                'alamat'  => $m->alamat,
+                'nik'     => $m->nik,
+            ];
+        }
+
+        // Cek apakah user yang login adalah amil
+        $isAmilUser = $this->user->isAmil() && $this->amil;
+        $currentAmil = null;
+
+        if ($isAmilUser) {
+            $currentAmil = $this->amil;
+        }
+
+        $breadcrumbs = [
+            'Kelola Dijemput' => route('transaksi-dijemput.index'),
+            'Tambah Data Dijemput' => route('transaksi-dijemput.create'),
+        ];
+
+        // Gunakan view khusus untuk create-dijemput
+        return view('amil.transaksi-penerimaan.create-dijemput', compact(
+            'mode',
+            'jenisZakatList',
+            'programZakatList',
+            'amilList',
+            'noTransaksiPreview',
+            'tanggalHariIni',
+            'tipeZakatList',
+            'rekeningList',
+            'zakatFitrahInfo',
+            'fidyahInfo',
+            'muzakkiData',
+            'qrisConfig',
+            'breadcrumbs',
+            'currentAmil',      // tambahkan ini
+            'isAmilUser'        // tambahkan ini
+        ));
     }
 
     // ================================================================
@@ -800,7 +877,7 @@ class TransaksiPenerimaanController extends Controller
     }
 
     // ================================================================
-    // STORE DIJEMPUT
+    // STORE DIJEMPUT - PERBAIKAN (TANPA VALIDASI JENIS ZAKAT)
     // ================================================================
     public function storeDijemput(Request $request)
     {
@@ -811,16 +888,8 @@ class TransaksiPenerimaanController extends Controller
         ]);
 
         try {
-            // Deteksi apakah ini pembayaran beras
-            $isBeras = $request->is_pembayaran_beras == '1';
-
-            // Deteksi fidyah — harus jenis zakat fidyah DAN ada isian fidyah
-            $jenisZakatCheck = JenisZakat::find($request->jenis_zakat_id);
-            $isFidyah = $request->filled('fidyah_jumlah_hari')
-                && $request->fidyah_jumlah_hari > 0
-                && $jenisZakatCheck
-                && stripos($jenisZakatCheck->nama, 'fidyah') !== false;
-
+            // HANYA validasi data dasar untuk request penjemputan
+            // TIDAK ADA validasi jenis_zakat_id, tipe_zakat_id, metode_pembayaran
             $rules = [
                 'tanggal_transaksi'   => 'required|date',
                 'muzakki_nama'        => 'required|string|max:255',
@@ -830,17 +899,8 @@ class TransaksiPenerimaanController extends Controller
                 'muzakki_nik'         => 'nullable|string|size:16',
                 'amil_id'             => 'required|exists:amil,id',
                 'tanggal_penjemputan' => 'nullable|date',
-                'metode_pembayaran'   => 'nullable|in:tunai,transfer,qris,beras,makanan_matang,bahan_mentah',
-                'jumlah_dibayar'      => 'nullable|numeric|min:0',
                 'keterangan'          => 'nullable|string',
             ];
-
-            // Jika jenis zakat & tipe sudah diisi dari form (opsional untuk dijemput)
-            if ($request->filled('jenis_zakat_id')) {
-                $rules['jenis_zakat_id']  = 'nullable|exists:jenis_zakat,id';
-                $rules['tipe_zakat_id']   = 'nullable|exists:tipe_zakat,uuid';
-                $rules['program_zakat_id'] = 'nullable|exists:program_zakat,id';
-            }
 
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
@@ -868,87 +928,23 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->amil_id            = $request->amil_id;
             $transaksi->status_penjemputan = 'menunggu';
             $transaksi->waktu_request      = now();
+
+            // SET JUMLAH = 0 (akan diisi amil nanti)
             $transaksi->jumlah             = 0;
+            $transaksi->jumlah_dibayar     = 0;
+            $transaksi->jumlah_infaq       = 0;
+            $transaksi->has_infaq          = false;
             $transaksi->keterangan         = $request->keterangan;
 
-            if ($request->filled('tanggal_penjemputan')) {
-                $transaksi->tanggal_penjemputan = $request->tanggal_penjemputan;
-            }
+            // STATUS PENDING - menunggu penjemputan
+            $transaksi->status             = 'pending';
+            $transaksi->konfirmasi_status  = null;
 
-            // ── Tentukan metode pembayaran ────────────────────────────
-            if ($request->filled('metode_pembayaran')) {
+            // JANGAN SET field zakat (biarkan NULL)
+            // $transaksi->jenis_zakat_id   = null; // default sudah null
+            // $transaksi->tipe_zakat_id    = null; // default sudah null
+            // $transaksi->metode_pembayaran = null; // default sudah null
 
-                if ($isBeras) {
-                    // Zakat fitrah beras
-                    $transaksi->metode_pembayaran = 'beras';
-                    $transaksi->jumlah_dibayar    = 0;
-                    $transaksi->jumlah_infaq      = 0;
-                    $transaksi->has_infaq         = false;
-                } elseif ($isFidyah) {
-                    // Fidyah
-                    switch ($request->fidyah_tipe) {
-                        case 'matang':
-                            $transaksi->metode_pembayaran = 'makanan_matang';
-                            $transaksi->jumlah_dibayar    = 0;
-                            $transaksi->jumlah_infaq      = 0;
-                            $transaksi->has_infaq         = false;
-                            break;
-                        case 'mentah':
-                            $transaksi->metode_pembayaran = 'bahan_mentah';
-                            $transaksi->jumlah_dibayar    = 0;
-                            $transaksi->jumlah_infaq      = 0;
-                            $transaksi->has_infaq         = false;
-                            break;
-                        case 'tunai':
-                        default:
-                            $transaksi->metode_pembayaran = $request->metode_pembayaran;
-                            if ($request->filled('jumlah_dibayar')) {
-                                $transaksi->jumlah_dibayar = $request->jumlah_dibayar;
-                                $transaksi->jumlah         = $request->jumlah_dibayar;
-                            } else {
-                                $transaksi->jumlah_dibayar = 0;
-                            }
-                            break;
-                    }
-                } else {
-                    // Zakat biasa (tunai / transfer / qris)
-                    $transaksi->metode_pembayaran = $request->metode_pembayaran;
-
-                    if ($request->filled('jumlah_dibayar')) {
-                        $transaksi->jumlah_dibayar = $request->jumlah_dibayar;
-                        $transaksi->jumlah         = $request->jumlah_dibayar;
-                    } else {
-                        $transaksi->jumlah_dibayar = 0;
-                    }
-                }
-
-                // Auto verified untuk semua metode
-                $transaksi->status      = 'verified';
-                $transaksi->verified_by = $this->user->id;
-                $transaksi->verified_at = now();
-
-                // konfirmasi_status untuk transfer/qris
-                if (in_array($transaksi->metode_pembayaran, ['transfer', 'qris'])) {
-                    $transaksi->konfirmasi_status = 'dikonfirmasi';
-                } else {
-                    $transaksi->konfirmasi_status = null;
-                }
-
-                Log::info('Transaksi dijemput auto verified', [
-                    'no_transaksi' => $noTransaksi,
-                    'metode'       => $transaksi->metode_pembayaran,
-                    'is_beras'     => $isBeras,
-                    'is_fidyah'    => $isFidyah,
-                ]);
-            } else {
-                // Tidak ada metode pembayaran — status pending, akan dilengkapi amil nanti
-                $transaksi->status            = 'pending';
-                $transaksi->konfirmasi_status = null;
-
-                Log::warning('Transaksi dijemput tanpa metode pembayaran', [
-                    'no_transaksi' => $noTransaksi,
-                ]);
-            }
 
             // Jika diinput oleh muzakki
             if ($this->user->isMuzakki() && $this->user->muzakki) {
@@ -963,26 +959,10 @@ class TransaksiPenerimaanController extends Controller
                 'no_transaksi' => $transaksi->no_transaksi,
                 'id'           => $transaksi->id,
                 'status'       => $transaksi->status,
-                'metode'       => $transaksi->metode_pembayaran,
-                'verified_at'  => $transaksi->verified_at,
+                'status_penjemputan' => $transaksi->status_penjemputan,
             ]);
 
-            // ── Pesan sukses ─────────────────────────────────────────
             $message = 'Request penjemputan berhasil disimpan. ';
-
-            if ($transaksi->status == 'verified') {
-                $labelMetode = [
-                    'tunai'          => 'TUNAI',
-                    'transfer'       => 'TRANSFER',
-                    'qris'           => 'QRIS',
-                    'beras'          => 'BERAS',
-                    'makanan_matang' => 'MAKANAN SIAP SANTAP',
-                    'bahan_mentah'   => 'BAHAN MAKANAN MENTAH',
-                ];
-                $namaMetode = $labelMetode[$transaksi->metode_pembayaran ?? ''] ?? strtoupper($transaksi->metode_pembayaran);
-                $message .= 'Pembayaran ' . $namaMetode . ' telah terverifikasi otomatis. ';
-            }
-
             $message .= 'Amil akan segera menghubungi Anda. No. Transaksi: ' . $transaksi->no_transaksi;
 
             if ($this->user->isMuzakki()) {
@@ -2044,6 +2024,30 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->save();
             DB::commit();
 
+            if ($isLengkapiZakat && $transaksi->status === 'verified' && $transaksi->muzakki_email) {
+                try {
+                    $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                        'kwitansi.download',
+                        now()->addDays(3),
+                        ['uuid' => $transaksi->uuid]
+                    );
+
+                    \Illuminate\Support\Facades\Mail::to($transaksi->muzakki_email)
+                        ->send(new \App\Mail\KwitansiTransaksiMail($transaksi, $signedUrl));
+
+                    Log::info('Email kwitansi dijemput terkirim', [
+                        'no_transaksi' => $transaksi->no_transaksi,
+                        'email'        => $transaksi->muzakki_email,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Gagal kirim email kwitansi dijemput: ' . $e->getMessage(), [
+                        'no_transaksi' => $transaksi->no_transaksi,
+                    ]);
+                    // Tidak abort — email gagal tidak boleh batalkan transaksi
+                }
+            }
+
+
             $message = $isLengkapiZakat
                 ? ($isFidyah
                     ? 'Data fidyah berhasil disimpan.'
@@ -2094,6 +2098,24 @@ class TransaksiPenerimaanController extends Controller
             $transaksi->save();
 
             DB::commit();
+
+            if ($transaksi->muzakki_email) {
+                try {
+                    $signedUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                        'kwitansi.download',
+                        now()->addDays(3),
+                        ['uuid' => $transaksi->uuid]
+                    );
+
+                    \Illuminate\Support\Facades\Mail::to($transaksi->muzakki_email)
+                        ->send(new \App\Mail\KwitansiTransaksiMail($transaksi, $signedUrl));
+                } catch (\Exception $e) {
+                    Log::warning('Gagal kirim email kwitansi konfirmasi: ' . $e->getMessage(), [
+                        'no_transaksi' => $transaksi->no_transaksi,
+                    ]);
+                }
+            }
+
 
             $infaqMsg = $transaksi->jumlah_infaq > 0
                 ? ' Infaq Rp ' . number_format($transaksi->jumlah_infaq, 0, ',', '.') . ' dicatat.'
