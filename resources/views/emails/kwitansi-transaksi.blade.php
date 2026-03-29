@@ -116,7 +116,7 @@
                     <tr>
                         <td style="padding:16px 40px 0; text-align:center;">
                             <span style="display:inline-block; background-color:#fef3c7; color:#92400e; font-size:11px; font-weight:700; padding:5px 14px; border-radius:999px; letter-spacing:0.5px; font-family:'Segoe UI',Arial,sans-serif;">
-                                🚗 Zakat Via Penjemputan
+                                Zakat Via Penjemputan
                             </span>
                         </td>
                     </tr>
