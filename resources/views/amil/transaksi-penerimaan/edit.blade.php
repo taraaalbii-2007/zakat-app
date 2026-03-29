@@ -96,8 +96,8 @@
                         </div>
                         <div id="line12" class="flex-1 h-0.5 bg-green-600"></div>
                         <div class="flex flex-col items-center flex-1">
-                            <div id="dot2" class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold bg-blue-600 text-white">2</div>
-                            <span class="text-xs mt-1 font-medium text-blue-600 text-center leading-tight">Detail Zakat</span>
+                            <div id="dot2" class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold bg-primary-600 text-white">2</div>
+                            <span class="text-xs mt-1 font-medium text-primary-600 text-center leading-tight">Detail Zakat</span>
                         </div>
                         <div id="line23" class="flex-1 h-0.5 bg-gray-200"></div>
                         <div class="flex flex-col items-center flex-1">
@@ -160,7 +160,7 @@
                 {{-- ═══════════ STEP 2 — DETAIL ZAKAT ═══════════ --}}
                 <div id="step2" class="step-panel">
                     <h3 class="text-sm font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-                        <span class="inline-flex w-5 h-5 rounded-full bg-blue-600 text-white text-xs items-center justify-center mr-1.5 font-bold">2</span>
+                        <span class="inline-flex w-5 h-5 rounded-full bg-primary-600 text-white text-xs items-center justify-center mr-1.5 font-bold">2</span>
                         Detail Zakat
                     </h3>
                     <div class="space-y-5">
@@ -237,7 +237,7 @@
                                         value="{{ old('jumlah_beras_kg', $transaksi->jumlah_beras_kg ?? $zakatFitrahInfo['beras_kg']) }}"
                                         min="0.1" step="0.1"
                                         class="w-full px-3 py-2 text-sm border border-gray-300 bg-white rounded-lg focus:outline-none focus:border-blue-500">
-                                    <p class="text-xs text-blue-600 mt-1 font-medium" id="infoBeras"></p>
+                                    <p class="text-xs text-primary-600 mt-1 font-medium" id="infoBeras"></p>
                                 </div>
                             </div>
 
@@ -303,8 +303,8 @@
                                 </div>
                             </div>
 
-                            <div id="infoTotalFitrahTunai" class="hidden bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-                                <p class="text-sm font-semibold text-blue-800" id="teksInfoTotalFitrah"></p>
+                            <div id="infoTotalFitrahTunai" class="hidden bg-primary-50 border border-blue-200 rounded-lg px-4 py-3">
+                                <p class="text-sm font-semibold text-primary-800" id="teksInfoTotalFitrah"></p>
                             </div>
 
                             {{-- Daftar Nama per Jiwa - Tunai --}}
@@ -371,11 +371,11 @@
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-start gap-3">
                                 <input type="checkbox" name="sudah_nisab" id="sudahNisab" value="1"
                                     {{ old('sudah_nisab', $transaksi->sudah_nisab ?? false) ? 'checked' : '' }}
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded mt-0.5">
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded mt-0.5">
                                 <div>
                                     <label for="sudahNisab" class="text-sm font-medium text-gray-900 cursor-pointer">
                                         Harta sudah mencapai nisab
-                                        <span id="keteranganNisab" class="text-xs text-blue-600 ml-1 font-normal"></span>
+                                        <span id="keteranganNisab" class="text-xs text-primary-600 ml-1 font-normal"></span>
                                     </label>
                                     <p class="text-xs text-gray-500 mt-0.5">Centang jika nilai harta sudah melebihi batas nisab</p>
                                 </div>
@@ -383,7 +383,7 @@
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-start gap-3">
                                 <input type="checkbox" name="sudah_haul" id="sudahHaul" value="1"
                                     {{ old('sudah_haul', $transaksi->sudah_haul) ? 'checked' : '' }}
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded mt-0.5">
+                                    class="w-4 h-4 text-primary-600 border-gray-300 rounded mt-0.5">
                                 <div>
                                     <label for="sudahHaul" class="text-sm font-medium text-gray-900 cursor-pointer">Harta sudah mencapai haul (1 tahun hijriyah)</label>
                                     <p class="text-xs text-gray-500 mt-0.5">Centang jika sudah dimiliki lebih dari atau sama dengan 1 tahun penuh</p>
@@ -397,7 +397,7 @@
                             </div>
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <p class="text-xs font-medium text-gray-700 mb-1">Total Zakat Mal</p>
-                                <p class="text-2xl font-bold text-blue-600" id="malTotalDisp">
+                                <p class="text-2xl font-bold text-primary-600" id="malTotalDisp">
                                     Rp {{ number_format($transaksi->jumlah ?? 0, 0, ',', '.') }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-0.5" id="malDetailDisp"></p>
@@ -556,7 +556,7 @@
                         </button>
                         <div class="flex gap-3">
                             <button type="button" id="btnS2Next" onclick="goToStep3()"
-                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all">
+                                class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition-all">
                                 Selanjutnya
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -576,7 +576,7 @@
                 {{-- ═══════════ STEP 3 — PEMBAYARAN ═══════════ --}}
                 <div id="step3" class="step-panel hidden">
                     <h3 class="text-sm font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-                        <span class="inline-flex w-5 h-5 rounded-full bg-blue-600 text-white text-xs items-center justify-center mr-1.5 font-bold">3</span>
+                        <span class="inline-flex w-5 h-5 rounded-full bg-primary-600 text-white text-xs items-center justify-center mr-1.5 font-bold">3</span>
                         Metode Pembayaran
                     </h3>
                     <div class="space-y-5">
@@ -584,7 +584,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Pilih Cara Pembayaran <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <label id="cardTunai"
-                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'tunai' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'tunai' ? 'border-blue-500 bg-primary-50' : 'border-gray-200 hover:bg-gray-50' }}">
                                     <input type="radio" name="metode_pembayaran" value="tunai" class="hidden pay-radio"
                                         {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'tunai' ? 'checked' : '' }}>
                                     <div class="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
@@ -596,11 +596,11 @@
                                     <p class="text-xs text-gray-500 text-center">Bayar langsung</p>
                                 </label>
                                 <label id="cardTransfer"
-                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'transfer' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'transfer' ? 'border-blue-500 bg-primary-50' : 'border-gray-200 hover:bg-gray-50' }}">
                                     <input type="radio" name="metode_pembayaran" value="transfer" class="hidden pay-radio"
                                         {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'transfer' ? 'checked' : '' }}>
-                                    <div class="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="w-11 h-11 rounded-full bg-primary-100 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10" />
                                         </svg>
                                     </div>
@@ -608,7 +608,7 @@
                                     <p class="text-xs text-gray-500 text-center">Ke rekening lembaga</p>
                                 </label>
                                 <label id="cardQris"
-                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'qris' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50' }}">
+                                    class="pay-card flex flex-col items-center gap-2 p-4 rounded-lg border cursor-pointer transition-all {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'qris' ? 'border-blue-500 bg-primary-50' : 'border-gray-200 hover:bg-gray-50' }}">
                                     <input type="radio" name="metode_pembayaran" value="qris" class="hidden pay-radio"
                                         {{ old('metode_pembayaran', $transaksi->metode_pembayaran) === 'qris' ? 'checked' : '' }}>
                                     <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center">
@@ -629,7 +629,7 @@
                                 <div>
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="text-sm font-medium text-gray-700">Jumlah yang Diserahkan (Rp)</label>
-                                        <button type="button" id="btnBayarPas" class="text-xs font-semibold text-blue-600 hover:underline">Isi Sesuai Zakat</button>
+                                        <button type="button" id="btnBayarPas" class="text-xs font-semibold text-primary-600 hover:underline">Isi Sesuai Zakat</button>
                                     </div>
                                     <div class="relative">
                                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">Rp</span>
@@ -668,7 +668,7 @@
                                                 <p class="text-xs text-gray-500">a.n. {{ $rek->nama_pemilik }}</p>
                                             </div>
                                             <button type="button" onclick="salin('{{ $rek->nomor_rekening }}')"
-                                                class="text-xs text-blue-600 hover:bg-blue-100 px-2 py-1 rounded transition-all font-medium">Salin</button>
+                                                class="text-xs text-primary-600 hover:bg-primary-100 px-2 py-1 rounded transition-all font-medium">Salin</button>
                                         </div>
                                     @endforeach
                                 @else
@@ -728,7 +728,7 @@
                             Kembali
                         </button>
                         <button type="submit" id="btnFinalSave"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-all">
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
@@ -810,13 +810,13 @@ function goToStep3() {
     document.getElementById('step3').classList.remove('hidden');
 
     const dot2 = document.getElementById('dot2');
-    dot2.classList.remove('bg-blue-600');
+    dot2.classList.remove('bg-primary-600');
     dot2.classList.add('bg-green-600');
     dot2.textContent = '✓';
 
     const dot3 = document.getElementById('dot3');
     dot3.classList.remove('bg-gray-200', 'text-gray-500');
-    dot3.classList.add('bg-blue-600', 'text-white');
+    dot3.classList.add('bg-primary-600', 'text-white');
 
     document.getElementById('line23').classList.add('bg-green-600');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -827,12 +827,12 @@ function goToStep2() {
     document.getElementById('step2').classList.remove('hidden');
 
     const dot3 = document.getElementById('dot3');
-    dot3.classList.remove('bg-blue-600', 'text-white');
+    dot3.classList.remove('bg-primary-600', 'text-white');
     dot3.classList.add('bg-gray-200', 'text-gray-500');
 
     const dot2 = document.getElementById('dot2');
     dot2.classList.remove('bg-green-600');
-    dot2.classList.add('bg-blue-600', 'text-white');
+    dot2.classList.add('bg-primary-600', 'text-white');
     dot2.textContent = '2';
 
     document.getElementById('line23').classList.remove('bg-green-600');
@@ -1367,7 +1367,7 @@ document.querySelectorAll('.pay-radio').forEach(r => {
         document.querySelectorAll('.pay-card').forEach(c => {
             const chk = c.querySelector('input').checked;
             c.classList.toggle('border-blue-500', chk);
-            c.classList.toggle('bg-blue-50', chk);
+            c.classList.toggle('bg-primary-50', chk);
             c.classList.toggle('border-gray-200', !chk);
         });
 

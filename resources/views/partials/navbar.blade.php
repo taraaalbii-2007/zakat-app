@@ -181,7 +181,6 @@
         class="absolute inset-0 bg-black/50 backdrop-blur-md opacity-0 transition-opacity duration-300"
         onclick="closeLogoutModal()"></div>
 
-    {{-- Modal card — tanpa border --}}
     <div id="logout-card"
         class="relative bg-white rounded-3xl w-full max-w-sm mx-4 overflow-hidden scale-90 opacity-0 transition-all duration-300"
         style="box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 12px rgba(0,0,0,0.05);">
@@ -204,7 +203,7 @@
                 Sesi Anda akan diakhiri. Pastikan semua<br>pekerjaan sudah tersimpan sebelum keluar.
             </p>
 
-            {{-- User info card — tanpa border --}}
+            {{-- User info card --}}
             <div class="flex items-center space-x-3 px-2 py-2 mb-6">
                 <div class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
                     style="background: #2d6a2d;">
@@ -318,7 +317,7 @@
                             @endif
                         </button>
 
-                        {{-- Notifications Dropdown — tanpa border --}}
+                        {{-- Notifications Dropdown --}}
                         <div id="notifications-dropdown"
                             class="absolute right-0 mt-3 w-[350px] bg-white rounded-2xl hidden overflow-hidden"
                             style="box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);">
@@ -362,11 +361,13 @@
                             <div id="notif-list" class="max-h-[380px] overflow-y-auto"
                                 style="scrollbar-width: thin; scrollbar-color: #e5e7eb transparent;">
                                 @forelse($notifItems as $notif)
-                                    <a href="{{ $notif['url'] }}" data-id="{{ $notif['id'] }}"
+                                    {{-- ✅ PERBAIKAN: tag <a> sekarang ditutup dengan > sebelum konten di dalamnya --}}
+                                    <a href="{{ $notif['url'] }}"
+                                        data-id="{{ $notif['id'] }}"
                                         onclick="markNotifRead(event, this)"
-                                        class="notif-item flex items-start space-x-3 px-5 py-4 hover:bg-[#f9fbf9] transition-all duration-200 group"
-                                        <div
-                                            class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 {{ $notif['color'] === 'emerald' ? 'bg-emerald-50' : ($notif['color'] === 'amber' ? 'bg-amber-50' : ($notif['color'] === 'red' ? 'bg-red-50' : ($notif['color'] === 'blue' ? 'bg-blue-50' : 'bg-gray-50'))) }}">
+                                        class="notif-item flex items-start space-x-3 px-5 py-4 hover:bg-[#f9fbf9] transition-all duration-200 group">
+                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5
+                                            {{ $notif['color'] === 'emerald' ? 'bg-emerald-50' : ($notif['color'] === 'amber' ? 'bg-amber-50' : ($notif['color'] === 'red' ? 'bg-red-50' : ($notif['color'] === 'blue' ? 'bg-blue-50' : 'bg-gray-50'))) }}">
                                             @if ($notif['icon'] === 'transfer')
                                                 <svg class="w-4 h-4 text-emerald-600" fill="none"
                                                     stroke="currentColor" viewBox="0 0 24 24">
@@ -416,8 +417,7 @@
                                             @endif
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <p
-                                                class="text-[12.5px] font-semibold text-gray-900 truncate group-hover:text-[#1f5c1f] transition-colors">
+                                            <p class="text-[12.5px] font-semibold text-gray-900 truncate group-hover:text-[#1f5c1f] transition-colors">
                                                 {{ $notif['title'] }}</p>
                                             <p class="text-[11.5px] text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
                                                 {{ $notif['body'] }}</p>
@@ -518,12 +518,12 @@
                         </svg>
                     </button>
 
-                    {{-- User Dropdown — tanpa border --}}
+                    {{-- User Dropdown --}}
                     <div id="user-menu-dropdown"
                         class="absolute right-0 mt-3 w-60 bg-white rounded-2xl hidden overflow-hidden"
                         style="box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);">
 
-                        {{-- Header — tanpa border --}}
+                        {{-- Header --}}
                         <div class="px-4 py-3" style="background: #fafcfa;">
                             <div class="flex items-center space-x-3">
                                 <div class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
@@ -555,8 +555,7 @@
                             @if ($isSuperadmin)
                                 <a href="{{ route('superadmin.profil.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -567,8 +566,7 @@
                                 </a>
                                 <a href="{{ route('konfigurasi-global.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-global.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -581,8 +579,7 @@
                                 </a>
                                 <a href="{{ route('superadmin.kontak.index') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('superadmin.kontak.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -603,8 +600,7 @@
                             @if ($isAdminLembaga)
                                 <a href="{{ route('admin-lembaga.profil.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('admin-lembaga.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -615,8 +611,7 @@
                                 </a>
                                 <a href="{{ route('konfigurasi-integrasi.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('konfigurasi-integrasi.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -632,8 +627,7 @@
                             @if ($isAmil)
                                 <a href="{{ route('profil.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -647,8 +641,7 @@
                             @if ($isMuzakki)
                                 <a href="{{ route('muzakki.profil.show') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('muzakki.profil.*') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -659,8 +652,7 @@
                                 </a>
                                 <a href="{{ route('transaksi-daring-muzakki.create') }}"
                                     class="flex items-center space-x-3 px-4 py-1.5 text-[12.5px] text-gray-700 hover:bg-[#f5faf5] hover:text-[#1f5c1f] transition-colors {{ request()->routeIs('transaksi-daring-muzakki.create') ? 'bg-[#f0f7f0] text-[#1f5c1f] font-semibold' : '' }}">
-                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                                        >
+                                    <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -672,7 +664,7 @@
                             @endif
                         </div>
 
-                        {{-- Logout — tanpa border --}}
+                        {{-- Logout --}}
                         <div class="px-3 py-2">
                             <button type="button" onclick="openLogoutModal()"
                                 class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-[12.5px] font-medium text-red-600 hover:bg-red-50 transition-all duration-200 group">
