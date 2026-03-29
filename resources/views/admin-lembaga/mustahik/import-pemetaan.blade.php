@@ -7,24 +7,6 @@
 @section('content')
     <div class="space-y-5">
 
-        {{-- ── Info File ──────────────────────────────────────────────── --}}
-        <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-start gap-3">
-            <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div class="text-sm text-blue-800">
-                <p>File berhasil dibaca. Ditemukan
-                    <strong>{{ count($importSession['excel_headers']) }} kolom</strong> dan
-                    <strong>{{ $importSession['total_rows'] }} baris</strong> data.
-                </p>
-                <p class="text-blue-600 text-xs mt-0.5">
-                    Petakan kolom Excel ke kolom sistem, lalu klik
-                    <strong>"Cek Pemetaan &amp; Preview"</strong> sebelum import.
-                </p>
-            </div>
-        </div>
-
         {{-- ── Form Utama ─────────────────────────────────────────────── --}}
         <form method="POST" action="{{ route('mustahik.import.proses') }}" id="form-import">
             @csrf
