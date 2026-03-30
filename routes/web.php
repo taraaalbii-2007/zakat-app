@@ -238,13 +238,17 @@ Route::middleware(['auth', 'active.user', 'superadmin'])->group(function () {
     });
 
     Route::prefix('superadmin-profil')->name('superadmin.profil.')->group(function () {
-        Route::get('/',                     [ProfilSuperadminController::class, 'show'])->name('show');
-        Route::get('/edit',                 [ProfilSuperadminController::class, 'edit'])->name('edit');
-        Route::put('/update',                [ProfilSuperadminController::class, 'update'])->name('update');
+        Route::get('/', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'show'])->name('show');
+        Route::get('/edit', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'edit'])->name('edit');
+        Route::put('/update', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'update'])->name('update');
 
-        // Routes khusus untuk password
-        Route::get('/ubah-password',         [ProfilSuperadminController::class, 'editPassword'])->name('password.edit');
-        Route::put('/ubah-password',          [ProfilSuperadminController::class, 'updatePassword'])->name('password.update');
+        // Email routes
+        Route::get('/email/edit', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'editEmail'])->name('email.edit');
+        Route::put('/email/update', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'updateEmail'])->name('email.update');
+
+        // Password routes
+        Route::get('/password/edit', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'editPassword'])->name('password.edit');
+        Route::put('/password/update', [App\Http\Controllers\Superadmin\ProfilSuperadminController::class, 'updatePassword'])->name('password.update');
     });
 
     Route::prefix('kategori-bulletin')->name('superadmin.kategori-bulletin.')->group(function () {
@@ -619,11 +623,19 @@ Route::middleware(['auth', 'active.user', 'amil', 'lembaga.access'])->group(func
     });
 
 
+    // Amil Profile Routes
     Route::prefix('profil')->name('profil.')->group(function () {
-        Route::get('/',         [ProfilAmilController::class, 'show'])->name('show');
-        Route::get('/edit',     [ProfilAmilController::class, 'edit'])->name('edit');
-        Route::put('/update',   [ProfilAmilController::class, 'update'])->name('update');
-        Route::put('/password', [ProfilAmilController::class, 'updatePassword'])->name('password');
+        Route::get('/', [App\Http\Controllers\Amil\ProfilAmilController::class, 'show'])->name('show');
+        Route::get('/edit', [App\Http\Controllers\Amil\ProfilAmilController::class, 'edit'])->name('edit');
+        Route::put('/update', [App\Http\Controllers\Amil\ProfilAmilController::class, 'update'])->name('update');
+
+        // Email routes
+        Route::get('/email/edit', [App\Http\Controllers\Amil\ProfilAmilController::class, 'editEmail'])->name('email.edit');
+        Route::put('/email/update', [App\Http\Controllers\Amil\ProfilAmilController::class, 'updateEmail'])->name('email.update');
+
+        // Password routes
+        Route::get('/password/edit', [App\Http\Controllers\Amil\ProfilAmilController::class, 'editPassword'])->name('password.edit');
+        Route::put('/password/update', [App\Http\Controllers\Amil\ProfilAmilController::class, 'updatePassword'])->name('password.update');
     });
 
     Route::prefix('kas-harian')->name('kas-harian.')->group(function () {
@@ -766,11 +778,11 @@ Route::middleware(['auth', 'active.user', 'role:admin_lembaga,amil', 'lembaga.ac
         // AJAX: cek kategori mustahik ada di DB
         Route::post('/import/cek-kategori', [MustahikController::class, 'cekKategori'])
             ->name('import.cekKategori');
-        
+
         // AJAX: cek NIK duplikat di DB
         Route::post('/import/cek-nik', [MustahikController::class, 'cekNik'])
             ->name('import.cekNik');
- 
+
 
         // CRUD - Both can access
         Route::get('/', [MustahikController::class, 'index'])->name('index');

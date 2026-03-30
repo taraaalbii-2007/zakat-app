@@ -55,73 +55,133 @@ class ProfilSuperadminController extends Controller
     }
 
     // ---------------------------------------------------------------
+    // FORM UBAH EMAIL
+    // ---------------------------------------------------------------
+    public function editEmail()
+    {
+        $user = $this->user;
+        $breadcrumbs = [
+            'Kelola Profil' => route('superadmin.profil.show'),
+            'Ubah Email' => route('superadmin.profil.email.edit')
+        ];
+        return view('superadmin.profil.ubah-email', compact('user', 'breadcrumbs'));
+    }
+
+    // ---------------------------------------------------------------
     // FORM UBAH PASSWORD
     // ---------------------------------------------------------------
     public function editPassword()
     {
         $user = $this->user;
-        return view('superadmin.profil.ubah-password', compact('user'));
+        $breadcrumbs = [
+            'Kelola Profil' => route('superadmin.profil.show'),
+            'Ubah Password' => route('superadmin.profil.password.edit')
+        ];
+        return view('superadmin.profil.ubah-password', compact('user', 'breadcrumbs'));
     }
 
     // ---------------------------------------------------------------
-    // UPDATE — username + email (FOTO DIHAPUS)
+    // UPDATE — username (TANPA email)
     // ---------------------------------------------------------------
     public function update(Request $request)
     {
         $user = $this->user;
-        $emailChanged = $user->email !== $request->email;
 
         $request->validate([
             'username' => 'required|string|max:255|unique:pengguna,username,' . $user->id,
-            'email'    => 'required|email|max:255|unique:pengguna,email,' . $user->id,
         ]);
 
         DB::beginTransaction();
         try {
-            // ── Update username & email ──────────────────
             $user->username = $request->input('username');
-            $user->email    = $request->input('email');
-
-            // ── Simpan ───────────────────────────────────
             $user->save();
-
-            // ── Kirim email notifikasi jika email berubah ──
-            if ($emailChanged) {
-                try {
-                    Mail::to($user->email)->send(new DataAkunDiubahNotification($user, 'email'));
-                    Log::info('Email notifikasi perubahan email terkirim ke: ' . $user->email);
-                } catch (\Exception $e) {
-                    Log::error('Gagal kirim email notifikasi perubahan email: ' . $e->getMessage());
-                    // Tetap lanjutkan proses meskipun email gagal terkirim
-                }
-            }
 
             DB::commit();
 
-            // ── Logout user jika email berubah ──
-            if ($emailChanged) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return redirect()->route('login')
-                    ->with('warning', 'Email Anda telah diubah. Silakan login ulang dengan email baru Anda.');
-            }
-
             return redirect()->route('superadmin.profil.show')
-                ->with('success', 'Profil berhasil diperbarui.');
+                ->with('success', 'Username berhasil diperbarui.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Gagal update profil superadmin: ' . $e->getMessage());
+            Log::error('Gagal update username superadmin: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
+                ->with('error', 'Gagal memperbarui username. Silakan coba lagi.');
         }
     }
 
     // ---------------------------------------------------------------
-    // UPDATE PASSWORD
+    // UPDATE EMAIL — simpan email baru + notifikasi + auto logout
+    // ---------------------------------------------------------------
+    public function updateEmail(Request $request)
+    {
+        $user = $this->user;
+
+        $validator = Validator::make($request->all(), [
+            'email'            => 'required|email|max:255|unique:pengguna,email,' . $user->id,
+            'current_password' => 'required|string',
+        ], [
+            'email.unique'              => 'Email tersebut sudah digunakan oleh akun lain.',
+            'email.required'            => 'Email baru wajib diisi.',
+            'current_password.required' => 'Password wajib diisi untuk konfirmasi.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Verifikasi password sebagai konfirmasi keamanan
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'Password tidak sesuai. Perubahan email dibatalkan.'])
+                ->withInput();
+        }
+
+        // Cek apakah email benar-benar berubah
+        if ($user->email === $request->email) {
+            return redirect()->back()
+                ->with('info', 'Email tidak berubah.')
+                ->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            $user->email = $request->email;
+            $user->save();
+
+            // Kirim notifikasi ke email baru
+            try {
+                $mailConfig = \App\Models\MailConfig::first();
+                if ($mailConfig && $mailConfig->isComplete()) {
+                    Mail::to($user->email)->send(new DataAkunDiubahNotification($user, 'email'));
+                    Log::info('Notifikasi perubahan email terkirim ke: ' . $user->email);
+                } else {
+                    Log::warning('Konfigurasi mail tidak lengkap, notifikasi email tidak dikirim.');
+                }
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim notifikasi perubahan email: ' . $e->getMessage());
+                // Tetap lanjutkan meskipun notifikasi gagal
+            }
+
+            DB::commit();
+
+            // Auto logout
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('warning', 'Email Anda berhasil diubah. Silakan login ulang menggunakan email baru Anda.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal update email superadmin: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui email. Silakan coba lagi.');
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // UPDATE PASSWORD — simpan password baru + notifikasi + auto logout
     // ---------------------------------------------------------------
     public function updatePassword(Request $request)
     {
@@ -147,49 +207,30 @@ class ProfilSuperadminController extends Controller
             $this->user->password = Hash::make($request->password);
             $this->user->save();
 
-            // Kirim email notifikasi perubahan password
+            // Kirim notifikasi ke email
             try {
-                // Cek konfigurasi mail sebelum mengirim
                 $mailConfig = \App\Models\MailConfig::first();
-
-                if (!$mailConfig || !$mailConfig->isComplete()) {
-                    Log::error('Mail configuration incomplete', [
-                        'config_exists' => !is_null($mailConfig),
-                        'is_complete' => $mailConfig ? $mailConfig->isComplete() : false
-                    ]);
-                    throw new \Exception('Konfigurasi email tidak lengkap');
+                if ($mailConfig && $mailConfig->isComplete()) {
+                    Mail::to($this->user->email)->send(new DataAkunDiubahNotification($this->user, 'password'));
+                    Log::info('Notifikasi perubahan password terkirim ke: ' . $this->user->email);
+                } else {
+                    Log::warning('Konfigurasi mail tidak lengkap, notifikasi password tidak dikirim.');
                 }
-
-                // Log config yang akan digunakan
-                Log::info('Attempting to send email with config:', [
-                    'host' => config('mail.mailers.smtp.host'),
-                    'port' => config('mail.mailers.smtp.port'),
-                    'username' => config('mail.mailers.smtp.username'),
-                    'from' => config('mail.from.address'),
-                    'to' => $this->user->email
-                ]);
-
-                Mail::to($this->user->email)->send(new \App\Mail\DataAkunDiubahNotification($this->user, 'password'));
-
-                Log::info('Email notifikasi perubahan password terkirim ke: ' . $this->user->email);
             } catch (\Exception $e) {
-                Log::error('Gagal kirim email notifikasi perubahan password: ' . $e->getMessage());
-                Log::error('Stack trace: ' . $e->getTraceAsString());
-
-                // Tetap lanjutkan proses meskipun email gagal terkirim
-                // Tapi kita bisa kasih warning ke user
-                session()->flash('warning', 'Password berhasil diubah, tetapi gagal mengirim email notifikasi. Error: ' . $e->getMessage());
+                Log::error('Gagal kirim notifikasi perubahan password: ' . $e->getMessage());
+                // Tetap lanjutkan meskipun notifikasi gagal
             }
 
             DB::commit();
 
-            // Logout user setelah password berubah
+            // Auto logout
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
                 ->with('success', 'Password berhasil diubah. Silakan login ulang dengan password baru Anda.');
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Update password superadmin error: ' . $e->getMessage());

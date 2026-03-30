@@ -1,3 +1,4 @@
+{{-- resources/views/amil/profil/ubah-password.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Ubah Password')
@@ -14,7 +15,7 @@
                     <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Ubah Password</h1>
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Perbarui password akun Anda</p>
                 </div>
-                <a href="{{ route('superadmin.profil.show') }}"
+                <a href="{{ route('profil.show') }}"
                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
                     <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -26,9 +27,11 @@
 
         <div class="p-4 sm:p-6">
 
+            @php $user = $amil->pengguna; @endphp
+
             @if(!$user->is_google_user)
 
-            <form action="{{ route('superadmin.profil.password.update') }}" method="POST" class="w-full">
+            <form action="{{ route('profil.password.update') }}" method="POST" class="w-full">
                 @csrf
                 @method('PUT')
 
@@ -144,7 +147,7 @@
 
                 {{-- Action Buttons --}}
                 <div class="w-full flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <a href="{{ route('superadmin.profil.show') }}"
+                    <a href="{{ route('profil.show') }}"
                         class="px-5 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition">
                         Batal
                     </a>
