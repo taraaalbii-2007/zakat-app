@@ -626,14 +626,26 @@
                     <div>
                         <h4 class="text-sm sm:text-base font-semibold text-gray-900 mb-4">Informasi Amil</h4>
                         @if ($transaksi->amil)
+                            @php
+                                $namaAmil = $transaksi->amil->nama_lengkap ?? optional(optional($transaksi->amil)->pengguna)->name ?? '-';
+                                $inisialAmil = strtoupper(substr($namaAmil, 0, 1));
+                                $bgColors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-orange-500'];
+                                $bgColor = $bgColors[ord($inisialAmil) % count($bgColors)];
+                            @endphp
                             <div class="flex items-center gap-3 mb-3">
-                                <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
-                                    <img src="{{ $transaksi->amil->foto_url ?? asset('images/default-avatar.png') }}"
-                                        alt="Foto Amil" class="w-full h-full object-cover">
-                                </div>
+                                @if ($transaksi->amil->foto_url && file_exists(public_path('storage/' . $transaksi->amil->foto_url)))
+                                    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+                                        <img src="{{ asset('storage/' . $transaksi->amil->foto_url) }}"
+                                            alt="Foto Amil" class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <div class="w-12 h-12 rounded-full {{ $bgColor }} flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0">
+                                        {{ $inisialAmil }}
+                                    </div>
+                                @endif
                                 <div>
                                     <p class="text-sm font-medium text-gray-900">
-                                        {{ $transaksi->amil->nama_lengkap ?? optional(optional($transaksi->amil)->pengguna)->name ?? '-' }}
+                                        {{ $namaAmil }}
                                     </p>
                                     @if ($transaksi->amil->kode_amil)
                                         <p class="text-xs text-gray-500">Kode: {{ $transaksi->amil->kode_amil }}</p>
