@@ -275,4 +275,5 @@ class SetorKas extends Model
         if (is_null($this->jumlah_dihitung_fisik)) return null;
         return (float) $this->jumlah_dihitung_fisik - (float) $this->jumlah_disetor;
     }
+    
 }

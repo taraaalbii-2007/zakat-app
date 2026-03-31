@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\Bulletin;
 use App\Models\KonfigurasiAplikasi;
 use App\Models\TransaksiPenyaluran;
+use App\Models\SetorKas;
+use App\Models\Mustahik;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -33,6 +35,29 @@ class AppServiceProvider extends ServiceProvider
                 $pendingApprovalCount = 0;
             }
 
+            // Count setor kas pending untuk admin lembaga
+            if (Auth::check() && Auth::user()->peran === 'admin_lembaga') {
+                $lembaga = Auth::user()->lembaga;
+                $pendingSetorKasCount = $lembaga
+                    ? SetorKas::byLembaga($lembaga->id)->pending()->count()
+                    : 0;
+            } else {
+                $pendingSetorKasCount = 0;
+            }
+
+            // Count mustahik pending untuk admin lembaga
+if (Auth::check() && Auth::user()->peran === 'admin_lembaga') {
+    $lembaga = Auth::user()->lembaga;
+    $pendingMustahikCount = $lembaga
+        ? Mustahik::where('lembaga_id', $lembaga->id)
+            ->where('status_verifikasi', 'pending')
+            ->count()
+        : 0;
+} else {
+    $pendingMustahikCount = 0;
+}
+
+            
             // Count bulletin pending untuk superadmin (semua bulletin dari lembaga yang menunggu approval)
             if (Auth::check() && Auth::user()->peran === 'superadmin') {
                 $bulletinPendingCount = Bulletin::whereNotNull('lembaga_id')
@@ -88,6 +113,8 @@ class AppServiceProvider extends ServiceProvider
             $view->with('pendingApprovalCount', $pendingApprovalCount);
             $view->with('bulletinPendingCount', $bulletinPendingCount);
             $view->with('sidebarCounts', $sidebarCounts);
+            $view->with('pendingSetorKasCount', $pendingSetorKasCount);
+            $view->with('pendingMustahikCount', $pendingMustahikCount);
         });
     }
 }
