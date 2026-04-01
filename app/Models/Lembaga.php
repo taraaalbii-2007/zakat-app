@@ -492,4 +492,9 @@ class Lembaga extends Model
             default     => '-',
         };
     }
+
+    public function laporanKeuangan()
+    {
+        return $this->hasMany(\App\Models\LaporanKeuanganLembaga::class, 'lembaga_id');
+    }
 }

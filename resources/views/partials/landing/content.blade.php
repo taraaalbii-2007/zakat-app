@@ -7,19 +7,17 @@
      ============================================================ --}}
 
 @include('partials.landing.sections.video')
-
+ 
 @include('partials.landing.sections.fitur')
-
+ 
+@include('partials.landing.sections.laporan')
+ 
 @include('partials.landing.sections.statistik')
-
+ 
 @include('partials.landing.sections.cara-kerja')
-
+ 
 @include('partials.landing.sections.testimoni')
-
-{{-- ============================================================
-     GLOBAL SCROLL OBSERVER
-     Dipasang sekali di sini agar berlaku untuk semua section.
-     ============================================================ --}}
+ 
 <script>
 (function () {
     if (!('IntersectionObserver' in window)) {
@@ -35,7 +33,7 @@
             }
         });
     }, { threshold: 0.12 });
-
+ 
     document.querySelectorAll('.nz-reveal,.nz-reveal-left,.nz-reveal-right,.nz-reveal-scale')
         .forEach(function(el){ obs.observe(el); });
 })();

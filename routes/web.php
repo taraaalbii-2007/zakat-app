@@ -37,6 +37,8 @@ Route::get('/hitung-zakat', [LandingController::class, 'hitungZakat'])->name('hi
 Route::get('/panduan-zakat', [LandingController::class, 'panduanZakat'])->name('panduan-zakat');
 Route::get('/artikel', [LandingController::class, 'artikel'])->name('artikel.index');
 Route::get('/artikel/{bulletin:slug}', [LandingController::class, 'artikelShow'])->name('artikel.show');
+Route::get('/laporan', [LandingController::class, 'laporan'])->name('laporan.index');
+Route::get('/laporan/{lembaga:id}', [LandingController::class, 'laporanDetail'])->name('laporan.detail');
 
 // kontak
 Route::get('/kontak', [KontakController::class, 'index'])->name('kontak');

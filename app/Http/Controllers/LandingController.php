@@ -148,4 +148,115 @@ class LandingController extends Controller
 
         return view('pages.bulletin-show', compact('bulletin', 'related'));
     }
+
+    public function laporan(Request $request)
+    {
+        $tahun = $request->get('tahun', date('Y'));
+        $bulan = $request->get('bulan');
+        $q     = $request->get('q');
+
+        $query = \App\Models\LaporanKeuanganLembaga::with('lembaga')
+            ->where('status', 'published')
+            ->orderBy('published_at', 'desc');
+
+        // Filter tahun
+        if ($tahun) {
+            $query->where('tahun', $tahun);
+        }
+
+        // Filter bulan
+        if ($bulan) {
+            $query->where('bulan', $bulan);
+        }
+
+        // Search nama lembaga
+        if ($q) {
+            $query->whereHas('lembaga', function ($sub) use ($q) {
+                $sub->where('nama', 'like', "%{$q}%")
+                    ->orWhere('kode_lembaga', 'like', "%{$q}%")
+                    ->orWhere('kota_nama', 'like', "%{$q}%");
+            });
+        }
+
+        $laporan = $query->paginate(12);
+
+        // Available tahun untuk filter
+        $availableTahun = \App\Models\LaporanKeuanganLembaga::where('status', 'published')
+            ->selectRaw('DISTINCT tahun')
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun')
+            ->toArray();
+
+        if (!in_array(date('Y'), $availableTahun)) {
+            array_unshift($availableTahun, (int) date('Y'));
+        }
+
+        // Summary stats untuk hero
+        $totalLaporan  = \App\Models\LaporanKeuanganLembaga::where('status', 'published')->count();
+        $totalLembaga  = \App\Models\Lembaga::where('is_active', true)->count();
+
+        $totalDana = \App\Models\LaporanKeuanganLembaga::where('status', 'published')
+            ->sum('total_penyaluran');
+        $totalDanaDisalurkan = 'Rp ' . $this->formatAngka($totalDana);
+
+        return view('pages.laporan', compact(
+            'laporan',
+            'availableTahun',
+            'totalLaporan',
+            'totalLembaga',
+            'totalDanaDisalurkan',
+        ));
+    }
+
+
+    private function formatAngka(float $angka): string
+    {
+        if ($angka >= 1_000_000_000) {
+            return number_format($angka / 1_000_000_000, 1, ',', '.') . ' M';
+        }
+        if ($angka >= 1_000_000) {
+            return number_format($angka / 1_000_000, 1, ',', '.') . ' Jt';
+        }
+        return number_format($angka, 0, ',', '.');
+    }
+
+    public function laporanDetail(Request $request, $id)
+{
+    // Ambil lembaga beserta laporan keuangannya
+    $lembaga = Lembaga::findOrFail($id);
+    
+    // Buat query untuk laporan keuangan
+    $query = \App\Models\LaporanKeuanganLembaga::where('lembaga_id', $lembaga->id)
+        ->where('status', 'published')
+        ->orderBy('tahun', 'desc')
+        ->orderBy('bulan', 'desc');
+    
+    // Ambil semua tahun yang tersedia untuk filtering
+    $availableTahun = \App\Models\LaporanKeuanganLembaga::where('lembaga_id', $lembaga->id)
+        ->where('status', 'published')
+        ->select('tahun')
+        ->distinct()
+        ->orderBy('tahun', 'desc')
+        ->pluck('tahun')
+        ->toArray();
+    
+    // Filter berdasarkan tahun jika ada
+    $tahun = $request->get('tahun');
+    if ($tahun && in_array($tahun, $availableTahun)) {
+        $query->where('tahun', $tahun);
+    }
+    
+    // Ambil laporan terbaru untuk summary
+    $latestLaporan = $query->clone()->first();
+    
+    // Paginate hasilnya
+    $laporan = $query->paginate(10);
+    
+    return view('pages.laporan-detail', compact(
+        'lembaga',
+        'laporan',
+        'latestLaporan',
+        'availableTahun'
+    ));
+}
 }
