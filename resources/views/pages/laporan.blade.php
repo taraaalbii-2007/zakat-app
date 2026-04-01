@@ -16,7 +16,9 @@
         /* ── WRAPPER HALAMAN ─────────────────────────── */
         .lrk-page {
             background: #ffffff;
-            padding-bottom: 5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── FILTER + SEARCH WRAP (sticky) ──────────── */
@@ -176,6 +178,7 @@
             width: 100%;
             box-sizing: border-box;
             padding: 1.5rem 1rem 0;
+            flex: 1;
         }
 
         @media (min-width: 640px) {
@@ -509,7 +512,7 @@
         .lrk-pagination {
             width: 100%;
             box-sizing: border-box;
-            margin: 3rem 0 0;
+            margin: 3rem 0 2rem;
             padding: 0 1rem;
             display: flex;
             justify-content: center;
@@ -546,6 +549,23 @@
             background: #16a34a !important;
             border-color: #16a34a !important;
             color: #ffffff !important;
+        }
+
+        /* Menambahkan min-height pada section agar bisa scroll */
+        .lrk-section {
+            min-height: calc(100vh - 300px);
+        }
+        
+        /* Memastikan body bisa scroll */
+        html, body {
+            height: auto;
+            min-height: 100vh;
+            overflow-y: auto !important;
+        }
+        
+        /* Footer spacer untuk memastikan scroll */
+        .lrk-footer-spacer {
+            height: 2rem;
         }
     </style>
 
@@ -757,7 +777,28 @@
                 {{ $laporan->appends(request()->query())->links() }}
             </div>
         @endif
+        
+        {{-- Spacer untuk memastikan bisa scroll meskipun hanya 1 card --}}
+        <div class="lrk-footer-spacer"></div>
 
     </div>
+
+    <script>
+        // Memastikan body bisa scroll
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
+        
+        // Jika ada navbar fixed, sesuaikan posisi sticky
+        setTimeout(function() {
+            const navbar = document.querySelector('nav.navbar, nav, header');
+            if (navbar && window.getComputedStyle(navbar).position === 'fixed') {
+                const navbarHeight = navbar.offsetHeight;
+                const filterWrap = document.querySelector('.lrk-filter-wrap');
+                if (filterWrap) {
+                    filterWrap.style.top = navbarHeight + 'px';
+                }
+            }
+        }, 100);
+    </script>
 
 @endsection

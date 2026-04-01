@@ -50,6 +50,12 @@ class LandingController extends Controller
             ->latest('published_at')
             ->limit(3)
             ->get();
+        
+        $laporanPublished = \App\Models\LaporanKeuanganLembaga::with('lembaga')
+        ->where('status', 'published')
+        ->orderBy('published_at', 'desc')
+        ->limit(3) 
+        ->get();
 
         return view('layouts.guest', compact(
             'hargaTerbaru',
@@ -61,6 +67,7 @@ class LandingController extends Controller
             'totalLembaga',
             'testimonis',
             'bulletinTerbaru',
+            'laporanPublished'
         ));
     }
 
