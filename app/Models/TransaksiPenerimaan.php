@@ -135,7 +135,7 @@ class TransaksiPenerimaan extends Model
             if (empty($model->tanggal_transaksi)) $model->tanggal_transaksi = now();
             if (empty($model->waktu_transaksi))   $model->waktu_transaksi = now();
             if (empty($model->no_kwitansi))    $model->no_kwitansi = self::generateNoKwitansi($model->lembaga_id);
-            
+
             // Default jumlah_dibayar = jumlah jika tidak diisi
             if (is_null($model->jumlah_dibayar) && !is_null($model->jumlah)) {
                 $model->jumlah_dibayar = $model->jumlah;
@@ -152,31 +152,31 @@ class TransaksiPenerimaan extends Model
     // GENERATE NOMOR
     // ===============================
 
-  public static function generateNoTransaksi($lembagaId): string
-{
-    $lembaga     = Lembaga::find($lembagaId);
-    $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
+    public static function generateNoTransaksi($lembagaId): string
+    {
+        $lembaga     = Lembaga::find($lembagaId);
+        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
 
-    $last = self::orderBy('id', 'desc')->first();
+        $last = self::orderBy('id', 'desc')->first();
 
-    $newNumber = $last ? ((int) substr($last->no_transaksi, -4)) + 1 : 1;
-    return 'TRX-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-    // hasil: TRX-LMBG20260001-0001
-}
+        $newNumber = $last ? ((int) substr($last->no_transaksi, -4)) + 1 : 1;
+        return 'TRX-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // hasil: TRX-LMBG20260001-0001
+    }
 
-public static function generateNoKwitansi($lembagaId): string
-{
-    $lembaga     = Lembaga::find($lembagaId);
-    $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
+    public static function generateNoKwitansi($lembagaId): string
+    {
+        $lembaga     = Lembaga::find($lembagaId);
+        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
 
-    $last = self::whereNotNull('no_kwitansi')
-        ->orderBy('id', 'desc')
-        ->first();
+        $last = self::whereNotNull('no_kwitansi')
+            ->orderBy('id', 'desc')
+            ->first();
 
-    $newNumber = ($last && $last->no_kwitansi) ? ((int) substr($last->no_kwitansi, -4)) + 1 : 1;
-    return 'KWT-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-    // hasil: KWT-LMBG20260001-0001
-}
+        $newNumber = ($last && $last->no_kwitansi) ? ((int) substr($last->no_kwitansi, -4)) + 1 : 1;
+        return 'KWT-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // hasil: KWT-LMBG20260001-0001
+    }
 
     // ===============================
     // RELATIONSHIPS
@@ -291,7 +291,7 @@ public static function generateNoKwitansi($lembagaId): string
     {
         return $query->whereYear('tanggal_transaksi', $tahun);
     }
-    
+
     /**
      * Scope untuk filter fidyah
      */
@@ -299,7 +299,7 @@ public static function generateNoKwitansi($lembagaId): string
     {
         return $q->whereNotNull('fidyah_jumlah_hari');
     }
-    
+
     public function scopeByFidyahTipe($q, $tipe)
     {
         return $q->where('fidyah_tipe', $tipe);
@@ -392,13 +392,13 @@ public static function generateNoKwitansi($lembagaId): string
     public function getFidyahTipeBadgeAttribute(): string
     {
         if (!$this->fidyah_tipe) return '';
-        
+
         $badges = [
             'mentah' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">Fidyah Bahan Mentah</span>',
             'matang' => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800 border border-orange-200">Fidyah Makanan Matang</span>',
             'tunai'  => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Fidyah Tunai</span>',
         ];
-        
+
         return $badges[$this->fidyah_tipe] ?? '';
     }
 
@@ -493,7 +493,7 @@ public static function generateNoKwitansi($lembagaId): string
             'matang' => 'Makanan Siap Santap',
             'tunai' => 'Tunai / Uang',
         ];
-        
+
         return $tipe[$this->fidyah_tipe] ?? '-';
     }
 
@@ -507,7 +507,7 @@ public static function generateNoKwitansi($lembagaId): string
             'dijamu' => 'Dijamu / Diundang Makan',
             'via_lembaga' => 'Disalurkan via Lembaga',
         ];
-        
+
         return $cara[$this->fidyah_cara_serah] ?? '-';
     }
 
@@ -532,7 +532,7 @@ public static function generateNoKwitansi($lembagaId): string
                     $detail .= $this->fidyah_jumlah_hari . " hari × " . ($this->fidyah_berat_per_hari_gram ?? 675) . " gram";
                 }
                 break;
-                
+
             case 'matang':
                 $detail .= " • {$this->fidyah_jumlah_box} box makanan siap santap";
                 if ($this->fidyah_menu_makanan) {
@@ -542,7 +542,7 @@ public static function generateNoKwitansi($lembagaId): string
                     $detail .= " • {$this->fidyah_cara_serah_label}";
                 }
                 break;
-                
+
             case 'tunai':
                 $detail .= " • Tunai " . $this->jumlah_formatted;
                 break;
