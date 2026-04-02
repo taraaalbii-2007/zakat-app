@@ -87,22 +87,18 @@ class SetorKas extends Model
     }
 
     public static function generateNoSetor(int $amilId, int $lembagaId): string
-    {
-        $lembaga     = Lembaga::find($lembagaId);
-        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ0001';
-        $year       = date('Y');
-        $month      = date('m');
+{
+    $lembaga     = Lembaga::find($lembagaId);
+    $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
 
-        $last = static::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->where('lembaga_id', $lembagaId)
-            ->orderBy('id', 'desc')
-            ->first();
+    $last = static::where('lembaga_id', $lembagaId)
+        ->orderBy('id', 'desc')
+        ->first();
 
-        $seq = $last ? ((int) substr($last->no_setor, -4)) + 1 : 1;
+    $seq = $last ? ((int) substr($last->no_setor, -4)) + 1 : 1;
 
-        return 'SETOR-' . $kodeLembaga . '-' . $year . $month . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
-    }
+    return 'SETOR-' . $kodeLembaga . '-' . str_pad($seq, 4, '0', STR_PAD_LEFT);
+}
 
     // ============================================
     // ROUTE MODEL BINDING

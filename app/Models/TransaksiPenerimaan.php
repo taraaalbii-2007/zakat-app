@@ -152,36 +152,31 @@ class TransaksiPenerimaan extends Model
     // GENERATE NOMOR
     // ===============================
 
-    public static function generateNoTransaksi($lembagaId): string
-    {
-        $lembaga     = Lembaga::find($lembagaId);
-        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ001';
-        $year       = date('Y');
-        $month      = date('m');
+  public static function generateNoTransaksi($lembagaId): string
+{
+    $lembaga     = Lembaga::find($lembagaId);
+    $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
 
-        $last = self::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderBy('id', 'desc')
-            ->first();
+    $last = self::orderBy('id', 'desc')->first();
 
-        $newNumber = $last ? ((int) substr($last->no_transaksi, -4)) + 1 : 1;
-        return 'TRX-' . $kodeLembaga . '-' . $year . $month . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-    }
+    $newNumber = $last ? ((int) substr($last->no_transaksi, -4)) + 1 : 1;
+    return 'TRX-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    // hasil: TRX-LMBG20260001-0001
+}
 
-    public static function generateNoKwitansi($lembagaId): string
-    {
-        $lembaga     = Lembaga::find($lembagaId);
-        $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'MSJ001';
-        $year       = date('Y');
+public static function generateNoKwitansi($lembagaId): string
+{
+    $lembaga     = Lembaga::find($lembagaId);
+    $kodeLembaga = $lembaga ? $lembaga->kode_lembaga : 'LMBG0001';
 
-        $last = self::whereYear('created_at', $year)
-            ->whereNotNull('no_kwitansi')
-            ->orderBy('id', 'desc')
-            ->first();
+    $last = self::whereNotNull('no_kwitansi')
+        ->orderBy('id', 'desc')
+        ->first();
 
-        $newNumber = ($last && $last->no_kwitansi) ? ((int) substr($last->no_kwitansi, -4)) + 1 : 1;
-        return 'KWT-' . $kodeLembaga . '-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-    }
+    $newNumber = ($last && $last->no_kwitansi) ? ((int) substr($last->no_kwitansi, -4)) + 1 : 1;
+    return 'KWT-' . $kodeLembaga . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    // hasil: KWT-LMBG20260001-0001
+}
 
     // ===============================
     // RELATIONSHIPS

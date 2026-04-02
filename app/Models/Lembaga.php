@@ -161,8 +161,8 @@ class Lembaga extends Model
             $newNumber = 1;
         }
 
-        return $prefix . '-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-        // hasil: LMBG-2026-0001
+        return $prefix . $year . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        // hasil: LMBG20260001
     }
 
     public function syncWilayahNames()
