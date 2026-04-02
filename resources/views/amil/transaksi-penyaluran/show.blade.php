@@ -502,13 +502,7 @@
                     @endcan
                     @endif
 
-                    @if($transaksi->status === 'disalurkan')
-                    <a href="{{ route('transaksi-penyaluran.cetak', $transaksi->uuid) }}" target="_blank"
-                        class="inline-flex items-center justify-center px-4 py-2.5 bg-primary border border-transparent shadow-sm text-sm font-medium rounded-lg text-white hover:bg-primary-600 transition-colors">
-                        Cetak Kwitansi
-                    </a>
-                    @endif
-
+                
                     @if($transaksi->status === 'draft')
                     @can('amil')
                     <button type="button" onclick="confirmDelete()"

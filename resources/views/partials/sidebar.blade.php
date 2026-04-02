@@ -490,6 +490,26 @@
                     </details>
                 </li>
 
+                 {{-- ===== BULLETIN ===== --}}
+                <li class="mt-4 mb-1">
+                    <p class="{{ $sectionLabel }}">Bulletin</p>
+                </li>
+                <li>
+                    <a href="{{ route('admin-lembaga.bulletin.index') }}"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-150 text-[13px]
+                        {{ str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya') ? $activeClass : $inactiveClass }}"
+                        @if (str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya')) style="background: #f0fdf4;" @endif>
+                        <svg class="w-4 h-4 flex-shrink-0
+                            {{ str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya') ? 'text-[#17a34a]' : 'text-gray-500' }}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        </svg>
+                        <span class="flex-1">Bulletin Saya</span>
+                    </a>
+                </li>
+
+
                 {{-- ===== KELOLA AMIL ===== --}}
                 <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Kelola Amil</p>
@@ -611,25 +631,7 @@
                     </a>
                 </li>
 
-                {{-- ===== BULLETIN ===== --}}
-                <li class="mt-4 mb-1">
-                    <p class="{{ $sectionLabel }}">Bulletin</p>
-                </li>
-                <li>
-                    <a href="{{ route('admin-lembaga.bulletin.index') }}"
-                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition-all duration-150 text-[13px]
-                        {{ str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya') ? $activeClass : $inactiveClass }}"
-                        @if (str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya')) style="background: #f0fdf4;" @endif>
-                        <svg class="w-4 h-4 flex-shrink-0
-                            {{ str_contains($currentRoute, 'admin-lembaga.bulletin') || str_contains($currentRoute, 'bulletin-saya') ? 'text-[#17a34a]' : 'text-gray-500' }}"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                        </svg>
-                        <span class="flex-1">Bulletin Saya</span>
-                    </a>
-                </li>
-
+               
                 {{-- ===== PENGATURAN ===== --}}
                 <li class="mt-4 mb-1">
                     <p class="{{ $sectionLabel }}">Pengaturan</p>

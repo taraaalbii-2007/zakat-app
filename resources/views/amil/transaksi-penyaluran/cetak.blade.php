@@ -35,7 +35,7 @@
 
         /* ── Header ── */
         .header {
-            background: #1a3a2a;
+            background: #17a34a; /* hijau utama kwitansi penerimaan */
             color: white;
             padding: 20px 32px;
             display: flex;
@@ -80,18 +80,20 @@
             text-align: center;
             margin-bottom: 16px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #d1d5db;
+            border-bottom: 1px solid #bbf7d0; /* hijau muda kwitansi penerimaan */
         }
         .title h2 {
             font-family: 'Lora', serif;
             font-size: 17px; font-weight: 700;
-            color: #1a3a2a; letter-spacing: 3px;
+            color: #15803d; /* hijau tua kwitansi penerimaan */
+            letter-spacing: 3px;
             text-transform: uppercase; margin-bottom: 12px;
         }
         .no-kwitansi {
             display: inline-block;
-            font-size: 13.5px; font-weight: 700; color: #1a3a2a;
-            background: #f0f7f2; border: 1.5px solid #a7c4b0;
+            font-size: 13.5px; font-weight: 700; color: #15803d;
+            background: #f0fdf4; /* bg hijau lembut */
+            border: 1.5px solid #86efac;
             padding: 5px 22px; border-radius: 3px; letter-spacing: 0.5px;
         }
 
@@ -99,7 +101,7 @@
         .info-section { margin-bottom: 12px; }
         .info-row {
             display: flex; align-items: flex-start;
-            padding: 5px 0; border-bottom: 1px solid #f3f4f6;
+            padding: 5px 0; border-bottom: 1px solid #f0fdf4;
         }
         .info-row:last-child { border-bottom: none; }
         .info-label {
@@ -114,14 +116,16 @@
             font-size: 10px; font-weight: 700; color: #9ca3af;
             text-transform: uppercase; letter-spacing: 2px;
             margin-bottom: 10px; padding-bottom: 6px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #bbf7d0; /* hijau muda */
         }
 
         /* ── Amount box ── */
         .amount-box {
-            background: #1a3a2a; border-radius: 6px;
+            background: linear-gradient(135deg, #17a34a 0%, #15803d 100%); /* gradasi hijau kwitansi penerimaan */
+            border-radius: 6px;
             padding: 16px 24px; margin: 14px 0; text-align: center;
             position: relative; overflow: hidden;
+            border: 1.5px solid #22c55e;
         }
         .amount-box::before {
             content: ''; position: absolute; top: -30px; right: -30px;
@@ -142,7 +146,8 @@
         }
 
         .detail-penyaluran {
-            background: #fafafa; border: 1px solid #e5e7eb;
+            background: #f0fdf4; /* bg hijau lembut kwitansi penerimaan */
+            border: 1px solid #bbf7d0;
             border-radius: 6px; padding: 12px 18px; margin-bottom: 12px;
         }
 
@@ -150,7 +155,7 @@
             display: inline-block; padding: 2px 10px; border-radius: 3px;
             font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
         }
-        .status-disalurkan { background: #ecfdf5; color: #166534; border: 1px solid #bbf7d0; }
+        .status-disalurkan { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
 
         /* ── Signature area: 2 kolom ── */
         .signature-area {
@@ -159,7 +164,7 @@
             align-items: flex-start;
             margin-top: 16px;
             padding-top: 14px;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #bbf7d0; /* hijau muda */
             gap: 16px;
         }
 
@@ -177,7 +182,6 @@
             font-size: 11px; color: #6b7280; margin-bottom: 4px;
         }
 
-        /* Container tanda tangan — tinggi tetap agar nama sejajar */
         .sig-image-wrap {
             height: 90px;
             margin: 4px auto;
@@ -187,17 +191,13 @@
             position: relative;
         }
 
-        /* ── Tanda Tangan Mustahik ── */
         .sig-image-wrap img.tt-mustahik {
             max-width: 180px;
             max-height: 85px;
             object-fit: contain;
             display: block;
-            /* Jika background putih muncul di PDF, uncomment baris di bawah: */
-            /* mix-blend-mode: multiply; */
         }
 
-        /* ── Tanda Tangan Amil ── */
         .sig-image-wrap img.tt-amil {
             max-width: 180px;
             max-height: 85px;
@@ -207,11 +207,12 @@
 
         .stamp-circle {
             width: 72px; height: 72px;
-            border: 1.5px dashed #cbd5e1; border-radius: 50%;
+            border: 1.5px dashed #86efac; /* hijau muda */
+            border-radius: 50%;
             margin: 0 auto;
             display: flex; align-items: center; justify-content: center;
         }
-        .stamp-circle span { font-size: 9px; color: #b0bbc7; text-align: center; line-height: 1.4; }
+        .stamp-circle span { font-size: 9px; color: #17a34a; text-align: center; line-height: 1.4; }
 
         .sig-name {
             font-size: 12.5px; font-weight: 700; color: #111827;
@@ -227,7 +228,8 @@
 
         /* ── Footer ── */
         .footer {
-            background: #1a3a2a; padding: 12px 32px; text-align: center;
+            background: #17a34a; /* hijau utama kwitansi penerimaan */
+            padding: 12px 32px; text-align: center;
         }
         .footer p { font-size: 11.5px; color: rgba(255,255,255,0.5); line-height: 1.9; }
         .footer p:first-child { color: rgba(255,255,255,0.75); font-weight: 600; font-size: 12px; }
@@ -245,8 +247,8 @@
             box-shadow: 0 4px 14px rgba(0,0,0,0.15);
             font-family: 'Source Sans 3', sans-serif;
         }
-        .btn-primary { background: #1a3a2a; color: white; }
-        .btn-primary:hover { background: #0f2418; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,58,42,0.35); }
+        .btn-primary { background: #17a34a; color: white; } /* hijau utama */
+        .btn-primary:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(23,163,74,0.35); }
         .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; transform: none; }
         .btn-secondary { background: white; color: #374151; border: 1px solid #d1d5db; }
         .btn-secondary:hover { background: #f9fafb; transform: translateY(-1px); }
@@ -373,7 +375,7 @@
                 <div class="info-row">
                     <span class="info-label">Nama</span>
                     <span class="info-sep">:</span>
-                    <span class="info-value" style="font-weight:700; color:#1a3a2a;">
+                    <span class="info-value" style="font-weight:700; color:#15803d;">
                         {{ optional($transaksi->mustahik)->nama_lengkap ?? '-' }}
                     </span>
                 </div>
@@ -468,12 +470,10 @@
             </div>
             @endif
 
-            {{-- ════════════════════════════════════════════════
-                 TANDA TANGAN — 2 kolom: Mustahik kiri, Amil kanan
-                 ════════════════════════════════════════════════ --}}
+            {{-- Tanda Tangan --}}
             <div class="signature-area">
 
-                {{-- ── Penerima (Mustahik) — KIRI ── --}}
+                {{-- Penerima (Mustahik) — KIRI --}}
                 <div class="recipient-box">
                     <div class="sig-city-date">
                         {{ optional($transaksi->lembaga)->kota_nama ?? '' }},
@@ -481,31 +481,25 @@
                     </div>
                     <div class="sig-position">Yang Menerima,</div>
 
-                    {{-- Area tanda tangan mustahik --}}
                     <div class="sig-image-wrap">
                         @php
                             $ttMustahikUrl = null;
-
-                            // Prioritas 1: path_tanda_tangan (file di storage)
                             if (!empty($transaksi->path_tanda_tangan)) {
                                 $ttMustahikUrl = asset('storage/' . $transaksi->path_tanda_tangan);
                             }
                         @endphp
 
                         @if($ttMustahikUrl)
-                            {{-- Tanda tangan ada → tampilkan --}}
                             <img src="{{ $ttMustahikUrl }}"
                                  alt="Tanda Tangan {{ optional($transaksi->mustahik)->nama_lengkap }}"
                                  class="tt-mustahik"
                                  onerror="this.style.display='none'; document.getElementById('tt-mustahik-fallback').style.display='flex';">
-                            {{-- Fallback jika gambar gagal load --}}
                             <div id="tt-mustahik-fallback" style="display:none; position:absolute; inset:0; align-items:center; justify-content:center;">
                                 <div class="stamp-circle">
                                     <span>Tanda<br>Tangan</span>
                                 </div>
                             </div>
                         @else
-                            {{-- Belum ada tanda tangan --}}
                             <div class="stamp-circle">
                                 <span>Tanda<br>Tangan</span>
                             </div>
@@ -520,7 +514,7 @@
                     @endif
                 </div>
 
-                {{-- ── Amil Penyalur — KANAN ── --}}
+                {{-- Amil Penyalur — KANAN --}}
                 <div class="signature-box">
                     <div class="sig-city-date">
                         {{ optional($transaksi->lembaga)->kota_nama ?? '' }},
@@ -554,11 +548,11 @@
                     @endif
                 </div>
 
-            </div>{{-- end .signature-area --}}
+            </div>
 
             {{-- Catatan --}}
-            <div style="margin-top:14px; padding:10px 14px; background:#f9fafb; border-radius:6px; border:1px solid #e5e7eb;">
-                <p style="font-size:11px; color:#9ca3af; line-height:1.7;">
+            <div style="margin-top:14px; padding:10px 14px; background:#f0fdf4; border-radius:6px; border:1px solid #bbf7d0;">
+                <p style="font-size:11px; color:#6b7280; line-height:1.7;">
                     Kwitansi ini merupakan bukti sah penyaluran zakat kepada mustahik yang berhak.<br>
                     Dicetak pada: {{ now()->translatedFormat('d F Y, H:i') }} WIB &bull; Dokumen ini dicetak secara digital.
                 </p>
@@ -599,7 +593,6 @@
                     windowHeight   : element.scrollHeight,
                     foreignObjectRendering: false,
                     onclone: function(clonedDoc) {
-                        // Pastikan gambar tanda tangan ter-render saat clone
                         const imgs = clonedDoc.querySelectorAll('img.tt-mustahik, img.tt-amil');
                         imgs.forEach(img => {
                             img.style.maxWidth  = '180px';

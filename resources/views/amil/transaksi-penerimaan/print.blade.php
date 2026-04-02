@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f0f4f0;
+            background: #f0fdf4;
             min-height: 100vh;
             padding: 32px 20px 100px;
             display: flex;
@@ -55,11 +55,11 @@
         .btn-back { background: #f3f4f6; color: #374151; }
         .btn-back:hover { background: #e5e7eb; }
         .btn-download {
-            background: #1a4030;
+            background: #17a34a;
             color: #fff;
-            box-shadow: 0 4px 14px rgba(26,64,48,0.3);
+            box-shadow: 0 4px 14px rgba(23,163,74,0.35);
         }
-        .btn-download:hover { background: #0f2c21; transform: translateY(-1px); }
+        .btn-download:hover { background: #15803d; transform: translateY(-1px); }
         .btn-download:disabled { background: #9ca3af; box-shadow: none; cursor: not-allowed; transform: none; }
         .spinner {
             display: none;
@@ -83,7 +83,7 @@
 
         /* ── Header ── */
         .header {
-            background: linear-gradient(135deg, #1a4030 0%, #2d6040 60%, #3a7a50 100%);
+            background: #17a34a;
             padding: 22px 32px;
             display: flex;
             align-items: center;
@@ -95,6 +95,13 @@
         .header::before {
             content: '';
             position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: #22c55e;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
             top: -40px; right: -40px;
             width: 180px; height: 180px;
             border-radius: 50%;
@@ -102,13 +109,12 @@
         }
         .header-left { display: flex; align-items: center; gap: 14px; z-index: 1; }
 
-        /* Logo dari konfigurasi aplikasi */
         .header-logo-img {
             width: 52px; height: 52px;
             border-radius: 10px;
             object-fit: cover;
-            border: 1.5px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.35);
+            background: #fff;
             flex-shrink: 0;
         }
         .header-logo-fallback {
@@ -131,21 +137,21 @@
         }
         .header-lembaga p {
             font-size: 11px;
-            color: rgba(255,255,255,0.68);
+            color: rgba(255,255,255,0.80);
             line-height: 1.5;
         }
         .header-badge {
             z-index: 1;
-            background: rgba(255,255,255,0.12);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.18);
+            border: 1.5px solid rgba(255,255,255,0.40);
             border-radius: 8px;
-            padding: 8px 14px;
+            padding: 9px 14px;
             text-align: right;
             flex-shrink: 0;
         }
         .header-badge .badge-label {
-            font-size: 9px;
-            color: rgba(255,255,255,0.6);
+            font-size: 7.5px;
+            color: rgba(255,255,255,0.75);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 3px;
@@ -159,16 +165,18 @@
 
         /* ── Title Strip ── */
         .title-strip {
-            background: #f8faf8;
-            border-bottom: 2px solid #e2ece4;
-            padding: 11px 32px;
+            background: #f0fdf4;
+            border-top: 3px solid #22c55e;
+            border-bottom: 1px solid #bbf7d0;
+            padding: 10px 32px;
             text-align: center;
         }
         .title-strip h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 16px;
-            color: #1a4030;
-            letter-spacing: 3px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #15803d;
+            letter-spacing: 5px;
             text-transform: uppercase;
         }
 
@@ -179,33 +187,34 @@
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            border: 1.5px solid #d1dbd3;
+            border: 1.5px solid #bbf7d0;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 12px;
         }
-        .info-grid-full { grid-column: 1 / -1; border-top: 1px solid #d1dbd3; }
+        .info-grid-full { grid-column: 1 / -1; border-top: 1px solid #bbf7d0; }
         .info-cell {
             padding: 7px 12px;
-            border-right: 1px solid #d1dbd3;
+            border-right: 1px solid #bbf7d0;
+            background: #fff;
         }
         .info-cell:nth-child(even), .info-cell:last-child { border-right: none; }
         .cell-label {
-            font-size: 9.5px;
-            font-weight: 600;
+            font-size: 8.5px;
+            font-weight: 700;
             color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.7px;
             margin-bottom: 2px;
         }
         .cell-value { font-size: 13px; font-weight: 500; color: #111827; }
-        .cell-value.bold { font-weight: 700; color: #1a4030; }
+        .cell-value.bold { font-weight: 700; color: #15803d; }
 
         /* ── Amount Box ── */
         .amount-box {
-            background: linear-gradient(135deg, #1a4030 0%, #2d6040 100%);
+            background: linear-gradient(135deg, #17a34a 0%, #15803d 100%);
             border-radius: 8px;
-            padding: 12px 20px;
+            padding: 16px 22px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
@@ -213,6 +222,14 @@
             gap: 16px;
             position: relative;
             overflow: hidden;
+            border: 1.5px solid #22c55e;
+        }
+        .amount-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 4px;
+            background: #22c55e;
         }
         .amount-box::before {
             content: '';
@@ -223,32 +240,32 @@
             background: rgba(255,255,255,0.05);
         }
         .amount-left .label {
-            font-size: 9.5px; font-weight: 600;
-            color: rgba(255,255,255,0.6);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;
+            font-size: 8.5px; font-weight: 700;
+            color: rgba(255,255,255,0.70);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px;
         }
         .amount-left .value {
             font-family: 'Playfair Display', serif;
-            font-size: 22px; font-weight: 700;
+            font-size: 28px; font-weight: 700;
             color: #fff; letter-spacing: -0.5px; line-height: 1;
         }
         .amount-left .terbilang {
-            font-size: 10px; color: rgba(255,255,255,0.55);
-            margin-top: 4px; font-style: italic;
+            font-size: 9px; color: rgba(255,255,255,0.65);
+            margin-top: 5px; font-style: italic;
         }
         .amount-right { flex-shrink: 0; z-index: 1; }
         .status-pill {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.10);
             border: 1px solid rgba(255,255,255,0.25);
             border-radius: 999px;
-            padding: 5px 14px;
-            font-size: 10.5px; font-weight: 700;
-            color: #fff; text-transform: uppercase; letter-spacing: 0.8px;
+            padding: 6px 16px;
+            font-size: 9.5px; font-weight: 700;
+            color: rgba(255,255,255,0.75); text-transform: uppercase;
         }
         .status-pill.verified {
-            background: rgba(74,222,128,0.2);
-            border-color: rgba(74,222,128,0.4);
-            color: #bbf7d0;
+            background: rgba(255,255,255,0.20);
+            border: 1.5px solid rgba(255,255,255,0.50);
+            color: #ffffff;
         }
 
         /* ── Section Header ── */
@@ -256,10 +273,14 @@
             display: flex; align-items: center; gap: 10px;
             margin-bottom: 8px; margin-top: 2px;
         }
-        .section-header .line { flex: 1; height: 1px; background: #e2ece4; }
+        .section-header .line { flex: 1; height: 1px; background: #bbf7d0; }
         .section-header span {
-            font-size: 9.5px; font-weight: 700; color: #6b7280;
-            text-transform: uppercase; letter-spacing: 1.5px; white-space: nowrap;
+            font-size: 8px; font-weight: 700; color: #17a34a;
+            text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;
+            padding: 4px 18px;
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 999px;
         }
 
         /* ── Detail Table ── */
@@ -267,45 +288,46 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 12px;
-            border: 1.5px solid #d1dbd3;
+            border: 1.5px solid #bbf7d0;
             border-radius: 8px;
             overflow: hidden;
         }
-        .detail-table tr:not(:last-child) td { border-bottom: 1px solid #eaf0eb; }
-        .detail-table td { padding: 7px 12px; font-size: 12px; }
+        .detail-table tr:not(:last-child) td { border-bottom: 1px solid #f0fdf4; }
+        .detail-table tr:nth-child(odd) td  { background: #ffffff; }
+        .detail-table tr:nth-child(even) td { background: #fafffe; }
+        .detail-table td { padding: 8px 14px; font-size: 12px; vertical-align: top; }
         .detail-table td:first-child {
-            width: 40%; font-weight: 600; color: #4b5563;
-            background: #f8faf8; font-size: 11px;
-            text-transform: uppercase; letter-spacing: 0.3px;
+            width: 34%; font-weight: 700; color: #6b7280;
+            font-size: 8.5px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .detail-table td:nth-child(2) { width: 4%; color: #9ca3af; text-align: center; font-size: 11px; }
-        .detail-table td:last-child { color: #111827; font-weight: 500; }
+        .detail-table td:nth-child(2) { width: 4%; color: #d1d5db; text-align: center; font-size: 11px; }
+        .detail-table td:last-child { color: #1f2937; font-weight: 500; font-size: 11px; }
+        .detail-table td:last-child.accent { font-weight: 700; color: #15803d; }
 
         /* ── Badge ── */
         .badge {
-            display: inline-block; padding: 2px 9px;
-            border-radius: 999px; font-size: 10.5px; font-weight: 700;
+            display: inline-block; padding: 2px 10px;
+            border-radius: 999px; font-size: 8.5px; font-weight: 700;
             letter-spacing: 0.5px; text-transform: uppercase;
         }
-        .badge-verified { background: #dcfce7; color: #166534; }
-        .badge-pending  { background: #fef9c3; color: #854d0e; }
-        .badge-confirmed { background: #dbeafe; color: #1e40af; }
+        .badge-verified { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-pending  { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
+        .badge-confirmed { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
 
-        /* ── Tanda Tangan — AMIL ONLY ── */
+        /* ── Tanda Tangan ── */
         .signature-section {
             margin-top: 6px;
-            border: 1.5px solid #d1dbd3;
+            border: 1px solid #bbf7d0;
             border-radius: 8px;
             overflow: hidden;
         }
         .signature-section-header {
-            background: #f8faf8;
-            border-bottom: 1px solid #d1dbd3;
-            padding: 7px 14px;
-            font-size: 9.5px; font-weight: 700; color: #6b7280;
-            text-transform: uppercase; letter-spacing: 1.2px;
+            background: linear-gradient(90deg, #17a34a 0%, #22c55e 100%);
+            padding: 6px 14px;
+            font-size: 8px; font-weight: 700; color: #ffffff;
+            text-transform: uppercase; letter-spacing: 2px;
         }
-        /* Satu kolom terpusat untuk Amil saja */
         .signature-amil-wrap {
             display: flex;
             justify-content: center;
@@ -319,27 +341,30 @@
             flex-direction: column;
             align-items: center;
         }
-        .sig-date { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
-        .sig-role { font-size: 11px; font-weight: 700; color: #1a4030; margin-bottom: 10px; }
+        .sig-date { font-size: 9.5px; color: #9ca3af; margin-bottom: 2px; }
+        .sig-role { font-size: 10.5px; font-weight: 700; color: #17a34a; margin-bottom: 14px; }
         .sig-space {
-            width: 100%; min-height: 44px;
+            width: 100%; min-height: 55px;
             display: flex; align-items: center; justify-content: center;
             margin-bottom: 6px;
         }
-        .sig-space img { max-width: 110px; max-height: 50px; object-fit: contain; }
-        .sig-line { width: 80%; border-top: 1.5px solid #374151; margin: 0 auto 6px; }
+        .sig-space img { max-width: 115px; max-height: 55px; object-fit: contain; }
+        .sig-line { width: 190px; border-top: 1.5px solid #374151; margin: 0 auto 6px; }
         .sig-name { font-size: 12px; font-weight: 700; color: #111827; }
-        .sig-sub { font-size: 10.5px; color: #6b7280; margin-top: 2px; }
+        .sig-sub { font-size: 9px; color: #9ca3af; margin-top: 2px; }
 
         /* ── Footer ── */
         .footer {
-            background: #1a4030;
-            padding: 10px 28px;
-            text-align: center;
-            margin-top: 14px;
+            margin-top: 16px;
+            background: #17a34a;
         }
-        .footer p { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.7; }
-        .footer p:first-child { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,0.8); }
+        .footer-accent { height: 3px; background: #22c55e; }
+        .footer-inner {
+            padding: 10px 30px;
+            text-align: center;
+        }
+        .footer-inner p { font-size: 11px; color: rgba(255,255,255,0.60); line-height: 1.7; }
+        .footer-inner p:first-child { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.90); margin-bottom: 3px; }
 
         /* ── Print ── */
         @media print {
@@ -389,7 +414,6 @@
         {{-- Header --}}
         <div class="header">
             <div class="header-left">
-                {{-- Logo dari KonfigurasiAplikasi --}}
                 @if($logoBase64)
                     <img src="{{ $logoBase64 }}"
                          alt="{{ optional($config)->nama_aplikasi ?? 'Logo' }}"
@@ -428,7 +452,7 @@
         <div class="content">
 
             {{-- Info Grid --}}
-            <div class="info-grid">
+            <div class="info-grid" style="margin-top:14px;">
                 <div class="info-cell">
                     <div class="cell-label">No. Transaksi</div>
                     <div class="cell-value" style="font-size:12px;font-weight:600;">{{ $transaksi->no_transaksi }}</div>
@@ -444,7 +468,7 @@
                 @if($transaksi->muzakki_nik)
                 <div class="info-cell info-grid-full">
                     <div class="cell-label">NIK</div>
-                    <div class="cell-value">{{ $transaksi->muzakki_nik }}</div>
+                    <div class="cell-value" style="font-family:monospace;">{{ $transaksi->muzakki_nik }}</div>
                 </div>
                 @endif
                 @if($transaksi->muzakki_alamat)
@@ -462,12 +486,12 @@
                     <div class="label">Jumlah Diterima</div>
                     <div class="value">{{ $transaksi->jumlah_formatted }}</div>
                     @if(function_exists('terbilang'))
-                    <div class="terbilang">{{ ucfirst(terbilang($transaksi->jumlah)) }} Rupiah</div>
+                    <div class="terbilang">&#x2605; {{ ucfirst(terbilang($transaksi->jumlah)) }} Rupiah</div>
                     @endif
                 </div>
                 <div class="amount-right">
                     @if($transaksi->status === 'verified')
-                        <span class="status-pill verified">Terverifikasi</span>
+                        <span class="status-pill verified">&#10003; Terverifikasi</span>
                     @elseif($transaksi->status === 'pending')
                         <span class="status-pill">Menunggu Verifikasi</span>
                     @else
@@ -478,15 +502,18 @@
             @elseif(isset($transaksi->isBayarBeras) && $transaksi->isBayarBeras && $transaksi->jumlah_beras_kg > 0)
             <div class="amount-box">
                 <div class="amount-left">
-                    <div class="label">Zakat Fitrah Beras</div>
-                    <div class="value">{{ number_format($transaksi->jumlah_beras_kg, 2, ',', '.') }} kg</div>
+                    <div class="label">Zakat Fitrah — Beras</div>
+                    <div class="value" style="font-size:24px;">{{ number_format($transaksi->jumlah_beras_kg, 2, ',', '.') }} kg</div>
                     @if($transaksi->jumlah_jiwa)
-                    <div class="terbilang">{{ $transaksi->jumlah_jiwa }} jiwa @if($transaksi->harga_beras_per_kg) &bull; Setara ± Rp {{ number_format($transaksi->jumlah_beras_kg * $transaksi->harga_beras_per_kg, 0, ',', '.') }} @endif</div>
+                    <div class="terbilang">
+                        {{ $transaksi->jumlah_jiwa }} jiwa
+                        @if($transaksi->harga_beras_per_kg) &bull; Setara &plusmn; Rp {{ number_format($transaksi->jumlah_beras_kg * $transaksi->harga_beras_per_kg, 0, ',', '.') }} @endif
+                    </div>
                     @endif
                 </div>
                 <div class="amount-right">
                     @if($transaksi->status === 'verified')
-                        <span class="status-pill verified">Terverifikasi</span>
+                        <span class="status-pill verified">&#10003; Terverifikasi</span>
                     @else
                         <span class="status-pill">{{ ucfirst($transaksi->status) }}</span>
                     @endif
@@ -505,11 +532,11 @@
                 <tr>
                     <td>Untuk Pembayaran</td>
                     <td>:</td>
-                    <td style="font-weight:600; color:#1a4030;">
-                        {{ $transaksi->jenisZakat->nama ?? '-' }}
+                    <td class="accent">
+                        {{ optional($transaksi->jenisZakat)->nama ?? '-' }}
                         @if($transaksi->tipeZakat) &ndash; {{ $transaksi->tipeZakat->nama }} @endif
                         @if($transaksi->programZakat)
-                            <br><span style="font-size:11.5px;font-weight:400;color:#4b5563;">Program: {{ $transaksi->programZakat->nama_program }}</span>
+                            <br><span style="font-size:9.5px;font-weight:400;color:#6b7280;">Program: {{ $transaksi->programZakat->nama_program }}</span>
                         @endif
                     </td>
                 </tr>
@@ -517,7 +544,7 @@
                 <tr>
                     <td>Terbilang</td>
                     <td>:</td>
-                    <td style="font-style:italic;">{{ ucfirst(terbilang($transaksi->jumlah)) }} Rupiah</td>
+                    <td style="font-style:italic; color:#374151;">{{ ucfirst(terbilang($transaksi->jumlah)) }} Rupiah</td>
                 </tr>
                 @elseif(isset($transaksi->isBayarBeras) && $transaksi->isBayarBeras)
                 <tr>
@@ -530,7 +557,18 @@
                     <td>Metode Pembayaran</td>
                     <td>:</td>
                     <td>
-                        {{ ucfirst($transaksi->metode_pembayaran ?? '-') }}
+                        @php
+                            $metodeLabel = match($transaksi->metode_pembayaran) {
+                                'tunai'          => 'Tunai (Cash)',
+                                'transfer'       => 'Transfer Bank',
+                                'qris'           => 'QRIS',
+                                'beras'          => 'Beras',
+                                'bahan_mentah'   => 'Bahan Mentah',
+                                'makanan_matang' => 'Makanan Matang/Siap Santap',
+                                default          => ucfirst($transaksi->metode_pembayaran ?? '-'),
+                            };
+                        @endphp
+                        {{ $metodeLabel }}
                         &nbsp;
                         @if($transaksi->status === 'verified')
                             <span class="badge badge-verified">Terverifikasi</span>
@@ -542,16 +580,20 @@
                 <tr>
                     <td>Metode Penerimaan</td>
                     <td>:</td>
-                    <td>{{ $transaksi->metode_penerimaan === 'dijemput' ? 'Dijemput Amil' : 'Datang Langsung' }}</td>
+                    <td>{{ match($transaksi->metode_penerimaan) {
+                        'dijemput' => 'Dijemput Amil',
+                        'daring'   => 'Daring / Online',
+                        default    => 'Datang Langsung',
+                    } }}</td>
                 </tr>
                 @if($transaksi->no_referensi_transfer)
                 <tr>
                     <td>No. Referensi</td>
                     <td>:</td>
-                    <td>{{ $transaksi->no_referensi_transfer }}</td>
+                    <td style="font-family:monospace;">{{ $transaksi->no_referensi_transfer }}</td>
                 </tr>
                 @endif
-                @if(in_array($transaksi->metode_pembayaran, ['transfer', 'qris']) && $transaksi->konfirmasi_status)
+                @if(in_array($transaksi->metode_pembayaran, ['transfer','qris']) && $transaksi->konfirmasi_status)
                 <tr>
                     <td>Status Transfer</td>
                     <td>:</td>
@@ -561,7 +603,7 @@
                         @elseif($transaksi->konfirmasi_status === 'menunggu_konfirmasi')
                             <span class="badge badge-pending">Menunggu Konfirmasi</span>
                         @else
-                            <span class="badge">{{ ucfirst($transaksi->konfirmasi_status) }}</span>
+                            {{ ucfirst($transaksi->konfirmasi_status) }}
                         @endif
                     </td>
                 </tr>
@@ -581,7 +623,7 @@
                     @if($transaksi->jumlah_jiwa)
                     <tr><td>Jumlah Jiwa</td><td>:</td><td>{{ $transaksi->jumlah_jiwa }} jiwa</td></tr>
                     @endif
-                    @if($transaksi->harga_beras_per_kg)
+                    @if($transaksi->harga_beras_per_kg !== null && $transaksi->harga_beras_per_kg > 0)
                     <tr><td>Harga / kg</td><td>:</td><td>Rp {{ number_format($transaksi->harga_beras_per_kg, 0, ',', '.') }}</td></tr>
                     @endif
                 @endif
@@ -595,11 +637,11 @@
                     <tr><td>Sudah Haul</td><td>:</td><td>{{ $transaksi->sudah_haul ? 'Sudah' : 'Belum' }}</td></tr>
                 @endif
                 @if($transaksi->keterangan)
-                <tr><td>Keterangan</td><td>:</td><td>{{ $transaksi->keterangan }}</td></tr>
+                <tr><td>Keterangan</td><td>:</td><td style="font-style:italic; color:#6b7280;">{{ $transaksi->keterangan }}</td></tr>
                 @endif
             </table>
 
-            {{-- ===== TANDA TANGAN — AMIL SAJA ===== --}}
+            {{-- Tanda Tangan --}}
             <div class="signature-section">
                 <div class="signature-section-header">Pengesahan &amp; Tanda Tangan</div>
                 <div class="signature-amil-wrap">
@@ -613,9 +655,11 @@
                         </div>
                         <div class="sig-line"></div>
                         <div class="sig-name">
-                            {{ optional($transaksi->amil)->nama_lengkap ?? optional(optional($transaksi->amil)->pengguna)->name ?? '_____________________' }}
+                            {{ optional($transaksi->amil)->nama_lengkap
+                                ?? optional(optional($transaksi->amil)->pengguna)->name
+                                ?? '_____________________' }}
                         </div>
-                        <div class="sig-sub">Amil / Petugas</div>
+                        <div class="sig-sub">Amil / Petugas Penerimaan Zakat</div>
                     </div>
                 </div>
             </div>
@@ -624,8 +668,11 @@
 
         {{-- Footer --}}
         <div class="footer">
-            <p>Terima kasih telah menunaikan zakat melalui {{ $transaksi->lembaga->nama ?? optional($config)->nama_aplikasi ?? 'Lembaga' }}</p>
-            <p>Kwitansi ini dicetak secara otomatis oleh sistem &bull; {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }} &bull; Dicetak pada: {{ now()->format('d F Y, H:i') }} WIB</p>
+            <div class="footer-accent"></div>
+            <div class="footer-inner">
+                <p>Terima kasih telah menunaikan zakat melalui {{ $transaksi->lembaga->nama ?? optional($config)->nama_aplikasi ?? 'Lembaga' }}</p>
+                <p>Kwitansi ini dicetak secara otomatis oleh sistem &bull; {{ optional($config)->nama_aplikasi ?? 'Niat Zakat' }} &bull; Dicetak pada: {{ now()->format('d F Y, H:i') }} WIB</p>
+            </div>
         </div>
 
     </div>{{-- end .kwitansi --}}
@@ -642,12 +689,10 @@
         icon.style.display    = 'none';
         text.textContent      = 'Memproses...';
 
-        // Sembunyikan action-bar SEBELUM capture
         const actionBar = document.querySelector('.action-bar');
         actionBar.style.visibility = 'hidden';
         actionBar.style.opacity    = '0';
 
-        // Tunggu sebentar agar browser render ulang tanpa action-bar
         await new Promise(r => setTimeout(r, 100));
 
         try {
@@ -660,7 +705,6 @@
                 logging        : false,
                 backgroundColor: '#ffffff',
                 imageTimeout   : 15000,
-                // Capture HANYA elemen kwitansi, bukan seluruh halaman
                 width          : element.scrollWidth,
                 height         : element.scrollHeight,
                 windowWidth    : element.scrollWidth,
@@ -670,11 +714,9 @@
                 scrollX        : -window.scrollX,
                 scrollY        : -window.scrollY,
                 onclone: (doc) => {
-                    // Hapus action-bar dari clone
                     const bar = doc.querySelector('.action-bar');
                     if (bar) bar.remove();
 
-                    // Reset TOTAL body — hapus flex, padding, min-height
                     doc.body.style.cssText = [
                         'margin:0',
                         'padding:0',
@@ -687,7 +729,6 @@
                         'justify-content:unset',
                     ].join(';');
 
-                    // Fix kwitansi agar mulai dari pojok kiri-atas
                     const kw = doc.getElementById('kwitansi-content');
                     if (kw) {
                         kw.style.cssText = [
@@ -711,13 +752,12 @@
             const PDF_H  = 297;
             const MARGIN = 8;
 
-            const usableW = PDF_W - MARGIN * 2;  // 194mm
-            const usableH = PDF_H - MARGIN * 2;  // 281mm
+            const usableW = PDF_W - MARGIN * 2;
+            const usableH = PDF_H - MARGIN * 2;
 
             let imgW = usableW;
             let imgH = (canvas.height / canvas.width) * imgW;
 
-            // Paksa muat 1 halaman
             if (imgH > usableH) {
                 imgH = usableH;
                 imgW = (canvas.width / canvas.height) * imgH;
