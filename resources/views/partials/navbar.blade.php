@@ -254,8 +254,7 @@
 {{-- ═══════════════════════════════════════════════════════════════
      NAVBAR UTAMA
      ═══════════════════════════════════════════════════════════════ --}}
-<header class="sticky top-0 z-40"
-    style="background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);">
+<header class="sticky top-0 z-40" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);">
     <div class="px-5 sm:px-7 lg:px-10">
         <div class="flex items-center justify-between" style="height: 64px;">
 
@@ -297,12 +296,12 @@
                 @endif
 
                 {{-- ════════════════════════════════════════════════════════
-                     NOTIFIKASI — Hanya tampil untuk Amil & Muzakki
-                     ════════════════════════════════════════════════════════ --}}
+     NOTIFIKASI — Hanya tampil untuk Amil & Muzakki
+     ════════════════════════════════════════════════════════ --}}
                 @if ($isAmil || $isMuzakki)
                     <div class="relative">
                         <button onclick="toggleNotifications()" id="notif-btn"
-                            class="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 text-gray-500 hover:text-[#1f5c1f] hover:bg-[#f0f7f0]"
+                            class="relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                             title="Notifikasi">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
@@ -310,8 +309,8 @@
                             </svg>
                             @if ($notifUnread > 0)
                                 <span id="notif-badge"
-                                    class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-white text-[9px] font-bold rounded-full flex items-center justify-center leading-none"
-                                    style="background: #ef4444">
+                                    class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-bold rounded-full flex items-center justify-center"
+                                    style="background: #ef4444;">
                                     {{ $notifUnread > 9 ? '9+' : $notifUnread }}
                                 </span>
                             @endif
@@ -319,174 +318,169 @@
 
                         {{-- Notifications Dropdown --}}
                         <div id="notifications-dropdown"
-                            class="absolute right-0 mt-3 w-[350px] bg-white rounded-2xl hidden overflow-hidden"
-                            style="box-shadow: 0 20px 60px rgba(0,0,0,0.1), 0 4px 16px rgba(0,0,0,0.06);">
+                            class="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-[60px] sm:top-auto sm:mt-3 w-auto sm:w-[400px] bg-white rounded-2xl hidden overflow-hidden z-50"
+                            style="box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;">
 
-                            <div class="px-5 py-4">
+                            <div class="px-5 py-4 border-b border-gray-100">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-                                            style="background: #e8f5e8;">
-                                            <svg class="w-4.5 h-4.5 text-[#2d6a2d]" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24"
-                                                style="width:18px;height:18px;">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-sm font-bold text-gray-900">Notifikasi</h3>
-                                            <p class="text-[11px] text-gray-400 leading-none mt-0.5">
-                                                @if ($isAmil)
-                                                    Tindakan diperlukan
-                                                @elseif($isMuzakki)
-                                                    Update transaksi (7 hari)
-                                                @endif
-                                            </p>
-                                        </div>
+                                    <div>
+                                        <h3 class="text-sm font-semibold text-gray-900">Notifikasi</h3>
+                                        <p class="text-[11px] text-gray-400 mt-0.5">
+                                            @if ($isAmil)
+                                                Tindakan yang perlu ditinjau
+                                            @elseif($isMuzakki)
+                                                Update transaksi (7 hari terakhir)
+                                            @endif
+                                        </p>
                                     </div>
                                     @if ($notifUnread > 0)
-                                        <span id="notif-header-badge"
-                                            class="text-[10px] font-bold px-2.5 py-1 rounded-full"
-                                            style="background: #fef2f2; color: #ef4444;">{{ $notifUnread }}
-                                            baru</span>
-                                    @else
-                                        <span id="notif-header-badge"
-                                            class="hidden text-[10px] font-bold px-2.5 py-1 rounded-full"
-                                            style="background: #fef2f2; color: #ef4444;"></span>
+                                        <span
+                                            class="text-[10px] font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-600">
+                                            {{ $notifUnread }} baru
+                                        </span>
                                     @endif
                                 </div>
                             </div>
 
-                            <div id="notif-list" class="max-h-[380px] overflow-y-auto"
-                                style="scrollbar-width: thin; scrollbar-color: #e5e7eb transparent;">
+                            <div id="notif-list" class="max-h-[420px] overflow-y-auto divide-y divide-gray-50">
                                 @forelse($notifItems as $notif)
-                                    {{-- ✅ PERBAIKAN: tag <a> sekarang ditutup dengan > sebelum konten di dalamnya --}}
-                                    <a href="{{ $notif['url'] }}"
-                                        data-id="{{ $notif['id'] }}"
+                                    <a href="{{ $notif['url'] }}" data-id="{{ $notif['id'] }}"
                                         onclick="markNotifRead(event, this)"
-                                        class="notif-item flex items-start space-x-3 px-5 py-4 hover:bg-[#f9fbf9] transition-all duration-200 group">
-                                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5
-                                            {{ $notif['color'] === 'emerald' ? 'bg-emerald-50' : ($notif['color'] === 'amber' ? 'bg-amber-50' : ($notif['color'] === 'red' ? 'bg-red-50' : ($notif['color'] === 'blue' ? 'bg-blue-50' : 'bg-gray-50'))) }}">
-                                            @if ($notif['icon'] === 'transfer')
-                                                <svg class="w-4 h-4 text-emerald-600" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                </svg>
-                                            @elseif($notif['icon'] === 'pickup')
-                                                <svg class="w-4 h-4 text-amber-600" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                </svg>
-                                            @elseif($notif['icon'] === 'check')
-                                                <svg class="w-4 h-4 text-emerald-600" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @elseif($notif['icon'] === 'x')
-                                                <svg class="w-4 h-4 text-red-500" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @elseif($notif['icon'] === 'truck')
-                                                <svg class="w-4 h-4 text-blue-500" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                                                </svg>
-                                            @else
-                                                <svg class="w-4 h-4 text-gray-400" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            @endif
+                                        class="notif-item block px-5 py-4 hover:bg-gray-50 transition-colors duration-150">
+                                        <div class="flex gap-3">
+                                            {{-- Icon --}}
+                                            <div class="flex-shrink-0 mt-0.5">
+                                                <div
+                                                    class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100">
+                                                    @if ($notif['icon'] === 'transfer')
+                                                        <svg class="w-4 h-4 text-gray-600" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                        </svg>
+                                                    @elseif($notif['icon'] === 'pickup')
+                                                        <svg class="w-4 h-4 text-gray-600" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        </svg>
+                                                    @elseif($notif['icon'] === 'check')
+                                                        <svg class="w-4 h-4 text-gray-600" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    @elseif($notif['icon'] === 'x')
+                                                        <svg class="w-4 h-4 text-gray-600" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    @elseif($notif['icon'] === 'truck')
+                                                        <svg class="w-4 h-4 text-gray-600" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
+                                                        </svg>
+                                                    @else
+                                                        <svg class="w-4 h-4 text-gray-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="1.75"
+                                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            {{-- Content --}}
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm font-medium text-gray-900 mb-0.5">
+                                                    {{ $notif['title'] }}</p>
+                                                <p class="text-[13px] text-gray-500 leading-relaxed">
+                                                    {{ $notif['body'] }}</p>
+                                                <p class="text-[11px] text-gray-400 mt-1.5 flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {{ $notif['time'] }}
+                                                </p>
+                                            </div>
+
+                                            {{-- Arrow --}}
+                                            <svg class="w-4 h-4 text-gray-300 flex-shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-[12.5px] font-semibold text-gray-900 truncate group-hover:text-[#1f5c1f] transition-colors">
-                                                {{ $notif['title'] }}</p>
-                                            <p class="text-[11.5px] text-gray-500 mt-0.5 line-clamp-2 leading-relaxed">
-                                                {{ $notif['body'] }}</p>
-                                            <p class="text-[10.5px] text-gray-300 mt-1.5 flex items-center space-x-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                <span>{{ $notif['time'] }}</span>
-                                            </p>
-                                        </div>
-                                        <svg class="w-3.5 h-3.5 text-gray-300 flex-shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
                                     </a>
                                 @empty
-                                    <div id="notif-empty" class="py-12 text-center px-5">
-                                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                                            style="background: #f0f7f0;">
-                                            <svg class="w-7 h-7 text-[#4a9b4a]" fill="none" stroke="currentColor"
+                                    <div class="py-12 text-center">
+                                        <div
+                                            class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                                            <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round"
                                                     stroke-width="1.5"
                                                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                         </div>
-                                        <p class="text-[13px] font-semibold text-gray-700">Semua beres!</p>
-                                        <p class="text-[11.5px] text-gray-400 mt-1 leading-relaxed">
+                                        <p class="text-sm font-medium text-gray-700">Tidak ada notifikasi</p>
+                                        <p class="text-xs text-gray-400 mt-1">
                                             @if ($isAmil)
-                                                Belum ada transaksi yang perlu ditindaklanjuti
+                                                Semua transaksi sudah tertangani
                                             @elseif($isMuzakki)
-                                                Belum ada update transaksi dalam 7 hari terakhir
+                                                Belum ada update dalam 7 hari terakhir
                                             @endif
                                         </p>
                                     </div>
                                 @endforelse
                             </div>
 
-                            <div class="px-5 py-3" style="background: #fafafa;">
-                                @if ($isAmil)
-                                    <a href="{{ route('pemantauan-transaksi.index') }}"
-                                        class="flex items-center justify-center space-x-1.5 text-[12px] font-semibold text-[#1f5c1f] hover:text-[#2d6a2d] transition-colors py-1">
-                                        <span>Lihat semua transaksi</span>
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </a>
-                                @elseif($isMuzakki)
-                                    <a href="{{ route('transaksi-daring-muzakki.index') }}"
-                                        class="flex items-center justify-center space-x-1.5 text-[12px] font-semibold text-[#1f5c1f] hover:text-[#2d6a2d] transition-colors py-1">
-                                        <span>Lihat riwayat transaksi</span>
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </a>
-                                @endif
-                            </div>
+                            @if ($notifItems->isNotEmpty())
+                                <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50">
+                                    @if ($isAmil)
+                                        <a href="{{ route('pemantauan-transaksi.index') }}"
+                                            class="flex items-center justify-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors py-1">
+                                            <span>Lihat semua transaksi</span>
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </a>
+                                    @elseif($isMuzakki)
+                                        <a href="{{ route('transaksi-daring-muzakki.index') }}"
+                                            class="flex items-center justify-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors py-1">
+                                            <span>Lihat riwayat transaksi</span>
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
 
-                    <div class="w-px h-5 mx-1" style="background: #e8e8e8;"></div>
+                    <div class="w-px h-5 mx-1 bg-gray-200"></div>
                 @endif
 
                 {{-- USER MENU --}}

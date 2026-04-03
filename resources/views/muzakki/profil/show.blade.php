@@ -49,18 +49,6 @@
                 </div>
             </div>
 
-            {{-- ── Alert ── --}}
-            @if (session('success'))
-                <div class="mx-4 sm:mx-6 mt-4 p-4 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="mx-4 sm:mx-6 mt-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
-
             <div class="p-4 sm:p-6 space-y-6 sm:space-y-8">
 
                 {{-- ── Profile Header ── --}}
@@ -124,71 +112,6 @@
                                 </span>
                             @endif
                         </div>
-                    </div>
-                </div>
-
-                <hr class="border-gray-200">
-
-                {{-- ── Statistik Zakat ── --}}
-                <div>
-                    <h4 class="text-sm sm:text-base font-semibold text-gray-900 mb-4">Ringkasan Zakat</h4>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        @php
-                            $statItems = [
-                                [
-                                    'label' => 'Total Transaksi',
-                                    'value' => $stats['total_transaksi'],
-                                    'suffix' => 'transaksi',
-                                    'color' => 'bg-blue-50 border-blue-100',
-                                    'text' => 'text-blue-700',
-                                    'icon' =>
-                                        'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
-                                ],
-                                [
-                                    'label' => 'Bulan Ini',
-                                    'value' => $stats['transaksi_bulan_ini'],
-                                    'suffix' => 'transaksi',
-                                    'color' => 'bg-amber-50 border-amber-100',
-                                    'text' => 'text-amber-700',
-                                    'icon' =>
-                                        'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-                                ],
-                                [
-                                    'label' => 'Terverifikasi',
-                                    'value' => $stats['total_verified'],
-                                    'suffix' => 'transaksi',
-                                    'color' => 'bg-emerald-50 border-emerald-100',
-                                    'text' => 'text-emerald-700',
-                                    'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-                                ],
-                                [
-                                    'label' => 'Total Zakat',
-                                    'value' => 'Rp ' . number_format($stats['total_nominal'], 0, ',', '.'),
-                                    'suffix' => '',
-                                    'color' => 'bg-purple-50 border-purple-100',
-                                    'text' => 'text-purple-700',
-                                    'icon' =>
-                                        'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
-                                ],
-                            ];
-                        @endphp
-
-                        @foreach ($statItems as $item)
-                            <div class="border {{ $item['color'] }} rounded-xl p-3 sm:p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <svg class="w-4 h-4 {{ $item['text'] }}" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="{{ $item['icon'] }}" />
-                                    </svg>
-                                    <span class="text-xs font-medium text-gray-500">{{ $item['label'] }}</span>
-                                </div>
-                                <p class="text-base sm:text-lg font-bold {{ $item['text'] }}">{{ $item['value'] }}</p>
-                                @if ($item['suffix'])
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ $item['suffix'] }}</p>
-                                @endif
-                            </div>
-                        @endforeach
                     </div>
                 </div>
 
