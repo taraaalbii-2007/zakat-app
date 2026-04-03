@@ -60,24 +60,29 @@
                     Kelola transparansi laporan secara real-time dalam satu dashboard terintegrasi.
                 </p>
 
-                <div class="hero-reveal flex flex-wrap gap-4 items-center" style="transition-delay:480ms;">
+                {{-- BUTTONS: selalu berdampingan kiri-kanan di semua ukuran --}}
+                <div class="hero-reveal" style="transition-delay:480ms; display:flex; flex-direction:row; gap:0.75rem; align-items:center; flex-wrap:nowrap;">
                     <a href="{{ route('register') }}"
-                       class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-600 text-white font-bold text-base rounded-2xl shadow-xl shadow-primary-200 hover:bg-primary-700 active:scale-95 transition-all duration-300">
+                       style="display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; padding:0.75rem 1.1rem; background:#16a34a; color:#fff; font-weight:700; font-size:0.82rem; border-radius:1rem; box-shadow:0 8px 24px rgba(22,163,74,0.25); text-decoration:none; white-space:nowrap; flex-shrink:0; transition:background .2s, transform .1s;"
+                       onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'"
+                       onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'">
                         Mulai Gratis Sekarang
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;flex-shrink:0;" fill="none"
                              viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
                     </a>
                     <a href="#fitur"
-                       class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/90 backdrop-blur-sm text-slate-700 font-bold text-base rounded-2xl border border-slate-200 hover:border-primary-500 hover:text-primary-600 active:scale-95 transition-all duration-300">
+                       style="display:inline-flex; align-items:center; justify-content:center; padding:0.75rem 1.1rem; background:rgba(255,255,255,0.9); color:#334155; font-weight:700; font-size:0.82rem; border-radius:1rem; border:1.5px solid #e2e8f0; text-decoration:none; white-space:nowrap; flex-shrink:0; transition:border-color .2s, color .2s, transform .1s; backdrop-filter:blur(4px);"
+                       onmouseover="this.style.borderColor='#16a34a';this.style.color='#16a34a'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#334155'"
+                       onmousedown="this.style.transform='scale(0.96)'" onmouseup="this.style.transform='scale(1)'">
                         Pelajari Fitur
                     </a>
                 </div>
             </div>
 
-            {{-- FOTO KANAN --}}
-            <div class="w-full lg:w-[45%] order-1 lg:order-2 hero-reveal flex justify-center lg:justify-end"
+            {{-- FOTO KANAN: disembunyikan di mobile, tampil di lg ke atas --}}
+            <div class="w-full lg:w-[45%] order-1 lg:order-2 hero-reveal hidden lg:flex justify-center lg:justify-end"
                  style="transition-delay:200ms;">
 
                 {{-- Parallax wrapper --}}
@@ -136,14 +141,8 @@
                                 background-image:radial-gradient(#2d6936 2.2px,transparent 2.2px);
                                 background-size:16px 16px;"></div>
 
-                    {{-- ══════════════════════════════════════
-                         FOTO + CANVAS BORDER GLOW
-                         Canvas diposisikan ABSOLUTE di luar
-                         frame foto — tidak ada overflow:hidden
-                         ══════════════════════════════════════ --}}
                     <div id="hero-photo-wrap" style="position:relative; z-index:10;">
 
-                        {{-- Frame foto — TIDAK ada overflow:hidden di parent ini --}}
                         <div class="hero-img-frame">
                             <img src="{{ asset('image/zakat.jpg') }}"
                                  alt="Visual Zakat"
@@ -151,8 +150,6 @@
                                  style="display:block;">
                         </div>
 
-                        {{-- Canvas border glow — absolute, lebih besar dari foto,
-                             pointer-events:none sehingga tidak ganggu interaksi --}}
                         <canvas id="hero-glow-canvas"
                                 aria-hidden="true"
                                 style="position:absolute;

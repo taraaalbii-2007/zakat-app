@@ -756,7 +756,8 @@
                 <div class="sec-label">Transparansi Lembaga &mdash; {{ $lembaga?->nama }}</div>
 
                 {{-- 4 Metric Cards --}}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
 
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -773,8 +774,7 @@
                     </div>
 
                     <div class="stat-card">
-                        <div class="stat-icon"
-                            style="background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 6px 16px -3px rgba(59,130,246,.35);">
+                        <div class="stat-icon">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -802,8 +802,7 @@
                     </div>
 
                     <div class="stat-card" style="border-color:#fde68a;">
-                        <div class="stat-icon"
-                            style="background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 6px 16px -3px rgba(245,158,11,.35);">
+                        <div class="stat-icon">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />

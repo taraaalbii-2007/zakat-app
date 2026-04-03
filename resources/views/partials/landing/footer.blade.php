@@ -40,13 +40,16 @@
     {{-- KONTEN --}}
     <div class="w-full px-6 sm:px-12 lg:px-20 pt-8 pb-4" style="position:relative; z-index:1;">
 
-        {{-- GRID 3 kolom --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 pb-8" style="align-items:start;">
+        {{-- ═══════════════════════════════════════════════
+             LAYOUT GRID:
+             Mobile  → Brand full-width, lalu Menu+Kontak 2 kolom berdampingan
+             Desktop → 3 kolom sejajar
+             ═══════════════════════════════════════════════ --}}
+        <div class="nz-footer-grid pb-8">
 
             {{-- KOLOM 1: Brand --}}
-            <div class="flex flex-col items-start nz-footer-reveal">
+            <div class="flex flex-col items-start nz-footer-reveal nz-footer-brand">
 
-                {{-- Logo + Nama sejajar dengan heading kolom 2 & 3 --}}
                 <a href="/" class="flex items-center gap-3 mb-4 group" style="min-height: 2.25rem;">
                     <img src="{{ asset('image/logo_zakat.png') }}" alt="{{ $config->nama_aplikasi }}"
                         style="height:52px;width:auto;object-fit:contain; filter: brightness(0) invert(1);">
@@ -98,9 +101,9 @@
             </div>
 
             {{-- KOLOM 2: Menu Cepat --}}
-            <div class="flex flex-col items-start nz-footer-reveal" style="transition-delay:0.1s">
+            <div class="flex flex-col items-start nz-footer-reveal nz-footer-menu" style="transition-delay:0.1s">
                 <h4 class="text-sm font-bold text-white w-full"
-                    style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:52px;">Menu Cepat</h4>
+                    style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:40px;">Menu Cepat</h4>
                 <ul class="space-y-2.5 w-full">
                     @foreach ([
                         ['href' => '/', 'label' => 'Beranda'],
@@ -123,67 +126,67 @@
             </div>
 
             {{-- KOLOM 3: Kontak --}}
-            <div class="flex flex-col items-start nz-footer-reveal" style="transition-delay:0.2s">
+            <div class="flex flex-col items-start nz-footer-reveal nz-footer-kontak" style="transition-delay:0.2s">
                 <h4 class="text-sm font-bold text-white w-full"
-                    style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:52px;">Hubungi Kami</h4>
+                    style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:40px;">Hubungi Kami</h4>
                 <ul class="space-y-3 w-full">
                     @if ($config->email_admin)
-                        <li class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
-                                <i class="fa-solid fa-envelope" style="color:#fff; font-size:14px;"></i>
+                        <li class="flex items-start gap-2">
+                            <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-envelope" style="color:#fff; font-size:12px;"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Email</p>
                                 <a href="mailto:{{ $config->email_admin }}"
-                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    class="nz-menu-link text-xs text-white transition-all duration-150 break-all">
                                     {{ $config->email_admin }}
                                 </a>
                             </div>
                         </li>
                     @endif
                     @if ($config->telepon_admin)
-                        <li class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
-                                <i class="fa-solid fa-phone" style="color:#fff; font-size:14px;"></i>
+                        <li class="flex items-start gap-2">
+                            <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-phone" style="color:#fff; font-size:12px;"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Telepon</p>
                                 <a href="tel:{{ $config->telepon_formatted }}"
-                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    class="nz-menu-link text-xs text-white transition-all duration-150">
                                     {{ $config->telepon_admin }}
                                 </a>
                             </div>
                         </li>
                     @endif
                     @if ($config->whatsapp_support)
-                        <li class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
-                                <i class="fa-brands fa-whatsapp" style="color:#fff; font-size:16px;"></i>
+                        <li class="flex items-start gap-2">
+                            <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-brands fa-whatsapp" style="color:#fff; font-size:14px;"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">WhatsApp</p>
                                 <a href="{{ $config->whatsapp_link }}" target="_blank" rel="noopener"
-                                    class="nz-menu-link text-sm text-white transition-all duration-150">
+                                    class="nz-menu-link text-xs text-white transition-all duration-150">
                                     {{ $config->whatsapp_support }}
                                 </a>
                             </div>
                         </li>
                     @endif
                     @if ($config->alamat_kantor)
-                        <li class="flex items-start gap-3">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
-                                <i class="fa-solid fa-location-dot" style="color:#fff; font-size:15px;"></i>
+                        <li class="flex items-start gap-2">
+                            <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5" style="background:rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-location-dot" style="color:#fff; font-size:13px;"></i>
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-xs font-semibold mb-0.5" style="color:rgba(220,252,231,0.75);">Alamat</p>
-                                <p class="text-sm text-white leading-relaxed">{{ $config->alamat_kantor }}</p>
+                                <p class="text-xs text-white leading-relaxed">{{ $config->alamat_kantor }}</p>
                             </div>
                         </li>
                     @endif
                 </ul>
             </div>
 
-        </div>{{-- /grid --}}
+        </div>{{-- /nz-footer-grid --}}
 
         {{-- Divider --}}
         <div class="w-full h-px" style="background:rgba(255,255,255,0.2);"></div>
@@ -202,6 +205,55 @@
 </footer>
 
 <style>
+    /* ═══════════════════════════════════════════════
+       FOOTER GRID LAYOUT
+       Mobile  : Brand full → Menu+Kontak berdampingan (2 kolom)
+       Desktop : 3 kolom sejajar
+       ═══════════════════════════════════════════════ */
+    .nz-footer-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+    /* Di mobile, kolom menu & kontak berdampingan dalam subgrid 2 kolom */
+    .nz-footer-menu,
+    .nz-footer-kontak {
+        /* default: masing-masing di row sendiri */
+    }
+    @media (max-width: 767px) {
+        .nz-footer-grid {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto;
+        }
+        /* Brand: full width */
+        .nz-footer-brand {
+            grid-column: 1 / -1;
+        }
+        /* Menu & Kontak: 2 kolom berdampingan */
+        .nz-footer-menu,
+        .nz-footer-kontak {
+            display: flex;
+        }
+        /* Bungkus Menu+Kontak dalam 1 row dengan 2 kolom */
+        .nz-footer-grid {
+            grid-template-areas:
+                "brand brand"
+                "menu kontak";
+            grid-template-columns: 1fr 1fr;
+        }
+        .nz-footer-brand { grid-area: brand; }
+        .nz-footer-menu  { grid-area: menu; }
+        .nz-footer-kontak{ grid-area: kontak; }
+    }
+    @media (min-width: 768px) {
+        .nz-footer-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2.5rem;
+        }
+    }
+
+    /* Reveal animation */
     .nz-footer-reveal {
         opacity: 0;
         transform: translateY(18px);
@@ -249,7 +301,6 @@
 
 <script>
     (function() {
-    (function() {
         function showAll() {
             document.querySelectorAll('.nz-footer-reveal').forEach(function(el) {
                 el.classList.add('nz-footer-visible');
@@ -281,6 +332,5 @@
                 link.classList.add('nz-active');
             });
         });
-    })();
     })();
 </script>

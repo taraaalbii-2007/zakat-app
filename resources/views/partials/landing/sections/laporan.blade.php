@@ -1,9 +1,4 @@
 {{-- resources/views/partials/landing/sections/laporan.blade.php --}}
-{{--
-    PROPS yang dikirim dari LandingController:
-    $laporanPublished = collection LaporanKeuanganLembaga (status=published, with lembaga)
---}}
-
 @php
     $hasData = isset($laporanPublished) && $laporanPublished->count() > 0;
 @endphp
@@ -16,7 +11,26 @@
         position: relative;
         overflow: hidden;
     }
-    
+
+    /* ── ANIMATED UNDERLINE (sama persis dengan cara-kerja) ── */
+    .lrk-underline-path {
+        fill: none;
+        stroke: #16a34a;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        stroke-dasharray: 280;
+        stroke-dashoffset: 280;
+    }
+
+    .lrk-underline-path.lrk-draw {
+        animation: lrkDrawLine 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+    }
+
+    @keyframes lrkDrawLine {
+        from { stroke-dashoffset: 280; }
+        to   { stroke-dashoffset: 0;   }
+    }
+
     /* ── GRID 3 KOLOM ───────────────────────────── */
     .lrk-landing-grid {
         display: grid;
@@ -24,19 +38,15 @@
         gap: 1.75rem;
         margin-bottom: 2.5rem;
     }
-    
+
     @media (min-width: 640px) {
-        .lrk-landing-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+        .lrk-landing-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    
+
     @media (min-width: 1024px) {
-        .lrk-landing-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
+        .lrk-landing-grid { grid-template-columns: repeat(3, 1fr); }
     }
-    
+
     /* ── CARD ───────────────────────────────────── */
     .lrk-landing-card {
         background: #ffffff;
@@ -46,21 +56,18 @@
         display: flex;
         flex-direction: column;
         transition: transform .22s, box-shadow .22s, border-color .22s;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         height: 100%;
     }
-    
+
     .lrk-landing-card:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 28px rgba(22, 163, 74, 0.13);
+        box-shadow: 0 8px 28px rgba(22,163,74,0.13);
         border-color: #86efac;
     }
-    
-    /* Card head */
-    .lrk-landing-card__head {
-        padding: 1.25rem 1.25rem 0.75rem;
-    }
-    
+
+    .lrk-landing-card__head { padding: 1.25rem 1.25rem 0.75rem; }
+
     .lrk-landing-card__top {
         display: flex;
         align-items: flex-start;
@@ -68,7 +75,7 @@
         gap: 0.5rem;
         margin-bottom: 0.75rem;
     }
-    
+
     .lrk-landing-card__kode {
         font-size: 0.7rem;
         font-weight: 700;
@@ -76,7 +83,7 @@
         letter-spacing: 0.08em;
         color: #9ca3af;
     }
-    
+
     .lrk-landing-card__badge {
         display: inline-flex;
         align-items: center;
@@ -91,26 +98,19 @@
         white-space: nowrap;
         flex-shrink: 0;
     }
-    
+
     .lrk-landing-card__badge-dot {
-        width: 5px;
-        height: 5px;
+        width: 5px; height: 5px;
         border-radius: 50%;
         background: #22c55e;
         animation: pulseLanding 2.4s ease-in-out infinite;
     }
-    
+
     @keyframes pulseLanding {
-        0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-        }
-        50% {
-            opacity: .5;
-            transform: scale(0.9);
-        }
+        0%,100% { opacity:1; transform:scale(1); }
+        50%      { opacity:.5; transform:scale(0.9); }
     }
-    
+
     .lrk-landing-card__nama {
         font-size: 1.05rem;
         font-weight: 800;
@@ -123,11 +123,9 @@
         overflow: hidden;
         transition: color 0.2s;
     }
-    
-    .lrk-landing-card:hover .lrk-landing-card__nama {
-        color: #16a34a;
-    }
-    
+
+    .lrk-landing-card:hover .lrk-landing-card__nama { color: #16a34a; }
+
     .lrk-landing-card__kota {
         font-size: 0.7rem;
         font-weight: 600;
@@ -135,8 +133,7 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
-    
-    /* Card body */
+
     .lrk-landing-card__body {
         padding: 0 1.25rem 1.25rem;
         display: flex;
@@ -144,19 +141,15 @@
         gap: 1rem;
         flex: 1;
     }
-    
-    .lrk-landing-divider {
-        height: 1px;
-        background: #f3f4f6;
-    }
-    
-    /* Stat pair */
+
+    .lrk-landing-divider { height: 1px; background: #f3f4f6; }
+
     .lrk-landing-stat-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem 1rem;
     }
-    
+
     .lrk-landing-stat__label {
         font-size: 0.65rem;
         font-weight: 700;
@@ -165,54 +158,30 @@
         color: #9ca3af;
         margin-bottom: 0.25rem;
     }
-    
-    .lrk-landing-stat__val {
-        font-size: 0.95rem;
-        font-weight: 800;
-        color: #111827;
-    }
-    
-    .v-green {
-        color: #16a34a;
-    }
-    
-    .v-red {
-        color: #dc2626;
-    }
-    
-    /* Rasio block */
+
+    .lrk-landing-stat__val { font-size: 0.95rem; font-weight: 800; color: #111827; }
+    .v-green { color: #16a34a; }
+    .v-red   { color: #dc2626; }
+
     .lrk-landing-rasio-row {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
         gap: 1rem;
     }
-    
+
     .lrk-landing-rasio-num {
         font-size: 2rem;
         font-weight: 900;
         line-height: 1;
         letter-spacing: -0.03em;
     }
-    
-    .lrk-landing-rasio-num sup {
-        font-size: 0.85rem;
-        font-weight: 700;
-        vertical-align: super;
-    }
-    
-    .rn-high {
-        color: #16a34a;
-    }
-    
-    .rn-mid {
-        color: #f59e0b;
-    }
-    
-    .rn-low {
-        color: #d1d5db;
-    }
-    
+
+    .lrk-landing-rasio-num sup { font-size: 0.85rem; font-weight: 700; vertical-align: super; }
+    .rn-high { color: #16a34a; }
+    .rn-mid  { color: #f59e0b; }
+    .rn-low  { color: #d1d5db; }
+
     .lrk-landing-rasio-lbl {
         font-size: 0.62rem;
         font-weight: 700;
@@ -221,45 +190,15 @@
         color: #9ca3af;
         margin-top: 0.25rem;
     }
-    
-    /* Bar */
-    .lrk-landing-bar {
-        height: 4px;
-        background: #f3f4f6;
-        border-radius: 99px;
-        overflow: hidden;
-    }
-    
-    .lrk-landing-bar__fill {
-        height: 100%;
-        border-radius: 99px;
-        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    .bf-high {
-        background: linear-gradient(90deg, #22c55e, #16a34a);
-    }
-    
-    .bf-mid {
-        background: linear-gradient(90deg, #fbbf24, #f59e0b);
-    }
-    
-    .bf-low {
-        background: #d1d5db;
-    }
-    
-    /* People */
-    .lrk-landing-people {
-        display: flex;
-        gap: 1.5rem;
-    }
-    
-    .lrk-landing-people__num {
-        font-size: 1rem;
-        font-weight: 800;
-        color: #111827;
-    }
-    
+
+    .lrk-landing-bar { height: 4px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
+    .lrk-landing-bar__fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
+    .bf-high { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .bf-mid  { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+    .bf-low  { background: #d1d5db; }
+
+    .lrk-landing-people { display: flex; gap: 1.5rem; }
+    .lrk-landing-people__num { font-size: 1rem; font-weight: 800; color: #111827; }
     .lrk-landing-people__lbl {
         font-size: 0.65rem;
         font-weight: 700;
@@ -268,8 +207,7 @@
         color: #9ca3af;
         margin-top: 0.15rem;
     }
-    
-    /* Card footer */
+
     .lrk-landing-card__footer {
         display: flex;
         align-items: center;
@@ -278,12 +216,9 @@
         background: #fafafa;
         border-top: 1px solid #f3f4f6;
     }
-    
-    .lrk-landing-card__date {
-        font-size: 0.72rem;
-        color: #9ca3af;
-    }
-    
+
+    .lrk-landing-card__date { font-size: 0.72rem; color: #9ca3af; }
+
     .lrk-landing-link {
         display: inline-flex;
         align-items: center;
@@ -294,41 +229,17 @@
         text-decoration: none;
         transition: all 0.2s;
     }
-    
-    .lrk-landing-link svg {
-        transition: transform 0.2s;
-    }
-    
-    .lrk-landing-link:hover {
-        gap: 0.5rem;
-    }
-    
-    .lrk-landing-link:hover svg {
-        transform: translateX(3px);
-    }
-    
-    /* Empty state */
-    .lrk-landing-empty {
-        text-align: center;
-        padding: 4rem 1rem;
-        color: #9ca3af;
-    }
-    
-    .lrk-landing-empty svg {
-        margin: 0 auto 1rem;
-        display: block;
-    }
-    
-    .lrk-landing-empty p {
-        font-size: 0.95rem;
-    }
-    
-    /* CTA Button */
-    .lrk-landing-cta {
-        text-align: center;
-        margin-top: 1rem;
-    }
-    
+
+    .lrk-landing-link svg { transition: transform 0.2s; }
+    .lrk-landing-link:hover { gap: 0.5rem; }
+    .lrk-landing-link:hover svg { transform: translateX(3px); }
+
+    .lrk-landing-empty { text-align: center; padding: 4rem 1rem; color: #9ca3af; }
+    .lrk-landing-empty svg { margin: 0 auto 1rem; display: block; }
+    .lrk-landing-empty p { font-size: 0.95rem; }
+
+    .lrk-landing-cta { text-align: center; margin-top: 1rem; }
+
     .lrk-landing-cta-btn {
         display: inline-flex;
         align-items: center;
@@ -341,13 +252,13 @@
         border-radius: 99px;
         text-decoration: none;
         transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
+        box-shadow: 0 2px 8px rgba(22,163,74,0.2);
     }
-    
+
     .lrk-landing-cta-btn:hover {
         background: #15803d;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        box-shadow: 0 4px 12px rgba(22,163,74,0.3);
     }
 </style>
 
@@ -367,9 +278,21 @@
                 </svg>
                 Laporan Keuangan
             </div>
+
+            {{-- Heading dengan animasi underline berjalan saat di-scroll --}}
             <h2 class="text-3xl lg:text-4xl font-bold text-neutral-900 mb-3 tracking-tight">
-                Transparansi Keuangan <span class="text-green-600">Lembaga Zakat</span>
+                Transparansi Keuangan
+                <span class="relative inline-block text-green-600">
+                    Lembaga Zakat
+                    {{-- SVG underline — stroke-dashoffset di-animate via JS saat masuk viewport --}}
+                    <svg class="block w-full overflow-visible" style="height:11px; margin-top:3px;"
+                         viewBox="0 0 260 11" preserveAspectRatio="none">
+                        <path class="lrk-underline-path" id="lrkUnderlinePath"
+                              d="M2,7 Q65,2 130,7 Q195,12 258,6" />
+                    </svg>
+                </span>
             </h2>
+
             <p class="text-neutral-500 text-base max-w-xl mx-auto">
                 Laporan keuangan resmi yang telah dipublikasikan oleh lembaga-lembaga zakat terdaftar — terbuka dan dapat diakses oleh siapa saja.
             </p>
@@ -384,12 +307,12 @@
                             1=>'Jan',2=>'Feb',3=>'Mar',4=>'Apr',5=>'Mei',6=>'Jun',
                             7=>'Jul',8=>'Agu',9=>'Sep',10=>'Okt',11=>'Nov',12=>'Des',
                         ][$laporan->bulan] ?? '-';
-                        
+
                         $rasio = $laporan->total_penerimaan > 0
                             ? min(round(($laporan->total_penyaluran / $laporan->total_penerimaan) * 100), 100)
                             : 0;
                         $rc = $rasio >= 80 ? 'high' : ($rasio >= 50 ? 'mid' : 'low');
-                        
+
                         $lembagaNama = $laporan->lembaga->nama ?? 'Lembaga';
                         $lembagaKode = $laporan->lembaga->kode_lembaga ?? null;
                         $kota        = $laporan->lembaga->kota_nama ?? null;
@@ -399,7 +322,6 @@
                     @endphp
 
                     <article class="lrk-landing-card">
-                        {{-- HEAD --}}
                         <div class="lrk-landing-card__head">
                             <div class="lrk-landing-card__top">
                                 <span class="lrk-landing-card__kode">
@@ -416,11 +338,9 @@
                             @endif
                         </div>
 
-                        {{-- BODY --}}
                         <div class="lrk-landing-card__body">
                             <div class="lrk-landing-divider"></div>
 
-                            {{-- Penerimaan & Penyaluran --}}
                             <div class="lrk-landing-stat-row">
                                 <div>
                                     <div class="lrk-landing-stat__label">Penerimaan</div>
@@ -432,7 +352,6 @@
                                 </div>
                             </div>
 
-                            {{-- Saldo + Rasio --}}
                             <div class="lrk-landing-rasio-row">
                                 <div>
                                     <div class="lrk-landing-stat__label">Saldo Akhir</div>
@@ -446,12 +365,10 @@
                                 </div>
                             </div>
 
-                            {{-- Progress bar --}}
                             <div class="lrk-landing-bar">
                                 <div class="lrk-landing-bar__fill bf-{{ $rc }}" style="width:{{ $rasio }}%"></div>
                             </div>
 
-                            {{-- Muzakki & Mustahik --}}
                             <div class="lrk-landing-people">
                                 <div>
                                     <div class="lrk-landing-people__num">{{ number_format($laporan->jumlah_muzakki) }}</div>
@@ -464,7 +381,6 @@
                             </div>
                         </div>
 
-                        {{-- FOOTER --}}
                         <div class="lrk-landing-card__footer">
                             <span class="lrk-landing-card__date">Terbit {{ $publishedAt }}</span>
                             @if($laporan->lembaga)
@@ -480,7 +396,6 @@
                 @endforeach
             </div>
 
-            {{-- CTA Lihat Semua --}}
             <div class="lrk-landing-cta">
                 <a href="{{ route('laporan.index') }}" class="lrk-landing-cta-btn">
                     Lihat Semua Laporan
@@ -490,7 +405,6 @@
                 </a>
             </div>
         @else
-            {{-- Empty state --}}
             <div class="lrk-landing-empty">
                 <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <rect width="56" height="56" rx="16" fill="#f0fdf4" />
@@ -502,3 +416,36 @@
         @endif
     </div>
 </section>
+
+<script>
+(function () {
+    var drawn = false;
+    var path  = document.getElementById('lrkUnderlinePath');
+    if (!path) return;
+
+    function draw() {
+        if (drawn) return;
+        drawn = true;
+        path.classList.add('lrk-draw');
+    }
+
+    // Trigger saat section masuk viewport
+    var section = document.getElementById('laporan-landing');
+    if (!section) return;
+
+    if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    draw();
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.25 });
+        obs.observe(section);
+    } else {
+        // Fallback: langsung draw jika IO tidak tersedia
+        draw();
+    }
+})();
+</script>
