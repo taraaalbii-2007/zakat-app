@@ -7,10 +7,13 @@
     <div class="space-y-4 sm:space-y-6">
         <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
             <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                         <h2 class="text-base sm:text-lg font-semibold text-gray-900">Detail Program Zakat</h2>
                         <p class="text-xs sm:text-sm text-gray-500 mt-1">Informasi lengkap program zakat</p>
+                    </div>
+                    <div class="sm:hidden">
+                        {!! $program->status_badge !!}
                     </div>
                 </div>
             </div>
@@ -20,16 +23,28 @@
                 <div class="pb-6 border-b border-gray-200">
                     <div class="flex flex-col sm:flex-row items-start gap-4">
                         @if (!empty($program->foto_kegiatan[0]))
-                            <div class="flex-shrink-0">
+                            <div class="flex-shrink-0 w-full sm:w-auto flex justify-center sm:justify-start">
                                 <img src="{{ Storage::url($program->foto_kegiatan[0]) }}" alt="Poster Program"
-                                    class="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-gray-200">
+                                    class="w-32 h-32 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-gray-200 mx-auto sm:mx-0">
                             </div>
                         @endif
-                        <div class="w-full">
+                        <div class="w-full text-center sm:text-left">
                             <h3 class="text-xl sm:text-2xl font-bold text-gray-900">{{ $program->nama_program }}</h3>
                             <p class="text-sm text-gray-500 mt-1">{{ $program->kode_program }}</p>
-                            <div class="flex flex-wrap gap-2 mt-3">
+                            <div class="hidden sm:flex flex-wrap gap-2 mt-3">
                                 {!! $program->status_badge !!}
+                                @if ($program->target_dana)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Target: Rp {{ number_format($program->target_dana, 0, ',', '.') }}
+                                    </span>
+                                @endif
+                                @if ($program->target_mustahik)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ $program->target_mustahik }} Mustahik
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
                                 @if ($program->target_dana)
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         Target: Rp {{ number_format($program->target_dana, 0, ',', '.') }}
@@ -48,41 +63,39 @@
                 {{-- Tabs --}}
                 <div class="mt-6">
                     <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
+                        <nav class="-mb-px flex space-x-3 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
                             <button type="button" onclick="switchTab('info')" id="tab-info"
-                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-primary text-primary font-medium text-sm focus:outline-none">
+                                class="tab-button whitespace-nowrap py-2.5 sm:py-3 px-1 border-b-2 border-primary text-primary font-medium text-xs sm:text-sm focus:outline-none">
                                 Informasi Program
                             </button>
                             <button type="button" onclick="switchTab('penerimaan')" id="tab-penerimaan"
-                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm focus:outline-none">
+                                class="tab-button whitespace-nowrap py-2.5 sm:py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-xs sm:text-sm focus:outline-none">
                                 Penerimaan Dana
                                 @if($totalPenerimaanTrx > 0)
-                                    <span class="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                                    <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
                                         {{ $totalPenerimaanTrx }}
                                     </span>
                                 @endif
                             </button>
                             <button type="button" onclick="switchTab('penyaluran')" id="tab-penyaluran"
-                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm focus:outline-none">
+                                class="tab-button whitespace-nowrap py-2.5 sm:py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-xs sm:text-sm focus:outline-none">
                                 Penyaluran
                                 @if($totalPenyaluranTrx > 0)
-                                    <span class="ml-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                                    <span class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                                         {{ $totalPenyaluranTrx }}
                                     </span>
                                 @endif
                             </button>
                             <button type="button" onclick="switchTab('gallery')" id="tab-gallery"
-                                class="tab-button whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm focus:outline-none">
+                                class="tab-button whitespace-nowrap py-2.5 sm:py-3 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-xs sm:text-sm focus:outline-none">
                                 Gallery
                             </button>
                         </nav>
                     </div>
 
-                    {{-- ═══════════════════════════════════════════════════════ --}}
-                    {{-- TAB: Informasi Program                                  --}}
-                    {{-- ═══════════════════════════════════════════════════════ --}}
+                    {{-- TAB 1: Informasi Program --}}
                     <div id="content-info" class="tab-content mt-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {{-- Informasi Dasar --}}
                             <div class="space-y-4">
                                 <h4 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">Informasi Dasar</h4>
@@ -167,9 +180,9 @@
                                                 <div class="bg-primary h-3 rounded-full transition-all duration-500"
                                                     style="width: {{ min(100, $program->progress_dana) }}%"></div>
                                             </div>
-                                            <div class="flex justify-between text-xs text-gray-600">
+                                            <div class="flex flex-col xs:flex-row justify-between text-xs text-gray-600 gap-1">
                                                 <span class="font-medium">Rp {{ number_format($program->realisasi_dana, 0, ',', '.') }}</span>
-                                                <span>Rp {{ number_format($program->target_dana, 0, ',', '.') }}</span>
+                                                <span class="text-gray-400">dari Rp {{ number_format($program->target_dana, 0, ',', '.') }}</span>
                                             </div>
                                         </div>
                                     @else
@@ -192,9 +205,9 @@
                                                 <div class="bg-green-500 h-3 rounded-full transition-all duration-500"
                                                     style="width: {{ min(100, $program->progress_mustahik) }}%"></div>
                                             </div>
-                                            <div class="flex justify-between text-xs text-gray-600">
+                                            <div class="flex flex-col xs:flex-row justify-between text-xs text-gray-600 gap-1">
                                                 <span class="font-medium">{{ $program->realisasi_mustahik }} orang</span>
-                                                <span>{{ $program->target_mustahik }} orang</span>
+                                                <span class="text-gray-400">dari {{ $program->target_mustahik }} orang</span>
                                             </div>
                                         </div>
                                     @else
@@ -251,26 +264,23 @@
                         </div>
                     </div>
 
-                    {{-- ═══════════════════════════════════════════════════════ --}}
-                    {{-- TAB: Penerimaan Dana                                    --}}
-                    {{-- ═══════════════════════════════════════════════════════ --}}
+                    {{-- TAB 2: Penerimaan Dana --}}
                     <div id="content-penerimaan" class="tab-content hidden mt-6">
-
                         {{-- Ringkasan Penerimaan --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-3 sm:p-4">
                                 <p class="text-xs text-green-600 font-medium mb-1">Total Dana Masuk (Verified)</p>
-                                <p class="text-lg font-bold text-green-700">
+                                <p class="text-base sm:text-lg font-bold text-green-700 break-words">
                                     Rp {{ number_format($totalPenerimaanVerified, 0, ',', '.') }}
                                 </p>
                             </div>
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4">
                                 <p class="text-xs text-blue-600 font-medium mb-1">Total Transaksi</p>
-                                <p class="text-lg font-bold text-blue-700">{{ $totalPenerimaanTrx }}</p>
+                                <p class="text-base sm:text-lg font-bold text-blue-700">{{ $totalPenerimaanTrx }}</p>
                             </div>
-                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 sm:p-4 col-span-1 xs:col-span-2 sm:col-span-1">
                                 <p class="text-xs text-yellow-600 font-medium mb-1">Menunggu Verifikasi</p>
-                                <p class="text-lg font-bold text-yellow-700">{{ $totalPenerimaanPending }}</p>
+                                <p class="text-base sm:text-lg font-bold text-yellow-700">{{ $totalPenerimaanPending }}</p>
                             </div>
                         </div>
 
@@ -397,41 +407,27 @@
                                 <p class="mt-1 text-xs text-gray-400">
                                     Transaksi penerimaan yang dikaitkan dengan program ini akan tampil di sini.
                                 </p>
-                                @if ($program->status === 'aktif')
-                                    <div class="mt-5">
-                                        <a href="{{ route('transaksi-datang-langsung.create') }}"
-                                            class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                            </svg>
-                                            Catat Penerimaan
-                                        </a>
-                                    </div>
-                                @endif
                             </div>
                         @endif
                     </div>
 
-                    {{-- ═══════════════════════════════════════════════════════ --}}
-                    {{-- TAB: Penyaluran                                         --}}
-                    {{-- ═══════════════════════════════════════════════════════ --}}
+                    {{-- TAB 3: Penyaluran --}}
                     <div id="content-penyaluran" class="tab-content hidden mt-6">
-
                         {{-- Ringkasan Penyaluran --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                            <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-3 sm:p-4">
                                 <p class="text-xs text-green-600 font-medium mb-1">Total Tersalurkan</p>
-                                <p class="text-lg font-bold text-green-700">
+                                <p class="text-base sm:text-lg font-bold text-green-700 break-words">
                                     Rp {{ number_format($totalPenyaluranNominal, 0, ',', '.') }}
                                 </p>
                             </div>
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4">
                                 <p class="text-xs text-blue-600 font-medium mb-1">Mustahik Unik</p>
-                                <p class="text-lg font-bold text-blue-700">{{ $totalMustahikUnik }} orang</p>
+                                <p class="text-base sm:text-lg font-bold text-blue-700">{{ $totalMustahikUnik }} orang</p>
                             </div>
-                            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <div class="bg-purple-50 border border-purple-200 rounded-xl p-3 sm:p-4 col-span-1 xs:col-span-2 sm:col-span-1">
                                 <p class="text-xs text-purple-600 font-medium mb-1">Total Transaksi</p>
-                                <p class="text-lg font-bold text-purple-700">{{ $totalPenyaluranTrx }}</p>
+                                <p class="text-base sm:text-lg font-bold text-purple-700">{{ $totalPenyaluranTrx }}</p>
                             </div>
                         </div>
 
@@ -568,39 +564,26 @@
                                 <p class="mt-1 text-xs text-gray-400">
                                     Transaksi penyaluran yang dikaitkan dengan program ini akan tampil di sini.
                                 </p>
-                                @if ($program->status === 'aktif')
-                                    <div class="mt-5">
-                                        <a href="{{ route('transaksi-penyaluran.create') }}"
-                                            class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                            </svg>
-                                            Buat Penyaluran
-                                        </a>
-                                    </div>
-                                @endif
                             </div>
                         @endif
                     </div>
 
-                    {{-- ═══════════════════════════════════════════════════════ --}}
-                    {{-- TAB: Gallery                                             --}}
-                    {{-- ═══════════════════════════════════════════════════════ --}}
+                    {{-- TAB 4: Gallery --}}
                     <div id="content-gallery" class="tab-content hidden mt-6">
                         @if (!empty($program->foto_kegiatan) && count($program->foto_kegiatan) > 0)
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                                 @foreach ($program->foto_kegiatan as $index => $foto)
                                     <div class="relative group">
                                         <a href="{{ Storage::url($foto) }}" target="_blank"
-                                            class="block rounded-lg overflow-hidden border border-gray-200 hover:border-primary transition-all hover:shadow-md">
+                                            class="block rounded-lg overflow-hidden border border-gray-200 hover:border-primary transition-all hover:shadow-md aspect-square">
                                             <img src="{{ Storage::url($foto) }}" alt="Foto Kegiatan {{ $index + 1 }}"
-                                                class="object-cover w-full h-48">
+                                                class="w-full h-full object-cover">
                                         </a>
                                         @if (!in_array($program->status, ['selesai', 'dibatalkan']))
-                                            <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button type="button" onclick="deletePhoto({{ $index }})"
-                                                    class="p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    class="p-1.5 sm:p-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg">
+                                                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
@@ -617,16 +600,24 @@
                                     <form action="{{ route('program-zakat.upload-foto', $program->uuid) }}"
                                         method="POST" enctype="multipart/form-data" class="space-y-3">
                                         @csrf
-                                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                                            <div class="flex-1 w-full">
+                                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                            <div class="flex-1">
                                                 <input type="file" name="foto" accept="image/jpeg,image/png,image/jpg"
-                                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary-600 transition-colors">
+                                                    class="block w-full text-sm text-gray-500
+                                                    file:mr-2 sm:file:mr-4
+                                                    file:py-1.5 sm:file:py-2
+                                                    file:px-3 sm:file:px-4
+                                                    file:rounded-lg file:border-0
+                                                    file:text-xs sm:file:text-sm
+                                                    file:font-medium file:bg-primary file:text-white
+                                                    hover:file:bg-primary-600 transition-colors
+                                                    cursor-pointer">
                                             </div>
                                             <button type="submit"
                                                 class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
                                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                                 </svg>
                                                 Upload Foto
                                             </button>
@@ -642,21 +633,6 @@
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <h3 class="mt-3 text-sm font-medium text-gray-700">Belum ada foto kegiatan</h3>
-                                @if (!in_array($program->status, ['selesai', 'dibatalkan']))
-                                    <div class="mt-5">
-                                        <form action="{{ route('program-zakat.upload-foto', $program->uuid) }}"
-                                            method="POST" enctype="multipart/form-data" class="max-w-sm mx-auto space-y-3">
-                                            @csrf
-                                            <input type="file" name="foto" accept="image/jpeg,image/png,image/jpg"
-                                                class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary-600 transition-colors">
-                                            <button type="submit"
-                                                class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
-                                                Upload Foto Pertama
-                                            </button>
-                                            <p class="text-xs text-gray-500 text-center">Format: JPEG, PNG, JPG. Maksimal 2MB</p>
-                                        </form>
-                                    </div>
-                                @endif
                             </div>
                         @endif
                     </div>
@@ -793,7 +769,7 @@
 
 @push('scripts')
     <script>
-        // ── Tab switching ─────────────────────────────────────────────────────
+        // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.querySelectorAll('.tab-button').forEach(b => {
@@ -806,7 +782,7 @@
             activeTab.classList.remove('border-transparent', 'text-gray-500');
         }
 
-        // ── Delete Program ────────────────────────────────────────────────────
+        // Delete Program
         function confirmDelete() {
             document.getElementById('delete-modal').classList.remove('hidden');
         }
@@ -814,7 +790,7 @@
             document.getElementById('delete-modal').classList.add('hidden');
         }
 
-        // ── Status Modal ──────────────────────────────────────────────────────
+        // Status Modal
         function showStatusModal(status) {
             const messages = {
                 aktif:      { title: 'Aktifkan Program',  msg: 'Program akan diaktifkan dan dapat menerima donasi serta penyaluran.' },
@@ -842,7 +818,7 @@
             document.getElementById('status-catatan').value = '';
         }
 
-        // ── Delete Photo ──────────────────────────────────────────────────────
+        // Delete Photo
         function deletePhoto(index) {
             if (!confirm('Apakah Anda yakin ingin menghapus foto ini?')) return;
 
@@ -862,11 +838,24 @@
             .catch(() => alert('Terjadi kesalahan saat menghapus foto'));
         }
 
-        // ── Close modals on backdrop click ────────────────────────────────────
+        // Close modals on backdrop click & escape key
         ['delete-modal', 'status-modal'].forEach(id => {
-            document.getElementById(id).addEventListener('click', function (e) {
-                if (e.target === this) this.classList.add('hidden');
-            });
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        this.classList.add('hidden');
+                        if (id === 'status-modal') document.getElementById('status-catatan').value = '';
+                    }
+                });
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+                closeStatusModal();
+            }
         });
     </script>
 @endpush

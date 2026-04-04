@@ -258,17 +258,155 @@
     <div class="px-5 sm:px-7 lg:px-10">
         <div class="flex items-center justify-between" style="height: 64px;">
 
-            {{-- Left: Page Title --}}
-            <div class="flex items-center">
-                <div class="hidden lg:block">
-                    <h1 class="text-base font-bold text-gray-900 leading-tight" style="letter-spacing: -0.025em;">
-                        @yield('page-title', 'Dashboard')
-                    </h1>
-                    @hasSection('page-subtitle')
-                        <p class="text-xs text-gray-400 mt-0.5">@yield('page-subtitle')</p>
-                    @endif
-                </div>
-            </div>
+{{-- Left: Page Title --}}
+@php
+    $routePageMap = [
+        // Dashboard
+        'dashboard'                               => ['title' => 'Dashboard',                    'subtitle' => 'Ringkasan aktivitas'],
+
+        // Superadmin - Data Master
+        'jenis-zakat.index'                       => ['title' => 'Jenis Zakat',                  'subtitle' => 'Kelola jenis zakat'],
+        'jenis-zakat.create'                      => ['title' => 'Tambah Jenis Zakat',           'subtitle' => 'Jenis Zakat'],
+        'jenis-zakat.edit'                        => ['title' => 'Edit Jenis Zakat',             'subtitle' => 'Jenis Zakat'],
+        'tipe-zakat.index'                        => ['title' => 'Tipe Zakat',                   'subtitle' => 'Kelola tipe zakat'],
+        'tipe-zakat.create'                       => ['title' => 'Tambah Tipe Zakat',            'subtitle' => 'Tipe Zakat'],
+        'tipe-zakat.edit'                         => ['title' => 'Edit Tipe Zakat',              'subtitle' => 'Tipe Zakat'],
+        'kategori-mustahik.index'                 => ['title' => 'Kategori Mustahik',            'subtitle' => 'Kelola kategori mustahik'],
+        'kategori-mustahik.create'                => ['title' => 'Tambah Kategori Mustahik',     'subtitle' => 'Kategori Mustahik'],
+        'kategori-mustahik.edit'                  => ['title' => 'Edit Kategori Mustahik',       'subtitle' => 'Kategori Mustahik'],
+        'harga-emas-perak.index'                  => ['title' => 'Harga Emas & Perak',           'subtitle' => 'Kelola harga emas dan perak'],
+        'harga-emas-perak.create'                 => ['title' => 'Tambah Harga Emas & Perak',    'subtitle' => 'Harga Emas & Perak'],
+        'harga-emas-perak.edit'                   => ['title' => 'Edit Harga Emas & Perak',      'subtitle' => 'Harga Emas & Perak'],
+
+        // Superadmin - Pengguna
+        'pengguna.index'                          => ['title' => 'Pengguna',                     'subtitle' => 'Kelola data pengguna'],
+        'pengguna.create'                         => ['title' => 'Tambah Pengguna',              'subtitle' => 'Pengguna'],
+        'pengguna.edit'                           => ['title' => 'Edit Pengguna',                'subtitle' => 'Pengguna'],
+
+        // Superadmin - Bulletin
+        'superadmin.kategori-bulletin.index'      => ['title' => 'Kategori Bulletin',            'subtitle' => 'Kelola kategori bulletin'],
+        'superadmin.bulletin.index'               => ['title' => 'Kelola Bulletin',              'subtitle' => 'Manajemen artikel bulletin'],
+        'superadmin.bulletin.create'              => ['title' => 'Tambah Bulletin',              'subtitle' => 'Bulletin'],
+        'superadmin.bulletin.edit'                => ['title' => 'Edit Bulletin',                'subtitle' => 'Bulletin'],
+        'superadmin.bulletin.show'                => ['title' => 'Detail Bulletin',              'subtitle' => 'Bulletin'],
+
+        // Superadmin - Lembaga
+        'lembaga.index'                           => ['title' => 'Lembaga',                      'subtitle' => 'Kelola data lembaga'],
+        'lembaga.create'                          => ['title' => 'Tambah Lembaga',               'subtitle' => 'Lembaga'],
+        'lembaga.edit'                            => ['title' => 'Edit Lembaga',                 'subtitle' => 'Lembaga'],
+        'lembaga.show'                            => ['title' => 'Detail Lembaga',               'subtitle' => 'Lembaga'],
+
+        // Superadmin - Amil
+        'superadmin.amil.index'                   => ['title' => 'Data Amil',                    'subtitle' => 'Kelola data amil'],
+        'superadmin.amil.show'                    => ['title' => 'Detail Amil',                  'subtitle' => 'Data Amil'],
+
+        // Superadmin - Mustahik
+        'superadmin.mustahik.index'               => ['title' => 'Data Mustahik',                'subtitle' => 'Kelola data mustahik'],
+        'superadmin.mustahik.show'                => ['title' => 'Detail Mustahik',              'subtitle' => 'Data Mustahik'],
+
+        // Superadmin - Muzaki
+        'muzaki.index'                            => ['title' => 'Data Muzaki',                  'subtitle' => 'Kelola data muzaki'],
+        'muzaki.show'                             => ['title' => 'Detail Muzaki',                'subtitle' => 'Data Muzaki'],
+
+        // Superadmin - Transaksi
+        'superadmin.transaksi-penerimaan.index'   => ['title' => 'Transaksi Penerimaan',         'subtitle' => 'Data seluruh transaksi penerimaan'],
+        'superadmin.transaksi-penerimaan.show'    => ['title' => 'Detail Transaksi Penerimaan',  'subtitle' => 'Transaksi Penerimaan'],
+        'superadmin.transaksi-penyaluran.index'   => ['title' => 'Transaksi Penyaluran',         'subtitle' => 'Data seluruh transaksi penyaluran'],
+        'superadmin.transaksi-penyaluran.show'    => ['title' => 'Detail Transaksi Penyaluran',  'subtitle' => 'Transaksi Penyaluran'],
+
+        // Superadmin - Lainnya
+        'superadmin.testimoni.index'              => ['title' => 'Kelola Testimoni',             'subtitle' => 'Moderasi testimoni muzakki'],
+        'laporan-konsolidasi.index'               => ['title' => 'Keuangan Seluruh Lembaga',     'subtitle' => 'Laporan keuangan konsolidasi'],
+        'log-aktivitas.index'                     => ['title' => 'Log Aktivitas',                'subtitle' => 'Riwayat aktivitas sistem'],
+        'konfigurasi-global.show'                 => ['title' => 'Konfigurasi Aplikasi',         'subtitle' => 'Pengaturan global aplikasi'],
+        'superadmin.kontak.index'                 => ['title' => 'Pesan Masuk',                  'subtitle' => 'Pesan dari pengguna'],
+        'superadmin.kontak.show'                  => ['title' => 'Detail Pesan',                 'subtitle' => 'Pesan Masuk'],
+        'superadmin.profil.show'                  => ['title' => 'Profil Saya',                  'subtitle' => 'Informasi akun superadmin'],
+
+        // Admin Lembaga - Data Master
+        'program-zakat.index'                     => ['title' => 'Program Zakat',                'subtitle' => 'Kelola program zakat lembaga'],
+        'program-zakat.create'                    => ['title' => 'Tambah Program Zakat',         'subtitle' => 'Program Zakat'],
+        'program-zakat.edit'                      => ['title' => 'Edit Program Zakat',           'subtitle' => 'Program Zakat'],
+        'rekening-lembaga.index'                  => ['title' => 'Rekening Lembaga',             'subtitle' => 'Kelola rekening lembaga'],
+        'rekening-lembaga.create'                 => ['title' => 'Tambah Rekening',              'subtitle' => 'Rekening Lembaga'],
+        'rekening-lembaga.edit'                   => ['title' => 'Edit Rekening',                'subtitle' => 'Rekening Lembaga'],
+
+        // Admin Lembaga - Bulletin
+        'admin-lembaga.bulletin.index'            => ['title' => 'Bulletin Saya',                'subtitle' => 'Artikel bulletin lembaga'],
+        'admin-lembaga.bulletin.create'           => ['title' => 'Tulis Bulletin',               'subtitle' => 'Bulletin Saya'],
+        'admin-lembaga.bulletin.edit'             => ['title' => 'Edit Bulletin',                'subtitle' => 'Bulletin Saya'],
+        'admin-lembaga.bulletin.show'             => ['title' => 'Detail Bulletin',              'subtitle' => 'Bulletin Saya'],
+
+        // Admin Lembaga - Amil
+        'amil.index'                              => ['title' => 'Data Amil',                    'subtitle' => 'Kelola amil lembaga'],
+        'amil.create'                             => ['title' => 'Tambah Amil',                  'subtitle' => 'Data Amil'],
+        'amil.edit'                               => ['title' => 'Edit Amil',                    'subtitle' => 'Data Amil'],
+        'amil.show'                               => ['title' => 'Detail Amil',                  'subtitle' => 'Data Amil'],
+
+        // Admin Lembaga - Mustahik
+        'mustahik.index'                          => ['title' => 'Data Mustahik',                'subtitle' => 'Kelola data mustahik'],
+        'mustahik.create'                         => ['title' => 'Tambah Mustahik',              'subtitle' => 'Data Mustahik'],
+        'mustahik.edit'                           => ['title' => 'Edit Mustahik',                'subtitle' => 'Data Mustahik'],
+        'mustahik.show'                           => ['title' => 'Detail Mustahik',              'subtitle' => 'Data Mustahik'],
+
+        // Admin Lembaga - Muzaki
+        'admin-lembaga.muzaki.index'              => ['title' => 'Data Muzaki',                  'subtitle' => 'Kelola data muzaki lembaga'],
+        'admin-lembaga.muzaki.show'               => ['title' => 'Detail Muzaki',                'subtitle' => 'Data Muzaki'],
+
+        // Admin Lembaga - Penyaluran & Kas
+        'transaksi-penyaluran.index'              => ['title' => 'Penyaluran',                   'subtitle' => 'Kelola transaksi penyaluran'],
+        'transaksi-penyaluran.create'             => ['title' => 'Tambah Penyaluran',            'subtitle' => 'Penyaluran'],
+        'transaksi-penyaluran.show'               => ['title' => 'Detail Penyaluran',            'subtitle' => 'Penyaluran'],
+        'admin-lembaga.setor-kas.pending'         => ['title' => 'Setor Kas Amil',               'subtitle' => 'Konfirmasi setoran kas amil'],
+        'admin-lembaga.setor-kas.index'           => ['title' => 'Setor Kas Amil',               'subtitle' => 'Riwayat setoran kas amil'],
+
+        // Admin Lembaga - Lainnya
+        'laporan-keuangan.index'                  => ['title' => 'Keuangan',                     'subtitle' => 'Laporan keuangan lembaga'],
+        'konfigurasi-integrasi.show'              => ['title' => 'Konfigurasi Lembaga',          'subtitle' => 'Pengaturan integrasi lembaga'],
+        'admin-lembaga.profil.show'               => ['title' => 'Profil Saya',                  'subtitle' => 'Informasi akun admin lembaga'],
+
+        // Amil - Transaksi
+        'pemantauan-transaksi.index'              => ['title' => 'Pemantauan Transaksi',         'subtitle' => 'Pantau semua transaksi'],
+        'transaksi-datang-langsung.index'         => ['title' => 'Transaksi Datang Langsung',    'subtitle' => 'Kelola transaksi tatap muka'],
+        'transaksi-datang-langsung.create'        => ['title' => 'Catat Transaksi Langsung',     'subtitle' => 'Transaksi Datang Langsung'],
+        'transaksi-datang-langsung.show'          => ['title' => 'Detail Transaksi Langsung',    'subtitle' => 'Transaksi Datang Langsung'],
+        'transaksi-daring.index'                  => ['title' => 'Transaksi Daring',             'subtitle' => 'Kelola transaksi online'],
+        'transaksi-daring.show'                   => ['title' => 'Detail Transaksi Daring',      'subtitle' => 'Transaksi Daring'],
+        'transaksi-dijemput.index'                => ['title' => 'Transaksi Dijemput',           'subtitle' => 'Kelola transaksi penjemputan'],
+        'transaksi-dijemput.show'                 => ['title' => 'Detail Transaksi Dijemput',    'subtitle' => 'Transaksi Dijemput'],
+
+        // Amil - Kas & Kunjungan
+        'kas-harian.index'                        => ['title' => 'Kas Harian',                   'subtitle' => 'Rekap kas harian amil'],
+        'amil.setor-kas.index'                    => ['title' => 'Setor Kas',                    'subtitle' => 'Riwayat setoran kas'],
+        'amil.setor-kas.create'                   => ['title' => 'Buat Setor Kas',               'subtitle' => 'Setor Kas'],
+        'amil.kunjungan.index'                    => ['title' => 'Kunjungan Mustahik',           'subtitle' => 'Riwayat kunjungan mustahik'],
+        'amil.kunjungan.create'                   => ['title' => 'Catat Kunjungan',              'subtitle' => 'Kunjungan Mustahik'],
+        'amil.kunjungan.show'                     => ['title' => 'Detail Kunjungan',             'subtitle' => 'Kunjungan Mustahik'],
+        'profil.show'                             => ['title' => 'Profil Saya',                  'subtitle' => 'Informasi akun amil'],
+
+        // Muzakki
+        'transaksi-daring-muzakki.index'          => ['title' => 'Bayar Zakat',                  'subtitle' => 'Pilih metode pembayaran zakat'],
+        'transaksi-daring-muzakki.create'         => ['title' => 'Bayar Zakat',                  'subtitle' => 'Formulir pembayaran zakat'],
+        'transaksi-daring-muzakki.show'           => ['title' => 'Detail Transaksi',             'subtitle' => 'Bayar Zakat'],
+        'riwayat-transaksi-muzakki.index'         => ['title' => 'Riwayat Zakat',                'subtitle' => 'Histori pembayaran zakat Anda'],
+        'muzakki.testimoni.index'                 => ['title' => 'Testimoni Saya',               'subtitle' => 'Ulasan dan testimoni'],
+        'muzakki.testimoni.create'                => ['title' => 'Tulis Testimoni',              'subtitle' => 'Testimoni Saya'],
+        'muzakki.profil.show'                     => ['title' => 'Profil Saya',                  'subtitle' => 'Informasi akun muzakki'],
+    ];
+
+    $currentRouteName = request()->route()?->getName() ?? '';
+    $pageInfo = $routePageMap[$currentRouteName] ?? ['title' => 'Dashboard', 'subtitle' => ''];
+@endphp
+<div class="flex items-center">
+    <div class="hidden lg:block">
+        <h1 class="text-base font-bold text-gray-900 leading-tight" style="letter-spacing: -0.025em;">
+            @yield('page-title', $pageInfo['title'])
+        </h1>
+        @if (!empty($pageInfo['subtitle']))
+            <p class="text-xs text-gray-400 mt-0.5">@yield('page-subtitle', $pageInfo['subtitle'])</p>
+        @endif
+    </div>
+</div>
 
             {{-- Right: Actions & User --}}
             <div class="flex items-center gap-1">
