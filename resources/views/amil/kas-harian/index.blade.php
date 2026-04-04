@@ -132,8 +132,28 @@
     @elseif($kas)
     {{-- ===== KAS ADA: STATISTIK ===== --}}
 
-    {{-- Statistics Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
+{{-- Statistics Cards --}}
+{{-- Toggle button khusus mobile --}}
+<div class="sm:hidden">
+    <button type="button" onclick="toggleStatsMobile()"
+        class="w-full flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-100 shadow-sm text-sm font-medium text-gray-700 mb-3">
+        <span class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Lihat Statistik
+        </span>
+        <svg id="stats-chevron" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+</div>
+
+{{-- Container statistik (bisa toggle di mobile) --}}
+<div id="stats-mobile-panel" class="hidden sm:block">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
         <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
             <div class="flex items-center">
                 <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -195,6 +215,7 @@
             </div>
         </div>
     </div>
+</div>
 
     {{-- ===== MAIN CARD ===== --}}
     <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
@@ -1078,5 +1099,15 @@ document.addEventListener('keydown', function (e) {
         closeModal('tutup-kas-modal');
     }
 });
+
+function toggleStatsMobile() {
+    var panel = document.getElementById('stats-mobile-panel');
+    var chevron = document.getElementById('stats-chevron');
+    if (panel && chevron) {
+        var isHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', !isHidden);
+        chevron.classList.toggle('rotate-180', isHidden);
+    }
+}
 </script>
 @endpush
