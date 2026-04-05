@@ -497,4 +497,5 @@ class Lembaga extends Model
     {
         return $this->hasMany(\App\Models\LaporanKeuanganLembaga::class, 'lembaga_id');
     }
+    
 }
