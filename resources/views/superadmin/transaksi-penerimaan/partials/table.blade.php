@@ -8,7 +8,7 @@
     {{-- Baris Lembaga --}}
     <tr class="lembaga-row cursor-pointer hover:bg-amber-50/50 transition-colors"
         data-nama="{{ strtolower($lembaga->nama) }}"
-        onclick="toggleMasjid('trx-penerimaan-{{ $lembaga->id }}', this)">
+        onclick="toggleLembaga('trx-penerimaan-{{ $lembaga->id }}', this)">  {{-- <-- Ganti toggleMasjid jadi toggleLembaga --}}
         <td class="px-4 py-3">
             <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 lembaga-chevron"
                 fill="none" stroke="currentColor" viewBox="0 0 24 24">

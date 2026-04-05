@@ -5,31 +5,128 @@
 @section('content')
     <div class="space-y-4 sm:space-y-6">
 
-        {{-- Stats Cards --}}
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
+        {{-- Toggle button untuk statistik di mode mobile --}}
+        <div class="sm:hidden">
+            <button type="button" onclick="toggleStatsMobile()"
+                class="w-full flex items-center justify-between px-4 py-3 bg-white rounded-xl border border-gray-100 shadow-sm text-sm font-medium text-gray-700 transition-all hover:bg-gray-50">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span>Lihat Statistik</span>
+                </div>
+                <svg id="stats-chevron-mobile" class="w-5 h-5 text-gray-400 transition-transform duration-200"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+        </div>
+
+        {{-- Stats Cards - Mobile Version (hidden by default, toggleable) --}}
+        <div id="stats-mobile-panel" class="hidden space-y-3">
+            {{-- Single column grid untuk mobile --}}
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Total</p>
+                                <p class="text-xl font-bold text-gray-900" id="stat-total-transaksi-mobile">
+                                    {{ number_format($totalTransaksi) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Menunggu</p>
+                                <p class="text-xl font-bold text-gray-900" id="stat-total-draft-mobile">
+                                    {{ number_format($totalDraft) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Disalurkan</p>
+                                <p class="text-xl font-bold text-gray-900" id="stat-total-disalurkan-mobile">
+                                    {{ number_format($totalDisalurkan) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Total Nominal</p>
+                                <p class="text-lg font-bold text-gray-900" id="stat-total-nominal-mobile">Rp
+                                    {{ number_format($totalNominal, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Stats Cards - Desktop Version (always visible) --}}
+        <div class="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
             <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                         <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
                         <p class="text-xs font-medium text-gray-500">Total</p>
-                        <p class="text-xl font-semibold text-gray-900" id="stat-total-transaksi">{{ number_format($totalTransaksi) }}</p>
+                        <p class="text-xl font-semibold text-gray-900" id="stat-total-transaksi">
+                            {{ number_format($totalTransaksi) }}</p>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
                         <p class="text-xs font-medium text-gray-500">Menunggu</p>
-                        <p class="text-xl font-semibold text-gray-900" id="stat-total-draft">{{ number_format($totalDraft) }}</p>
+                        <p class="text-xl font-semibold text-gray-900" id="stat-total-draft">
+                            {{ number_format($totalDraft) }}</p>
                     </div>
                 </div>
             </div>
@@ -37,25 +134,28 @@
                 <div class="flex items-center">
                     <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
                         <p class="text-xs font-medium text-gray-500">Disalurkan</p>
-                        <p class="text-xl font-semibold text-gray-900" id="stat-total-disalurkan">{{ number_format($totalDisalurkan) }}</p>
+                        <p class="text-xl font-semibold text-gray-900" id="stat-total-disalurkan">
+                            {{ number_format($totalDisalurkan) }}</p>
                     </div>
                 </div>
             </div>
             <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div class="ml-3 flex-1 min-w-0">
                         <p class="text-xs font-medium text-gray-500">Total Nominal</p>
-                        <p class="text-xl font-semibold text-gray-900" id="stat-total-nominal">Rp {{ number_format($totalNominal, 0, ',', '.') }}</p>
+                        <p class="text-xl font-semibold text-gray-900" id="stat-total-nominal">Rp
+                            {{ number_format($totalNominal, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>
@@ -228,6 +328,22 @@
     const PENYALURAN_PER_PAGE = 10;
     const penyaluranPages = {};
 
+    // ── Fungsi untuk toggle statistik di mobile ───────────────────────────
+    function toggleStatsMobile() {
+        const panel = document.getElementById('stats-mobile-panel');
+        const chevron = document.getElementById('stats-chevron-mobile');
+
+        if (!panel) return;
+
+        if (panel.classList.contains('hidden')) {
+            panel.classList.remove('hidden');
+            if (chevron) chevron.classList.add('rotate-180');
+        } else {
+            panel.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+        }
+    }
+
     // ── Fungsi untuk menerapkan filter dengan AJAX ────────────────────────
     function applyFilters() {
         const lembagaId = document.getElementById('filter-lembaga')?.value || '';
@@ -318,6 +434,7 @@
     }
     
     function updateStats(data) {
+        // Update desktop stats
         const totalTransaksi = document.getElementById('stat-total-transaksi');
         const totalDraft = document.getElementById('stat-total-draft');
         const totalDisalurkan = document.getElementById('stat-total-disalurkan');
@@ -327,6 +444,17 @@
         if (totalDraft) totalDraft.textContent = new Intl.NumberFormat('id-ID').format(data.totalDraft);
         if (totalDisalurkan) totalDisalurkan.textContent = new Intl.NumberFormat('id-ID').format(data.totalDisalurkan);
         if (totalNominal) totalNominal.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.totalNominal);
+        
+        // Update mobile stats
+        const totalTransaksiMobile = document.getElementById('stat-total-transaksi-mobile');
+        const totalDraftMobile = document.getElementById('stat-total-draft-mobile');
+        const totalDisalurkanMobile = document.getElementById('stat-total-disalurkan-mobile');
+        const totalNominalMobile = document.getElementById('stat-total-nominal-mobile');
+        
+        if (totalTransaksiMobile) totalTransaksiMobile.textContent = new Intl.NumberFormat('id-ID').format(data.totalTransaksi);
+        if (totalDraftMobile) totalDraftMobile.textContent = new Intl.NumberFormat('id-ID').format(data.totalDraft);
+        if (totalDisalurkanMobile) totalDisalurkanMobile.textContent = new Intl.NumberFormat('id-ID').format(data.totalDisalurkan);
+        if (totalNominalMobile) totalNominalMobile.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.totalNominal);
     }
     
     function updateFilterActiveState(lembagaId, status, metode, startDate, endDate, searchQuery) {
@@ -378,7 +506,7 @@
         const tbody = document.getElementById('tbody-lembaga');
         if (tbody) {
             tbody.innerHTML = `
-                  </tr>
+                  <tr>
                     <td colspan="5" class="px-6 py-12 text-center">
                         <svg class="h-12 w-12 text-red-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
