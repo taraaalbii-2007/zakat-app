@@ -292,28 +292,32 @@
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
 
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 96;
+                    dropdownContainer.style.visibility = 'hidden';
+                    dropdownContainer.classList.remove('hidden');
 
-                    let top = rect.bottom + 4;
-                    let left = rect.right - dropdownWidth;
+                    requestAnimationFrame(() => {
+                        const dropdownWidth = dropdownContainer.offsetWidth;
+                        const dropdownHeight = dropdownContainer.offsetHeight;
 
-                    if (left < 10) left = 10;
-                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth -
-                        dropdownWidth - 10;
-                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+                        let top = rect.bottom + 4;
+                        let left = rect.right - dropdownWidth;
 
-                    dropdownContainer.style.top = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
+                        if (left < 10) left = 10;
+                        if (left + dropdownWidth > window.innerWidth - 10) left = window
+                            .innerWidth - dropdownWidth - 10;
+                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top -
+                            dropdownHeight - 4;
+                        if (top < 4) top = 4;
 
-                    editLink.href = `/jenis-zakat/${dropdownUuid}/edit`;
-
+                        dropdownContainer.style.top = top + 'px';
+                        dropdownContainer.style.left = left + 'px';
+                        dropdownContainer.style.visibility = '';
+                    });
                     currentDropdownData = {
                         uuid: dropdownUuid,
                         name: zakatName
                     };
 
-                    dropdownContainer.classList.remove('hidden');
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');

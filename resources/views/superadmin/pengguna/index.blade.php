@@ -488,42 +488,36 @@
 
                     currentUuid = uuid;
                     currentNama = nama;
-                    dropdownContainer.setAttribute('data-current-uuid', uuid);
+                  dropdownContainer.setAttribute('data-current-uuid', uuid);
 
-                    const rect = toggle.getBoundingClientRect();
-                    const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownH = 180;
+const rect = toggle.getBoundingClientRect();
 
-                    const spaceBelow = window.innerHeight - rect.bottom;
-                    const spaceAbove = rect.top;
+detailLink.href = `/pengguna/${uuid}`;
+editLink.href = `/pengguna/${uuid}/edit`;
 
-                    // top: pakai viewport coordinates langsung (fixed positioning)
-                    let top;
-                    if (spaceBelow >= dropdownH || spaceBelow >= spaceAbove) {
-                        top = rect.bottom + 4;
-                    } else {
-                        top = rect.top - dropdownH - 4;
-                    }
+toggleLabel.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
+toggleBtn.classList.toggle('hidden', isSelf);
+deleteBtn.classList.toggle('hidden', isSelf);
 
-                    // left: rata kanan tombol, pakai viewport rect langsung
-                    let left = rect.right - dropdownW;
-                    if (left < 10) left = 10;
-                    if (left + dropdownW > window.innerWidth - 10) {
-                        left = window.innerWidth - dropdownW - 10;
-                    }
+dropdownContainer.style.visibility = 'hidden';
+dropdownContainer.classList.remove('hidden');
 
-                    dropdownContainer.style.top = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
+requestAnimationFrame(() => {
+    const dropdownW  = dropdownContainer.offsetWidth;
+    const dropdownH  = dropdownContainer.offsetHeight;
 
-                    detailLink.href = `/pengguna/${uuid}`;
-                    editLink.href = `/pengguna/${uuid}/edit`;
+    let top  = rect.bottom + 4;
+    let left = rect.right - dropdownW;
 
-                    toggleLabel.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
-                    toggleBtn.classList.toggle('hidden', isSelf);
-                    deleteBtn.classList.toggle('hidden', isSelf);
+    if (left < 10) left = 10;
+    if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW - 10;
+    if (top + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+    if (top < 4) top = 4;
 
-                    dropdownContainer.classList.remove('hidden');
-
+    dropdownContainer.style.top        = top  + 'px';
+    dropdownContainer.style.left       = left + 'px';
+    dropdownContainer.style.visibility = '';
+});
                 } else if (!dropdownContainer.contains(e.target)) {
                     dropdownContainer.classList.add('hidden');
                     dropdownContainer.removeAttribute('data-current-uuid');

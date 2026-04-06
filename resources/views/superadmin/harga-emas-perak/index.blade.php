@@ -876,33 +876,37 @@
                         return;
                     }
 
-                    dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
-                    const rect = toggle.getBoundingClientRect();
+                  dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
+const rect = toggle.getBoundingClientRect();
 
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 132;
+editLink.href = `/harga-emas-perak/${dropdownUuid}/edit`;
+toggleForm.action = `/harga-emas-perak/${dropdownUuid}/toggle-status`;
+toggleText.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
 
-                    let top = rect.bottom + 4;
-                    let left = rect.right - dropdownWidth;
+currentDropdownData = {
+    uuid: dropdownUuid,
+    tanggal: tanggal
+};
 
-                    if (left < 10) left = 10;
-                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth -
-                        dropdownWidth - 10;
-                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+dropdownContainer.style.visibility = 'hidden';
+dropdownContainer.classList.remove('hidden');
 
-                    dropdownContainer.style.top = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
+requestAnimationFrame(() => {
+    const dropdownWidth  = dropdownContainer.offsetWidth;
+    const dropdownHeight = dropdownContainer.offsetHeight;
 
-                    editLink.href = `/harga-emas-perak/${dropdownUuid}/edit`;
-                    toggleForm.action = `/harga-emas-perak/${dropdownUuid}/toggle-status`;
-                    toggleText.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
+    let top  = rect.bottom + 4;
+    let left = rect.right - dropdownWidth;
 
-                    currentDropdownData = {
-                        uuid: dropdownUuid,
-                        tanggal: tanggal
-                    };
+    if (left < 10) left = 10;
+    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
+    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+    if (top < 4) top = 4;
 
-                    dropdownContainer.classList.remove('hidden');
+    dropdownContainer.style.top        = top  + 'px';
+    dropdownContainer.style.left       = left + 'px';
+    dropdownContainer.style.visibility = '';
+});
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');

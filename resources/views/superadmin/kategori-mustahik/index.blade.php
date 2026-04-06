@@ -391,146 +391,200 @@
 @endsection
 
 @push('scripts')
-    <script>
-        // PERBAIKAN: URL dropdown menggunakan route() via data-attribute yang di-set dari Blade,
-        // bukan hardcode string URL di JS
+<script>
+    let currentDropdownData = null;
 
-        let currentDropdownData = null;
+    document.addEventListener('DOMContentLoaded', function () {
+        const dropdownContainer = document.getElementById('dropdown-container');
+        const editLink          = document.getElementById('dropdown-edit-link');
+        const deleteBtn         = document.getElementById('dropdown-delete-btn');
+        const tableContainer    = document.getElementById('table-container');
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownContainer = document.getElementById('dropdown-container');
-            const editLink = document.getElementById('dropdown-edit-link');
-            const deleteBtn = document.getElementById('dropdown-delete-btn');
-            const deleteForm = document.getElementById('delete-form');
-            const tableContainer = document.getElementById('table-container');
-            const filterForm = document.getElementById('filter-form');
-
-            // Auto-submit filter saat select berubah
-            ['filter-sort-by', 'filter-sort-order'].forEach(id => {
-                document.getElementById(id)?.addEventListener('change', () => filterForm.submit());
+        // ─── Filter auto-submit (dengan loading state) ───────────────────────
+        ['filter-jenis-zakat', 'filter-haul', 'filter-sort-by', 'filter-sort-order'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.addEventListener('change', () => {
+                el.disabled = true;
+                document.getElementById('filter-form').submit();
             });
+        });
 
-            // Desktop: expandable rows
-            document.querySelectorAll('.expandable-row').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
-                    const target = document.getElementById(this.dataset.target);
-                    const icon = this.querySelector('.expand-icon');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
-                });
+        // ─── Search form — disable input saat submit ──────────────────────────
+        const searchForm = document.getElementById('search-form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function () {
+                const input = this.querySelector('input[name="search"]');
+                if (input) input.disabled = true;
             });
+        }
 
-            // Mobile: expandable cards
-            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
-                    const target = document.getElementById(this.dataset.target);
-                    const icon = this.querySelector('.expand-icon-mobile');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                });
+        // ─── Desktop: Expandable Rows ─────────────────────────────────────────
+        document.querySelectorAll('.expandable-row').forEach(row => {
+            row.addEventListener('click', function (e) {
+                if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
+                const targetRow = document.getElementById(this.getAttribute('data-target'));
+                const icon      = this.querySelector('.expand-icon');
+                if (!targetRow) return;
+                targetRow.classList.toggle('hidden');
+                icon.classList.toggle('rotate-90');
             });
+        });
 
-            // Dropdown toggle
-            document.addEventListener('click', function(e) {
-                const toggle = e.target.closest('.dropdown-toggle');
-                if (toggle) {
-                    e.stopPropagation();
-                    const uuid = toggle.dataset.uuid;
-                    const nama = toggle.dataset.nama;
+        // ─── Mobile: Expandable Cards ─────────────────────────────────────────
+        document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+            row.addEventListener('click', function (e) {
+                if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
+                const targetContent = document.getElementById(this.getAttribute('data-target'));
+                const icon          = this.querySelector('.expand-icon-mobile');
+                if (!targetContent) return;
+                targetContent.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
 
-                    // Toggle tutup jika klik pada item yang sama
-                    if (dropdownContainer.dataset.currentUuid === uuid &&
-                        !dropdownContainer.classList.contains('hidden')) {
-                        closeDropdown();
+        // ─── Dropdown Toggle ──────────────────────────────────────────────────
+        document.addEventListener('click', function (e) {
+            const toggle = e.target.closest('.dropdown-toggle');
+
+            if (toggle) {
+                e.stopPropagation();
+                const dropdownUuid = toggle.getAttribute('data-uuid');
+                const nama         = toggle.getAttribute('data-nama');
+
+                // Tutup jika dropdown UUID sama dan sedang terbuka
+                if (
+                    dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
+                    !dropdownContainer.classList.contains('hidden')
+                ) {
+                    closeDropdown();
+                    return;
+                }
+
+                dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
+                currentDropdownData = { uuid: dropdownUuid, nama };
+
+                editLink.href = '{{ route('tipe-zakat.edit', ':uuid') }}'.replace(':uuid', dropdownUuid);
+
+                // Tampilkan tapi sembunyikan dulu agar bisa ukur dimensi
+                dropdownContainer.style.visibility = 'hidden';
+                dropdownContainer.classList.remove('hidden');
+
+                requestAnimationFrame(() => {
+                    // Batalkan jika uuid sudah berubah (user scroll/close cepat)
+                    if (dropdownContainer.getAttribute('data-current-uuid') !== dropdownUuid) {
+                        dropdownContainer.classList.add('hidden');
                         return;
                     }
 
-                    dropdownContainer.dataset.currentUuid = uuid;
-                    currentDropdownData = {
-                        uuid,
-                        nama
-                    };
+                    const rect           = toggle.getBoundingClientRect();
+                    const dropdownWidth  = dropdownContainer.offsetWidth;
+                    const dropdownHeight = dropdownContainer.offsetHeight;
+                    const margin         = 10;
 
-                    // Posisikan dropdown
-                    const rect = toggle.getBoundingClientRect();
-                    const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownH = 96;
-                    let top = rect.bottom + 4;
-                    let left = rect.right - dropdownW;
+                    let top  = rect.bottom + 4;
+                    let left = rect.right - dropdownWidth;
 
-                    if (left < 10) left = 10;
-                    if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW -
-                    10;
-                    if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+                    // Jaga agar tidak keluar kiri/kanan viewport
+                    if (left < margin) left = margin;
+                    if (left + dropdownWidth > window.innerWidth - margin) {
+                        left = window.innerWidth - dropdownWidth - margin;
+                    }
 
-                    dropdownContainer.style.top = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
+                    // Jika tidak muat di bawah, tampilkan di atas tombol
+                    if (rect.bottom + dropdownHeight > window.innerHeight) {
+                        top = rect.top - dropdownHeight - 4;
+                    }
 
-                    // PERBAIKAN: gunakan route name dengan UUID dari data-attribute, bukan hardcode path
-                    editLink.href = '{{ url('kategori-mustahik') }}/' + uuid + '/edit';
+                    // Jaga agar tidak keluar atas viewport
+                    if (top < margin) top = margin;
 
-                    dropdownContainer.classList.remove('hidden');
-                } else if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.style.top        = top + 'px';
+                    dropdownContainer.style.left       = left + 'px';
+                    dropdownContainer.style.visibility = '';
+                });
+
+            } else {
+                // Klik di luar dropdown → tutup
+                if (!dropdownContainer.contains(e.target)) {
                     closeDropdown();
                 }
-            });
-
-            // Hapus
-            deleteBtn.addEventListener('click', function() {
-                if (!currentDropdownData) return;
-                closeDropdown();
-                document.getElementById('modal-kategori-name').textContent = currentDropdownData.nama;
-                // PERBAIKAN: sama — gunakan URL helper, bukan hardcode
-                deleteForm.action = '{{ url('kategori-mustahik') }}/' + currentDropdownData.uuid;
-                document.getElementById('delete-modal').classList.remove('hidden');
-            });
-
-            document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-                document.getElementById('delete-modal').classList.add('hidden');
-            });
-            document.getElementById('delete-modal').addEventListener('click', function(e) {
-                if (e.target === this) this.classList.add('hidden');
-            });
-
-            // Tutup dropdown saat scroll atau resize
-            ['scroll', 'resize'].forEach(ev => window.addEventListener(ev, closeDropdown, true));
-            tableContainer?.addEventListener('scroll', closeDropdown, true);
-
-            function closeDropdown() {
-                dropdownContainer.classList.add('hidden');
-                delete dropdownContainer.dataset.currentUuid;
             }
         });
 
-        function toggleSearch() {
-            const btn = document.getElementById('search-button');
-            const form = document.getElementById('search-form');
-            const input = document.getElementById('search-input');
-            const container = document.getElementById('search-container');
-            if (form.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                form.classList.remove('hidden');
-                container.style.minWidth = '280px';
-                setTimeout(() => input.focus(), 50);
-            } else {
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = 'auto';
-                input.value = '';
-            }
-        }
+        // ─── Delete dari dropdown ─────────────────────────────────────────────
+        deleteBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const { uuid, nama } = currentDropdownData || {};
+            if (!uuid) return;
+            closeDropdown();
+            showDeleteModal(uuid, nama);
+        });
 
-        function toggleFilter() {
-            document.getElementById('filter-panel').classList.toggle('hidden');
-        }
+        // ─── Delete Modal: Batal & klik backdrop ─────────────────────────────
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            document.getElementById('delete-modal').classList.add('hidden');
+        });
 
-        function removeFilter(name) {
-            const url = new URL(window.location.href);
-            url.searchParams.delete(name);
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
+        document.getElementById('delete-modal').addEventListener('click', function (e) {
+            if (e.target === this) this.classList.add('hidden');
+        });
+
+        // ─── Tutup dropdown saat scroll / resize ─────────────────────────────
+        window.addEventListener('scroll', closeDropdown, true);
+        window.addEventListener('resize', closeDropdown);
+        if (tableContainer) tableContainer.addEventListener('scroll', closeDropdown, true);
+    });
+
+    // ─── Helper: tutup dropdown ───────────────────────────────────────────────
+    function closeDropdown() {
+        const dropdownContainer = document.getElementById('dropdown-container');
+        dropdownContainer.classList.add('hidden');
+        dropdownContainer.removeAttribute('data-current-uuid');
+    }
+
+    // ─── Toggle Search ────────────────────────────────────────────────────────
+    function toggleSearch() {
+        const searchButton    = document.getElementById('search-button');
+        const searchForm      = document.getElementById('search-form');
+        const searchInput     = document.getElementById('search-input');
+        const searchContainer = document.getElementById('search-container');
+
+        const isHidden = searchForm.classList.contains('hidden');
+
+        if (isHidden) {
+            searchButton.classList.add('hidden');
+            searchForm.classList.remove('hidden');
+            searchContainer.style.minWidth = '180px';
+            setTimeout(() => searchInput.focus(), 50);
+        } else {
+            // Hanya kosongkan input jika memang tidak ada nilai aktif dari server
+            if (!searchInput.dataset.hasValue) searchInput.value = '';
+            searchForm.classList.add('hidden');
+            searchButton.classList.remove('hidden');
+            searchContainer.style.minWidth = 'auto';
         }
-    </script>
+    }
+
+    // ─── Toggle Filter Panel ──────────────────────────────────────────────────
+    function toggleFilter() {
+        document.getElementById('filter-panel').classList.toggle('hidden');
+    }
+
+    // ─── Hapus satu filter dari URL ───────────────────────────────────────────
+    function removeFilter(filterName) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(filterName);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+
+    // ─── Tampilkan Delete Modal ───────────────────────────────────────────────
+    function showDeleteModal(uuid, nama) {
+        document.getElementById('modal-nama').textContent = nama;
+        document.getElementById('delete-form').action =
+            '{{ route('tipe-zakat.destroy', ':uuid') }}'.replace(':uuid', uuid);
+        document.getElementById('delete-modal').classList.remove('hidden');
+    }
+</script>
 @endpush

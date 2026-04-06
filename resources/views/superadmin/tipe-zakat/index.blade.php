@@ -761,7 +761,7 @@
             ['filter-jenis-zakat', 'filter-haul', 'filter-sort-by', 'filter-sort-order'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', () => document.getElementById('filter-form')
-            .submit());
+                    .submit());
             });
 
             // Desktop Expandable Rows
@@ -805,25 +805,35 @@
 
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 88;
-                    let top = rect.bottom + 4;
-                    let left = rect.right - dropdownWidth;
 
-                    if (left < 10) left = 10;
-                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth -
-                        dropdownWidth - 10;
-                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+                    dropdownContainer.style.visibility = 'hidden';
+                    dropdownContainer.classList.remove('hidden');
 
-                    dropdownContainer.style.top = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
+                    requestAnimationFrame(() => {
+                        const dropdownWidth = dropdownContainer.offsetWidth;
+                        const dropdownHeight = dropdownContainer.offsetHeight;
+
+                        let top = rect.bottom + 4;
+                        let left = rect.right - dropdownWidth;
+
+                        if (left < 10) left = 10;
+                        if (left + dropdownWidth > window.innerWidth - 10) left = window
+                            .innerWidth - dropdownWidth - 10;
+                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top -
+                            dropdownHeight - 4;
+                        if (top < 4) top = 4;
+
+                        dropdownContainer.style.top = top + 'px';
+                        dropdownContainer.style.left = left + 'px';
+                        dropdownContainer.style.visibility = '';
+                    });
+
                     editLink.href = '{{ route('tipe-zakat.edit', ':uuid') }}'.replace(':uuid',
                         dropdownUuid);
                     currentDropdownData = {
                         uuid: dropdownUuid,
                         nama: nama
                     };
-                    dropdownContainer.classList.remove('hidden');
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');
