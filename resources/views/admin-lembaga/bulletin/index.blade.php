@@ -457,8 +457,13 @@
                     dropdownContainer.setAttribute('data-current-uuid', uuid);
 
                     const rect = toggle.getBoundingClientRect();
-                    const dropdownW = window.innerWidth < 640 ? 176 : 208;
-                    const dropdownH = 160;
+
+                    dropdownContainer.style.visibility = 'hidden';
+                    dropdownContainer.classList.remove('hidden');
+
+                    const dropdownW = dropdownContainer.offsetWidth;
+                    const dropdownH = dropdownContainer.offsetHeight;
+
                     let top = rect.bottom + 4;
                     let left = rect.right - dropdownW;
 
@@ -466,9 +471,11 @@
                     if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW -
                     10;
                     if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+                    if (top < 4) top = 4;
 
                     dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
+                    dropdownContainer.style.visibility = '';
                     detailLink.href = `/bulletin-saya/${uuid}`;
 
                     if (canEdit) {
@@ -480,8 +487,6 @@
 
                     canSubmit ? submitBtn.classList.remove('hidden') : submitBtn.classList.add('hidden');
                     canDelete ? deleteBtn.classList.remove('hidden') : deleteBtn.classList.add('hidden');
-
-                    dropdownContainer.classList.remove('hidden');
 
                 } else if (!dropdownContainer.contains(e.target)) {
                     dropdownContainer.classList.add('hidden');

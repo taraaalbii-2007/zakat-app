@@ -430,8 +430,11 @@
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
 
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 160;
+                    dropdownContainer.style.visibility = 'hidden';
+                    dropdownContainer.classList.remove('hidden');
+
+                    const dropdownWidth = dropdownContainer.offsetWidth;
+                    const dropdownHeight = dropdownContainer.offsetHeight;
 
                     let top = rect.bottom + 4;
                     let left = rect.right - dropdownWidth;
@@ -439,12 +442,14 @@
                     if (left < 10) left = 10;
                     if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth -
                         dropdownWidth - 10;
-                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+                    if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight -
+                        4;
+                    if (top < 4) top = 4;
 
                     dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
+                    dropdownContainer.style.visibility = '';
                     editLink.href = `/rekening-lembaga/${dropdownUuid}/edit`;
-
                     // Show/hide set primary button
                     if (actions.can_set_primary && !isPrimary) {
                         setPrimaryBtn.classList.remove('hidden');
@@ -456,7 +461,6 @@
                     const toggleText = document.getElementById('toggle-active-text');
                     toggleText.textContent = isActive ? 'Nonaktifkan' : 'Aktifkan';
 
-                    dropdownContainer.classList.remove('hidden');
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');

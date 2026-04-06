@@ -73,7 +73,7 @@
                    rounded-lg transition-all">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 <span class="ml-2">Template</span>
                             </a>
@@ -102,7 +102,7 @@
                    rounded-lg transition-all shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 <span class="ml-2">Export</span>
                             </a>
@@ -562,15 +562,13 @@
     </div>{{-- end space-y --}}
 
 
-    {{-- ════════════════════════════════════════════════════════════════
-         DROPDOWN MENU
-    ════════════════════════════════════════════════════════════════ --}}
+    {{-- Dropdown Container --}}
     <div id="dropdown-container" class="fixed hidden z-50">
-        <div class="w-44 sm:w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+        <div class="w-44 sm:w-52 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
             <div class="py-1">
                 <a href="#" id="dropdown-view-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -578,44 +576,39 @@
                     </svg>
                     Lihat Detail
                 </a>
-
                 <a href="#" id="dropdown-edit-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Edit
                 </a>
-
                 <button type="button" id="dropdown-verify-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                     Verifikasi
                 </button>
-
                 <button type="button" id="dropdown-reject-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                     Tolak
                 </button>
-
                 <button type="button" id="dropdown-toggle-active-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span id="toggle-active-text">Aktifkan</span>
                 </button>
-
                 <button type="button" id="dropdown-delete-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -832,7 +825,7 @@
                             <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <p class="text-sm text-gray-500 text-center px-4">Klik atau seret file Excel ke sini</p>
                             <p class="text-xs text-gray-400 mt-1">.xlsx / .xls — maks. 500 MB</p>
@@ -1276,41 +1269,30 @@
                         isActive,
                         userRole
                     };
-                    if (dropdownContainer) dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
+                    if (dropdownContainer) dropdownContainer.setAttribute('data-current-uuid',
+                        dropdownUuid);
 
-                    // ── POSISI DROPDOWN (FIXED) ──────────────────
-                    // getBoundingClientRect() sudah relatif ke viewport,
-                    // dan dropdown pakai position:fixed → JANGAN tambah scrollY/scrollX
-                    const rect = toggle.getBoundingClientRect();
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 220;
+                   // ── POSISI DROPDOWN ──────────────────────────────────────
+const rect = toggle.getBoundingClientRect();
 
-                    // Rata kanan dengan tombol, 4px gap di bawah
-                    let top = rect.bottom + 4;
-                    let left = rect.right - dropdownWidth;
+dropdownContainer.style.visibility = 'hidden';
+dropdownContainer.classList.remove('hidden');
 
-                    // Jaga agar tidak keluar layar kiri
-                    if (left < 4) left = 4;
+const dropdownW = dropdownContainer.offsetWidth;
+const dropdownH = dropdownContainer.offsetHeight;
 
-                    // Jaga agar tidak keluar layar kanan
-                    if (left + dropdownWidth > window.innerWidth) {
-                        left = window.innerWidth - dropdownWidth - 10;
-                    }
+let top  = rect.bottom + 4;
+let left = rect.right - dropdownW;
 
-                    // Jika tidak cukup ruang di bawah → tampilkan di atas tombol
-                    if (rect.bottom + dropdownHeight > window.innerHeight) {
-                        top = rect.top - dropdownHeight - 4;
-                    }
+if (left < 10) left = 10;
+if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW - 10;
+if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+if (top < 4) top = 4;
 
-                    // Jaga agar tidak keluar layar atas
-                    if (top < 4) top = 4;
-
-                    if (dropdownContainer) {
-                        dropdownContainer.style.top = top + 'px';
-                        dropdownContainer.style.left = left + 'px';
-                    }
-
-                    // Set links & visibility
+dropdownContainer.style.top        = top  + 'px';
+dropdownContainer.style.left       = left + 'px';
+dropdownContainer.style.visibility = '';
+// Set links & visibility
                     if (viewLink) viewLink.href = `/mustahik/${dropdownUuid}`;
                     if (editLink) {
                         if (actions.can_edit) {
@@ -1333,7 +1315,6 @@
                         }
                     }
                     if (deleteBtn) deleteBtn.classList.toggle('hidden', !actions.can_delete);
-                    if (dropdownContainer) dropdownContainer.classList.remove('hidden');
 
                 } else if (dropdownContainer && !dropdownContainer.contains(e.target)) {
                     dropdownContainer.classList.add('hidden');
@@ -1428,7 +1409,8 @@
                     if (!currentMustahikUuid) return;
                     if (dropdownContainer) dropdownContainer.classList.add('hidden');
                     const actionText = currentDropdownData.isActive ? 'Nonaktifkan' : 'Aktifkan';
-                    if (confirm(`${actionText} mustahik ini?`)) window.toggleActiveMustahik(currentMustahikUuid);
+                    if (confirm(`${actionText} mustahik ini?`)) window.toggleActiveMustahik(
+                        currentMustahikUuid);
                 });
             }
 

@@ -71,7 +71,7 @@
                             title="Download Template Excel Import">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span
                                 class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
@@ -103,7 +103,7 @@
                             title="Export Data Amil ke Excel">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span
                                 class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
@@ -119,7 +119,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414
-                                       a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                               a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
                             <span
                                 class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
@@ -174,48 +174,39 @@
 
             {{-- Filter Panel --}}
             <div id="filter-panel"
-                class="{{ request('status') || request('jenis_kelamin') || request('lembaga_id') ? '' : 'hidden' }}
-           px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                <form method="GET" action="#" id="filter-form" onsubmit="applyFilters(); return false;">
+                class="{{ request('status') || request('jenis_kelamin') || request('lembaga_id') ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                <form method="GET" action="{{ route('amil.index') }}" id="filter-form">
                     @if (request('q'))
                         <input type="hidden" name="q" value="{{ request('q') }}">
                     @endif
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                            <select name="status" id="filter-status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white
-                           focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="applyFilters()">
+                            <select name="status" onchange="this.form.submit()"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                 <option value="">Semua Status</option>
-                                <option value="aktif" {{ request('status') === 'aktif' ? 'selected' : '' }}>Aktif
-                                </option>
-                                <option value="nonaktif" {{ request('status') === 'nonaktif' ? 'selected' : '' }}>Nonaktif
-                                </option>
-                                <option value="cuti" {{ request('status') === 'cuti' ? 'selected' : '' }}>Cuti
+                                <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="cuti" {{ request('status') == 'cuti' ? 'selected' : '' }}>Cuti</option>
+                                <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif
                                 </option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" id="filter-jenis_kelamin"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white
-                           focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="applyFilters()">
+                            <select name="jenis_kelamin" onchange="this.form.submit()"
+                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                 <option value="">Semua</option>
-                                <option value="L" {{ request('jenis_kelamin') === 'L' ? 'selected' : '' }}>Laki-laki
+                                <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki
                                 </option>
-                                <option value="P" {{ request('jenis_kelamin') === 'P' ? 'selected' : '' }}>Perempuan
+                                <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan
                                 </option>
                             </select>
                         </div>
                         @if (auth()->user()->peran === 'superadmin')
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">Lembaga</label>
-                                <select name="lembaga_id" id="filter-lembaga"
-                                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white
-                               focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                    onchange="applyFilters()">
+                                <select name="lembaga_id" onchange="this.form.submit()"
+                                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
                                     <option value="">Semua Lembaga</option>
                                     @foreach ($lembagas as $lembaga)
                                         <option value="{{ $lembaga->id }}"
@@ -229,15 +220,14 @@
                     </div>
                     @if (request('status') || request('jenis_kelamin') || request('lembaga_id'))
                         <div class="mt-3 flex justify-end">
-                            <button type="button" onclick="resetFilters()"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium
-                           text-gray-600 hover:text-gray-800 transition-colors">
+                            <a href="{{ route('amil.index', request('q') ? ['q' => request('q')] : []) }}"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                                 Reset Filter
-                            </button>
+                            </a>
                         </div>
                     @endif
                 </form>
@@ -427,7 +417,6 @@
                         </div>
                     @endforeach
                 </div>
-
             @else
                 {{-- Empty State --}}
                 <div class="p-8 sm:p-12 text-center">
@@ -471,33 +460,29 @@
     </div>{{-- /space-y --}}
 
 
-    {{-- ════════════════════════════════════════════════════════════════
-     DROPDOWN MENU
-════════════════════════════════════════════════════════════════ --}}
+    {{-- Dropdown Container --}}
     <div id="dropdown-container" class="fixed hidden z-50">
-        <div class="w-44 sm:w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+        <div class="w-44 sm:w-52 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
             <div class="py-1">
-                <a href="#" id="dropdown-show-link"
+                <a href="#" id="dropdown-detail-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    Detail
+                    Lihat Detail
                 </a>
                 <a href="#" id="dropdown-edit-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Edit
                 </a>
-                <button type="button" id="dropdown-toggle-status-btn"
+                <button type="button" id="dropdown-status-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
@@ -505,7 +490,7 @@
                 </button>
                 <button type="button" id="dropdown-delete-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -515,10 +500,7 @@
         </div>
     </div>
 
-
-    {{-- ════════════════════════════════════════════════════════════════
-     MODAL — UBAH STATUS
-════════════════════════════════════════════════════════════════ --}}
+    {{-- Modal Ubah Status --}}
     <div id="status-modal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
@@ -529,14 +511,15 @@
                         d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                 </svg>
             </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 text-center">Ubah Status Amil</h3>
-            <p class="text-xs sm:text-sm text-gray-500 mb-4 text-center">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Ubah Status Amil</h3>
+            <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
                 Pilih status baru untuk "<span id="modal-status-name" class="font-semibold text-gray-700"></span>"
             </p>
+            <p class="text-xs text-gray-400 text-center mb-5">Perubahan akan langsung diterapkan.</p>
             <form id="status-form" method="POST">
                 @csrf
                 @method('PATCH')
-                <div class="space-y-3 mb-5">
+                <div class="space-y-3 mb-5 sm:mb-6">
                     <label
                         class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                         <input type="radio" name="status" value="aktif"
@@ -558,13 +541,11 @@
                 </div>
                 <div class="flex justify-center gap-2 sm:gap-3">
                     <button type="button" id="cancel-status-btn"
-                        class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5
-                           bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                         Batal
                     </button>
                     <button type="submit"
-                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5
-                           bg-yellow-600 text-xs sm:text-sm font-medium text-white hover:bg-yellow-700 transition-colors">
+                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-yellow-600 text-xs sm:text-sm font-medium text-white hover:bg-yellow-700 transition-colors">
                         Simpan
                     </button>
                 </div>
@@ -622,22 +603,99 @@
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 w-full max-w-md">
 
             {{-- Header --}}
-            <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 11l3 3m0 0l3-3m-3 3V4" />
-                        </svg>
+            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Daftar Amil</h2>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $amils->total() }} Amil</p>
                     </div>
-                    <h3 class="text-base font-semibold text-gray-900">Import Data Amil</h3>
+
+                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        {{-- Tambah --}}
+                        <a href="{{ route('amil.create') }}"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2">Tambah Amil</span>
+                        </a>
+
+                        {{-- Download Template --}}
+                        <a href="{{ route('import.template') }}"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2">Template</span>
+                        </a>
+
+                        {{-- Import --}}
+                        <button type="button" onclick="openImportModal()"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 11l3 3m0 0l3-3m-3 3V4" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2">Import</span>
+                        </button>
+
+                        {{-- Export Excel --}}
+                        <a href="{{ route('export.excel', request()->query()) }}"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2">Export</span>
+                        </a>
+
+                        {{-- Filter --}}
+                        <button type="button" onclick="toggleFilter()"
+                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            <span class="hidden sm:inline-block sm:ml-2">Filter</span>
+                        </button>
+
+                        {{-- Search --}}
+                        <div id="search-container" class="transition-all duration-300"
+                            style="{{ request('q') ? 'min-width: 280px;' : '' }}">
+                            <button type="button" onclick="toggleSearch()" id="search-button"
+                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                <span class="hidden sm:inline-block sm:ml-2">Cari</span>
+                            </button>
+                            <form method="GET" action="{{ route('amil.index') }}" id="search-form"
+                                class="{{ request('q') ? '' : 'hidden' }}">
+                                @foreach (['status', 'jenis_kelamin', 'lembaga_id'] as $filter)
+                                    @if (request($filter))
+                                        <input type="hidden" name="{{ $filter }}"
+                                            value="{{ request($filter) }}">
+                                    @endif
+                                @endforeach
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
+                                    <input type="search" name="q" value="{{ request('q') }}" id="search-input"
+                                        placeholder="Cari nama, kode, email..."
+                                        class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" onclick="closeImportModal()"
-                    class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
             </div>
 
             {{-- Body --}}
@@ -668,7 +726,7 @@
                             <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                       a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                               a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <p class="text-sm text-gray-500 text-center px-4">Klik atau seret file Excel ke sini</p>
                             <p class="text-xs text-gray-400 mt-1">.xlsx / .xls — maks. 500 MB</p>
@@ -707,7 +765,7 @@
                         class="inline-flex items-center gap-1.5 text-xs text-primary hover:underline">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
-                                   a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                           a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         Download Template
                     </a>
@@ -738,52 +796,67 @@
 
 @push('scripts')
     <script>
-        let currentDropdownData = null;
+        // Variabel untuk menyimpan data amil yang dipilih
+        let currentUuid = null;
+        let currentNama = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
-            const showLink = document.getElementById('dropdown-show-link');
+            const detailLink = document.getElementById('dropdown-detail-link');
             const editLink = document.getElementById('dropdown-edit-link');
-            const toggleStatusBtn = document.getElementById('dropdown-toggle-status-btn');
+            const statusBtn = document.getElementById('dropdown-status-btn');
             const deleteBtn = document.getElementById('dropdown-delete-btn');
             const tableContainer = document.getElementById('table-container');
 
-            // ── Dropdown toggle ─────────────────────────────────────
+            // ── Dropdown toggle ──
             document.addEventListener('click', function(e) {
                 const toggle = e.target.closest('.dropdown-toggle');
+
                 if (toggle) {
                     e.stopPropagation();
+
                     const uuid = toggle.getAttribute('data-uuid');
                     const nama = toggle.getAttribute('data-nama');
 
-                    if (dropdownContainer.getAttribute('data-current-uuid') === uuid &&
-                        !dropdownContainer.classList.contains('hidden')) {
+                    // Tutup dropdown jika klik tombol yang sama
+                    if (dropdownContainer.getAttribute('data-current-uuid') === uuid && !dropdownContainer
+                        .classList.contains('hidden')) {
                         dropdownContainer.classList.add('hidden');
                         dropdownContainer.removeAttribute('data-current-uuid');
                         return;
                     }
 
+                    currentUuid = uuid;
+                    currentNama = nama;
                     dropdownContainer.setAttribute('data-current-uuid', uuid);
-                    currentDropdownData = {
-                        uuid,
-                        nama
-                    };
 
+                    // Posisi dropdown
+                    // Posisi dropdown
                     const rect = toggle.getBoundingClientRect();
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 176;
-                    let top = rect.bottom + window.scrollY;
-                    let left = rect.left + window.scrollX;
-                    if (rect.left + dropdownWidth > window.innerWidth) left = window.innerWidth -
-                        dropdownWidth - 10;
-                    if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top + window.scrollY -
-                        dropdownHeight;
+
+                    dropdownContainer.style.visibility = 'hidden';
+                    dropdownContainer.classList.remove('hidden');
+
+                    const dropdownW = dropdownContainer.offsetWidth;
+                    const dropdownH = dropdownContainer.offsetHeight;
+
+                    let top = rect.bottom + 4;
+                    let left = rect.right - dropdownW;
+
+                    if (left < 10) left = 10;
+                    if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW -
+                    10;
+                    if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+                    if (top < 4) top = 4;
 
                     dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
-                    showLink.href = '/amil/' + uuid;
-                    editLink.href = '/amil/' + uuid + '/edit';
-                    dropdownContainer.classList.remove('hidden');
+                    dropdownContainer.style.visibility = '';
+
+                    // Set link
+                    detailLink.href = `/amil/${uuid}`;
+                    editLink.href = `/amil/${uuid}/edit`;
+
 
                 } else if (!dropdownContainer.contains(e.target)) {
                     dropdownContainer.classList.add('hidden');
@@ -791,23 +864,23 @@
                 }
             });
 
-            const hideDropdown = () => {
+            // Tutup dropdown saat scroll/resize
+            const closeDropdown = () => {
                 if (!dropdownContainer.classList.contains('hidden')) {
                     dropdownContainer.classList.add('hidden');
                     dropdownContainer.removeAttribute('data-current-uuid');
                 }
             };
-            window.addEventListener('scroll', hideDropdown, true);
-            window.addEventListener('resize', hideDropdown);
-            if (tableContainer) tableContainer.addEventListener('scroll', hideDropdown, true);
+            window.addEventListener('scroll', closeDropdown, true);
+            window.addEventListener('resize', closeDropdown);
+            if (tableContainer) tableContainer.addEventListener('scroll', closeDropdown, true);
 
-            // ── Ubah Status ─────────────────────────────────────────
-            toggleStatusBtn.addEventListener('click', function() {
-                if (!currentDropdownData) return;
+            // ── Ubah Status ──
+            statusBtn.addEventListener('click', function() {
+                if (!currentUuid) return;
                 dropdownContainer.classList.add('hidden');
-                document.getElementById('modal-status-name').textContent = currentDropdownData.nama;
-                document.getElementById('status-form').action = '/amil/' + currentDropdownData.uuid +
-                    '/toggle-status';
+                document.getElementById('modal-status-name').textContent = currentNama;
+                document.getElementById('status-form').action = `/amil/${currentUuid}/toggle-status`;
                 document.getElementById('status-modal').classList.remove('hidden');
             });
 
@@ -818,12 +891,12 @@
                 if (e.target === this) this.classList.add('hidden');
             });
 
-            // ── Hapus ───────────────────────────────────────────────
+            // ── Hapus ──
             deleteBtn.addEventListener('click', function() {
-                if (!currentDropdownData) return;
+                if (!currentUuid) return;
                 dropdownContainer.classList.add('hidden');
-                document.getElementById('modal-amil-name').textContent = currentDropdownData.nama;
-                document.getElementById('delete-form').action = '/amil/' + currentDropdownData.uuid;
+                document.getElementById('modal-amil-name').textContent = currentNama;
+                document.getElementById('delete-form').action = `/amil/${currentUuid}`;
                 document.getElementById('delete-modal').classList.remove('hidden');
             });
 
@@ -833,214 +906,25 @@
             document.getElementById('delete-modal').addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
             });
-
-            // ── Desktop Expand ──────────────────────────────────────
-            document.querySelectorAll('.expandable-row').forEach(function(row) {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    const target = document.getElementById(this.getAttribute('data-target'));
-                    const icon = this.querySelector('.expand-icon');
-                    if (target.classList.contains('hidden')) {
-                        target.classList.remove('hidden');
-                        icon.classList.add('rotate-90');
-                    } else {
-                        target.classList.add('hidden');
-                        icon.classList.remove('rotate-90');
-                    }
-                });
-            });
-
-            // ── Mobile Expand ───────────────────────────────────────
-            document.querySelectorAll('.expandable-row-mobile').forEach(function(row) {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    const target = document.getElementById(this.getAttribute('data-target'));
-                    const icon = this.querySelector('.expand-icon-mobile');
-                    if (target.classList.contains('hidden')) {
-                        target.classList.remove('hidden');
-                        icon.classList.add('rotate-180');
-                    } else {
-                        target.classList.add('hidden');
-                        icon.classList.remove('rotate-180');
-                    }
-                });
-            });
-
-            // ── Import error toggle ─────────────────────────────────
-            const btnErr = document.getElementById('btn-toggle-import-errors');
-            if (btnErr) {
-                btnErr.addEventListener('click', function() {
-                    const list = document.getElementById('import-errors-list');
-                    list.classList.toggle('hidden');
-                    this.textContent = list.classList.contains('hidden') ? 'Lihat detail error ▾' :
-                        'Sembunyikan ▴';
-                });
-            }
         });
 
-        // ── Fungsi untuk menerapkan filter dengan AJAX ────────────────────────
-        function applyFilters() {
-            const status = document.getElementById('filter-status')?.value || '';
-            const jenisKelamin = document.getElementById('filter-jenis_kelamin')?.value || '';
-            const lembagaId = document.getElementById('filter-lembaga')?.value || '';
-            const searchQuery = document.querySelector('input[name="q"]')?.value || '';
-
-            const params = new URLSearchParams();
-            if (status) params.append('status', status);
-            if (jenisKelamin) params.append('jenis_kelamin', jenisKelamin);
-            if (lembagaId) params.append('lembaga_id', lembagaId);
-            if (searchQuery) params.append('q', searchQuery);
-            params.append('_', Date.now()); // Prevent cache
-
-            showLoading();
-
-            fetch(`{{ route('amil.index') }}?${params.toString()}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                    },
-                    credentials: 'same-origin'
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        updateTableContent(data);
-                        updatePagination(data);
-                        hideLoading();
-
-                        const newUrl = `${window.location.pathname}?${params.toString()}`;
-                        window.history.pushState({}, '', newUrl);
-                        updateFilterActiveState(status, jenisKelamin, lembagaId, searchQuery);
-                    } else {
-                        throw new Error(data.message || 'Gagal memuat data');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    hideLoading();
-                    showError('Gagal memuat data: ' + error.message);
-                });
-        }
-
-        function resetFilters() {
-            const statusSelect = document.getElementById('filter-status');
-            const jenisSelect = document.getElementById('filter-jenis_kelamin');
-            const lembagaSelect = document.getElementById('filter-lembaga');
-            const searchInput = document.querySelector('input[name="q"]');
-
-            if (statusSelect) statusSelect.value = '';
-            if (jenisSelect) jenisSelect.value = '';
-            if (lembagaSelect) lembagaSelect.value = '';
-            if (searchInput) searchInput.value = '';
-
-            applyFilters();
-        }
-
-        function updateTableContent(data) {
-            const tbody = document.getElementById('tbody-lembaga');
-            if (tbody) tbody.innerHTML = data.html;
-
-            const totalInfo = document.querySelector('.text-gray-500.mt-1');
-            if (totalInfo) {
-                totalInfo.innerHTML = `Total: ${data.total} Amil`;
-            }
-
-            if (data.amilData) {
-                window.amilData = window.amilData || {};
-                Object.assign(window.amilData, data.amilData);
-            }
-        }
-
-        function updatePagination(data) {
-            const paginationContainer = document.getElementById('pagination-container');
-            if (paginationContainer && data.pagination) {
-                paginationContainer.innerHTML = data.pagination;
-            }
-        }
-
-        function updateFilterActiveState(status, jenisKelamin, lembagaId, searchQuery) {
-            const filterButton = document.querySelector('button[onclick="toggleFilter()"]');
-            const hasFilter = status || jenisKelamin || lembagaId;
-
-            if (filterButton) {
-                if (hasFilter) {
-                    filterButton.classList.add('ring-2', 'ring-primary');
-                } else {
-                    filterButton.classList.remove('ring-2', 'ring-primary');
-                }
-            }
-
-            const filterPanel = document.getElementById('filter-panel');
-            if (filterPanel && hasFilter && filterPanel.classList.contains('hidden')) {
-                filterPanel.classList.remove('hidden');
-            }
-
-            const hasAnyFilter = status || jenisKelamin || lembagaId || searchQuery;
-            const resetButtons = document.querySelectorAll('button[onclick="resetFilters()"]');
-            resetButtons.forEach(btn => {
-                btn.style.display = hasAnyFilter ? 'inline-flex' : 'none';
-            });
-        }
-
-        function showLoading() {
-            const tbody = document.getElementById('tbody-lembaga');
-            if (tbody) {
-                tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="px-6 py-12 text-center">
-                    <div class="flex justify-center">
-                        <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </div>
-                    <p class="text-sm text-gray-500 mt-2">Memuat data...</p>
-                </td>
-            </tr>
-        `;
-            }
-        }
-
-        function hideLoading() {}
-
-        function showError(message) {
-            const tbody = document.getElementById('tbody-lembaga');
-            if (tbody) {
-                tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="px-6 py-12 text-center">
-                    <svg class="h-12 w-12 text-red-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <p class="text-sm text-red-600">${escapeHtml(message)}</p>
-                </td>
-            </tr>
-        `;
-            }
-        }
-
-        // ── Search & Filter ────────────────────────────────────────
+        // ── Fungsi Search & Filter ──
         function toggleSearch() {
-            const btn = document.getElementById('search-button');
-            const form = document.getElementById('search-form');
-            const input = document.getElementById('search-input');
-            const container = document.getElementById('search-container');
-            if (form.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                form.classList.remove('hidden');
-                container.style.minWidth = '280px';
-                setTimeout(() => input.focus(), 50);
+            const searchButton = document.getElementById('search-button');
+            const searchForm = document.getElementById('search-form');
+            const searchInput = document.getElementById('search-input');
+            const searchContainer = document.getElementById('search-container');
+
+            if (searchForm.classList.contains('hidden')) {
+                searchButton.classList.add('hidden');
+                searchForm.classList.remove('hidden');
+                searchContainer.style.minWidth = '280px';
+                setTimeout(() => searchInput.focus(), 50);
             } else {
-                if (!'{{ request('q') }}') input.value = '';
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = 'auto';
+                if ('{{ request('q') }}' === '') searchInput.value = '';
+                searchForm.classList.add('hidden');
+                searchButton.classList.remove('hidden');
+                searchContainer.style.minWidth = 'auto';
             }
         }
 
@@ -1048,14 +932,11 @@
             document.getElementById('filter-panel').classList.toggle('hidden');
         }
 
-        function removeFilter(name) {
-            const url = new URL(window.location.href);
-            url.searchParams.delete(name);
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
+        // ── Import Modal ──
+        function openImportModal() {
+            document.getElementById('modal-import').classList.remove('hidden');
         }
 
-        // ── Import Modal ───────────────────────────────────────────
         function closeImportModal() {
             document.getElementById('modal-import').classList.add('hidden');
             clearImportFile();
@@ -1075,33 +956,14 @@
             document.getElementById('btn-upload-submit').disabled = true;
         }
 
-        document.getElementById('modal-import').addEventListener('click', function(e) {
-            if (e.target === this) closeImportModal();
+        // Close modal klik di luar
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalImport = document.getElementById('modal-import');
+            if (modalImport) {
+                modalImport.addEventListener('click', function(e) {
+                    if (e.target === this) closeImportModal();
+                });
+            }
         });
-
-        // Drag & drop
-        (function() {
-            const zone = document.getElementById('import-drop-zone');
-            const input = document.getElementById('file-input-import');
-            if (!zone) return;
-            ['dragenter', 'dragover'].forEach(function(evt) {
-                zone.addEventListener(evt, function(e) {
-                    e.preventDefault();
-                    zone.classList.add('border-green-400', 'bg-green-50');
-                });
-            });
-            ['dragleave', 'drop'].forEach(function(evt) {
-                zone.addEventListener(evt, function(e) {
-                    e.preventDefault();
-                    zone.classList.remove('border-green-400', 'bg-green-50');
-                });
-            });
-            zone.addEventListener('drop', function(e) {
-                if (e.dataTransfer.files.length > 0) {
-                    input.files = e.dataTransfer.files;
-                    onImportFileSelected(input);
-                }
-            });
-        })();
     </script>
 @endpush

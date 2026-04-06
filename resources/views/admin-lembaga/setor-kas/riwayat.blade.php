@@ -435,36 +435,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            // ✅ setAttribute dulu sebelum assign variable
+            dropdownContainer.setAttribute('data-current-uuid', uuid);
             currentUuid   = uuid;
             currentNo     = no;
             currentAlasan = alasan;
-            dropdownContainer.setAttribute('data-current-uuid', uuid);
 
-            // Posisi
+            // ✅ Posisi — fixed tidak butuh scrollY/scrollX
             const rect      = toggle.getBoundingClientRect();
             const dropdownW = window.innerWidth < 640 ? 176 : 192;
-            const dropdownH = 100;
-            let top  = rect.bottom + window.scrollY + 6;
-            let left = rect.left   + window.scrollX;
+            const dropdownH = status === 'ditolak' && alasan ? 100 : 72;
 
-            if (rect.left + dropdownW > window.innerWidth) {
-                left = window.innerWidth - dropdownW - 10 + window.scrollX;
-            }
-            if (rect.bottom + dropdownH > window.innerHeight) {
-                top = rect.top - dropdownH + window.scrollY - 6;
-            }
+            let top  = rect.bottom + 4;
+            let left = rect.right - dropdownW;
+
+            if (left < 10) left = 10;
+            if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW - 10;
+            if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
 
             dropdownContainer.style.top  = top  + 'px';
             dropdownContainer.style.left = left + 'px';
 
             detailLink.href = `/admin-setor-kas/${uuid}`;
 
-            // Tombol alasan — hanya tampil jika status ditolak dan ada alasan
-            if (status === 'ditolak' && alasan) {
-                alasanBtn.classList.remove('hidden');
-            } else {
-                alasanBtn.classList.add('hidden');
-            }
+            alasanBtn.classList.toggle('hidden', !(status === 'ditolak' && alasan));
 
             dropdownContainer.classList.remove('hidden');
 
@@ -474,22 +468,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // ── Helper tutup modal ────────────────────────────────────────
+    const closeAlasanModal = () => {
+        document.getElementById('alasan-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    };
+
     // ── Lihat Alasan ─────────────────────────────────────────────
     alasanBtn.addEventListener('click', function () {
         dropdownContainer.classList.add('hidden');
         dropdownContainer.removeAttribute('data-current-uuid');
 
-        document.getElementById('modal-alasan-no').textContent   = currentNo;
-        document.getElementById('modal-alasan-text').textContent  = currentAlasan || 'Tidak ada keterangan.';
+        document.getElementById('modal-alasan-no').textContent  = currentNo;
+        document.getElementById('modal-alasan-text').textContent = currentAlasan || 'Tidak ada keterangan.';
         document.getElementById('alasan-modal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     });
 
+    // ✅ Backdrop klik + pakai closeAlasanModal
     document.getElementById('alasan-modal').addEventListener('click', function (e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
-            document.body.style.overflow = '';
-        }
+        if (e.target === this) closeAlasanModal();
     });
 
     // ── Tutup saat scroll/resize ──────────────────────────────────
@@ -501,12 +499,9 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', closeDropdown);
     if (tableContainer) tableContainer.addEventListener('scroll', closeDropdown, true);
 
+    // ✅ Escape pakai helper, tidak duplikat kode
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            closeDropdown();
-            document.getElementById('alasan-modal').classList.add('hidden');
-            document.body.style.overflow = '';
-        }
+        if (e.key === 'Escape') { closeDropdown(); closeAlasanModal(); }
     });
 });
 
