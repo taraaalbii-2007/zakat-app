@@ -544,18 +544,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function positionDropdown(toggle) {
-        var rect = toggle.getBoundingClientRect();
-        var ddW = 176, margin = 6;
-        var vpW = window.innerWidth, vpH = window.innerHeight;
+    var rect   = toggle.getBoundingClientRect();
+    var margin = 6;
+
+    dropdown.style.visibility = 'hidden';
+
+    requestAnimationFrame(function () {
+        var ddW  = dropdown.offsetWidth;
+        var ddH  = dropdown.offsetHeight;
+        var vpW  = window.innerWidth;
+        var vpH  = window.innerHeight;
+
         var left = rect.right - ddW;
         if (left < margin) left = margin;
         if (left + ddW > vpW - margin) left = vpW - ddW - margin;
+
         var top = rect.bottom + margin;
-        if (top + 100 > vpH - margin) top = rect.top - 100 - margin;
+        if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
         if (top < margin) top = margin;
-        dropdown.style.top = top + 'px';
-        dropdown.style.left = left + 'px';
-    }
+
+        dropdown.style.top        = top  + 'px';
+        dropdown.style.left       = left + 'px';
+        dropdown.style.visibility = '';
+    });
+}
 
     document.addEventListener('click', function (e) {
         var toggle = e.target.closest('.dropdown-toggle');

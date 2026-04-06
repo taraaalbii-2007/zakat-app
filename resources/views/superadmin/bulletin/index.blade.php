@@ -843,35 +843,41 @@
                         return;
                     }
 
-                    dropdownContainer.setAttribute('data-current-uuid', uuid);
+                   dropdownContainer.setAttribute('data-current-uuid', uuid);
 
-                    const rect          = toggle.getBoundingClientRect();
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight= isPending ? 148 : (!hasLembaga ? 132 : 100);
+const rect = toggle.getBoundingClientRect();
 
-                    let top  = rect.bottom + 4;
-let left = rect.right - dropdownWidth;
+// Update link & form targets
+viewLink.href      = `/bulletin/${uuid}`;
+approveForm.action = `/bulletin/${uuid}/approve`;
+editLink.href      = `/bulletin/${uuid}/edit`;
 
-if (left < 10) left = 10;
-if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
-if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+// Show/hide approve
+approveWrapper.style.display = isPending   ? '' : 'none';
+// Show/hide edit (hanya untuk superadmin punya)
+editLink.style.display       = !hasLembaga ? '' : 'none';
 
-dropdownContainer.style.top  = top + 'px';
-dropdownContainer.style.left = left + 'px';
+currentDropdownData = { uuid, judul };
 
-                    // Update link & form targets
-                    viewLink.href         = `/bulletin/${uuid}`;
-                    approveForm.action    = `/bulletin/${uuid}/approve`;
-                    editLink.href         = `/bulletin/${uuid}/edit`;
+dropdownContainer.style.visibility = 'hidden';
+dropdownContainer.classList.remove('hidden');
 
-                    // Show/hide approve
-                    approveWrapper.style.display = isPending  ? '' : 'none';
-                    // Show/hide edit (hanya untuk superadmin punya)
-                    editLink.style.display       = !hasLembaga ? '' : 'none';
+requestAnimationFrame(() => {
+    const dropdownWidth  = dropdownContainer.offsetWidth;
+    const dropdownHeight = dropdownContainer.offsetHeight;
 
-                    currentDropdownData = { uuid, judul };
-                    dropdownContainer.classList.remove('hidden');
+    let top  = rect.bottom + 4;
+    let left = rect.right - dropdownWidth;
 
+    if (left < 10) left = 10;
+    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
+    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
+    if (top < 4) top = 4;
+
+    dropdownContainer.style.top        = top  + 'px';
+    dropdownContainer.style.left       = left + 'px';
+    dropdownContainer.style.visibility = '';
+});
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');

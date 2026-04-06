@@ -329,45 +329,45 @@
                     return;
                 }
 
-                currentUuid    = uuid;
-                currentNoSetor = noSetor;
-                dropdownContainer.setAttribute('data-current-uuid', uuid);
+             currentUuid    = uuid;
+currentNoSetor = noSetor;
+dropdownContainer.setAttribute('data-current-uuid', uuid);
 
-                // Posisi dropdown
-                const rect      = toggle.getBoundingClientRect();
-                const dropdownW = window.innerWidth < 640 ? 176 : 192;
-                const dropdownH = 130;
-                let top  = rect.bottom + window.scrollY;
-                let left = rect.left   + window.scrollX;
+const rect = toggle.getBoundingClientRect();
 
-                if (rect.left + dropdownW > window.innerWidth) {
-                    left = window.innerWidth - dropdownW - 10 + window.scrollX;
-                }
-                if (rect.bottom + dropdownH > window.innerHeight) {
-                    top = rect.top - dropdownH + window.scrollY;
-                }
+// Set link & visibility item
+detailLink.href = `/setor-kas/${uuid}`;
 
-                dropdownContainer.style.top  = top  + 'px';
-                dropdownContainer.style.left = left + 'px';
+if (bisaEdit) {
+    editLink.href = `/setor-kas/${uuid}/edit`;
+    editLink.classList.remove('hidden');
+} else {
+    editLink.classList.add('hidden');
+}
 
-                // Set link
-                detailLink.href = `/setor-kas/${uuid}`;
+bisaHapus
+    ? deleteBtn.classList.remove('hidden')
+    : deleteBtn.classList.add('hidden');
 
-                if (bisaEdit) {
-                    editLink.href = `/setor-kas/${uuid}/edit`;
-                    editLink.classList.remove('hidden');
-                } else {
-                    editLink.classList.add('hidden');
-                }
+dropdownContainer.style.visibility = 'hidden';
+dropdownContainer.classList.remove('hidden');
 
-                if (bisaHapus) {
-                    deleteBtn.classList.remove('hidden');
-                } else {
-                    deleteBtn.classList.add('hidden');
-                }
+requestAnimationFrame(() => {
+    const dropdownW  = dropdownContainer.offsetWidth;
+    const dropdownH  = dropdownContainer.offsetHeight;
 
-                dropdownContainer.classList.remove('hidden');
+    let top  = rect.bottom + 4;
+    let left = rect.right - dropdownW;
 
+    if (left < 10) left = 10;
+    if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW - 10;
+    if (top + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
+    if (top < 4) top = 4;
+
+    dropdownContainer.style.top        = top  + 'px';
+    dropdownContainer.style.left       = left + 'px';
+    dropdownContainer.style.visibility = '';
+});
             } else if (!dropdownContainer.contains(e.target)) {
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
