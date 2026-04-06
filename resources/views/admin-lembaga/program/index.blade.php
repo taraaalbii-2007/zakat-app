@@ -20,7 +20,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                            <span
+                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                 Buat Program
                             </span>
                         </a>
@@ -30,7 +31,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
+                            <span
+                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
                                 Filter
                             </span>
                         </button>
@@ -49,10 +51,10 @@
                             </button>
                             <form method="GET" action="{{ route('program-zakat.index') }}" id="search-form"
                                 class="{{ request('q') ? '' : 'hidden' }}">
-                                @if(request('status'))
+                                @if (request('status'))
                                     <input type="hidden" name="status" value="{{ request('status') }}">
                                 @endif
-                                @if(request('tahun'))
+                                @if (request('tahun'))
                                     <input type="hidden" name="tahun" value="{{ request('tahun') }}">
                                 @endif
                                 <div class="flex items-center">
@@ -77,9 +79,9 @@
 
             {{-- Filter Panel --}}
             <div id="filter-panel"
-                class="{{ (request('status') || request('tahun')) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
+                class="{{ request('status') || request('tahun') ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
                 <form method="GET" action="{{ route('program-zakat.index') }}" id="filter-form">
-                    @if(request('q'))
+                    @if (request('q'))
                         <input type="hidden" name="q" value="{{ request('q') }}">
                     @endif
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
@@ -91,8 +93,10 @@
                                 <option value="">Semua Status</option>
                                 <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
-                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                                <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>Dibatalkan</option>
+                                <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai
+                                </option>
+                                <option value="dibatalkan" {{ request('status') == 'dibatalkan' ? 'selected' : '' }}>
+                                    Dibatalkan</option>
                             </select>
                         </div>
                         <div>
@@ -101,15 +105,16 @@
                                 class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                                 onchange="this.form.submit()">
                                 <option value="">Semua Tahun</option>
-                                @foreach($tahunList as $tahun)
-                                    <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                                @foreach ($tahunList as $tahun)
+                                    <option value="{{ $tahun }}"
+                                        {{ request('tahun') == $tahun ? 'selected' : '' }}>
                                         {{ $tahun }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-                    @if(request('status') || request('tahun'))
+                    @if (request('status') || request('tahun'))
                         <div class="mt-3 flex justify-end">
                             <a href="{{ route('program-zakat.index', request('q') ? ['q' => request('q')] : []) }}"
                                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
@@ -140,14 +145,15 @@
                                     Progress</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach ($programs as $program)
                                 @php
-                                    $canEdit   = !in_array($program->status, ['selesai', 'dibatalkan']);
+                                    $canEdit = !in_array($program->status, ['selesai', 'dibatalkan']);
                                     $canDelete = $program->status === 'draft';
                                 @endphp
                                 <tr class="hover:bg-gray-50 transition-colors">
@@ -159,7 +165,7 @@
                                         <div class="text-sm text-gray-900">
                                             {{ $program->tanggal_mulai->format('d M Y') }}
                                         </div>
-                                        @if($program->tanggal_selesai)
+                                        @if ($program->tanggal_selesai)
                                             <div class="text-xs text-gray-500">
                                                 s/d {{ $program->tanggal_selesai->format('d M Y') }}
                                             </div>
@@ -167,20 +173,20 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900">
-                                            @if($program->target_dana)
+                                            @if ($program->target_dana)
                                                 Rp {{ number_format($program->target_dana, 0, ',', '.') }}
                                             @else
                                                 -
                                             @endif
                                         </div>
-                                        @if($program->target_mustahik)
+                                        @if ($program->target_mustahik)
                                             <div class="text-xs text-gray-500">
                                                 {{ $program->target_mustahik }} Mustahik
                                             </div>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4">
-                                        @if($program->target_dana)
+                                        @if ($program->target_dana)
                                             <div class="space-y-1">
                                                 <div class="flex items-center text-xs text-gray-600">
                                                     <span class="mr-2">Dana:</span>
@@ -192,7 +198,7 @@
                                                 </div>
                                             </div>
                                         @endif
-                                        @if($program->target_mustahik)
+                                        @if ($program->target_mustahik)
                                             <div class="space-y-1 mt-2">
                                                 <div class="flex items-center text-xs text-gray-600">
                                                     <span class="mr-2">Mustahik:</span>
@@ -210,8 +216,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                         <div class="relative inline-block text-left">
-                                            <button type="button"
-                                                data-dropdown-toggle="{{ $program->uuid }}"
+                                            <button type="button" data-dropdown-toggle="{{ $program->uuid }}"
                                                 data-nama="{{ $program->nama_program }}"
                                                 data-can-edit="{{ $canEdit ? '1' : '0' }}"
                                                 data-can-delete="{{ $canDelete ? '1' : '0' }}"
@@ -234,7 +239,7 @@
                 <div class="md:hidden divide-y divide-gray-200">
                     @foreach ($programs as $program)
                         @php
-                            $canEdit   = !in_array($program->status, ['selesai', 'dibatalkan']);
+                            $canEdit = !in_array($program->status, ['selesai', 'dibatalkan']);
                             $canDelete = $program->status === 'draft';
                         @endphp
                         <div class="p-4 hover:bg-gray-50 transition-colors">
@@ -257,12 +262,12 @@
                                                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                             {{ $program->tanggal_mulai->format('d M Y') }}
-                                            @if($program->tanggal_selesai)
+                                            @if ($program->tanggal_selesai)
                                                 &mdash; {{ $program->tanggal_selesai->format('d M Y') }}
                                             @endif
                                         </div>
 
-                                        @if($program->target_dana)
+                                        @if ($program->target_dana)
                                             <div class="space-y-1">
                                                 <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">
@@ -280,7 +285,7 @@
                                             </div>
                                         @endif
 
-                                        @if($program->target_mustahik)
+                                        @if ($program->target_mustahik)
                                             <div class="space-y-1">
                                                 <div class="flex items-center justify-between text-xs">
                                                     <span class="text-gray-600">
@@ -300,10 +305,8 @@
                                     </div>
                                 </div>
 
-                                <button type="button"
-                                    data-dropdown-toggle="{{ $program->uuid }}"
-                                    data-nama="{{ $program->nama_program }}"
-                                    data-can-edit="{{ $canEdit ? '1' : '0' }}"
+                                <button type="button" data-dropdown-toggle="{{ $program->uuid }}"
+                                    data-nama="{{ $program->nama_program }}" data-can-edit="{{ $canEdit ? '1' : '0' }}"
                                     data-can-delete="{{ $canDelete ? '1' : '0' }}"
                                     class="dropdown-toggle flex-shrink-0 ml-2 inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -333,10 +336,10 @@
                             </path>
                         </svg>
                     </div>
-                    @if(request('q') || request('status') || request('tahun'))
+                    @if (request('q') || request('status') || request('tahun'))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-sm text-gray-500 mb-6">
-                            @if(request('q'))
+                            @if (request('q'))
                                 Tidak ada program yang cocok dengan "{{ request('q') }}"
                             @else
                                 Tidak ada program yang sesuai dengan filter yang dipilih
@@ -375,7 +378,7 @@
                 {{-- Detail — selalu tampil --}}
                 <a href="#" id="dropdown-detail-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -387,7 +390,7 @@
                 {{-- Edit — hanya jika status bukan selesai/dibatalkan --}}
                 <a href="#" id="dropdown-edit-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors hidden">
-                    <svg class="w-4 h-4 mr-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                         </path>
@@ -445,23 +448,23 @@
         let currentProgramUuid = null;
         let currentProgramName = null;
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
-            const detailLink        = document.getElementById('dropdown-detail-link');
-            const editLink          = document.getElementById('dropdown-edit-link');
-            const deleteBtn         = document.getElementById('dropdown-delete-btn');
-            const tableContainer    = document.getElementById('table-container');
+            const detailLink = document.getElementById('dropdown-detail-link');
+            const editLink = document.getElementById('dropdown-edit-link');
+            const deleteBtn = document.getElementById('dropdown-delete-btn');
+            const tableContainer = document.getElementById('table-container');
 
             // ── Buka / Tutup Dropdown ─────────────────────────────────────────
-            document.addEventListener('click', function (e) {
+            document.addEventListener('click', function(e) {
                 const toggle = e.target.closest('.dropdown-toggle');
 
                 if (toggle) {
                     e.stopPropagation();
 
-                    const uuid     = toggle.getAttribute('data-dropdown-toggle');
-                    const nama     = toggle.getAttribute('data-nama');
-                    const canEdit  = toggle.getAttribute('data-can-edit') === '1';
+                    const uuid = toggle.getAttribute('data-dropdown-toggle');
+                    const nama = toggle.getAttribute('data-nama');
+                    const canEdit = toggle.getAttribute('data-can-edit') === '1';
                     const canDelete = toggle.getAttribute('data-can-delete') === '1';
 
                     // Klik tombol yang sama → toggle tutup
@@ -477,22 +480,19 @@
                     dropdownContainer.setAttribute('data-current-uuid', uuid);
 
                     // Hitung posisi (collision detection kanan & bawah)
-                    const rect         = toggle.getBoundingClientRect();
-                    const dropdownW    = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownH    = 160;
-                    let top  = rect.bottom + window.scrollY;
-                    let left = rect.left   + window.scrollX;
+                    const rect = toggle.getBoundingClientRect();
+                    const dropdownW = window.innerWidth < 640 ? 176 : 192;
+                    const dropdownH = 160;
+                    let top = rect.bottom + 4;
+                    let left = rect.right - dropdownW;
 
-                    if (rect.left + dropdownW > window.innerWidth) {
-                        left = window.innerWidth - dropdownW - 10 + window.scrollX;
-                    }
-                    if (rect.bottom + dropdownH > window.innerHeight) {
-                        top = rect.top - dropdownH + window.scrollY;
-                    }
+                    if (left < 10) left = 10;
+                    if (left + dropdownW > window.innerWidth - 10) left = window.innerWidth - dropdownW -
+                    10;
+                    if (rect.bottom + dropdownH > window.innerHeight) top = rect.top - dropdownH - 4;
 
-                    dropdownContainer.style.top  = top  + 'px';
+                    dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
-
                     // Set link
                     detailLink.href = `/program-zakat/${uuid}`;
 
@@ -518,7 +518,7 @@
             });
 
             // ── Hapus ─────────────────────────────────────────────────────────
-            deleteBtn.addEventListener('click', function () {
+            deleteBtn.addEventListener('click', function() {
                 if (!currentProgramUuid) return;
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
@@ -527,7 +527,7 @@
                 document.getElementById('delete-modal').classList.remove('hidden');
             });
 
-            document.getElementById('confirm-delete-btn').addEventListener('click', function () {
+            document.getElementById('confirm-delete-btn').addEventListener('click', function() {
                 if (!currentProgramUuid) return;
 
                 const form = document.createElement('form');
@@ -535,13 +535,13 @@
                 form.action = `/program-zakat/${currentProgramUuid}`;
 
                 const csrf = document.createElement('input');
-                csrf.type  = 'hidden';
-                csrf.name  = '_token';
+                csrf.type = 'hidden';
+                csrf.name = '_token';
                 csrf.value = '{{ csrf_token() }}';
 
                 const method = document.createElement('input');
-                method.type  = 'hidden';
-                method.name  = '_method';
+                method.type = 'hidden';
+                method.name = '_method';
                 method.value = 'DELETE';
 
                 form.appendChild(csrf);
@@ -550,11 +550,11 @@
                 form.submit();
             });
 
-            document.getElementById('cancel-delete-btn').addEventListener('click', function () {
+            document.getElementById('cancel-delete-btn').addEventListener('click', function() {
                 document.getElementById('delete-modal').classList.add('hidden');
             });
 
-            document.getElementById('delete-modal').addEventListener('click', function (e) {
+            document.getElementById('delete-modal').addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
             });
 
@@ -576,9 +576,9 @@
 
         // ── Search & Filter helpers ───────────────────────────────────────────
         function toggleSearch() {
-            const searchButton    = document.getElementById('search-button');
-            const searchForm      = document.getElementById('search-form');
-            const searchInput     = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            const searchForm = document.getElementById('search-form');
+            const searchInput = document.getElementById('search-input');
             const searchContainer = document.getElementById('search-container');
 
             if (searchForm.classList.contains('hidden')) {

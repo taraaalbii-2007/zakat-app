@@ -166,25 +166,19 @@
                                         </button>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="flex items-center">
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $lembaga->nama }}</div>
-                                                <div class="text-xs text-gray-500">Klik untuk melihat detail</div>
-                                            </div>
-                                        </div>
+                                        <div class="text-sm font-medium text-gray-900">{{ $lembaga->nama }}</div>
+                                        <div class="text-xs text-gray-500">Klik untuk melihat detail</div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <div class="relative inline-block text-left">
-                                            <button type="button"
-                                                class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                                data-uuid="{{ $lembaga->uuid }}"
-                                                data-nama="{{ $lembaga->nama }}"
-                                                data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
-                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <button type="button"
+                                            class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                            data-uuid="{{ $lembaga->uuid }}"
+                                            data-nama="{{ $lembaga->nama }}"
+                                            data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
                                     </td>
                                 </tr>
                                 {{-- Expandable Content Row --}}
@@ -267,13 +261,9 @@
                                                                 <div>
                                                                     <p class="text-xs text-gray-500">Status</p>
                                                                     @if($lembaga->is_active)
-                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                                            Aktif
-                                                                        </span>
+                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
                                                                     @else
-                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                                                            Nonaktif
-                                                                        </span>
+                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Nonaktif</span>
                                                                     @endif
                                                                 </div>
                                                             </div>
@@ -281,15 +271,12 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Tombol Detail di Expandable Content --}}
                                                 <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
                                                     <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
                                                         class="inline-flex items-center px-3 py-1.5 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-all">
                                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                         </svg>
                                                         Lihat Detail Lengkap
                                                     </a>
@@ -310,21 +297,15 @@
                             <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
                                 data-target="detail-mobile-{{ $lembaga->uuid }}">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center flex-1 min-w-0">
-                                        <div class="flex-1 min-w-0">
-                                            <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $lembaga->nama }}</h3>
-                                            <div class="flex items-center mt-1">
-                                                @if($lembaga->is_active)
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
-                                                        Aktif
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-2">
-                                                        Nonaktif
-                                                    </span>
-                                                @endif
-                                                <span class="text-xs text-gray-500">{{ $lembaga->kode_lembaga }}</span>
-                                            </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $lembaga->nama }}</h3>
+                                        <div class="flex items-center mt-1">
+                                            @if($lembaga->is_active)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">Aktif</span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-2">Nonaktif</span>
+                                            @endif
+                                            <span class="text-xs text-gray-500">{{ $lembaga->kode_lembaga }}</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-1 ml-2">
@@ -345,11 +326,9 @@
                                 </div>
                             </div>
 
-                            {{-- Mobile Expandable Content --}}
                             <div id="detail-mobile-{{ $lembaga->uuid }}" class="hidden expandable-content-mobile">
                                 <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
                                     <div class="space-y-4">
-                                        {{-- Admin Lembaga --}}
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 mb-2">Data Admin Lembaga</h4>
                                             <div class="space-y-2">
@@ -361,7 +340,6 @@
                                                     <span class="text-gray-900">{{ $lembaga->admin_nama }}</span>
                                                 </div>
                                                 @endif
-
                                                 @if($lembaga->admin_telepon)
                                                 <div class="flex items-center text-sm">
                                                     <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,7 +351,6 @@
                                             </div>
                                         </div>
 
-                                        {{-- Lokasi --}}
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 mb-2">Lokasi</h4>
                                             <div class="flex items-start text-sm">
@@ -385,15 +362,12 @@
                                             </div>
                                         </div>
 
-                                        {{-- Tombol Detail --}}
                                         <div class="pt-3 border-t border-gray-200">
                                             <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
                                                 class="inline-flex items-center justify-center w-full px-3 py-2 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-all">
                                                 <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
                                                 Lihat Detail Lengkap
                                             </a>
@@ -418,15 +392,13 @@
                                 d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
-
                     @if(request('q') || request('provinsi_kode') || request('status'))
                         <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-sm text-gray-500 mb-6">Tidak ada lembaga yang sesuai dengan filter yang dipilih.</p>
                         <a href="{{ route('lembaga.index') }}"
                             class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                             Reset Filter
                         </a>
@@ -436,8 +408,7 @@
                         <a href="{{ route('lembaga.create') }}"
                             class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Tambah Lembaga
                         </a>
@@ -453,32 +424,29 @@
             <div class="py-1">
                 <a href="#" id="dropdown-show-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg>
                     Lihat Detail
                 </a>
                 <a href="#" id="dropdown-edit-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                        </path>
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                     Edit
                 </a>
 
-                {{-- Toggle Status Button --}}
+                {{-- Toggle Status --}}
                 <button type="button" id="dropdown-toggle-status-btn"
-                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm transition-colors">
-                    <svg id="dropdown-toggle-status-icon-nonaktif" class="w-4 h-4 mr-3 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                    <svg id="dropdown-toggle-status-icon-nonaktif" class="w-4 h-4 mr-3 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                     </svg>
-                    <svg id="dropdown-toggle-status-icon-aktif" class="w-4 h-4 mr-3 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="dropdown-toggle-status-icon-aktif" class="w-4 h-4 mr-3 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -489,10 +457,9 @@
 
                 <button type="button" id="dropdown-delete-btn"
                     class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
                     Hapus
                 </button>
@@ -517,9 +484,7 @@
                     </svg>
                 </div>
             </div>
-            <h3 id="toggle-status-modal-title" class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">
-                Nonaktifkan Lembaga
-            </h3>
+            <h3 id="toggle-status-modal-title" class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Nonaktifkan Lembaga</h3>
             <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
                 Apakah Anda yakin ingin
                 <span id="toggle-status-action-label" class="font-semibold text-gray-700">menonaktifkan</span>
@@ -530,11 +495,11 @@
             </p>
             <div class="flex justify-center gap-2 sm:gap-3">
                 <button type="button" id="cancel-toggle-status-btn"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    class="w-24 sm:w-28 rounded-lg border border-gray-300 px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     Batal
                 </button>
                 <button type="button" id="confirm-toggle-status-btn"
-                    class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors">
+                    class="w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white transition-colors">
                     Konfirmasi
                 </button>
             </div>
@@ -558,11 +523,11 @@
             <p class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-center gap-2 sm:gap-3">
                 <button type="button" id="cancel-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    class="w-24 sm:w-28 rounded-lg border border-gray-300 px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     Batal
                 </button>
                 <button type="button" id="confirm-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                    class="w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 transition-colors">
                     Hapus
                 </button>
             </div>
@@ -576,14 +541,14 @@
         let currentLembagaIsActive = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            const dropdownContainer = document.getElementById('dropdown-container');
-            const showLink = document.getElementById('dropdown-show-link');
-            const editLink = document.getElementById('dropdown-edit-link');
-            const deleteBtn = document.getElementById('dropdown-delete-btn');
-            const toggleStatusBtn = document.getElementById('dropdown-toggle-status-btn');
-            const toggleStatusLabel = document.getElementById('dropdown-toggle-status-label');
+            const dropdownContainer        = document.getElementById('dropdown-container');
+            const showLink                 = document.getElementById('dropdown-show-link');
+            const editLink                 = document.getElementById('dropdown-edit-link');
+            const deleteBtn                = document.getElementById('dropdown-delete-btn');
+            const toggleStatusBtn          = document.getElementById('dropdown-toggle-status-btn');
+            const toggleStatusLabel        = document.getElementById('dropdown-toggle-status-label');
             const toggleStatusIconNonaktif = document.getElementById('dropdown-toggle-status-icon-nonaktif');
-            const toggleStatusIconAktif = document.getElementById('dropdown-toggle-status-icon-aktif');
+            const toggleStatusIconAktif    = document.getElementById('dropdown-toggle-status-icon-aktif');
 
             // ── Desktop Expandable Rows ───────────────────────────────────
             document.querySelectorAll('.expandable-row').forEach(row => {
@@ -612,9 +577,10 @@
                 const toggle = e.target.closest('.dropdown-toggle');
                 if (toggle) {
                     e.stopPropagation();
+
                     const dropdownUuid = toggle.getAttribute('data-uuid');
-                    const lembagaName = toggle.getAttribute('data-nama');
-                    const isActive = toggle.getAttribute('data-is-active') === '1';
+                    const lembagaName  = toggle.getAttribute('data-nama');
+                    const isActive     = toggle.getAttribute('data-is-active') === '1';
 
                     if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
                         !dropdownContainer.classList.contains('hidden')) {
@@ -624,32 +590,35 @@
                     }
 
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
-                    const rect = toggle.getBoundingClientRect();
+
+                    const rect          = toggle.getBoundingClientRect();
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 160;
+                    const dropdownHeight = 170;
 
-                    let top = rect.bottom + 4;
-                    let left = rect.left;
+                    // FIX: gunakan viewport coords langsung (fixed positioning)
+                    let top  = rect.bottom + 4;
+                    let left = rect.right - dropdownWidth;
 
-                    if (left + dropdownWidth > window.innerWidth) left = window.innerWidth - dropdownWidth - 10;
+                    if (left < 10) left = 10;
+                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
                     if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
 
-                    dropdownContainer.style.top = top + 'px';
+                    dropdownContainer.style.top  = top + 'px';
                     dropdownContainer.style.left = left + 'px';
+
                     showLink.href = `/lembaga/${dropdownUuid}`;
                     editLink.href = `/lembaga/${dropdownUuid}/edit`;
-                    currentDropdownData = { uuid: dropdownUuid, name: lembagaName };
+
+                    currentDropdownData    = { uuid: dropdownUuid, name: lembagaName };
                     currentLembagaIsActive = isActive;
 
-                    // Update toggle status button appearance
+                    // Update toggle status button — tanpa warna-warni
                     if (isActive) {
                         toggleStatusLabel.textContent = 'Nonaktifkan';
-                        toggleStatusBtn.className = 'flex items-center w-full px-3 sm:px-4 py-2 text-sm text-yellow-600 hover:bg-yellow-50 transition-colors';
                         toggleStatusIconNonaktif.classList.remove('hidden');
                         toggleStatusIconAktif.classList.add('hidden');
                     } else {
                         toggleStatusLabel.textContent = 'Aktifkan';
-                        toggleStatusBtn.className = 'flex items-center w-full px-3 sm:px-4 py-2 text-sm text-green-600 hover:bg-green-50 transition-colors';
                         toggleStatusIconNonaktif.classList.add('hidden');
                         toggleStatusIconAktif.classList.remove('hidden');
                     }
@@ -670,29 +639,29 @@
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
 
-                const isActive = currentLembagaIsActive;
-                const modal = document.getElementById('toggle-status-modal');
-                const modalTitle = document.getElementById('toggle-status-modal-title');
-                const actionLabel = document.getElementById('toggle-status-action-label');
-                const modalDesc = document.getElementById('toggle-status-modal-desc');
-                const confirmBtn = document.getElementById('confirm-toggle-status-btn');
+                const isActive            = currentLembagaIsActive;
+                const modal               = document.getElementById('toggle-status-modal');
+                const modalTitle          = document.getElementById('toggle-status-modal-title');
+                const actionLabel         = document.getElementById('toggle-status-action-label');
+                const modalDesc           = document.getElementById('toggle-status-modal-desc');
+                const confirmBtn          = document.getElementById('confirm-toggle-status-btn');
                 const iconWrapperNonaktif = document.getElementById('toggle-status-icon-wrapper-nonaktif');
-                const iconWrapperAktif = document.getElementById('toggle-status-icon-wrapper-aktif');
+                const iconWrapperAktif    = document.getElementById('toggle-status-icon-wrapper-aktif');
 
                 document.getElementById('modal-toggle-lembaga-name').textContent = currentDropdownData.name;
 
                 if (isActive) {
-                    modalTitle.textContent = 'Nonaktifkan Lembaga';
-                    actionLabel.textContent = 'menonaktifkan';
-                    modalDesc.textContent = 'Lembaga yang dinonaktifkan tidak akan bisa diakses oleh pengguna.';
-                    confirmBtn.className = 'w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors';
+                    modalTitle.textContent    = 'Nonaktifkan Lembaga';
+                    actionLabel.textContent   = 'menonaktifkan';
+                    modalDesc.textContent     = 'Lembaga yang dinonaktifkan tidak akan bisa diakses oleh pengguna.';
+                    confirmBtn.className      = 'w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors';
                     iconWrapperNonaktif.classList.remove('hidden');
                     iconWrapperAktif.classList.add('hidden');
                 } else {
-                    modalTitle.textContent = 'Aktifkan Lembaga';
-                    actionLabel.textContent = 'mengaktifkan';
-                    modalDesc.textContent = 'Lembaga yang diaktifkan kembali akan bisa diakses oleh pengguna.';
-                    confirmBtn.className = 'w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors';
+                    modalTitle.textContent    = 'Aktifkan Lembaga';
+                    actionLabel.textContent   = 'mengaktifkan';
+                    modalDesc.textContent     = 'Lembaga yang diaktifkan kembali akan bisa diakses oleh pengguna.';
+                    confirmBtn.className      = 'w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors';
                     iconWrapperNonaktif.classList.add('hidden');
                     iconWrapperAktif.classList.remove('hidden');
                 }
@@ -702,23 +671,22 @@
 
             document.getElementById('confirm-toggle-status-btn').addEventListener('click', function() {
                 if (!currentDropdownData) return;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/lembaga/${currentDropdownData.uuid}/toggle-status`;
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
+                const form   = document.createElement('form');
+                form.method  = 'POST';
+                form.action  = `/lembaga/${currentDropdownData.uuid}/toggle-status`;
+                const csrf   = document.createElement('input');
+                csrf.type    = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
                 const method = document.createElement('input');
-                method.type = 'hidden'; method.name = '_method'; method.value = 'PATCH';
+                method.type  = 'hidden'; method.name = '_method'; method.value = 'PATCH';
                 form.appendChild(csrf);
                 form.appendChild(method);
                 document.body.appendChild(form);
                 form.submit();
             });
 
-            document.getElementById('cancel-toggle-status-btn').addEventListener('click', function() {
-                document.getElementById('toggle-status-modal').classList.add('hidden');
-            });
-
+            document.getElementById('cancel-toggle-status-btn').addEventListener('click', () =>
+                document.getElementById('toggle-status-modal').classList.add('hidden')
+            );
             document.getElementById('toggle-status-modal').addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
             });
@@ -735,47 +703,45 @@
 
             document.getElementById('confirm-delete-btn').addEventListener('click', function() {
                 if (!currentDropdownData) return;
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/lembaga/${currentDropdownData.uuid}`;
-                const csrf = document.createElement('input');
-                csrf.type = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
+                const form   = document.createElement('form');
+                form.method  = 'POST';
+                form.action  = `/lembaga/${currentDropdownData.uuid}`;
+                const csrf   = document.createElement('input');
+                csrf.type    = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
                 const method = document.createElement('input');
-                method.type = 'hidden'; method.name = '_method'; method.value = 'DELETE';
+                method.type  = 'hidden'; method.name = '_method'; method.value = 'DELETE';
                 form.appendChild(csrf);
                 form.appendChild(method);
                 document.body.appendChild(form);
                 form.submit();
             });
 
-            document.getElementById('cancel-delete-btn').addEventListener('click', function() {
-                document.getElementById('delete-modal').classList.add('hidden');
-            });
-
+            document.getElementById('cancel-delete-btn').addEventListener('click', () =>
+                document.getElementById('delete-modal').classList.add('hidden')
+            );
             document.getElementById('delete-modal').addEventListener('click', function(e) {
                 if (e.target === this) this.classList.add('hidden');
             });
 
-            window.addEventListener('scroll', function() {
+            // ── Close on scroll / resize ──────────────────────────────────
+            const closeDropdown = () => {
                 dropdownContainer.classList.add('hidden');
-            }, true);
-
-            window.addEventListener('resize', function() {
-                dropdownContainer.classList.add('hidden');
-            });
+                dropdownContainer.removeAttribute('data-current-uuid');
+            };
+            window.addEventListener('scroll', closeDropdown, true);
+            window.addEventListener('resize', closeDropdown);
         });
 
-        // ── Toggle Search ─────────────────────────────────────────────────
         function toggleSearch() {
-            var btn = document.getElementById('search-button');
-            var form = document.getElementById('search-form');
-            var input = document.getElementById('search-input');
-            var container = document.getElementById('search-container');
+            const btn       = document.getElementById('search-button');
+            const form      = document.getElementById('search-form');
+            const input     = document.getElementById('search-input');
+            const container = document.getElementById('search-container');
             if (form.classList.contains('hidden')) {
                 btn.classList.add('hidden');
                 form.classList.remove('hidden');
                 container.style.minWidth = '280px';
-                setTimeout(function() { input.focus(); }, 50);
+                setTimeout(() => input.focus(), 50);
             } else {
                 form.classList.add('hidden');
                 btn.classList.remove('hidden');
@@ -783,17 +749,15 @@
             }
         }
 
-        // ── Toggle Filter Panel ───────────────────────────────────────────
         function toggleFilter() {
             document.getElementById('filter-panel').classList.toggle('hidden');
         }
 
-        // ── ESC menutup search form & modal ──────────────────────────────
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                var form = document.getElementById('search-form');
-                var btn = document.getElementById('search-button');
-                var container = document.getElementById('search-container');
+                const form = document.getElementById('search-form');
+                const btn  = document.getElementById('search-button');
+                const container = document.getElementById('search-container');
                 if (!form.classList.contains('hidden')) {
                     form.classList.add('hidden');
                     btn.classList.remove('hidden');

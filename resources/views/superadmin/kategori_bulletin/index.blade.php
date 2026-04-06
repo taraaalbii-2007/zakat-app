@@ -314,18 +314,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const dropdownWidth  = window.innerWidth < 640 ? 176 : 192;
             const dropdownHeight = 96;
 
-            let top  = rect.bottom + window.scrollY;
-            let left = rect.left + window.scrollX;
+            let top  = rect.bottom + 4;
+let left = rect.right - dropdownWidth;
 
-            if (left + dropdownWidth > window.innerWidth) {
-                left = window.innerWidth - dropdownWidth - 10;
-            }
-            if (rect.bottom + dropdownHeight > window.innerHeight) {
-                top = rect.top + window.scrollY - dropdownHeight;
-            }
+if (left < 10) left = 10;
+if (left + dropdownWidth > window.innerWidth - 10) {
+    left = window.innerWidth - dropdownWidth - 10;
+}
+if (rect.bottom + dropdownHeight > window.innerHeight) {
+    top = rect.top - dropdownHeight - 4;
+}
 
-            dropdownContainer.style.top  = top + 'px';
-            dropdownContainer.style.left = left + 'px';
+dropdownContainer.style.top  = top + 'px';
+dropdownContainer.style.left = left + 'px';
 
             editLink.href = baseUrl + '/' + uuid + '/edit';
 

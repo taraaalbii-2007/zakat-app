@@ -313,7 +313,7 @@
                 {{-- Hanya Edit, Set Primary, Toggle Active, dan Delete --}}
                 <a href="#" id="dropdown-edit-link"
                     class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                         </path>
@@ -430,19 +430,16 @@
                     dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
                     const rect = toggle.getBoundingClientRect();
 
-                    let top = rect.bottom;
-                    let left = rect.left;
-
                     const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
                     const dropdownHeight = 160;
 
-                    if (left + dropdownWidth > window.innerWidth) {
-                        left = window.innerWidth - dropdownWidth - 10;
-                    }
+                    let top = rect.bottom + 4;
+                    let left = rect.right - dropdownWidth;
 
-                    if (top + dropdownHeight > window.innerHeight) {
-                        top = rect.top - dropdownHeight;
-                    }
+                    if (left < 10) left = 10;
+                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth -
+                        dropdownWidth - 10;
+                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
 
                     dropdownContainer.style.top = top + 'px';
                     dropdownContainer.style.left = left + 'px';
