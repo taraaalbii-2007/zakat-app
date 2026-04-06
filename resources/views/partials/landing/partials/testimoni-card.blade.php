@@ -9,12 +9,12 @@ use Illuminate\Support\Str;
 $initial = strtoupper(Str::substr($t->nama_pengirim, 0, 1));
 
 $avatarColors = [
-    ['from' => '#16a34a', 'to' => '#0d9488'],
-    ['from' => '#d97706', 'to' => '#16a34a'],
-    ['from' => '#7c3aed', 'to' => '#2563eb'],
-    ['from' => '#0d9488', 'to' => '#059669'],
-    ['from' => '#db2777', 'to' => '#e11d48'],
-    ['from' => '#2563eb', 'to' => '#0d9488'],
+    '#16a34a',
+    '#d97706',
+    '#7c3aed',
+    '#0d9488',
+    '#db2777',
+    '#2563eb',
 ];
 $avatarColor = $avatarColors[$i % count($avatarColors)];
 
@@ -55,8 +55,7 @@ $dateLabel = isset($t->created_at)
 
         {{-- Footer --}}
         <div class="tc__footer">
-            <div class="tc__avatar"
-                 style="background: linear-gradient(135deg, {{ $avatarColor['from'] }}, {{ $avatarColor['to'] }})">
+            <div class="tc__avatar" style="background: {{ $avatarColor }}">
                 <span class="tc__avatar-text">{{ $initial }}</span>
             </div>
 
@@ -212,13 +211,6 @@ $dateLabel = isset($t->created_at)
 .tc.tc--active .tc__avatar {
     border-radius: 50%;
     transform: scale(1.07);
-}
-.tc__avatar::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(145deg,rgba(255,255,255,0.2) 0%,transparent 60%);
-    pointer-events: none;
 }
 .tc__avatar-text {
     font-size: 1.1rem;
