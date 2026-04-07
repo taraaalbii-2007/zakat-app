@@ -100,30 +100,59 @@
                 </div>
             </div>
 
-            {{-- KOLOM 2: Menu Cepat --}}
-            <div class="flex flex-col items-start nz-footer-reveal nz-footer-menu" style="transition-delay:0.1s">
-                <h4 class="text-sm font-bold text-white w-full"
-                    style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:40px;">Menu Cepat</h4>
-                <ul class="space-y-2.5 w-full">
-                    @foreach ([
-                        ['href' => '/', 'label' => 'Beranda'],
-                        ['href' => 'hitung-zakat', 'label' => 'Hitung Zakat'],
-                        ['href' => 'panduan-zakat', 'label' => 'Panduan Zakat'],
-                        ['href' => 'artikel', 'label' => 'Artikel / Buletin'],
-                        ['href' => 'kontak', 'label' => 'Kontak'],
-                        ['href' => route('login'), 'label' => 'Masuk'],
-                        ['href' => route('register'), 'label' => 'Daftar Gratis'],
-                    ] as $item)
-                        <li>
-                            <a href="{{ $item['href'] }}"
-                                class="nz-menu-link text-sm transition-all duration-150"
-                                style="color:rgba(220,252,231,0.90); text-decoration:none; position:relative; display:inline-block;">
-                                {{ $item['label'] }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+{{-- KOLOM 2: Menu Cepat --}}
+<div class="flex flex-col items-start nz-footer-reveal nz-footer-menu" style="transition-delay:0.1s">
+    <h4 class="text-sm font-bold text-white w-full"
+        style="border-bottom: 2px solid rgba(255,255,255,0.25); padding-bottom: 0.75rem; margin-bottom: 1rem; display:flex; align-items:center; min-height:40px;">Menu Cepat</h4>
+    <ul class="space-y-2.5 w-full">
+        <li>
+            <a href="/" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                Beranda
+            </a>
+        </li>
+        <li>
+            <a href="hitung-zakat" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                Hitung Zakat
+            </a>
+        </li>
+        <li>
+            <a href="panduan-zakat" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                Panduan Zakat
+            </a>
+        </li>
+        <li>
+            <a href="artikel" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                Artikel / Buletin
+            </a>
+        </li>
+        <li>
+            <a href="kontak" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                Kontak
+            </a>
+        </li>
+
+        {{-- Jika sudah login: tampilkan Dashboard saja --}}
+        @auth
+            <li>
+                <a href="{{ route('dashboard') }}" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                    Dashboard
+                </a>
+            </li>
+        @else
+            {{-- Belum login: tampilkan Masuk & Daftar Gratis --}}
+            <li>
+                <a href="{{ route('login') }}" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                    Masuk
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('register') }}" class="nz-menu-link text-sm transition-all duration-150" style="color:rgba(220,252,231,0.90); text-decoration:none;">
+                    Daftar Gratis
+                </a>
+            </li>
+        @endauth
+    </ul>
+</div>
 
             {{-- KOLOM 3: Kontak --}}
             <div class="flex flex-col items-start nz-footer-reveal nz-footer-kontak" style="transition-delay:0.2s">
