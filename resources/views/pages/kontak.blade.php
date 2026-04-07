@@ -292,19 +292,6 @@
                 </div>
             @endif
 
-            {{-- Jam Operasional --}}
-            <div class="flex items-start gap-3.5">
-                <svg class="flex-shrink-0 mt-0.5" style="width:18px;height:18px;color:#16a34a;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <div>
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider leading-none mb-0.5">Jam Operasional</p>
-                    <p class="text-sm text-gray-800">Senin – Jumat, 08.00 – 17.00 WIB</p>
-                    <p class="text-xs text-gray-400 mt-0.5">Respon email dalam 1×24 jam kerja</p>
-                </div>
-            </div>
-
         </div>
 
         {{-- Peta Alamat --}}
