@@ -750,6 +750,7 @@
 @push('scripts')
     <script>
         let currentDropdownData = null;
+        const editBaseUrl = "{{ rtrim(route('tipe-zakat.index'), '/') }}";
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
@@ -760,15 +761,13 @@
             // Filter auto-submit
             ['filter-jenis-zakat', 'filter-haul', 'filter-sort-by', 'filter-sort-order'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.addEventListener('change', () => document.getElementById('filter-form')
-                    .submit());
+                if (el) el.addEventListener('change', () => document.getElementById('filter-form').submit());
             });
 
             // Desktop Expandable Rows
             document.querySelectorAll('.expandable-row').forEach(row => {
                 row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle') || e.target
-                        .closest('button[type="submit"]')) return;
+                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle') || e.target.closest('button[type="submit"]')) return;
                     const targetRow = document.getElementById(this.getAttribute('data-target'));
                     const icon = this.querySelector('.expand-icon');
                     targetRow.classList.toggle('hidden');
@@ -779,8 +778,7 @@
             // Mobile Expandable Cards
             document.querySelectorAll('.expandable-row-mobile').forEach(row => {
                 row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle') || e.target
-                        .closest('button[type="submit"]')) return;
+                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle') || e.target.closest('button[type="submit"]')) return;
                     const targetContent = document.getElementById(this.getAttribute('data-target'));
                     const icon = this.querySelector('.expand-icon-mobile');
                     targetContent.classList.toggle('hidden');
@@ -796,8 +794,8 @@
                     const dropdownUuid = toggle.getAttribute('data-uuid');
                     const nama = toggle.getAttribute('data-nama');
 
-                    if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid && !
-                        dropdownContainer.classList.contains('hidden')) {
+                    if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
+                        !dropdownContainer.classList.contains('hidden')) {
                         dropdownContainer.classList.add('hidden');
                         dropdownContainer.removeAttribute('data-current-uuid');
                         return;
@@ -817,10 +815,8 @@
                         let left = rect.right - dropdownWidth;
 
                         if (left < 10) left = 10;
-                        if (left + dropdownWidth > window.innerWidth - 10) left = window
-                            .innerWidth - dropdownWidth - 10;
-                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top -
-                            dropdownHeight - 4;
+                        if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
+                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
                         if (top < 4) top = 4;
 
                         dropdownContainer.style.top = top + 'px';
@@ -828,12 +824,14 @@
                         dropdownContainer.style.visibility = '';
                     });
 
-                    editLink.href = '{{ route('tipe-zakat.edit', ':uuid') }}'.replace(':uuid',
-                        dropdownUuid);
+                    // ✅ FIX: Set href edit dengan UUID yang benar
+                    editLink.href = `${editBaseUrl}/${dropdownUuid}/edit`;
+
                     currentDropdownData = {
                         uuid: dropdownUuid,
                         nama: nama
                     };
+
                 } else {
                     if (!dropdownContainer.contains(e.target)) {
                         dropdownContainer.classList.add('hidden');
@@ -844,10 +842,7 @@
 
             deleteBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const {
-                    uuid,
-                    nama
-                } = currentDropdownData || {};
+                const { uuid, nama } = currentDropdownData || {};
                 if (!uuid) return;
                 dropdownContainer.classList.add('hidden');
                 dropdownContainer.removeAttribute('data-current-uuid');
@@ -906,8 +901,7 @@
 
         function showDeleteModal(uuid, nama) {
             document.getElementById('modal-nama').textContent = nama;
-            document.getElementById('delete-form').action = '{{ route('tipe-zakat.destroy', ':uuid') }}'.replace(':uuid',
-                uuid);
+            document.getElementById('delete-form').action = `${editBaseUrl}/${uuid}`;
             document.getElementById('delete-modal').classList.remove('hidden');
         }
     </script>

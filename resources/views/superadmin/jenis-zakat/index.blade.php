@@ -267,6 +267,7 @@
 @push('scripts')
     <script>
         let currentDropdownData = null;
+        const editBaseUrl = "{{ rtrim(route('jenis-zakat.index'), '/') }}";
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownContainer = document.getElementById('dropdown-container');
@@ -303,20 +304,22 @@
                         let left = rect.right - dropdownWidth;
 
                         if (left < 10) left = 10;
-                        if (left + dropdownWidth > window.innerWidth - 10) left = window
-                            .innerWidth - dropdownWidth - 10;
-                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top -
-                            dropdownHeight - 4;
+                        if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
+                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
                         if (top < 4) top = 4;
 
                         dropdownContainer.style.top = top + 'px';
                         dropdownContainer.style.left = left + 'px';
                         dropdownContainer.style.visibility = '';
                     });
+
                     currentDropdownData = {
                         uuid: dropdownUuid,
                         name: zakatName
                     };
+
+                    // ✅ FIX: Update href link Edit dengan UUID yang benar
+                    editLink.href = `${editBaseUrl}/${dropdownUuid}/edit`;
 
                 } else {
                     if (!dropdownContainer.contains(e.target)) {

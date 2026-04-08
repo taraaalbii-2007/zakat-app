@@ -401,14 +401,22 @@
         const tableContainer    = document.getElementById('table-container');
 
         // ─── Filter auto-submit (dengan loading state) ───────────────────────
-        ['filter-jenis-zakat', 'filter-haul', 'filter-sort-by', 'filter-sort-order'].forEach(id => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.addEventListener('change', () => {
-                el.disabled = true;
+        const filterSortBy = document.getElementById('filter-sort-by');
+        const filterSortOrder = document.getElementById('filter-sort-order');
+        
+        if (filterSortBy) {
+            filterSortBy.addEventListener('change', function() {
+                this.disabled = true;
                 document.getElementById('filter-form').submit();
             });
-        });
+        }
+        
+        if (filterSortOrder) {
+            filterSortOrder.addEventListener('change', function() {
+                this.disabled = true;
+                document.getElementById('filter-form').submit();
+            });
+        }
 
         // ─── Search form — disable input saat submit ──────────────────────────
         const searchForm = document.getElementById('search-form');
@@ -422,24 +430,25 @@
         // ─── Desktop: Expandable Rows ─────────────────────────────────────────
         document.querySelectorAll('.expandable-row').forEach(row => {
             row.addEventListener('click', function (e) {
-                if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
+                // Abaikan jika klik pada dropdown toggle atau link
+                if (e.target.closest('.dropdown-toggle') || e.target.closest('a')) return;
                 const targetRow = document.getElementById(this.getAttribute('data-target'));
                 const icon      = this.querySelector('.expand-icon');
                 if (!targetRow) return;
                 targetRow.classList.toggle('hidden');
-                icon.classList.toggle('rotate-90');
+                if (icon) icon.classList.toggle('rotate-90');
             });
         });
 
         // ─── Mobile: Expandable Cards ─────────────────────────────────────────
         document.querySelectorAll('.expandable-row-mobile').forEach(row => {
             row.addEventListener('click', function (e) {
-                if (e.target.closest('a, .dropdown-toggle, button[type="submit"]')) return;
+                if (e.target.closest('.dropdown-toggle') || e.target.closest('a')) return;
                 const targetContent = document.getElementById(this.getAttribute('data-target'));
                 const icon          = this.querySelector('.expand-icon-mobile');
                 if (!targetContent) return;
                 targetContent.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
+                if (icon) icon.classList.toggle('rotate-180');
             });
         });
 
@@ -454,6 +463,7 @@
 
                 // Tutup jika dropdown UUID sama dan sedang terbuka
                 if (
+                    dropdownContainer && 
                     dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
                     !dropdownContainer.classList.contains('hidden')
                 ) {
@@ -461,10 +471,16 @@
                     return;
                 }
 
-                dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
+                if (dropdownContainer) {
+                    dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
+                }
                 currentDropdownData = { uuid: dropdownUuid, nama };
 
-                editLink.href = '{{ route('tipe-zakat.edit', ':uuid') }}'.replace(':uuid', dropdownUuid);
+                if (editLink) {
+                    editLink.href = '{{ route('kategori-mustahik.edit', ':uuid') }}'.replace(':uuid', dropdownUuid);
+                }
+
+                if (!dropdownContainer) return;
 
                 // Tampilkan tapi sembunyikan dulu agar bisa ukur dimensi
                 dropdownContainer.style.visibility = 'hidden';
@@ -506,29 +522,38 @@
 
             } else {
                 // Klik di luar dropdown → tutup
-                if (!dropdownContainer.contains(e.target)) {
+                if (dropdownContainer && !dropdownContainer.contains(e.target)) {
                     closeDropdown();
                 }
             }
         });
 
         // ─── Delete dari dropdown ─────────────────────────────────────────────
-        deleteBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const { uuid, nama } = currentDropdownData || {};
-            if (!uuid) return;
-            closeDropdown();
-            showDeleteModal(uuid, nama);
-        });
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const { uuid, nama } = currentDropdownData || {};
+                if (!uuid) return;
+                closeDropdown();
+                showDeleteModal(uuid, nama);
+            });
+        }
 
         // ─── Delete Modal: Batal & klik backdrop ─────────────────────────────
-        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-            document.getElementById('delete-modal').classList.add('hidden');
-        });
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const deleteModal = document.getElementById('delete-modal');
+        
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                if (deleteModal) deleteModal.classList.add('hidden');
+            });
+        }
 
-        document.getElementById('delete-modal').addEventListener('click', function (e) {
-            if (e.target === this) this.classList.add('hidden');
-        });
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function (e) {
+                if (e.target === this) this.classList.add('hidden');
+            });
+        }
 
         // ─── Tutup dropdown saat scroll / resize ─────────────────────────────
         window.addEventListener('scroll', closeDropdown, true);
@@ -539,8 +564,10 @@
     // ─── Helper: tutup dropdown ───────────────────────────────────────────────
     function closeDropdown() {
         const dropdownContainer = document.getElementById('dropdown-container');
-        dropdownContainer.classList.add('hidden');
-        dropdownContainer.removeAttribute('data-current-uuid');
+        if (dropdownContainer) {
+            dropdownContainer.classList.add('hidden');
+            dropdownContainer.removeAttribute('data-current-uuid');
+        }
     }
 
     // ─── Toggle Search ────────────────────────────────────────────────────────
@@ -550,16 +577,19 @@
         const searchInput     = document.getElementById('search-input');
         const searchContainer = document.getElementById('search-container');
 
+        if (!searchButton || !searchForm || !searchContainer) return;
+
         const isHidden = searchForm.classList.contains('hidden');
 
         if (isHidden) {
             searchButton.classList.add('hidden');
             searchForm.classList.remove('hidden');
             searchContainer.style.minWidth = '180px';
-            setTimeout(() => searchInput.focus(), 50);
+            setTimeout(() => {
+                if (searchInput) searchInput.focus();
+            }, 50);
         } else {
-            // Hanya kosongkan input jika memang tidak ada nilai aktif dari server
-            if (!searchInput.dataset.hasValue) searchInput.value = '';
+            if (searchInput && !searchInput.value) searchInput.value = '';
             searchForm.classList.add('hidden');
             searchButton.classList.remove('hidden');
             searchContainer.style.minWidth = 'auto';
@@ -568,7 +598,8 @@
 
     // ─── Toggle Filter Panel ──────────────────────────────────────────────────
     function toggleFilter() {
-        document.getElementById('filter-panel').classList.toggle('hidden');
+        const filterPanel = document.getElementById('filter-panel');
+        if (filterPanel) filterPanel.classList.toggle('hidden');
     }
 
     // ─── Hapus satu filter dari URL ───────────────────────────────────────────
@@ -579,12 +610,38 @@
         window.location.href = url.toString();
     }
 
-    // ─── Tampilkan Delete Modal ───────────────────────────────────────────────
+    // ─── Tampilkan Delete Modal (DIPERBAIKI) ──────────────────────────────────
     function showDeleteModal(uuid, nama) {
-        document.getElementById('modal-nama').textContent = nama;
-        document.getElementById('delete-form').action =
-            '{{ route('tipe-zakat.destroy', ':uuid') }}'.replace(':uuid', uuid);
-        document.getElementById('delete-modal').classList.remove('hidden');
+        console.log("showDeleteModal dipanggil untuk:", nama); // Untuk debugging
+        
+        const modal = document.getElementById('delete-modal');
+        const nameSpan = document.getElementById('modal-kategori-name');
+        const deleteForm = document.getElementById('delete-form');
+
+        if (!modal) {
+            console.error("Modal dengan id 'delete-modal' tidak ditemukan!");
+            return;
+        }
+        
+        if (!nameSpan) {
+            console.error("Span dengan id 'modal-kategori-name' tidak ditemukan!");
+            return;
+        }
+        
+        if (!deleteForm) {
+            console.error("Form dengan id 'delete-form' tidak ditemukan!");
+            return;
+        }
+
+        // Isi nama kategori ke dalam modal
+        nameSpan.textContent = nama;
+
+        // Set action form untuk delete
+        const url = '{{ route("kategori-mustahik.destroy", ":uuid") }}'.replace(':uuid', uuid);
+        deleteForm.action = url;
+
+        // Tampilkan modal
+        modal.classList.remove('hidden');
     }
 </script>
 @endpush
