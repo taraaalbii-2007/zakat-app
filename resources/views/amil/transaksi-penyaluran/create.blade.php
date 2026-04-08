@@ -22,7 +22,7 @@
                         </svg>
                         Kembali
                     </a>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                         {{ $lembaga->nama }}
                     </span>
                 </div>
@@ -32,51 +32,46 @@
         {{-- ═══════════════════════════════════════════════
              INFO KEUANGAN — Saldo & Penerimaan
              ═══════════════════════════════════════════════ --}}
-        <div class="px-4 sm:px-6 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100">
-            <p class="text-xs font-semibold text-emerald-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                Ringkasan Kas Zakat
+<div class="px-4 sm:px-6 py-4 bg-white border-b border-gray-100">
+    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        Ringkasan Kas Zakat
+    </p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+        <div class="rounded-xl px-4 py-3 border border-gray-200">
+            <p class="text-xs text-gray-500 mb-1">Saldo Kas</p>
+            <p class="text-base sm:text-lg font-bold {{ $saldoKas >= 0 ? 'text-gray-900' : 'text-red-600' }}">
+                Rp {{ number_format($saldoKas, 0, ',', '.') }}
             </p>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {{-- Saldo Kas --}}
-                <div class="bg-white rounded-xl px-4 py-3 border border-emerald-200 shadow-sm">
-                    <p class="text-xs text-gray-500 mb-1">Saldo Kas</p>
-                    <p class="text-base sm:text-lg font-bold {{ $saldoKas >= 0 ? 'text-emerald-700' : 'text-red-600' }}">
-                        Rp {{ number_format($saldoKas, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-0.5">Total penerimaan − penyaluran</p>
-                </div>
-
-                {{-- Total Penerimaan --}}
-                <div class="bg-white rounded-xl px-4 py-3 border border-blue-200 shadow-sm">
-                    <p class="text-xs text-gray-500 mb-1">Total Penerimaan</p>
-                    <p class="text-base sm:text-lg font-bold text-blue-700">
-                        Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-0.5">Semua waktu</p>
-                </div>
-
-                {{-- Penerimaan Bulan Ini --}}
-                <div class="bg-white rounded-xl px-4 py-3 border border-indigo-200 shadow-sm">
-                    <p class="text-xs text-gray-500 mb-1">Penerimaan Bulan Ini</p>
-                    <p class="text-base sm:text-lg font-bold text-indigo-700">
-                        Rp {{ number_format($totalPenerimaanBulanIni, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ now()->translatedFormat('F Y') }}</p>
-                </div>
-
-                {{-- Total Disalurkan --}}
-                <div class="bg-white rounded-xl px-4 py-3 border border-orange-200 shadow-sm">
-                    <p class="text-xs text-gray-500 mb-1">Total Disalurkan</p>
-                    <p class="text-base sm:text-lg font-bold text-orange-700">
-                        Rp {{ number_format($totalDisalurkan, 0, ',', '.') }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-0.5">Disetujui & disalurkan</p>
-                </div>
-            </div>
+            <p class="text-xs text-gray-400 mt-0.5">Total penerimaan − penyaluran</p>
         </div>
+
+        <div class="rounded-xl px-4 py-3 border border-gray-200">
+            <p class="text-xs text-gray-500 mb-1">Total Penerimaan</p>
+            <p class="text-base sm:text-lg font-bold text-gray-900">
+                Rp {{ number_format($totalPenerimaan, 0, ',', '.') }}
+            </p>
+            <p class="text-xs text-gray-400 mt-0.5">Semua waktu</p>
+        </div>
+
+        <div class="rounded-xl px-4 py-3 border border-gray-200">
+            <p class="text-xs text-gray-500 mb-1">Penerimaan Bulan Ini</p>
+            <p class="text-base sm:text-lg font-bold text-gray-900">
+                Rp {{ number_format($totalPenerimaanBulanIni, 0, ',', '.') }}
+            </p>
+            <p class="text-xs text-gray-400 mt-0.5">{{ now()->translatedFormat('F Y') }}</p>
+        </div>
+
+        <div class="rounded-xl px-4 py-3 border border-gray-200">
+            <p class="text-xs text-gray-500 mb-1">Total Disalurkan</p>
+            <p class="text-base sm:text-lg font-bold text-gray-900">
+                Rp {{ number_format($totalDisalurkan, 0, ',', '.') }}
+            </p>
+            <p class="text-xs text-gray-400 mt-0.5">Disetujui & disalurkan</p>
+        </div>
+
+    </div>
+</div>
 
         <form id="formPenyaluran" action="{{ route('transaksi-penyaluran.store') }}" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
             @csrf
@@ -107,7 +102,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs mr-2">1</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">1</span>
                         Pilih Mustahik
                     </h3>
 
@@ -117,7 +112,7 @@
                                 Mustahik (Penerima Zakat) <span class="text-red-500">*</span>
                             </label>
                             <select name="mustahik_id" id="mustahik_id" onchange="onMustahikChange()"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('mustahik_id') border-red-500 @enderror">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('mustahik_id') border-red-500 @enderror">
                                 <option value="">-- Pilih Mustahik --</option>
                                 @foreach($mustahikList as $mustahik)
                                     <option value="{{ $mustahik->id }}"
@@ -148,7 +143,7 @@
                                 <span class="text-xs text-gray-500 font-normal ml-1">(snapshot saat transaksi)</span>
                             </label>
                             <select name="kategori_mustahik_id" id="kategori_mustahik_id"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('kategori_mustahik_id') border-red-500 @enderror">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('kategori_mustahik_id') border-red-500 @enderror">
                                 <option value="">-- Pilih Kategori --</option>
                                 @foreach($kategoriMustahikList as $kat)
                                     <option value="{{ $kat->id }}" {{ old('kategori_mustahik_id') == $kat->id ? 'selected' : '' }}>
@@ -161,9 +156,9 @@
                             @enderror
                         </div>
 
-                        <div id="mustahikInfoBox" class="hidden bg-blue-50 border border-blue-200 rounded-xl p-3">
-                            <p class="text-xs font-semibold text-blue-800 mb-1">Info Mustahik</p>
-                            <div class="text-xs text-blue-700 space-y-0.5">
+                        <div id="mustahikInfoBox" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-3">
+                            <p class="text-xs font-semibold text-gray-700 mb-1">Info Mustahik</p>
+                            <div class="text-xs text-gray-600 space-y-0.5">
                                 <p id="mustahikInfoTelepon"></p>
                                 <p id="mustahikInfoAlamat"></p>
                             </div>
@@ -176,7 +171,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs mr-2">2</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">2</span>
                         Detail Penyaluran
                     </h3>
 
@@ -187,7 +182,7 @@
                             </label>
                             <input type="date" name="tanggal_penyaluran" id="tanggal_penyaluran"
                                 value="{{ old('tanggal_penyaluran', $tanggalHariIni) }}"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('tanggal_penyaluran') border-red-500 @enderror">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('tanggal_penyaluran') border-red-500 @enderror">
                             @error('tanggal_penyaluran')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                             @enderror
@@ -197,7 +192,7 @@
                             <label for="waktu_penyaluran" class="block text-sm font-medium text-gray-700 mb-2">Waktu Penyaluran</label>
                             <input type="time" name="waktu_penyaluran" id="waktu_penyaluran"
                                 value="{{ old('waktu_penyaluran') }}"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all">
                         </div>
 
                         <div>
@@ -207,7 +202,7 @@
                             </label>
                             <input type="month" name="periode" id="periode"
                                 value="{{ old('periode') }}"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('periode') border-red-500 @enderror">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('periode') border-red-500 @enderror">
                             @error('periode')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                             @enderror
@@ -216,7 +211,7 @@
                         <div>
                             <label for="jenis_zakat_id" class="block text-sm font-medium text-gray-700 mb-2">Jenis Zakat</label>
                             <select name="jenis_zakat_id" id="jenis_zakat_id"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all">
                                 <option value="">-- Pilih Jenis Zakat (Opsional) --</option>
                                 @foreach($jenisZakatList as $jenis)
                                     <option value="{{ $jenis->id }}" {{ old('jenis_zakat_id') == $jenis->id ? 'selected' : '' }}>
@@ -229,7 +224,7 @@
                         <div>
                             <label for="program_zakat_id" class="block text-sm font-medium text-gray-700 mb-2">Program Zakat</label>
                             <select name="program_zakat_id" id="program_zakat_id"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all">
                                 <option value="">-- Pilih Program (Opsional) --</option>
                                 @foreach($programZakatList as $program)
                                     <option value="{{ $program->id }}" {{ old('program_zakat_id') == $program->id ? 'selected' : '' }}>
@@ -242,7 +237,7 @@
                         <div>
                             <label for="amil_id" class="block text-sm font-medium text-gray-700 mb-2">Amil yang Menyalurkan</label>
                             <select name="amil_id" id="amil_id"
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all">
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all">
                                 <option value="">-- Pilih Amil (Opsional) --</option>
                                 @foreach($amilList as $amil)
                                     <option value="{{ $amil->id }}" {{ old('amil_id') == $amil->id ? 'selected' : '' }}>
@@ -259,7 +254,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs mr-2">3</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">3</span>
                         Metode & Nominal Penyaluran
                     </h3>
 
@@ -272,52 +267,51 @@
                             </label>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 {{-- Tunai --}}
-                                <label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'tunai' ? 'border-primary bg-primary-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
-                                    <input type="radio" name="metode_penyaluran" value="tunai" class="hidden metode-radio" {{ old('metode_penyaluran', 'tunai') == 'tunai' ? 'checked' : '' }}>
-                                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
-                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Tunai</span>
-                                    <span class="text-xs text-gray-500 mt-1 text-center">Serahkan langsung</span>
-                                    {{-- Mini info saldo untuk tunai --}}
-                                    <span class="mt-2 text-xs font-semibold {{ $saldoKas >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
-                                        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
-                                    </span>
-                                </label>
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'tunai' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+    <input type="radio" name="metode_penyaluran" value="tunai" class="hidden metode-radio" {{ old('metode_penyaluran', 'tunai') == 'tunai' ? 'checked' : '' }}>
+    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+    </div>
+    <span class="text-sm font-medium text-gray-900">Tunai</span>
+    <span class="text-xs text-gray-500 mt-1 text-center">Serahkan langsung</span>
+    <span class="mt-2 text-xs text-gray-500">
+        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
+    </span>
+</label>
 
-                                {{-- Transfer --}}
-                                <label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'transfer' ? 'border-primary bg-primary-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
-                                    <input type="radio" name="metode_penyaluran" value="transfer" class="hidden metode-radio" {{ old('metode_penyaluran') == 'transfer' ? 'checked' : '' }}>
-                                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Transfer Bank</span>
-                                    <span class="text-xs text-gray-500 mt-1 text-center">Transfer ke rekening mustahik</span>
-                                    <span class="mt-2 text-xs font-semibold {{ $saldoKas >= 0 ? 'text-emerald-600' : 'text-red-500' }}">
-                                        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
-                                    </span>
-                                </label>
+{{-- Transfer --}}
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'transfer' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+    <input type="radio" name="metode_penyaluran" value="transfer" class="hidden metode-radio" {{ old('metode_penyaluran') == 'transfer' ? 'checked' : '' }}>
+    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10" />
+        </svg>
+    </div>
+    <span class="text-sm font-medium text-gray-900">Transfer Bank</span>
+    <span class="text-xs text-gray-500 mt-1 text-center">Transfer ke rekening mustahik</span>
+    <span class="mt-2 text-xs text-gray-500">
+        Saldo: Rp {{ number_format($saldoKas, 0, ',', '.') }}
+    </span>
+</label>
 
-                                {{-- Barang --}}
-                                <label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'barang' ? 'border-primary bg-primary-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
-                                    <input type="radio" name="metode_penyaluran" value="barang" class="hidden metode-radio" {{ old('metode_penyaluran') == 'barang' ? 'checked' : '' }}>
-                                    <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-2">
-                                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                        </svg>
-                                    </div>
-                                    <span class="text-sm font-medium text-gray-900">Barang</span>
-                                    <span class="text-xs text-gray-500 mt-1 text-center">Penyaluran in-kind</span>
-                                    @if(count($ringkasanBarang) > 0)
-                                        <span class="mt-2 text-xs font-semibold text-orange-600">
-                                            {{ count($ringkasanBarang) }} jenis barang tercatat
-                                        </span>
-                                    @endif
-                                </label>
+{{-- Barang --}}
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'barang' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+    <input type="radio" name="metode_penyaluran" value="barang" class="hidden metode-radio" {{ old('metode_penyaluran') == 'barang' ? 'checked' : '' }}>
+    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+    </div>
+    <span class="text-sm font-medium text-gray-900">Barang</span>
+    <span class="text-xs text-gray-500 mt-1 text-center">Penyaluran in-kind</span>
+    @if(count($ringkasanBarang) > 0)
+        <span class="mt-2 text-xs text-gray-500">
+            {{ count($ringkasanBarang) }} jenis barang tercatat
+        </span>
+    @endif
+</label>
                             </div>
                             @error('metode_penyaluran')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -327,8 +321,8 @@
                         {{-- INFO BARANG — tampil saat metode barang dipilih --}}
                         @if(count($ringkasanBarang) > 0)
                         <div id="infoBarangSection" class="{{ old('metode_penyaluran') === 'barang' ? '' : 'hidden' }}">
-                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
-                                <p class="text-xs font-semibold text-orange-800 mb-3 flex items-center gap-1.5">
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                <p class="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                                     </svg>
@@ -336,9 +330,9 @@
                                 </p>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     @foreach($ringkasanBarang as $namaBarang => $info)
-                                    <div class="bg-white rounded-lg px-3 py-2 border border-orange-100">
+                                    <div class="bg-white rounded-lg px-3 py-2 border border-gray-200">
                                         <p class="text-xs text-gray-500 capitalize">{{ $namaBarang }}</p>
-                                        <p class="text-sm font-bold text-orange-700">
+                                        <p class="text-sm font-bold text-gray-800">
                                             {{ number_format($info['total'], 1) }}
                                             <span class="font-normal text-xs">{{ $info['satuan'] ?: 'pcs' }}</span>
                                         </p>
@@ -346,7 +340,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                <p class="text-xs text-orange-600 mt-2 italic">* Data akumulasi dari semua transaksi barang yang telah dicatat.</p>
+                                <p class="text-xs text-gray-500 mt-2 italic">* Data akumulasi dari semua transaksi barang yang telah dicatat.</p>
                             </div>
                         </div>
                         @endif
@@ -363,13 +357,11 @@
                                     value="{{ old('jumlah') ? number_format(old('jumlah'), 0, ',', '.') : '' }}"
                                     placeholder="0"
                                     inputmode="numeric"
-                                    class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('jumlah') border-red-500 @enderror"
+                                    class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('jumlah') border-red-500 @enderror"
                                     oninput="formatRupiah(this, 'jumlah')">
                                 {{-- Input hidden (nilai mentah dikirim ke server) --}}
                                 <input type="hidden" name="jumlah" id="jumlah" value="{{ old('jumlah', 0) }}">
                             </div>
-                            {{-- Preview terbilang --}}
-                            <p id="jumlahTerbilang" class="mt-1 text-xs text-primary font-medium hidden"></p>
                             <p class="mt-1 text-xs text-gray-500">Jumlah PENUH yang diterima mustahik, tanpa potongan apapun.</p>
                             @error('jumlah')
                                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
@@ -378,12 +370,12 @@
 
                         {{-- Detail Barang (khusus metode barang) --}}
                         <div id="barangSection" class="{{ old('metode_penyaluran') === 'barang' ? '' : 'hidden' }} space-y-4">
-                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
                                 <div class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
-                                    <p class="text-xs text-orange-700">Penyaluran barang (in-kind). Isi deskripsi barang dan nilai estimasinya untuk pencatatan.</p>
+                                    <p class="text-xs text-gray-600">Penyaluran barang (in-kind). Isi deskripsi barang dan nilai estimasinya untuk pencatatan.</p>
                                 </div>
                             </div>
                             <div>
@@ -392,7 +384,7 @@
                                 </label>
                                 <textarea name="detail_barang" id="detail_barang" rows="3"
                                     placeholder="Contoh: Paket sembako (beras 5kg, gula 1kg, minyak 1L, kecap 1 botol)"
-                                    class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all placeholder:text-gray-400 @error('detail_barang') border-red-500 @enderror">{{ old('detail_barang') }}</textarea>
+                                    class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all placeholder:text-gray-400 @error('detail_barang') border-red-500 @enderror">{{ old('detail_barang') }}</textarea>
                                 @error('detail_barang')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -407,11 +399,10 @@
                                         value="{{ old('nilai_barang') ? number_format(old('nilai_barang'), 0, ',', '.') : '' }}"
                                         placeholder="0"
                                         inputmode="numeric"
-                                        class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all @error('nilai_barang') border-red-500 @enderror"
+                                        class="block w-full pl-12 pr-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all @error('nilai_barang') border-red-500 @enderror"
                                         oninput="formatRupiah(this, 'nilai_barang')">
                                     <input type="hidden" name="nilai_barang" id="nilai_barang" value="{{ old('nilai_barang') }}">
                                 </div>
-                                <p id="nilaBarangTerbilang" class="mt-1 text-xs text-primary font-medium hidden"></p>
                                 @error('nilai_barang')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
@@ -426,7 +417,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs mr-2">4</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">4</span>
                         Dokumentasi & Catatan
                         <span class="text-xs text-gray-400 font-normal ml-2">(opsional)</span>
                     </h3>
@@ -466,7 +457,7 @@
                             <div class="flex rounded-xl border border-gray-200 overflow-hidden mb-3 bg-gray-50">
                                 <button type="button" id="tabDraw"
                                     onclick="switchTTTab('draw')"
-                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all bg-primary text-white">
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all bg-gray-700 text-white">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                     </svg>
@@ -498,7 +489,7 @@
 
                                 {{-- Badge status draw --}}
                                 <div id="ttDrawBadge" class="hidden">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -516,7 +507,7 @@
                                         Hapus
                                     </button>
                                     <button type="button" onclick="saveCanvas()"
-                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-primary text-white text-xs font-medium rounded-lg hover:opacity-90 transition-colors">
+                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-gray-700 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -538,7 +529,7 @@
                                     </div>
                                     <img id="ttProcessedImg" class="hidden absolute inset-0 w-full h-full object-contain p-2" alt="Tanda Tangan">
                                     <div id="ttLoading" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/80 rounded-xl">
-                                        <svg class="animate-spin w-6 h-6 text-primary mb-1" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin w-6 h-6 text-gray-600 mb-1" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                         </svg>
@@ -547,7 +538,7 @@
                                 </div>
 
                                 <div id="ttStatusBadge" class="hidden">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -558,10 +549,10 @@
                                 <div id="ttThresholdSection" class="hidden">
                                     <div class="flex items-center justify-between mb-1">
                                         <label class="text-xs text-gray-600 font-medium">Sensitivitas hapus background</label>
-                                        <span id="ttThresholdValue" class="text-xs font-semibold text-primary">220</span>
+                                        <span id="ttThresholdValue" class="text-xs font-semibold text-gray-700">220</span>
                                     </div>
                                     <input type="range" id="ttThreshold" min="100" max="254" value="220" step="5"
-                                        class="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-primary"
+                                        class="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-gray-600"
                                         oninput="onThresholdChange(this.value)">
                                     <div class="flex justify-between text-xs text-gray-400 mt-0.5">
                                         <span>Ketat (tinta gelap)</span>
@@ -592,7 +583,6 @@
                             </div>
 
                             {{-- Hidden input — nilai base64 final (dari draw ATAU upload) --}}
-                            {{-- (sudah ada di atas form: tanda_tangan_base64) --}}
                         </div>
 
                         {{-- Foto Dokumentasi (multiple) --}}
@@ -614,20 +604,20 @@
                             <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan / Catatan</label>
                             <textarea name="keterangan" id="keterangan" rows="3"
                                 placeholder="Catatan tambahan mengenai penyaluran ini..."
-                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-primary focus:ring-0 transition-all placeholder:text-gray-400">{{ old('keterangan') }}</textarea>
+                                class="block w-full px-4 py-3 text-sm sm:text-base border border-gray-300 bg-white rounded-2xl focus:outline-none focus:border-gray-500 focus:ring-0 transition-all placeholder:text-gray-400">{{ old('keterangan') }}</textarea>
                         </div>
                     </div>
                 </div>
 
                 {{-- INFO BOX: Draft --}}
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
                     <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-semibold text-amber-800">Proses Approval</p>
-                            <p class="text-xs text-amber-700 mt-1">
+                            <p class="text-sm font-semibold text-gray-800">Proses Approval</p>
+                            <p class="text-xs text-gray-600 mt-1">
                                 Transaksi akan disimpan sebagai <strong>Draft</strong> dan menunggu persetujuan Admin Lembaga.
                                 Setelah disetujui, Anda perlu mengkonfirmasi bahwa dana/barang sudah diserahkan ke mustahik.
                             </p>
@@ -644,7 +634,7 @@
                     Batal
                 </a>
                 <button type="submit" id="submitBtn"
-                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-primary/30">
+                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-xl transition-all">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -683,18 +673,6 @@ function formatRupiah(displayInput, hiddenId) {
 
     // Simpan nilai mentah ke hidden input
     document.getElementById(hiddenId).value = numeric || 0;
-
-    // Tampilkan preview terbilang
-    const terbilangId = hiddenId === 'jumlah' ? 'jumlahTerbilang' : 'nilaBarangTerbilang';
-    const terbilangEl = document.getElementById(terbilangId);
-    if (terbilangEl) {
-        if (numeric > 0) {
-            terbilangEl.textContent = '= Rp ' + numeric.toLocaleString('id-ID');
-            terbilangEl.classList.remove('hidden');
-        } else {
-            terbilangEl.classList.add('hidden');
-        }
-    }
 }
 
 // Inisialisasi nilai lama (jika ada old value dari Laravel) + canvas
@@ -731,9 +709,9 @@ function switchTTTab(tab) {
     const tabUpload = document.getElementById('tabUpload');
 
     tabDraw.className   = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
-        + (isDraw  ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700');
+        + (isDraw  ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-700');
     tabUpload.className = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
-        + (!isDraw ? 'bg-primary text-white' : 'text-gray-500 hover:text-gray-700');
+        + (!isDraw ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-700');
 
     // Jika pindah ke draw, bersihkan nilai upload dan sebaliknya
     if (isDraw) {
@@ -971,8 +949,8 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
     radio.addEventListener('change', function () {
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
             const checked = card.querySelector('input').checked;
-            card.classList.toggle('border-primary',  checked);
-            card.classList.toggle('bg-primary-50',   checked);
+            card.classList.toggle('border-gray-700',  checked);
+            card.classList.toggle('bg-gray-50',   checked);
             card.classList.toggle('border-gray-200', !checked);
             card.classList.toggle('bg-white',        !checked);
         });
@@ -988,8 +966,6 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         if (isBarang) {
             document.getElementById('jumlah').value         = 0;
             document.getElementById('jumlah_display').value = '';
-            const tb = document.getElementById('jumlahTerbilang');
-            if (tb) tb.classList.add('hidden');
         }
     });
 });
@@ -1005,8 +981,8 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         if (infoBarang) infoBarang.classList.toggle('hidden', !isBarang);
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
             const c = card.querySelector('input').checked;
-            card.classList.toggle('border-primary',  c);
-            card.classList.toggle('bg-primary-50',   c);
+            card.classList.toggle('border-gray-700',  c);
+            card.classList.toggle('bg-gray-50',   c);
             card.classList.toggle('border-gray-200', !c);
             card.classList.toggle('bg-white',        !c);
         });

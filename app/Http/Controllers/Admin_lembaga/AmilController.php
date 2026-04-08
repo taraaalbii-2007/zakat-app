@@ -565,30 +565,33 @@ class AmilController extends Controller
 
     public function toggleStatus(Request $request, Amil $amil)
     {
+        $request->validate([
+            'status' => ['required', 'in:aktif,nonaktif,cuti'],
+        ]);
+
         try {
-            // Toggle status logic
-            if ($amil->status === 'aktif') {
-                $amil->status = 'nonaktif';
-                $amil->tanggal_selesai_tugas = now();
-            } else {
-                $amil->status = 'aktif';
-                $amil->tanggal_mulai_tugas = now();
+            $statusBaru = $request->status;
+
+            // Atur tanggal_selesai_tugas berdasarkan status baru
+            if ($statusBaru === 'aktif') {
                 $amil->tanggal_selesai_tugas = null;
+            } elseif (in_array($statusBaru, ['nonaktif', 'cuti'])) {
+                $amil->tanggal_selesai_tugas = now();
             }
 
+            $amil->status = $statusBaru;
             $amil->save();
 
             if ($request->ajax()) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Status berhasil diubah',
+                    'success'    => true,
+                    'message'    => 'Status berhasil diubah menjadi ' . $statusBaru,
                     'new_status' => $amil->status,
-                    'status_badge_html' => view('amil.partials.status-badge', ['status' => $amil->status])->render()
                 ]);
             }
 
-            return redirect()->route('amil.show', $amil->uuid)
-                ->with('success', 'Status berhasil diubah');
+            return redirect()->route('amil.index')
+                ->with('success', 'Status amil berhasil diubah menjadi ' . ucfirst($statusBaru) . '.');
         } catch (\Exception $e) {
             if ($request->ajax()) {
                 return response()->json([
@@ -597,7 +600,7 @@ class AmilController extends Controller
                 ], 500);
             }
 
-            return redirect()->route('amil.show', $amil->uuid)
+            return redirect()->route('amil.index')
                 ->with('error', 'Gagal mengubah status: ' . $e->getMessage());
         }
     }
