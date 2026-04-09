@@ -1668,7 +1668,8 @@ class AuthController extends Controller
 
     private function generateKodeLembaga(): string
     {
-        $prefix = 'MSJ';
+        // Ubah prefix dari 'MSJ' menjadi 'LMBG'
+        $prefix = 'LMBG';  // Sebelumnya: 'MSJ'
         $year = date('Y');
 
         return DB::transaction(function () use ($prefix, $year) {
