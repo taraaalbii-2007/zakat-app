@@ -3,116 +3,102 @@
 @section('title', 'Kelola Jenis Zakat')
 
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+    <div class="space-y-5">
+        <!-- Container utama -->
+        <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-soft transition-all duration-300">
+
+            <!-- Header + Search + Button -->
+            <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-neutral-200">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Daftar Jenis Zakat</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $jenisZakat->total() }} Jenis Zakat</p>
+                        <h1 class="text-lg sm:text-xl font-bold text-neutral-800">Jenis Zakat</h1>
+                        <p class="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1">Kelola dan konfigurasi jenis zakat</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <a href="{{ route('jenis-zakat.create') }}"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <!-- Search -->
+                        <div class="relative w-full sm:w-auto">
+                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
-                            <span
-                                class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                Tambah
-                            </span>
-                        </a>
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('search') ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('search') ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                                <span id="search-button-text"
-                                    class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                    Cari
-                                </span>
-                            </button>
-                            <form method="GET" action="{{ route('jenis-zakat.index') }}" id="search-form"
-                                class="{{ request('search') ? '' : 'hidden' }}">
-                                <div class="flex items-center">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="search" value="{{ request('search') }}"
-                                            id="search-input" placeholder="Cari jenis zakat..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                </div>
-                            </form>
+                            <input type="text" id="search-input" value="{{ request('search') }}"
+                                placeholder="Cari jenis zakat..."
+                                class="pl-9 pr-4 py-2 w-full sm:w-64 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200">
                         </div>
+                        <a href="{{ route('jenis-zakat.create') }}"
+                            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-soft hover:shadow-md active:scale-95">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah
+                        </a>
                     </div>
                 </div>
             </div>
 
-            @if ($jenisZakat->count() > 0)
-                {{-- Info Filter Aktif --}}
-                @if (request('search'))
-                    <div class="px-4 sm:px-6 py-2 bg-blue-50 border-b border-blue-100">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center flex-wrap gap-2">
-                                <span class="text-xs font-medium text-blue-800">Filter Aktif:</span>
-                                <span
-                                    class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                    Pencarian: "{{ request('search') }}"
-                                    <button type="button" onclick="removeFilter('search')"
-                                        class="ml-1.5 text-blue-600 hover:text-blue-800">
-                                        ×
-                                    </button>
-                                </span>
-                            </div>
-                        </div>
+            <!-- Total tanpa badge -->
+            <div class="px-4 sm:px-6 py-3 border-b border-neutral-100 bg-neutral-50/30">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-neutral-600">Total:</span>
+                        <span class="text-sm font-semibold text-neutral-800">{{ $jenisZakat->total() }}</span>
+                        <span class="text-sm text-neutral-500">jenis zakat</span>
                     </div>
-                @endif
+                    @if (request('search'))
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-neutral-400">Filter:</span>
+                            <span
+                                class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                                "{{ request('search') }}"
+                                <button onclick="removeFilter('search')"
+                                    class="hover:text-primary-900 transition-colors">×</button>
+                            </span>
+                        </div>
+                    @endif
+                </div>
+            </div>
 
-                {{-- Desktop View --}}
-                <div class="hidden md:block overflow-x-auto" id="table-container">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    No
+            <!-- Tabel - Responsive untuk mobile -->
+            @if ($jenisZakat->count() > 0)
+                <!-- Desktop Table (hidden di mobile) -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b-2 border-neutral-200 bg-neutral-50">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                                    NO
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Jenis Zakat
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                                    NAMA JENIS ZAKAT
                                 </th>
-                                <th
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                                    Aksi
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-neutral-700 w-24">
+                                    AKSI
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody>
                             @foreach ($jenisZakat as $index => $zakat)
-                                <tr class="hover:bg-gray-50 transition-colors">
-                                    <td class="px-6 py-4 text-sm text-gray-900">
+                                <tr
+                                    class="border-b border-neutral-100 hover:bg-primary-50/20 transition-all duration-200 group">
+                                    <td class="px-6 py-4 text-sm text-neutral-600">
                                         {{ $jenisZakat->firstItem() + $index }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $zakat->nama }}</div>
+                                        <span
+                                            class="text-sm font-medium text-neutral-800 group-hover:text-primary-600 transition-colors duration-200">
+                                            {{ $zakat->nama }}
+                                        </span>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <div class="relative inline-block text-left">
+                                        <div class="relative inline-block">
                                             <button type="button"
-                                                class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                                class="dropdown-toggle p-1.5 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
                                                 data-uuid="{{ $zakat->uuid }}" data-nama="{{ $zakat->nama }}">
-                                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                                                    </path>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                                                 </svg>
                                             </button>
                                         </div>
@@ -123,30 +109,27 @@
                     </table>
                 </div>
 
-                {{-- Mobile View --}}
-                <div class="md:hidden divide-y divide-gray-200">
+                <!-- Mobile Card View (muncul di mobile, hidden di desktop) -->
+                <div class="block md:hidden divide-y divide-neutral-100">
                     @foreach ($jenisZakat as $index => $zakat)
-                        <div class="p-4 hover:bg-gray-50 transition-colors">
-                            <div class="flex items-center justify-between">
+                        <div class="p-4 hover:bg-primary-50/20 transition-all duration-200">
+                            <div class="flex items-start justify-between gap-3">
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <h3 class="text-sm font-semibold text-gray-900 truncate">
-                                            {{ $jenisZakat->firstItem() + $index }}. {{ $zakat->nama }}
-                                        </h3>
-                                    </div>
-                                    <div class="mt-1">
+                                    <div class="flex items-center gap-2 mb-1">
                                         <span
-                                            class="text-xs text-gray-500">{{ $zakat->created_at->format('d/m/Y H:i') }}</span>
+                                            class="text-xs text-neutral-400">#{{ $jenisZakat->firstItem() + $index }}</span>
                                     </div>
+                                    <h3 class="text-sm font-semibold text-neutral-800 break-words">
+                                        {{ $zakat->nama }}
+                                    </h3>
                                 </div>
-                                <div class="ml-2">
+                                <div class="relative inline-block flex-shrink-0">
                                     <button type="button"
-                                        class="dropdown-toggle p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                        class="dropdown-toggle p-2 text-neutral-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200"
                                         data-uuid="{{ $zakat->uuid }}" data-nama="{{ $zakat->nama }}">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path
-                                                d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                                            </path>
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                                         </svg>
                                     </button>
                                 </div>
@@ -155,71 +138,55 @@
                     @endforeach
                 </div>
 
+                <!-- Pagination -->
                 @if ($jenisZakat->hasPages())
-                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
+                    <div class="px-4 sm:px-6 py-3 border-t border-neutral-200 bg-neutral-50/30">
                         {{ $jenisZakat->links() }}
                     </div>
                 @endif
             @else
-                <div class="p-8 sm:p-12 text-center">
-                    <div
-                        class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
+                <!-- Empty State -->
+                <div class="py-14 text-center animate-fade-in">
+                    <div class="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-7 h-7 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                         </svg>
                     </div>
                     @if (request('search'))
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">
-                            Tidak ada jenis zakat yang cocok dengan "{{ request('search') }}"
-                        </p>
-                        <a href="{{ route('jenis-zakat.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Reset Pencarian
-                        </a>
+                        <p class="text-sm text-neutral-500">Tidak ada hasil untuk "<span
+                                class="font-medium text-neutral-700">{{ request('search') }}</span>"</p>
+                        <button onclick="removeFilter('search')"
+                            class="mt-3 text-sm text-primary-600 hover:text-primary-700 transition-colors">Reset
+                            pencarian</button>
                     @else
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Jenis Zakat</h3>
-                        <p class="text-sm text-gray-500 mb-6">Mulai tambahkan data jenis zakat untuk mengelola konfigurasi
-                            zakat.</p>
+                        <p class="text-sm text-neutral-500">Belum ada data jenis zakat</p>
                         <a href="{{ route('jenis-zakat.create') }}"
-                            class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            Tambah Jenis Zakat
-                        </a>
+                            class="inline-block mt-3 text-sm text-primary-600 hover:text-primary-700 transition-colors">Tambah
+                            data</a>
                     @endif
                 </div>
             @endif
         </div>
     </div>
 
-    {{-- Dropdown Container --}}
-    <div id="dropdown-container" class="fixed hidden z-50">
-        <div class="w-44 sm:w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+    <!-- Dropdown Menu -->
+    <div id="dropdown-container" class="fixed hidden z-50 animate-scale-in">
+        <div class="w-36 bg-white rounded-lg shadow-lg border border-neutral-100 overflow-hidden">
             <div class="py-1">
                 <a href="#" id="dropdown-edit-link"
-                    class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-primary-50 hover:text-primary-600 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                        </path>
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Edit
                 </a>
                 <button type="button" id="dropdown-delete-btn"
-                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                     Hapus
                 </button>
@@ -227,38 +194,38 @@
         </div>
     </div>
 
-    {{-- Delete Modal --}}
+    <!-- Delete Modal -->
     <div id="delete-modal"
-        class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
-            <div class="flex justify-center mb-3 sm:mb-4">
-                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Hapus Jenis Zakat</h3>
-            <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
-                Apakah Anda yakin ingin menghapus jenis zakat
-                "<span id="modal-zakat-name" class="font-semibold text-gray-700"></span>"?
-            </p>
-            <p class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">
-                Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div class="flex justify-center gap-2 sm:gap-3">
-                <button type="button" id="cancel-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
-                    Batal
-                </button>
-                <form id="delete-form" method="POST" class="inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="w-24 sm:w-28 rounded-lg shadow-sm px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                        Hapus
+        class="fixed inset-0 bg-black/30 hidden z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div
+            class="bg-white rounded-xl max-w-sm w-full shadow-modal transform transition-all duration-300 animate-scale-in">
+            <div class="p-5">
+                <div class="flex justify-center mb-4">
+                    <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-neutral-900 mb-2 text-center">Hapus Jenis Zakat</h3>
+                <p class="text-sm text-neutral-500 mb-5 text-center">
+                    Yakin ingin menghapus "<span id="modal-zakat-name" class="font-semibold text-neutral-700"></span>"?
+                </p>
+                <div class="flex gap-3">
+                    <button type="button" id="cancel-delete-btn"
+                        class="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-all duration-200">
+                        Batal
                     </button>
-                </form>
+                    <form id="delete-form" method="POST" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium text-white transition-all duration-200 active:scale-95">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -267,6 +234,7 @@
 @push('scripts')
     <script>
         let currentDropdownData = null;
+        let searchTimeout = null;
         const editBaseUrl = "{{ rtrim(route('jenis-zakat.index'), '/') }}";
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -274,8 +242,28 @@
             const editLink = document.getElementById('dropdown-edit-link');
             const deleteBtn = document.getElementById('dropdown-delete-btn');
             const deleteForm = document.getElementById('delete-form');
-            const tableContainer = document.getElementById('table-container');
 
+            // Search dengan auto-submit
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    const searchValue = this.value;
+
+                    searchTimeout = setTimeout(() => {
+                        const url = new URL(window.location.href);
+                        if (searchValue) {
+                            url.searchParams.set('search', searchValue);
+                        } else {
+                            url.searchParams.delete('search');
+                        }
+                        url.searchParams.set('page', '1');
+                        window.location.href = url.toString();
+                    }, 400);
+                });
+            }
+
+            // Dropdown logic
             document.addEventListener('click', function(e) {
                 const toggle = e.target.closest('.dropdown-toggle');
                 if (toggle) {
@@ -300,13 +288,15 @@
                         const dropdownWidth = dropdownContainer.offsetWidth;
                         const dropdownHeight = dropdownContainer.offsetHeight;
 
-                        let top = rect.bottom + 4;
+                        let top = rect.bottom + 6;
                         let left = rect.right - dropdownWidth;
 
                         if (left < 10) left = 10;
-                        if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
-                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
-                        if (top < 4) top = 4;
+                        if (left + dropdownWidth > window.innerWidth - 10) left = window
+                            .innerWidth - dropdownWidth - 10;
+                        if (rect.bottom + dropdownHeight > window.innerHeight) top = rect.top -
+                            dropdownHeight - 6;
+                        if (top < 6) top = 6;
 
                         dropdownContainer.style.top = top + 'px';
                         dropdownContainer.style.left = left + 'px';
@@ -317,94 +307,43 @@
                         uuid: dropdownUuid,
                         name: zakatName
                     };
-
-                    // ✅ FIX: Update href link Edit dengan UUID yang benar
                     editLink.href = `${editBaseUrl}/${dropdownUuid}/edit`;
-
-                } else {
-                    if (!dropdownContainer.contains(e.target)) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                    }
+                } else if (!dropdownContainer.contains(e.target)) {
+                    dropdownContainer.classList.add('hidden');
+                    dropdownContainer.removeAttribute('data-current-uuid');
                 }
             });
 
+            // Delete handler
             deleteBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const uuid = currentDropdownData?.uuid;
-                const nama = currentDropdownData?.name;
-
-                if (!uuid) return;
+                if (!currentDropdownData?.uuid) return;
 
                 dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
-
-                const modalName = document.getElementById('modal-zakat-name');
-                modalName.textContent = nama;
-                deleteForm.action = `/jenis-zakat/${uuid}`;
+                document.getElementById('modal-zakat-name').textContent = currentDropdownData.name;
+                deleteForm.action = `/jenis-zakat/${currentDropdownData.uuid}`;
                 document.getElementById('delete-modal').classList.remove('hidden');
             });
 
+            // Modal handlers
             document.getElementById('cancel-delete-btn').addEventListener('click', function() {
                 document.getElementById('delete-modal').classList.add('hidden');
             });
 
             document.getElementById('delete-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
+                if (e.target === this) this.classList.add('hidden');
             });
 
-            window.addEventListener('scroll', function() {
-                if (!dropdownContainer.classList.contains('hidden')) {
-                    dropdownContainer.classList.add('hidden');
-                    dropdownContainer.removeAttribute('data-current-uuid');
-                }
-            }, true);
-
-            if (tableContainer) {
-                tableContainer.addEventListener('scroll', function() {
-                    if (!dropdownContainer.classList.contains('hidden')) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                    }
-                }, true);
-            }
-
-            window.addEventListener('resize', function() {
-                if (!dropdownContainer.classList.contains('hidden')) {
-                    dropdownContainer.classList.add('hidden');
-                    dropdownContainer.removeAttribute('data-current-uuid');
-                }
-            });
+            window.addEventListener('scroll', () => dropdownContainer.classList.add('hidden'), true);
+            window.addEventListener('resize', () => dropdownContainer.classList.add('hidden'));
         });
-
-        function toggleSearch() {
-            const searchButton = document.getElementById('search-button');
-            const searchForm = document.getElementById('search-form');
-            const searchInput = document.getElementById('search-input');
-            const searchContainer = document.getElementById('search-container');
-
-            if (searchForm.classList.contains('hidden')) {
-                searchButton.classList.add('hidden');
-                searchForm.classList.remove('hidden');
-                searchContainer.style.minWidth = '280px';
-                setTimeout(() => searchInput.focus(), 50);
-            } else {
-                const hasQuery = '{{ request('search') }}' !== '';
-                if (!hasQuery) {
-                    searchInput.value = '';
-                }
-                searchForm.classList.add('hidden');
-                searchButton.classList.remove('hidden');
-                searchContainer.style.minWidth = 'auto';
-            }
-        }
 
         function removeFilter(filterName) {
             const url = new URL(window.location.href);
             url.searchParams.delete(filterName);
             url.searchParams.set('page', '1');
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = '';
             window.location.href = url.toString();
         }
     </script>
