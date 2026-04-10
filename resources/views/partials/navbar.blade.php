@@ -7,82 +7,52 @@
     $isAmil = $authUser?->isAmil();
     $isMuzakki = $authUser?->isMuzakki();
 
-    // ════════════════════════════════════════════════════════
-    // SUPERADMIN — Jumlah pesan masuk belum dibaca
-    // ════════════════════════════════════════════════════════
     $kontakBelumDibaca = 0;
     if ($isSuperadmin) {
         $kontakBelumDibaca = \App\Models\Kontak::whereNull('dibaca_at')->count();
     }
 
-    // ════════════════════════════════════════════════════════
-    // NOTIFIKASI DINAMIS BERDASARKAN PERAN
-    // ════════════════════════════════════════════════════════
     $notifItems = collect();
     $notifUnread = 0;
-
     $notifSessionKey = 'notif_read_ids_' . $authUser->id;
     $readIds = session($notifSessionKey, []);
 
     if ($isAmil && isset($authUser->amil)) {
         $lembagaId = $authUser->amil->lembaga_id;
-
         $daringPending = \App\Models\TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-            ->where('metode_penerimaan', 'daring')
-            ->where('status', 'pending')
+            ->where('metode_penerimaan', 'daring')->where('status', 'pending')
             ->where('konfirmasi_status', 'menunggu_konfirmasi')
-            ->with('jenisZakat')
-            ->latest('created_at')
-            ->take(10)
-            ->get()
+            ->with('jenisZakat')->latest('created_at')->take(10)->get()
             ->map(fn($t) => [
-                'icon'      => 'transfer',
-                'title'     => 'Transaksi Daring Baru',
-                'body'      => $t->muzakki_nama . ' — ' . ($t->jenisZakat->nama ?? 'Zakat') . ' Rp ' . number_format($t->jumlah, 0, ',', '.'),
-                'time'      => $t->created_at->diffForHumans(),
-                'timestamp' => $t->created_at->timestamp,
-                'url'       => route('transaksi-daring.show', $t->uuid),
-                'id'        => $t->uuid,
+                'icon' => 'transfer', 'title' => 'Transaksi Daring Baru',
+                'body' => $t->muzakki_nama . ' — ' . ($t->jenisZakat->nama ?? 'Zakat') . ' Rp ' . number_format($t->jumlah, 0, ',', '.'),
+                'time' => $t->created_at->diffForHumans(), 'timestamp' => $t->created_at->timestamp,
+                'url' => route('transaksi-daring.show', $t->uuid), 'id' => $t->uuid,
             ]);
-
         $amilId = $authUser->amil->id;
-
         $dijemputPending = \App\Models\TransaksiPenerimaan::where('lembaga_id', $lembagaId)
-            ->where('metode_penerimaan', 'dijemput')
-            ->where('status', 'pending')
+            ->where('metode_penerimaan', 'dijemput')->where('status', 'pending')
             ->where('status_penjemputan', 'menunggu')
             ->where(fn($q) => $q->where('amil_id', $amilId)->orWhereNull('amil_id'))
-            ->with('jenisZakat')
-            ->latest('created_at')
-            ->take(10)
-            ->get()
+            ->with('jenisZakat')->latest('created_at')->take(10)->get()
             ->map(fn($t) => [
-                'icon'      => 'pickup',
-                'title'     => $t->amil_id === $amilId ? 'Request Penjemputan (Anda Dipilih)' : 'Request Penjemputan',
-                'body'      => $t->muzakki_nama . ' — Menunggu dijemput di ' . \Str::limit($t->muzakki_alamat ?? 'lokasi terdaftar', 35),
-                'time'      => $t->created_at->diffForHumans(),
-                'timestamp' => $t->created_at->timestamp,
-                'url'       => route('transaksi-dijemput.show', $t->uuid),
-                'id'        => $t->uuid,
+                'icon' => 'pickup',
+                'title' => $t->amil_id === $amilId ? 'Request Penjemputan (Anda Dipilih)' : 'Request Penjemputan',
+                'body' => $t->muzakki_nama . ' — Menunggu dijemput di ' . \Str::limit($t->muzakki_alamat ?? 'lokasi terdaftar', 35),
+                'time' => $t->created_at->diffForHumans(), 'timestamp' => $t->created_at->timestamp,
+                'url' => route('transaksi-dijemput.show', $t->uuid), 'id' => $t->uuid,
             ]);
-
         $notifItems = collect(array_merge($daringPending->values()->toArray(), $dijemputPending->values()->toArray()))
-            ->filter(fn($n) => !in_array($n['id'], $readIds))
-            ->sortByDesc('timestamp')
-            ->values();
+            ->filter(fn($n) => !in_array($n['id'], $readIds))->sortByDesc('timestamp')->values();
         $notifUnread = $notifItems->count();
     }
 
     if ($isMuzakki && isset($authUser->muzakki)) {
         $muzakkiId = $authUser->muzakki->id;
-
         $allMuzakkiNotif = \App\Models\TransaksiPenerimaan::where('muzakki_id', $muzakkiId)
             ->whereIn('status', ['verified', 'rejected', 'dijemput'])
             ->where('updated_at', '>=', now()->subDays(7))
-            ->with('jenisZakat')
-            ->latest('updated_at')
-            ->take(10)
-            ->get()
+            ->with('jenisZakat')->latest('updated_at')->take(10)->get()
             ->map(function ($t) {
                 $statusMap = [
                     'verified' => ['icon' => 'check', 'title' => 'Transaksi Dikonfirmasi', 'body' => 'Transaksi ' . $t->no_transaksi . ' telah diverifikasi oleh amil.'],
@@ -91,17 +61,12 @@
                 ];
                 $info = $statusMap[$t->status] ?? ['icon' => 'info', 'title' => 'Update Transaksi', 'body' => 'Ada pembaruan pada transaksi ' . $t->no_transaksi];
                 return array_merge($info, [
-                    'time'      => $t->updated_at->diffForHumans(),
-                    'timestamp' => $t->updated_at->timestamp,
-                    'url'       => route('transaksi-daring-muzakki.show', $t->uuid),
-                    'id'        => $t->uuid,
+                    'time' => $t->updated_at->diffForHumans(), 'timestamp' => $t->updated_at->timestamp,
+                    'url' => route('transaksi-daring-muzakki.show', $t->uuid), 'id' => $t->uuid,
                 ]);
             });
-
         $notifItems = collect($allMuzakkiNotif->values()->toArray())
-            ->filter(fn($n) => !in_array($n['id'], $readIds))
-            ->sortByDesc('timestamp')
-            ->values();
+            ->filter(fn($n) => !in_array($n['id'], $readIds))->sortByDesc('timestamp')->values();
         $notifUnread = $notifItems->count();
     }
 
@@ -113,17 +78,21 @@
         default         => 'Pengguna',
     };
 
+    $roleBadgeColor = match (true) {
+        $isSuperadmin   => 'role-superadmin',
+        $isAdminLembaga => 'role-admin',
+        $isAmil         => 'role-amil',
+        $isMuzakki      => 'role-muzakki',
+        default         => 'role-default',
+    };
+
     $avatarUrl = null;
     if ($isAdminLembaga && $authUser?->lembaga?->admin_foto) {
         $avatarUrl = $authUser->lembaga->admin_foto_url;
     } elseif ($isAmil && isset($authUser->amil) && $authUser->amil->foto) {
-        if (\Storage::disk('public')->exists($authUser->amil->foto)) {
-            $avatarUrl = \Storage::url($authUser->amil->foto);
-        }
+        if (\Storage::disk('public')->exists($authUser->amil->foto)) $avatarUrl = \Storage::url($authUser->amil->foto);
     } elseif ($isMuzakki && isset($authUser->muzakki) && $authUser->muzakki->foto) {
-        if (\Storage::disk('public')->exists($authUser->muzakki->foto)) {
-            $avatarUrl = \Storage::url($authUser->muzakki->foto);
-        }
+        if (\Storage::disk('public')->exists($authUser->muzakki->foto)) $avatarUrl = \Storage::url($authUser->muzakki->foto);
     } elseif (isset($authUser->foto) && $authUser->foto && \Storage::disk('public')->exists($authUser->foto)) {
         $avatarUrl = \Storage::url($authUser->foto);
     }
@@ -133,80 +102,7 @@
         : ($authUser->username ?? 'Pengguna');
 
     $avatarInitial = strtoupper(substr($displayName, 0, 1));
-@endphp
 
-{{-- ═══════════════════════════════════════════════════════════════
-     LOGOUT CONFIRMATION MODAL
-     ═══════════════════════════════════════════════════════════════ --}}
-<div id="logout-modal" class="fixed inset-0 z-[9999] flex items-center justify-center hidden" aria-modal="true" role="dialog">
-    <div id="logout-backdrop"
-        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
-        onclick="closeLogoutModal()"></div>
-
-    <div id="logout-card"
-        class="relative bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden scale-95 opacity-0 transition-all duration-300"
-        style="box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
-        <div class="px-7 pt-7 pb-6">
-
-            {{-- Icon --}}
-            <div class="flex justify-center mb-5">
-                <div class="w-14 h-14 rounded-xl flex items-center justify-center bg-gray-100">
-                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </div>
-            </div>
-
-            <h2 class="text-[17px] font-semibold text-gray-900 text-center mb-1" style="letter-spacing: -0.02em;">
-                Keluar dari Akun?
-            </h2>
-            <p class="text-[12.5px] text-gray-400 text-center leading-relaxed mb-5">
-                Sesi Anda akan diakhiri. Pastikan semua<br>pekerjaan sudah tersimpan sebelum keluar.
-            </p>
-
-            {{-- User info --}}
-            <div class="flex items-center gap-3 px-3 py-2.5 mb-5 bg-gray-50 rounded-xl">
-                <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-200">
-                    @if ($avatarUrl)
-                        <img src="{{ $avatarUrl }}" alt="{{ $displayName }}" class="w-full h-full object-cover">
-                    @else
-                        <span class="text-gray-500 text-[13px] font-medium">{{ $avatarInitial }}</span>
-                    @endif
-                </div>
-                <div class="min-w-0 flex-1">
-                    <p class="text-[12.5px] font-medium text-gray-800 truncate leading-tight">{{ $displayName }}</p>
-                    <p class="text-[11px] text-gray-400 truncate mt-0.5">{{ $authUser->email ?? '' }}</p>
-                </div>
-                <span class="text-[10px] text-gray-400 flex-shrink-0">{{ $roleLabel }}</span>
-            </div>
-
-            {{-- Buttons --}}
-            <div class="flex gap-2.5">
-                <button onclick="closeLogoutModal()"
-                    class="flex-1 px-4 py-2.5 rounded-xl text-[12.5px] font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors duration-150">
-                    Batal
-                </button>
-                <form method="POST" action="{{ route('logout') }}" id="logout-form" class="flex-1">
-                    @csrf
-                    <button type="submit"
-                        class="w-full flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[12.5px] font-medium text-white bg-red-500 hover:bg-red-600 transition-colors duration-150">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        <span>Ya, Keluar</span>
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- ═══════════════════════════════════════════════════════════════
-     NAVBAR UTAMA
-     ═══════════════════════════════════════════════════════════════ --}}
-@php
     $routePageMap = [
         'dashboard'                               => ['title' => 'Dashboard',                    'subtitle' => 'Ringkasan aktivitas'],
         'jenis-zakat.index'                       => ['title' => 'Jenis Zakat',                  'subtitle' => 'Kelola jenis zakat'],
@@ -306,303 +202,1016 @@
     $pageInfo = $routePageMap[$currentRouteName] ?? ['title' => 'Dashboard', 'subtitle' => ''];
 @endphp
 
-<header class="sticky top-0 z-40 bg-white border-b border-gray-100">
-    <div class="px-5 sm:px-7 lg:px-10">
-        <div class="flex items-center justify-between" style="height: 60px;">
+{{-- ═══════════════════════════════════════════════════════════════
+     STYLES
+     ═══════════════════════════════════════════════════════════════ --}}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-            {{-- Left: Page Title --}}
-            <div class="hidden lg:block">
-                <h1 class="text-[14px] font-semibold text-gray-900 leading-tight" style="letter-spacing: -0.02em;">
-                    @yield('page-title', $pageInfo['title'])
-                </h1>
-                @if (!empty($pageInfo['subtitle']))
-                    <p class="text-[11px] text-gray-400 mt-0.5">@yield('page-subtitle', $pageInfo['subtitle'])</p>
-                @endif
+    :root {
+        --nav-h: 64px;
+        --nav-bg: rgba(255,255,255,0.92);
+        --nav-border: rgba(0,0,0,0.06);
+        --surface: #ffffff;
+        --surface-hover: #f8f8fa;
+        --surface-active: #f2f2f6;
+        --text-primary: #0f0f14;
+        --text-secondary: #6b6b80;
+        --text-muted: #a0a0b0;
+        --accent: #16a34a;
+        --accent-light: #dcfce7;
+        --accent-mid: #22c55e;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --ring: rgba(22,163,74,0.18);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+        --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+        --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+        --font-main: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    #main-navbar {
+        font-family: Poppins;
+    }
+
+    /* ── Navbar Shell ── */
+    .navbar-shell {
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        height: var(--nav-h);
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid var(--nav-border);
+    }
+
+    .navbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+        padding: 0 24px;
+        gap: 12px;
+    }
+
+    /* ── Page Title Area ── */
+    .page-title-area {
+        display: none;
+    }
+    @media (min-width: 1024px) {
+        .page-title-area { display: flex; flex-direction: column; justify-content: center; }
+    }
+
+    .page-title {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+    }
+
+    .page-subtitle {
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-top: 2px;
+        letter-spacing: 0.01em;
+    }
+
+    /* ── Actions Bar ── */
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-left: auto;
+    }
+
+    .nav-divider {
+        width: 1px;
+        height: 20px;
+        background: var(--nav-border);
+        margin: 0 6px;
+        opacity: 0.8;
+    }
+
+    /* ── Icon Buttons ── */
+    .nav-icon-btn {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border-radius: var(--radius-sm);
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+        outline: none;
+    }
+
+    .nav-icon-btn:hover {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+        transform: translateY(-1px);
+    }
+
+    .nav-icon-btn:active {
+        transform: translateY(0);
+        background: var(--surface-active);
+    }
+
+    .nav-icon-btn.active {
+        background: var(--surface-active);
+        color: var(--text-primary);
+    }
+
+    .nav-icon-btn svg {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.2s ease;
+    }
+
+    .nav-icon-btn:hover svg {
+        transform: scale(1.08);
+    }
+
+    /* ── Notification Badge ── */
+    .notif-dot {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 8px;
+        height: 8px;
+        background: var(--danger);
+        border-radius: 50%;
+        border: 2px solid white;
+        animation: pulse-dot 2.5s ease infinite;
+    }
+
+    @keyframes pulse-dot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    /* ── User Menu Button ── */
+    .user-menu-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 10px 5px 5px;
+        border-radius: var(--radius-md);
+        border: 1.5px solid transparent;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+        outline: none;
+    }
+
+    .user-menu-btn:hover {
+        background: var(--surface-hover);
+        border-color: var(--nav-border);
+        transform: translateY(-1px);
+    }
+
+    .user-menu-btn:active {
+        transform: translateY(0);
+    }
+
+    .user-menu-btn.open {
+        background: var(--surface-active);
+        border-color: rgba(22,163,74,0.2);
+    }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255,255,255,0.9);
+        box-shadow: 0 0 0 1.5px rgba(22,163,74,0.15);
+    }
+
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .user-avatar-initial {
+        font-size: 13px;
+        font-weight: 700;
+        color: #15803d;
+        font-family: Poppins;
+    }
+
+    .user-info { display: none; text-align: left; }
+    @media (min-width: 1024px) { .user-info { display: block; } }
+
+    .user-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    .user-role {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+
+    .chevron-icon {
+        display: none;
+        width: 14px;
+        height: 14px;
+        color: var(--text-muted);
+        transition: transform 0.2s ease, color 0.15s ease;
+        flex-shrink: 0;
+    }
+    @media (min-width: 1024px) { .chevron-icon { display: block; } }
+    .user-menu-btn.open .chevron-icon { transform: rotate(180deg); color: var(--text-secondary); }
+
+    /* ══════════════════════════════════════════
+       DROPDOWN BASE
+    ══════════════════════════════════════════ */
+    .nav-dropdown {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 10px);
+        background: var(--surface);
+        border: 1px solid var(--nav-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        z-index: 50;
+        display: none;
+        opacity: 0;
+        transform: scale(0.96) translateY(-6px);
+        transition: opacity 0.15s ease, transform 0.15s ease;
+        transform-origin: top right;
+    }
+
+    .nav-dropdown.show {
+        display: block;
+        animation: dropdownIn 0.15s ease forwards;
+    }
+
+    @keyframes dropdownIn {
+        from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+        to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ── Notification Dropdown ── */
+    .notif-dropdown {
+        width: 380px;
+    }
+
+    .dropdown-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid var(--nav-border);
+    }
+
+    .dropdown-header-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+    }
+
+    .dropdown-header-sub {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        margin-top: 2px;
+        font-weight: 400;
+    }
+
+    .badge-count {
+        font-size: 10px;
+        font-weight: 700;
+        color: white;
+        background: var(--danger);
+        border-radius: 20px;
+        padding: 2px 7px;
+        letter-spacing: 0.01em;
+        min-width: 22px;
+        text-align: center;
+    }
+
+    .notif-list {
+        max-height: 360px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #e5e7eb transparent;
+    }
+
+    .notif-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        text-decoration: none;
+        transition: background 0.12s ease;
+        border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .notif-item:hover { background: var(--surface-hover); }
+    .notif-item:last-child { border-bottom: none; }
+
+    .notif-icon-wrap {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-sm);
+        background: var(--surface-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+    }
+
+    .notif-icon-wrap svg { width: 15px; height: 15px; color: var(--text-secondary); }
+
+    .notif-icon-wrap.type-transfer { background: #eff6ff; }
+    .notif-icon-wrap.type-transfer svg { color: #3b82f6; }
+    .notif-icon-wrap.type-pickup { background: #fff7ed; }
+    .notif-icon-wrap.type-pickup svg { color: #f97316; }
+    .notif-icon-wrap.type-check { background: #f0fdf4; }
+    .notif-icon-wrap.type-check svg { color: #16a34a; }
+    .notif-icon-wrap.type-x { background: #fef2f2; }
+    .notif-icon-wrap.type-x svg { color: #ef4444; }
+    .notif-icon-wrap.type-truck { background: #f5f3ff; }
+    .notif-icon-wrap.type-truck svg { color: #8b5cf6; }
+
+    .notif-title {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+    }
+
+    .notif-body {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+        line-height: 1.5;
+    }
+
+    .notif-time {
+        font-size: 10.5px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-weight: 500;
+    }
+
+    .notif-time svg { width: 11px; height: 11px; }
+
+    .notif-empty {
+        padding: 40px 16px;
+        text-align: center;
+    }
+
+    .notif-empty-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--surface-hover);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+    }
+
+    .notif-empty-icon svg { width: 22px; height: 22px; color: var(--text-muted); }
+
+    .notif-empty-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        letter-spacing: -0.01em;
+    }
+
+    .notif-empty-sub {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+
+    .dropdown-footer {
+        padding: 10px 16px;
+        border-top: 1px solid var(--nav-border);
+    }
+
+    .dropdown-footer-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        text-decoration: none;
+        padding: 6px;
+        border-radius: var(--radius-sm);
+        transition: background 0.12s ease, color 0.12s ease;
+        letter-spacing: -0.01em;
+    }
+
+    .dropdown-footer-link:hover { background: var(--accent-light); color: #15803d; }
+    .dropdown-footer-link svg { width: 13px; height: 13px; }
+
+    /* ── User Dropdown ── */
+    .user-dropdown {
+        width: 240px;
+    }
+
+    .user-dropdown-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--nav-border);
+    }
+
+    .user-dropdown-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-dropdown-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid rgba(255,255,255,0.9);
+        box-shadow: 0 0 0 1.5px rgba(22,163,74,0.15);
+    }
+
+    .user-dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-dropdown-avatar-initial { font-size: 15px; font-weight: 700; color: #15803d; font-family: Poppins; }
+
+    .user-dropdown-name {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .user-dropdown-email {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-top: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 400;
+    }
+
+    .role-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 700;
+        margin-top: 5px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+
+    .role-superadmin { background: #fef3c7; color: #92400e; }
+    .role-admin      { background: #eff6ff; color: #1d4ed8; }
+    .role-amil       { background: #f0fdf4; color: #15803d; }
+    .role-muzakki    { background: #f5f3ff; color: #6d28d9; }
+    .role-default    { background: var(--surface-hover); color: var(--text-secondary); }
+
+    /* ── Menu Items ── */
+    .menu-section { padding: 6px 0; }
+    .menu-section + .menu-section { border-top: 1px solid var(--nav-border); }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: background 0.1s ease, color 0.1s ease;
+        cursor: pointer;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        letter-spacing: -0.01em;
+        font-family: Poppins;
+    }
+
+    .menu-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+    .menu-item.active { background: var(--surface-active); color: var(--text-primary); font-weight: 600; }
+
+    .menu-item svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        color: var(--text-muted);
+        transition: color 0.1s ease;
+    }
+
+    .menu-item:hover svg { color: var(--text-secondary); }
+    .menu-item.active svg { color: var(--accent); }
+
+    .menu-item-label { flex: 1; }
+
+    .menu-badge {
+        font-size: 9.5px;
+        font-weight: 700;
+        color: white;
+        background: var(--danger);
+        border-radius: 20px;
+        padding: 1.5px 6px;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    .menu-item-danger { color: var(--danger) !important; }
+    .menu-item-danger:hover { background: #fff1f1 !important; }
+    .menu-item-danger svg { color: var(--danger) !important; }
+
+    /* ══════════════════════════════════════════
+       LOGOUT MODAL
+    ══════════════════════════════════════════ */
+    #logout-modal {
+        font-family: Poppins;
+    }
+
+    .logout-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        width: 100%;
+        max-width: 360px;
+        margin: 0 16px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .logout-card-body { padding: 28px 28px 24px; }
+
+    .logout-icon-wrap {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+        background: #fff1f1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+    .logout-icon-wrap svg { width: 24px; height: 24px; color: var(--danger); }
+
+    .logout-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-align: center;
+        letter-spacing: -0.03em;
+        margin-bottom: 5px;
+    }
+
+    .logout-desc {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        text-align: center;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-weight: 400;
+    }
+
+    .logout-user-card {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 13px;
+        background: var(--surface-hover);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--nav-border);
+        margin-bottom: 18px;
+    }
+
+    .logout-user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logout-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .logout-user-avatar-initial { font-size: 14px; font-weight: 700; color: #15803d; }
+
+    .logout-user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logout-user-email { font-size: 11px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logout-user-role { font-size: 10px; color: var(--text-muted); font-weight: 500; flex-shrink: 0; }
+
+    .logout-actions { display: flex; gap: 10px; }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 10px 16px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: var(--surface-hover);
+        border: 1.5px solid var(--nav-border);
+        cursor: pointer;
+        transition: background 0.12s ease, color 0.12s ease;
+        font-family: Poppins;
+        letter-spacing: -0.01em;
+    }
+
+    .btn-cancel:hover { background: var(--surface-active); color: var(--text-primary); }
+
+    .btn-logout {
+        flex: 1;
+        padding: 10px 16px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        color: white;
+        background: var(--danger);
+        border: 1.5px solid var(--danger);
+        cursor: pointer;
+        transition: background 0.12s ease, transform 0.1s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-family: Poppins;
+        letter-spacing: -0.01em;
+    }
+
+    .btn-logout:hover { background: #dc2626; transform: translateY(-1px); }
+    .btn-logout:active { transform: translateY(0); }
+    .btn-logout svg { width: 14px; height: 14px; }
+</style>
+
+{{-- ═══════════════════════════════════════════════════════════════
+     LOGOUT MODAL
+     ═══════════════════════════════════════════════════════════════ --}}
+<div id="logout-modal" class="fixed inset-0 z-[9999] flex items-center justify-center hidden" aria-modal="true" role="dialog">
+    <div id="logout-backdrop"
+        class="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-300"
+        style="backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);"
+        onclick="closeLogoutModal()"></div>
+
+    <div id="logout-card" class="logout-card relative scale-95 opacity-0 transition-all duration-300">
+        <div class="logout-card-body">
+            <div class="logout-icon-wrap">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
             </div>
 
-            {{-- Right: Actions --}}
-            <div class="flex items-center gap-1 ml-auto">
+            <h2 class="logout-title">Keluar dari Akun?</h2>
+            <p class="logout-desc">Sesi Anda akan diakhiri. Pastikan semua<br>pekerjaan sudah tersimpan.</p>
 
-                {{-- Superadmin: Pesan Masuk --}}
-                @if ($isSuperadmin)
-                    <a href="{{ route('superadmin.kontak.index') }}"
-                        class="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-150 {{ request()->routeIs('superadmin.kontak.*') ? 'text-gray-700 bg-gray-100' : '' }}">
-                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
-                                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+            <div class="logout-user-card">
+                <div class="logout-user-avatar">
+                    @if ($avatarUrl)
+                        <img src="{{ $avatarUrl }}" alt="{{ $displayName }}">
+                    @else
+                        <span class="logout-user-avatar-initial">{{ $avatarInitial }}</span>
+                    @endif
+                </div>
+                <div style="min-width:0; flex:1;">
+                    <p class="logout-user-name">{{ $displayName }}</p>
+                    <p class="logout-user-email">{{ $authUser->email ?? '' }}</p>
+                </div>
+                <span class="logout-user-role">{{ $roleLabel }}</span>
+            </div>
+
+            <div class="logout-actions">
+                <button onclick="closeLogoutModal()" class="btn-cancel">Batal</button>
+                <form method="POST" action="{{ route('logout') }}" id="logout-form" style="flex:1;">
+                    @csrf
+                    <button type="submit" class="btn-logout" style="width:100%;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                         </svg>
-                        @if ($kontakBelumDibaca > 0)
-                            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                        Ya, Keluar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════════
+     NAVBAR UTAMA
+     ═══════════════════════════════════════════════════════════════ --}}
+<header id="main-navbar" class="navbar-shell">
+    <div class="navbar-inner">
+
+        {{-- Page Title --}}
+        <div class="page-title-area">
+            <h1 class="page-title">@yield('page-title', $pageInfo['title'])</h1>
+            @if (!empty($pageInfo['subtitle']))
+                <p class="page-subtitle">@yield('page-subtitle', $pageInfo['subtitle'])</p>
+            @endif
+        </div>
+
+        {{-- Actions --}}
+        <div class="nav-actions">
+
+            {{-- Superadmin: Pesan Masuk --}}
+            @if ($isSuperadmin)
+                <a href="{{ route('superadmin.kontak.index') }}"
+                    class="nav-icon-btn {{ request()->routeIs('superadmin.kontak.*') ? 'active' : '' }}"
+                    title="Pesan Masuk">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+                    </svg>
+                    @if ($kontakBelumDibaca > 0)
+                        <span class="notif-dot"></span>
+                    @endif
+                </a>
+                <div class="nav-divider"></div>
+            @endif
+
+            {{-- Amil / Muzakki: Notifikasi --}}
+            @if ($isAmil || $isMuzakki)
+                <div class="relative">
+                    <button onclick="toggleNotifications()" id="notif-btn"
+                        class="nav-icon-btn" title="Notifikasi">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        @if ($notifUnread > 0)
+                            <span id="notif-badge" class="notif-dot"></span>
                         @endif
-                    </a>
-                    <div class="w-px h-4 bg-gray-200 mx-1"></div>
-                @endif
+                    </button>
 
-                {{-- Amil / Muzakki: Notifikasi --}}
-                @if ($isAmil || $isMuzakki)
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" id="notif-btn"
-                            class="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors duration-150">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
-                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
+                    {{-- Notifications Dropdown --}}
+                    <div id="notifications-dropdown" class="nav-dropdown notif-dropdown">
+                        <div class="dropdown-header">
+                            <div>
+                                <p class="dropdown-header-title">Notifikasi</p>
+                                <p class="dropdown-header-sub">
+                                    @if ($isAmil) Tindakan yang perlu ditinjau
+                                    @elseif($isMuzakki) Update transaksi (7 hari terakhir)
+                                    @endif
+                                </p>
+                            </div>
                             @if ($notifUnread > 0)
-                                <span id="notif-badge"
-                                    class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                                <span id="notif-header-badge" class="badge-count">{{ $notifUnread }}</span>
                             @endif
-                        </button>
+                        </div>
 
-                        {{-- Notifications Dropdown --}}
-                        <div id="notifications-dropdown"
-                            class="absolute right-0 mt-2 w-[360px] bg-white rounded-xl border border-gray-100 hidden overflow-hidden z-50"
-                            style="box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
-
-                            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                                <div>
-                                    <p class="text-[13px] font-semibold text-gray-900">Notifikasi</p>
-                                    <p class="text-[11px] text-gray-400 mt-0.5">
-                                        @if ($isAmil) Tindakan yang perlu ditinjau
-                                        @elseif($isMuzakki) Update transaksi (7 hari terakhir)
+                        <div id="notif-list" class="notif-list">
+                            @forelse($notifItems as $notif)
+                                <a href="{{ $notif['url'] }}" data-id="{{ $notif['id'] }}"
+                                    onclick="markNotifRead(event, this)"
+                                    class="notif-item">
+                                    <div class="notif-icon-wrap type-{{ $notif['icon'] }}">
+                                        @if ($notif['icon'] === 'transfer')
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                            </svg>
+                                        @elseif($notif['icon'] === 'pickup')
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        @elseif($notif['icon'] === 'check')
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        @elseif($notif['icon'] === 'x')
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        @elseif($notif['icon'] === 'truck')
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
+                                            </svg>
+                                        @else
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <div style="flex:1; min-width:0;">
+                                        <p class="notif-title">{{ $notif['title'] }}</p>
+                                        <p class="notif-body">{{ $notif['body'] }}</p>
+                                        <p class="notif-time">
+                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            {{ $notif['time'] }}
+                                        </p>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="notif-empty">
+                                    <div class="notif-empty-icon">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <p class="notif-empty-title">Tidak ada notifikasi</p>
+                                    <p class="notif-empty-sub">
+                                        @if ($isAmil) Semua transaksi sudah tertangani
+                                        @elseif($isMuzakki) Belum ada update dalam 7 hari terakhir
                                         @endif
                                     </p>
                                 </div>
-                                @if ($notifUnread > 0)
-                                    <span id="notif-header-badge"
-                                        class="text-[10px] text-gray-500 px-2 py-0.5 bg-gray-100 rounded-full">
-                                        {{ $notifUnread }} baru
-                                    </span>
+                            @endforelse
+                        </div>
+
+                        @if ($notifItems->isNotEmpty())
+                            <div class="dropdown-footer">
+                                @if ($isAmil)
+                                    <a href="{{ route('pemantauan-transaksi.index') }}" class="dropdown-footer-link">
+                                        Lihat semua transaksi
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                @elseif($isMuzakki)
+                                    <a href="{{ route('transaksi-daring-muzakki.index') }}" class="dropdown-footer-link">
+                                        Lihat riwayat transaksi
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
                                 @endif
                             </div>
-
-                            <div id="notif-list" class="max-h-[380px] overflow-y-auto divide-y divide-gray-50">
-                                @forelse($notifItems as $notif)
-                                    <a href="{{ $notif['url'] }}" data-id="{{ $notif['id'] }}"
-                                        onclick="markNotifRead(event, this)"
-                                        class="notif-item flex gap-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-150">
-                                        <div class="flex-shrink-0 mt-0.5">
-                                            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100">
-                                                @if ($notif['icon'] === 'transfer')
-                                                    <svg class="w-[15px] h-[15px] text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                    </svg>
-                                                @elseif($notif['icon'] === 'pickup')
-                                                    <svg class="w-[15px] h-[15px] text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                @elseif($notif['icon'] === 'check')
-                                                    <svg class="w-[15px] h-[15px] text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                @elseif($notif['icon'] === 'x')
-                                                    <svg class="w-[15px] h-[15px] text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                @elseif($notif['icon'] === 'truck')
-                                                    <svg class="w-[15px] h-[15px] text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
-                                                    </svg>
-                                                @else
-                                                    <svg class="w-[15px] h-[15px] text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-[12.5px] font-medium text-gray-800 leading-snug">{{ $notif['title'] }}</p>
-                                            <p class="text-[12px] text-gray-500 mt-0.5 leading-relaxed">{{ $notif['body'] }}</p>
-                                            <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                                {{ $notif['time'] }}
-                                            </p>
-                                        </div>
-                                    </a>
-                                @empty
-                                    <div class="py-10 text-center">
-                                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-[12.5px] font-medium text-gray-600">Tidak ada notifikasi</p>
-                                        <p class="text-[11.5px] text-gray-400 mt-0.5">
-                                            @if ($isAmil) Semua transaksi sudah tertangani
-                                            @elseif($isMuzakki) Belum ada update dalam 7 hari terakhir
-                                            @endif
-                                        </p>
-                                    </div>
-                                @endforelse
-                            </div>
-
-                            @if ($notifItems->isNotEmpty())
-                                <div class="px-4 py-2.5 border-t border-gray-100">
-                                    @if ($isAmil)
-                                        <a href="{{ route('pemantauan-transaksi.index') }}"
-                                            class="flex items-center justify-center gap-1 text-[11.5px] text-gray-500 hover:text-gray-700 transition-colors py-0.5">
-                                            Lihat semua transaksi
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
-                                    @elseif($isMuzakki)
-                                        <a href="{{ route('transaksi-daring-muzakki.index') }}"
-                                            class="flex items-center justify-center gap-1 text-[11.5px] text-gray-500 hover:text-gray-700 transition-colors py-0.5">
-                                            Lihat riwayat transaksi
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
-                                    @endif
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="w-px h-4 bg-gray-200 mx-1"></div>
-                @endif
-
-                {{-- User Menu --}}
-                <div class="relative">
-                    <button onclick="toggleUserMenu()" id="user-menu-btn"
-                        class="flex items-center gap-2.5 pl-1.5 pr-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-150 group">
-                        {{-- Avatar --}}
-                        <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-200">
-                            @if ($avatarUrl)
-                                <img src="{{ $avatarUrl }}" alt="{{ $displayName }}" class="w-full h-full object-cover">
-                            @else
-                                <span class="text-gray-500 text-[13px] font-medium">{{ $avatarInitial }}</span>
-                            @endif
-                        </div>
-                        {{-- Name + Role --}}
-                        <div class="hidden lg:block text-left">
-                            <p class="text-[12.5px] font-medium text-gray-800 leading-tight">{{ $displayName }}</p>
-                            <p class="text-[10.5px] text-gray-400 leading-tight mt-0.5">{{ $roleLabel }}</p>
-                        </div>
-                        <svg class="hidden lg:block w-3.5 h-3.5 text-gray-400 transition-transform duration-200 group-hover:text-gray-600"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    {{-- User Dropdown --}}
-                    <div id="user-menu-dropdown"
-                        class="absolute right-0 mt-2 w-56 bg-white rounded-xl border border-gray-100 hidden overflow-hidden z-50"
-                        style="box-shadow: 0 8px 24px rgba(0,0,0,0.08);">
-
-                        {{-- Header --}}
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center bg-gray-200">
-                                    @if ($avatarUrl)
-                                        <img src="{{ $avatarUrl }}" alt="{{ $displayName }}" class="w-full h-full object-cover">
-                                    @else
-                                        <span class="text-gray-500 text-[13px] font-medium">{{ $avatarInitial }}</span>
-                                    @endif
-                                </div>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-[13px] font-semibold text-gray-900 truncate leading-tight">{{ $displayName }}</p>
-                                    <p class="text-[11px] text-gray-400 truncate mt-0.5">{{ $authUser->email ?? '' }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Menu Items --}}
-                        <div class="py-1">
-                            @if ($isSuperadmin)
-                                <a href="{{ route('superadmin.profil.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('superadmin.profil.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    Profil Saya
-                                </a>
-                                <a href="{{ route('konfigurasi-global.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('konfigurasi-global.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    Konfigurasi Global
-                                </a>
-                                <a href="{{ route('superadmin.kontak.index') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('superadmin.kontak.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
-                                    </svg>
-                                    <span class="flex-1">Pesan Masuk</span>
-                                    @if ($kontakBelumDibaca > 0)
-                                        <span class="text-[9px] font-semibold text-white bg-red-500 rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
-                                            {{ $kontakBelumDibaca > 99 ? '99+' : $kontakBelumDibaca }}
-                                        </span>
-                                    @endif
-                                </a>
-                            @endif
-
-                            @if ($isAdminLembaga)
-                                <a href="{{ route('admin-lembaga.profil.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('admin-lembaga.profil.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    Profil Saya
-                                </a>
-                                <a href="{{ route('konfigurasi-integrasi.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('konfigurasi-integrasi.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    Konfigurasi Integrasi
-                                </a>
-                            @endif
-
-                            @if ($isAmil)
-                                <a href="{{ route('profil.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('profil.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    Profil Saya
-                                </a>
-                            @endif
-
-                            @if ($isMuzakki)
-                                <a href="{{ route('muzakki.profil.show') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('muzakki.profil.*') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    Profil Saya
-                                </a>
-                                <a href="{{ route('transaksi-daring-muzakki.create') }}"
-                                    class="flex items-center gap-3 px-4 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50 transition-colors {{ request()->routeIs('transaksi-daring-muzakki.create') ? 'bg-gray-50 font-medium' : '' }}">
-                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Bayar Zakat
-                                </a>
-                            @endif
-                        </div>
-
-                        {{-- Divider + Logout --}}
-                        <div class="border-t border-gray-100 py-1">
-                            <button type="button" onclick="openLogoutModal()"
-                                class="w-full flex items-center gap-3 px-4 py-2 text-[12.5px] text-red-500 hover:bg-gray-50 transition-colors">
-                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                Keluar
-                            </button>
-                        </div>
+                        @endif
                     </div>
                 </div>
+                <div class="nav-divider"></div>
+            @endif
 
+            {{-- User Menu --}}
+            <div class="relative">
+                <button onclick="toggleUserMenu()" id="user-menu-btn" class="user-menu-btn">
+                    <div class="user-avatar">
+                        @if ($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="{{ $displayName }}">
+                        @else
+                            <span class="user-avatar-initial">{{ $avatarInitial }}</span>
+                        @endif
+                    </div>
+                    <div class="user-info">
+                        <p class="user-name">{{ $displayName }}</p>
+                        <p class="user-role">{{ $roleLabel }}</p>
+                    </div>
+                    <svg class="chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                {{-- User Dropdown --}}
+                <div id="user-menu-dropdown" class="nav-dropdown user-dropdown">
+                    <div class="user-dropdown-header">
+                        <div class="user-dropdown-meta">
+                            <div class="user-dropdown-avatar">
+                                @if ($avatarUrl)
+                                    <img src="{{ $avatarUrl }}" alt="{{ $displayName }}">
+                                @else
+                                    <span class="user-dropdown-avatar-initial">{{ $avatarInitial }}</span>
+                                @endif
+                            </div>
+                            <div style="min-width:0; flex:1;">
+                                <p class="user-dropdown-name">{{ $displayName }}</p>
+                                <p class="user-dropdown-email">{{ $authUser->email ?? '' }}</p>
+                            </div>
+                        </div>
+                        <span class="role-pill {{ $roleBadgeColor }}" style="margin-top:10px;">{{ $roleLabel }}</span>
+                    </div>
+
+                    <div class="menu-section">
+                        @if ($isSuperadmin)
+                            <a href="{{ route('superadmin.profil.show') }}"
+                                class="menu-item {{ request()->routeIs('superadmin.profil.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="menu-item-label">Profil Saya</span>
+                            </a>
+                            <a href="{{ route('konfigurasi-global.show') }}"
+                                class="menu-item {{ request()->routeIs('konfigurasi-global.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="menu-item-label">Konfigurasi Global</span>
+                            </a>
+                            <a href="{{ route('superadmin.kontak.index') }}"
+                                class="menu-item {{ request()->routeIs('superadmin.kontak.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z" />
+                                </svg>
+                                <span class="menu-item-label">Pesan Masuk</span>
+                                @if ($kontakBelumDibaca > 0)
+                                    <span class="menu-badge">{{ $kontakBelumDibaca > 99 ? '99+' : $kontakBelumDibaca }}</span>
+                                @endif
+                            </a>
+                        @endif
+
+                        @if ($isAdminLembaga)
+                            <a href="{{ route('admin-lembaga.profil.show') }}"
+                                class="menu-item {{ request()->routeIs('admin-lembaga.profil.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="menu-item-label">Profil Saya</span>
+                            </a>
+                            <a href="{{ route('konfigurasi-integrasi.show') }}"
+                                class="menu-item {{ request()->routeIs('konfigurasi-integrasi.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="menu-item-label">Konfigurasi Integrasi</span>
+                            </a>
+                        @endif
+
+                        @if ($isAmil)
+                            <a href="{{ route('profil.show') }}"
+                                class="menu-item {{ request()->routeIs('profil.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="menu-item-label">Profil Saya</span>
+                            </a>
+                        @endif
+
+                        @if ($isMuzakki)
+                            <a href="{{ route('muzakki.profil.show') }}"
+                                class="menu-item {{ request()->routeIs('muzakki.profil.*') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span class="menu-item-label">Profil Saya</span>
+                            </a>
+                            <a href="{{ route('transaksi-daring-muzakki.create') }}"
+                                class="menu-item {{ request()->routeIs('transaksi-daring-muzakki.create') ? 'active' : '' }}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 4v16m8-8H4" />
+                                </svg>
+                                <span class="menu-item-label">Bayar Zakat</span>
+                            </a>
+                        @endif
+                    </div>
+
+                    <div class="menu-section">
+                        <button type="button" onclick="openLogoutModal()" class="menu-item menu-item-danger">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span class="menu-item-label">Keluar</span>
+                        </button>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 </header>
@@ -612,7 +1221,8 @@
         const modal = document.getElementById('logout-modal');
         const backdrop = document.getElementById('logout-backdrop');
         const card = document.getElementById('logout-card');
-        document.getElementById('user-menu-dropdown')?.classList.add('hidden');
+        document.getElementById('user-menu-dropdown')?.classList.remove('show');
+        document.getElementById('user-menu-btn')?.classList.remove('open');
         modal.classList.remove('hidden');
         requestAnimationFrame(() => {
             backdrop.style.opacity = '1';
@@ -631,39 +1241,34 @@
         setTimeout(() => modal.classList.add('hidden'), 250);
     }
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeLogoutModal();
-    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLogoutModal(); });
 
     function toggleNotifications() {
-        const dropdown = document.getElementById('notifications-dropdown');
-        const isHidden = dropdown.classList.contains('hidden');
-        dropdown.classList.toggle('hidden');
-        document.getElementById('user-menu-dropdown')?.classList.add('hidden');
-        if (isHidden) {
-            dropdown.style.opacity = '0';
-            dropdown.style.transform = 'scale(0.97) translateY(-4px)';
-            dropdown.style.transition = 'opacity 0.12s ease, transform 0.12s ease';
-            requestAnimationFrame(() => {
-                dropdown.style.opacity = '1';
-                dropdown.style.transform = 'scale(1) translateY(0)';
-            });
+        const dd = document.getElementById('notifications-dropdown');
+        const userDd = document.getElementById('user-menu-dropdown');
+        const userBtn = document.getElementById('user-menu-btn');
+        const isOpen = dd.classList.contains('show');
+        userDd?.classList.remove('show');
+        userBtn?.classList.remove('open');
+        if (isOpen) {
+            dd.classList.remove('show');
+        } else {
+            dd.classList.add('show');
         }
     }
 
     function toggleUserMenu() {
-        const dropdown = document.getElementById('user-menu-dropdown');
-        const isHidden = dropdown.classList.contains('hidden');
-        dropdown.classList.toggle('hidden');
-        document.getElementById('notifications-dropdown')?.classList.add('hidden');
-        if (isHidden) {
-            dropdown.style.opacity = '0';
-            dropdown.style.transform = 'scale(0.97) translateY(-4px)';
-            dropdown.style.transition = 'opacity 0.12s ease, transform 0.12s ease';
-            requestAnimationFrame(() => {
-                dropdown.style.opacity = '1';
-                dropdown.style.transform = 'scale(1) translateY(0)';
-            });
+        const dd = document.getElementById('user-menu-dropdown');
+        const btn = document.getElementById('user-menu-btn');
+        const notifDd = document.getElementById('notifications-dropdown');
+        const isOpen = dd.classList.contains('show');
+        notifDd?.classList.remove('show');
+        if (isOpen) {
+            dd.classList.remove('show');
+            btn.classList.remove('open');
+        } else {
+            dd.classList.add('show');
+            btn.classList.add('open');
         }
     }
 
@@ -677,26 +1282,27 @@
         el.style.opacity = '0';
         setTimeout(() => { el.style.maxHeight = '0'; el.style.padding = '0'; }, 50);
         setTimeout(() => el.remove(), 350);
-        const badge = document.getElementById('notif-badge');
-        const headerBadge = document.getElementById('notif-header-badge');
-        if (badge) {
-            badge.classList.add('hidden');
-            if (headerBadge) headerBadge.classList.add('hidden');
-        }
+        document.getElementById('notif-badge')?.classList.add('hidden');
+        document.getElementById('notif-header-badge')?.classList.add('hidden');
         fetch('{{ route('notif.mark-read') }}', {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ id: id }),
+            body: JSON.stringify({ id }),
         }).catch(() => {});
         setTimeout(() => { window.location.href = url; }, 300);
     }
 
     document.addEventListener('click', function(e) {
-        const notifBtn = document.getElementById('notif-btn');
-        const userBtn  = document.getElementById('user-menu-btn');
+        const notifBtn  = document.getElementById('notif-btn');
+        const userBtn   = document.getElementById('user-menu-btn');
         const notifDrop = document.getElementById('notifications-dropdown');
         const userDrop  = document.getElementById('user-menu-dropdown');
-        if (notifBtn && notifDrop && !notifBtn.contains(e.target) && !notifDrop.contains(e.target)) notifDrop.classList.add('hidden');
-        if (userBtn && userDrop && !userBtn.contains(e.target) && !userDrop.contains(e.target)) userDrop.classList.add('hidden');
+        if (notifBtn && notifDrop && !notifBtn.contains(e.target) && !notifDrop.contains(e.target)) {
+            notifDrop.classList.remove('show');
+        }
+        if (userBtn && userDrop && !userBtn.contains(e.target) && !userDrop.contains(e.target)) {
+            userDrop.classList.remove('show');
+            userBtn.classList.remove('open');
+        }
     });
 </script>
