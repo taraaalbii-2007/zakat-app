@@ -7,111 +7,166 @@
         <!-- Container utama -->
         <div class="bg-white rounded-xl border border-neutral-200 overflow-hidden shadow-soft transition-all duration-300">
 
-            <!-- Header + Search + Button -->
-            <div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-neutral-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 class="text-lg sm:text-xl font-bold text-neutral-800">Tipe Zakat</h1>
-                        <p class="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1">Kelola dan konfigurasi tipe zakat</p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <!-- Search -->
-                        <div class="relative w-full sm:w-auto">
-                            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            <input type="text" id="search-input" value="{{ request('search') }}"
-                                placeholder="Cari tipe zakat..."
-                                class="pl-9 pr-4 py-2 w-full sm:w-64 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200">
-                        </div>
+<!-- Header + Button (tanpa search) -->
+<div class="px-4 sm:px-6 py-4 sm:py-5 border-b border-neutral-200">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-lg sm:text-xl font-bold text-neutral-800">Tipe Zakat</h1>
+            <p class="text-xs sm:text-sm text-neutral-500 mt-0.5 sm:mt-1">Kelola dan konfigurasi tipe zakat</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <!-- Button Filter -->
+            <button type="button" id="filter-button"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium rounded-lg transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span class="hidden sm:inline">Filter</span>
+            </button>
 
-                        <!-- Button Filter -->
-                        <button type="button" id="filter-button"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-sm font-medium rounded-lg transition-all duration-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                            </svg>
-                            Filter
-                        </button>
+            <a href="{{ route('tipe-zakat.create') }}"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-soft hover:shadow-md active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span class="hidden sm:inline">Tambah Baru</span>
+                <span class="sm:hidden">Tambah</span>
+            </a>
+        </div>
+    </div>
+</div>
 
-                        <a href="{{ route('tipe-zakat.create') }}"
-                            class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-soft hover:shadow-md active:scale-95">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            <span class="hidden sm:inline">Tambah Baru</span>
-                            <span class="sm:hidden">Tambah</span>
-                        </a>
-                    </div>
-                </div>
+<!-- Filter Panel - Hidden by default -->
+<div id="filter-panel" class="hidden px-4 sm:px-6 py-4 border-b border-neutral-200 bg-neutral-50/30">
+    <form id="filter-form" method="GET" action="{{ route('tipe-zakat.index') }}">
+        <div class="flex flex-wrap items-end gap-4">
+            <!-- Search Field -->
+            <div class="min-w-[200px] flex-1 sm:flex-none">
+                <label class="block text-xs font-medium text-neutral-600 mb-1.5">Cari Tipe Zakat</label>
+                <input type="text" id="filter-search" name="search" value="{{ request('search') }}"
+                    placeholder="Cari nama tipe zakat..."
+                    class="pl-3 pr-4 py-2 w-full text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200">
             </div>
-
-            <!-- Filter Panel - Hidden by default -->
-            <div id="filter-panel" class="hidden px-4 sm:px-6 py-4 border-b border-neutral-200 bg-neutral-50/30">
-                <div class="flex flex-wrap items-end gap-4">
-                    <div class="min-w-[160px] flex-1 sm:flex-none">
-                        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Jenis Zakat</label>
-                        <select id="filter-jenis-zakat"
-                            class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
-                            <option value="">Semua Jenis</option>
-                            @foreach ($jenisZakatList as $jenis)
-                                <option value="{{ $jenis->id }}" {{ request('jenis_zakat_id') == $jenis->id ? 'selected' : '' }}>
-                                    {{ $jenis->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="min-w-[140px] flex-1 sm:flex-none">
-                        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Haul</label>
-                        <select id="filter-haul"
-                            class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
-                            <option value="">Semua Haul</option>
-                            <option value="true" {{ request('requires_haul') == 'true' ? 'selected' : '' }}>Perlu Haul (1 tahun)</option>
-                            <option value="false" {{ request('requires_haul') == 'false' ? 'selected' : '' }}>Tanpa Haul</option>
-                        </select>
-                    </div>
-                    <div class="min-w-[150px] flex-1 sm:flex-none">
-                        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Urut Berdasarkan</label>
-                        <select id="filter-sort-by"
-                            class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
-                            <option value="nama" {{ request('sort_by') == 'nama' ? 'selected' : '' }}>Nama</option>
-                            <option value="persentase_zakat" {{ request('sort_by') == 'persentase_zakat' ? 'selected' : '' }}>Persentase</option>
-                            <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Tanggal Input</option>
-                        </select>
-                    </div>
-                    <div class="min-w-[130px] flex-1 sm:flex-none">
-                        <label class="block text-xs font-medium text-neutral-600 mb-1.5">Urutan</label>
-                        <select id="filter-sort-order"
-                            class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
-                            <option value="asc" {{ request('sort_order') == 'asc' ? 'selected' : '' }}>Menaik (A-Z)</option>
-                            <option value="desc" {{ request('sort_order') == 'desc' ? 'selected' : '' }}>Menurun (Z-A)</option>
-                        </select>
-                    </div>
-                    @if (request('jenis_zakat_id') || request('requires_haul') || request('sort_by') || request('sort_order'))
-                        <div class="flex items-center">
-                            <a href="{{ route('tipe-zakat.index', request('search') ? ['search' => request('search')] : []) }}"
-                                class="inline-flex items-center gap-1 px-3 py-2 text-sm text-primary-600 hover:text-primary-700 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Reset
-                            </a>
-                        </div>
-                    @endif
-                </div>
+            
+            <div class="min-w-[160px] flex-1 sm:flex-none">
+                <label class="block text-xs font-medium text-neutral-600 mb-1.5">Jenis Zakat</label>
+                <select id="filter-jenis-zakat" name="jenis_zakat_id"
+                    class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
+                    <option value="">Semua Jenis</option>
+                    @foreach ($jenisZakatList as $jenis)
+                        <option value="{{ $jenis->id }}" {{ request('jenis_zakat_id') == $jenis->id ? 'selected' : '' }}>
+                            {{ $jenis->nama }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
-
-            <!-- Total -->
-            <div class="px-4 sm:px-6 py-3 border-b border-neutral-100 bg-neutral-50/30">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-neutral-600">Total:</span>
-                    <span class="text-sm font-semibold text-neutral-800">{{ $tipeZakat->total() }}</span>
-                    <span class="text-sm text-neutral-500">tipe zakat</span>
-                </div>
+            <div class="min-w-[140px] flex-1 sm:flex-none">
+                <label class="block text-xs font-medium text-neutral-600 mb-1.5">Haul</label>
+                <select id="filter-haul" name="requires_haul"
+                    class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
+                    <option value="">Semua Haul</option>
+                    <option value="true" {{ request('requires_haul') == 'true' ? 'selected' : '' }}>Perlu Haul (1 tahun)</option>
+                    <option value="false" {{ request('requires_haul') == 'false' ? 'selected' : '' }}>Tanpa Haul</option>
+                </select>
             </div>
+            <div class="min-w-[150px] flex-1 sm:flex-none">
+                <label class="block text-xs font-medium text-neutral-600 mb-1.5">Urut Berdasarkan</label>
+                <select id="filter-sort-by" name="sort_by"
+                    class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
+                    <option value="nama" {{ request('sort_by', 'nama') === 'nama' ? 'selected' : '' }}>Nama</option>
+                    <option value="persentase_zakat" {{ request('sort_by') === 'persentase_zakat' ? 'selected' : '' }}>Persentase</option>
+                    <option value="created_at" {{ request('sort_by') === 'created_at' ? 'selected' : '' }}>Tanggal Input</option>
+                </select>
+            </div>
+            <div class="min-w-[130px] flex-1 sm:flex-none">
+                <label class="block text-xs font-medium text-neutral-600 mb-1.5">Urutan</label>
+                <select id="filter-sort-order" name="sort_order"
+                    class="pl-3 pr-8 py-2 text-sm border border-neutral-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 w-full">
+                    <option value="asc" {{ request('sort_order', 'asc') === 'asc' ? 'selected' : '' }}>Menaik (A-Z)</option>
+                    <option value="desc" {{ request('sort_order') === 'desc' ? 'selected' : '' }}>Menurun (Z-A)</option>
+                </select>
+            </div>
+            
+            <!-- Tombol Terapkan Filter -->
+            <div class="flex items-center gap-2">
+                <button type="submit"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Terapkan
+                </button>
+                
+                @if (request('search') || request('jenis_zakat_id') || request('requires_haul') || (request('sort_by') && request('sort_by') != 'nama') || (request('sort_order') && request('sort_order') != 'asc'))
+                    <a href="{{ route('tipe-zakat.index') }}"
+                        class="inline-flex items-center gap-1 px-3 py-2 text-sm text-neutral-500 hover:text-red-600 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Total + Active Filters -->
+<div class="px-4 sm:px-6 py-3 border-b border-neutral-100 bg-neutral-50/30">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-neutral-600">Total:</span>
+            <span class="text-sm font-semibold text-neutral-800">{{ $tipeZakat->total() }}</span>
+            <span class="text-sm text-neutral-500">tipe zakat</span>
+        </div>
+        
+        <!-- Active Filters Badges -->
+        @if (request('search') || request('jenis_zakat_id') || request('requires_haul') || (request('sort_by') && request('sort_by') != 'nama') || (request('sort_order') && request('sort_order') != 'asc'))
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs text-neutral-400">Filter aktif:</span>
+                
+                @if (request('search'))
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                        Pencarian: "{{ request('search') }}"
+                        <button onclick="removeFilter('search')" class="hover:text-primary-900 transition-colors">×</button>
+                    </span>
+                @endif
+                
+                @if (request('jenis_zakat_id'))
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                        Jenis: {{ $jenisZakatList->find(request('jenis_zakat_id'))?->nama }}
+                        <button onclick="removeFilter('jenis_zakat_id')" class="hover:text-primary-900 transition-colors">×</button>
+                    </span>
+                @endif
+                
+                @if (request('requires_haul'))
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                        Haul: {{ request('requires_haul') == 'true' ? 'Perlu Haul' : 'Tanpa Haul' }}
+                        <button onclick="removeFilter('requires_haul')" class="hover:text-primary-900 transition-colors">×</button>
+                    </span>
+                @endif
+                
+                @if (request('sort_by') && request('sort_by') != 'nama')
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                        Urutan: {{ request('sort_by') == 'persentase_zakat' ? 'Persentase' : 'Tanggal Input' }}
+                        ({{ request('sort_order') == 'asc' ? 'Menaik' : 'Menurun' }})
+                        <button onclick="removeFilter('sort_by'); removeFilter('sort_order')" class="hover:text-primary-900 transition-colors">×</button>
+                    </span>
+                @elseif (request('sort_order') && request('sort_order') != 'asc')
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary-50 text-primary-700 text-xs rounded-full">
+                        Urutan: Menurun (Z-A)
+                        <button onclick="removeFilter('sort_order')" class="hover:text-primary-900 transition-colors">×</button>
+                    </span>
+                @endif
+                
+                <button onclick="resetAllFilters()" class="text-xs text-neutral-500 hover:text-neutral-700 transition-colors">
+                    Reset semua
+                </button>
+            </div>
+        @endif
+    </div>
+</div>
 
             <!-- Tabel dengan Expandable Row -->
             @if ($tipeZakat->count() > 0)
@@ -540,7 +595,6 @@
 @push('scripts')
 <script>
     let currentDropdownData = null;
-    let searchTimeout = null;
     const editBaseUrl = "{{ rtrim(route('tipe-zakat.index'), '/') }}";
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -557,54 +611,6 @@
                 filterPanel.classList.toggle('hidden');
             });
         }
-
-        // Search dengan debounce
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                const searchValue = this.value;
-                searchTimeout = setTimeout(() => {
-                    const url = new URL(window.location.href);
-                    if (searchValue) url.searchParams.set('search', searchValue);
-                    else url.searchParams.delete('search');
-                    url.searchParams.set('page', '1');
-                    window.location.href = url.toString();
-                }, 400);
-            });
-        }
-
-        // Filter auto-submit dengan tombol Terapkan
-        const applyFilters = () => {
-            const url = new URL(window.location.href);
-            const jenisZakat = document.getElementById('filter-jenis-zakat')?.value;
-            const haul = document.getElementById('filter-haul')?.value;
-            const sortBy = document.getElementById('filter-sort-by')?.value;
-            const sortOrder = document.getElementById('filter-sort-order')?.value;
-            
-            if (jenisZakat && jenisZakat !== '') url.searchParams.set('jenis_zakat_id', jenisZakat);
-            else url.searchParams.delete('jenis_zakat_id');
-            
-            if (haul && haul !== '') url.searchParams.set('requires_haul', haul);
-            else url.searchParams.delete('requires_haul');
-            
-            if (sortBy && sortBy !== 'nama') url.searchParams.set('sort_by', sortBy);
-            else url.searchParams.delete('sort_by');
-            
-            if (sortOrder && sortOrder !== 'asc') url.searchParams.set('sort_order', sortOrder);
-            else url.searchParams.delete('sort_order');
-            
-            url.searchParams.set('page', '1');
-            window.location.href = url.toString();
-        };
-
-        // Event listener untuk filter (change langsung)
-        ['filter-jenis-zakat', 'filter-haul', 'filter-sort-by', 'filter-sort-order'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.addEventListener('change', applyFilters);
-            }
-        });
 
         // Desktop Expandable row
         document.querySelectorAll('.expandable-row').forEach(row => {
@@ -703,11 +709,43 @@
         const url = new URL(window.location.href);
         url.searchParams.delete(filterName);
         url.searchParams.set('page', '1');
+        
+        if (filterName === 'search') {
+            const filterSearch = document.getElementById('filter-search');
+            if (filterSearch) filterSearch.value = '';
+        }
+        
+        // Jika menghapus sort_by, hapus juga sort_order
+        if (filterName === 'sort_by') {
+            url.searchParams.delete('sort_order');
+        }
+        
         window.location.href = url.toString();
     }
 
-    function removeAllFilters() {
-        window.location.href = "{{ route('tipe-zakat.index') }}";
+    function resetAllFilters() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('search');
+        url.searchParams.delete('jenis_zakat_id');
+        url.searchParams.delete('requires_haul');
+        url.searchParams.delete('sort_by');
+        url.searchParams.delete('sort_order');
+        url.searchParams.set('page', '1');
+        
+        // Reset input values
+        const filterSearch = document.getElementById('filter-search');
+        const filterJenisZakat = document.getElementById('filter-jenis-zakat');
+        const filterHaul = document.getElementById('filter-haul');
+        const filterSortBy = document.getElementById('filter-sort-by');
+        const filterSortOrder = document.getElementById('filter-sort-order');
+        
+        if (filterSearch) filterSearch.value = '';
+        if (filterJenisZakat) filterJenisZakat.value = '';
+        if (filterHaul) filterHaul.value = '';
+        if (filterSortBy) filterSortBy.value = 'nama';
+        if (filterSortOrder) filterSortOrder.value = 'asc';
+        
+        window.location.href = url.toString();
     }
 
     function showDeleteModal(uuid, nama) {
