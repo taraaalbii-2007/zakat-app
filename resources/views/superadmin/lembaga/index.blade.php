@@ -3,102 +3,108 @@
 @section('title', 'Kelola Data Lembaga')
 
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+    <div class="space-y-6">
+        <!-- Container utama -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
+
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Daftar Lembaga</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $lembagas->total() }} Lembaga</p>
+                        <h1 class="text-base font-semibold text-gray-800">Kelola Lembaga</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Kelola dan konfigurasi data lembaga</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
 
-                        {{-- Tambah --}}
-                        <a href="{{ route('lembaga.create') }}"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                            </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                Tambah
-                            </span>
-                        </a>
-
-                        {{-- Filter --}}
-                        <button type="button" onclick="toggleFilter()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
-                            {{ request()->hasAny(['provinsi_kode', 'status']) ? 'ring-2 ring-primary' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <!-- Tombol Filter -->
+                        <button type="button" id="filterButton"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
+                            Filter & Cari
                         </button>
 
-                        {{-- Search --}}
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('q') ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                                <span id="search-button-text"
-                                    class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">
-                                    Cari
-                                </span>
-                            </button>
-                            <form method="GET" action="{{ route('lembaga.index') }}" id="search-form"
-                                class="{{ request('q') ? '' : 'hidden' }}">
-                                @foreach (['provinsi_kode', 'status'] as $filter)
-                                    @if (request($filter))
-                                        <input type="hidden" name="{{ $filter }}" value="{{ request($filter) }}">
-                                    @endif
-                                @endforeach
-                                <div class="flex items-center gap-2">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="q" value="{{ request('q') }}" id="search-input"
-                                            placeholder="Cari lembaga..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                    @if (request()->hasAny(['q', 'provinsi_kode', 'kota_kode', 'status']))
-                                        <a href="{{ route('lembaga.index') }}"
-                                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                                            Reset
-                                        </a>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
-
+                        <!-- Tombol Tambah -->
+                        <a href="{{ route('lembaga.create') }}"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah
+                        </a>
                     </div>
                 </div>
             </div>
 
-            {{-- Filter Panel --}}
-            <div id="filter-panel"
-                class="{{ request()->hasAny(['provinsi_kode', 'status']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                <form method="GET" action="{{ route('lembaga.index') }}" id="filter-form">
-                    @if (request('q'))
-                        <input type="hidden" name="q" value="{{ request('q') }}">
-                    @endif
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <!-- Statistik Bar -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $lembagas->total() }}</span>
+                        <span class="text-sm text-gray-500">Lembaga</span>
+                    </div>
 
+                    <!-- Active Filters Tags -->
+                    @if(request('q') || request('provinsi_kode') || request('status'))
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-400">Filter aktif:</span>
+                            
+                            @if(request('q'))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    "{{ request('q') }}"
+                                    <button onclick="removeFilter('q')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                            
+                            @if(request('provinsi_kode') && isset($provinces))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Provinsi: {{ $provinces->firstWhere('code', request('provinsi_kode'))?->name ?? request('provinsi_kode') }}
+                                    <button onclick="removeFilter('provinsi_kode')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                            
+                            @if(request('status'))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Status: {{ request('status') == 'aktif' ? 'Aktif' : 'Nonaktif' }}
+                                    <button onclick="removeFilter('status')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Filter Panel -->
+            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
+                <form method="GET" action="{{ route('lembaga.index') }}" class="flex flex-col gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <!-- Search Field -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Lembaga</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                    <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" name="q" value="{{ request('q') }}"
+                                    placeholder="Cari lembaga..."
+                                    class="pl-8 pr-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Provinsi Filter -->
                         @if(isset($provinces) && $provinces->count() > 0)
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Provinsi</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Provinsi</label>
                             <select name="provinsi_kode"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="this.form.submit()">
+                                class="px-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                                 <option value="">Semua Provinsi</option>
                                 @foreach($provinces as $province)
                                     <option value="{{ $province->code }}" {{ request('provinsi_kode') == $province->code ? 'selected' : '' }}>
@@ -109,179 +115,225 @@
                         </div>
                         @endif
 
+                        <!-- Status Filter -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
                             <select name="status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="this.form.submit()">
+                                class="px-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                                 <option value="">Semua Status</option>
                                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
 
+                        <div></div>
                     </div>
 
-                    @if (request()->hasAny(['provinsi_kode', 'status']))
-                        <div class="mt-3 flex justify-end">
-                            <a href="{{ route('lembaga.index', request('q') ? ['q' => request('q')] : []) }}"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Reset Filter
-                            </a>
-                        </div>
-                    @endif
+                    <div class="flex gap-2 justify-end">
+                        <button type="submit"
+                            class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            Terapkan
+                        </button>
+                        <button type="button" id="closeFilterPanelBtn"
+                            class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            @if ($lembagas->count() > 0)
-                {{-- Desktop View --}}
-                <div class="hidden md:block overflow-x-auto" id="table-container">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="w-12 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Nama Lembaga
-                                </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                                    Aksi
-                                </th>
+            <!-- Tabel -->
+            @if($lembagas->count() > 0)
+                <!-- DESKTOP TABLE -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50/50">
+                                <th class="px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-10"></th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">NAMA LEMBAGA</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">KODE LEMBAGA</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach ($lembagas as $lembaga)
-                                {{-- Parent Row --}}
-                                <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach($lembagas as $lembaga)
+                                <!-- Baris Utama -->
+                                <tr class="group hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-300 cursor-pointer expandable-row"
                                     data-target="detail-{{ $lembaga->uuid }}">
-                                    <td class="px-4 py-4">
-                                        <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
-                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                            </svg>
-                                        </button>
+                                    <td class="px-4 py-4 text-center">
+                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block" 
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $lembaga->nama }}</div>
-                                        <div class="text-xs text-gray-500">Klik untuk melihat detail</div>
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-800 group-hover:text-green-700 transition-colors duration-200">
+                                                {{ $lembaga->nama }}
+                                            </span>
+                                            <div class="text-xs text-gray-400 mt-0.5">Klik untuk detail lengkap</div>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <button type="button"
-                                            class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                            data-uuid="{{ $lembaga->uuid }}"
-                                            data-nama="{{ $lembaga->nama }}"
-                                            data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                            </svg>
-                                        </button>
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm text-gray-600">{{ $lembaga->kode_lembaga }}</span>
                                     </td>
-                                </tr>
-                                {{-- Expandable Content Row --}}
-                                <tr id="detail-{{ $lembaga->uuid }}" class="hidden expandable-content">
-                                    <td colspan="3" class="px-0 py-0">
-                                        <div class="bg-gray-50 border-y border-gray-100">
-                                            <div class="px-6 py-4">
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {{-- Kolom Kiri: Admin Lembaga --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Data Admin Lembaga</h4>
-                                                        <div class="space-y-3">
-                                                            @if($lembaga->admin_nama)
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Nama Admin</p>
-                                                                    <p class="text-sm font-medium text-gray-900">{{ $lembaga->admin_nama }}</p>
-                                                                </div>
-                                                            </div>
-                                                            @endif
-
-                                                            @if($lembaga->admin_telepon)
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Telepon Admin</p>
-                                                                    <p class="text-sm font-medium text-gray-900">{{ $lembaga->admin_telepon }}</p>
-                                                                </div>
-                                                            </div>
-                                                            @endif
-
-                                                            @if($lembaga->admin_email)
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Email Admin</p>
-                                                                    <p class="text-sm font-medium text-gray-900">{{ $lembaga->admin_email }}</p>
-                                                                </div>
-                                                            </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-
-                                                    {{-- Kolom Kanan: Lokasi & Status --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-medium text-gray-900 mb-3">Lokasi & Status</h4>
-                                                        <div class="space-y-3">
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Alamat</p>
-                                                                    <p class="text-sm font-medium text-gray-900">{{ $lembaga->alamat_lengkap }}</p>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Kode Lembaga</p>
-                                                                    <p class="text-sm font-medium text-gray-900">{{ $lembaga->kode_lembaga }}</p>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="flex items-start">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Status</p>
-                                                                    @if($lembaga->is_active)
-                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
-                                                                    @else
-                                                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Nonaktif</span>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mt-4 pt-4 border-t border-gray-200 flex justify-end">
-                                                    <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
-                                                        class="inline-flex items-center px-3 py-1.5 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                        </svg>
-                                                        Lihat Detail Lengkap
-                                                    </a>
+                                    <td class="px-6 py-4">
+                                        @if($lembaga->is_active)
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                                Aktif
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                                Nonaktif
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="px-5 py-3 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <!-- Ikon Lihat Detail -->
+                                            <div class="relative group/tooltip">
+                                                <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
+                                                    class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                </a>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Lihat Detail
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
                                                 </div>
                                             </div>
+
+                                            <!-- Ikon Edit -->
+                                            <div class="relative group/tooltip">
+                                                <a href="{{ route('lembaga.edit', $lembaga->uuid) }}"
+                                                    class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </a>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Edit
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ikon Toggle Status -->
+                                            <div class="relative group/tooltip">
+                                                <button type="button"
+                                                    class="toggle-status-btn flex items-center justify-center p-1.5 text-gray-400 {{ $lembaga->is_active ? 'hover:text-amber-600 hover:bg-amber-50' : 'hover:text-green-600 hover:bg-green-50' }} rounded-lg transition-all duration-200"
+                                                    data-uuid="{{ $lembaga->uuid }}" 
+                                                    data-nama="{{ addslashes($lembaga->nama) }}"
+                                                    data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
+                                                    @if($lembaga->is_active)
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                        </svg>
+                                                    @else
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    @endif
+                                                </button>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    {{ $lembaga->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ikon Hapus -->
+                                            <div class="relative group/tooltip">
+                                                <button type="button"
+                                                    class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                    data-uuid="{{ $lembaga->uuid }}" data-nama="{{ addslashes($lembaga->nama) }}">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Hapus
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Baris Expandable Desktop - Detail Lengkap Rapi -->
+                                <tr id="detail-{{ $lembaga->uuid }}" class="hidden border-b border-gray-100 expandable-content">
+                                    <td colspan="5" class="px-0 py-0">
+                                        <div class="bg-gray-50/50 px-6 py-5">
+                                            <!-- Grid 2 Kolom -->
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                
+                                                <!-- Kolom Kiri: Data Admin Lembaga -->
+                                                <div>
+                                                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
+                                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                        </svg>
+                                                        <h4 class="text-sm font-semibold text-gray-800">Data Admin Lembaga</h4>
+                                                    </div>
+                                                    <div class="space-y-3">
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                                                            <span class="text-xs text-gray-500 sm:w-1/3">Nama Admin</span>
+                                                            <span class="text-sm font-medium text-gray-800 sm:w-2/3">{{ $lembaga->admin_nama ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                                                            <span class="text-xs text-gray-500 sm:w-1/3">Telepon Admin</span>
+                                                            <span class="text-sm font-medium text-gray-800 sm:w-2/3">{{ $lembaga->admin_telepon ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                                                            <span class="text-xs text-gray-500 sm:w-1/3">Email Admin</span>
+                                                            <span class="text-sm font-medium text-gray-800 sm:w-2/3 break-all">{{ $lembaga->admin_email ?? '-' }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Kolom Kanan: Lokasi -->
+                                                <div>
+                                                    <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
+                                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        </svg>
+                                                        <h4 class="text-sm font-semibold text-gray-800">Lokasi Lembaga</h4>
+                                                    </div>
+                                                    <div class="space-y-3">
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                                                            <span class="text-xs text-gray-500 sm:w-1/3">Alamat Lengkap</span>
+                                                            <span class="text-sm font-medium text-gray-800 sm:w-2/3">{{ $lembaga->alamat_lengkap ?? '-' }}</span>
+                                                        </div>
+                                                        <div class="flex flex-col sm:flex-row sm:justify-between">
+                                                            <span class="text-xs text-gray-500 sm:w-1/3">Kode Lembaga</span>
+                                                            <span class="text-sm font-medium text-gray-800 sm:w-2/3">{{ $lembaga->kode_lembaga ?? '-' }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Deskripsi (full width) -->
+                                            @if($lembaga->deskripsi)
+                                                <div class="mt-5 pt-4 border-t border-gray-200">
+                                                    <div class="flex items-center gap-2 mb-3">
+                                                        <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                        </svg>
+                                                        <h4 class="text-sm font-semibold text-gray-800">Deskripsi Lembaga</h4>
+                                                    </div>
+                                                    <div class="bg-white rounded-lg p-4 border border-gray-100">
+                                                        <p class="text-sm text-gray-600 leading-relaxed">{{ $lembaga->deskripsi }}</p>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -290,127 +342,211 @@
                     </table>
                 </div>
 
-                {{-- Mobile View --}}
-                <div class="md:hidden divide-y divide-gray-200">
-                    @foreach ($lembagas as $lembaga)
-                        <div class="expandable-card">
-                            <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
-                                data-target="detail-mobile-{{ $lembaga->uuid }}">
-                                <div class="flex items-center justify-between">
+                <!-- MOBILE CARD VIEW -->
+                <div class="block md:hidden divide-y divide-gray-100">
+                    @foreach($lembagas as $lembaga)
+                        <div class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200">
+                            <div class="expandable-row-mobile cursor-pointer" data-target="detail-mobile-{{ $lembaga->uuid }}">
+                                <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
-                                        <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $lembaga->nama }}</h3>
-                                        <div class="flex items-center mt-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile" 
+                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                            <span class="text-xs text-gray-400">Lembaga</span>
+                                        </div>
+                                        <h3 class="text-sm font-semibold text-gray-800 break-words">
+                                            {{ $lembaga->nama }}
+                                        </h3>
+                                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
                                             @if($lembaga->is_active)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">Aktif</span>
+                                                <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-100">Aktif</span>
                                             @else
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mr-2">Nonaktif</span>
+                                                <span class="inline-flex items-center px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">Nonaktif</span>
                                             @endif
                                             <span class="text-xs text-gray-500">{{ $lembaga->kode_lembaga }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-1 ml-2">
-                                        <button type="button"
-                                            class="dropdown-toggle p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                            data-uuid="{{ $lembaga->uuid }}"
-                                            data-nama="{{ $lembaga->nama }}"
-                                            data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
-                                            </svg>
-                                        </button>
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                        </svg>
+                                    
+                                    <div class="flex items-center gap-1 flex-shrink-0">
+                                        <!-- Lihat Detail -->
+                                        <div class="relative group/tooltip">
+                                            <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </a>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Lihat
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Edit -->
+                                        <div class="relative group/tooltip">
+                                            <a href="{{ route('lembaga.edit', $lembaga->uuid) }}"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </a>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Edit
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Toggle Status -->
+                                        <div class="relative group/tooltip">
+                                            <button type="button"
+                                                class="toggle-status-btn flex items-center justify-center p-1.5 text-gray-400 {{ $lembaga->is_active ? 'hover:text-amber-600 hover:bg-amber-50' : 'hover:text-green-600 hover:bg-green-50' }} rounded-lg transition-all"
+                                                data-uuid="{{ $lembaga->uuid }}" 
+                                                data-nama="{{ addslashes($lembaga->nama) }}"
+                                                data-is-active="{{ $lembaga->is_active ? '1' : '0' }}">
+                                                @if($lembaga->is_active)
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                    </svg>
+                                                @else
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                @endif
+                                            </button>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                {{ $lembaga->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Hapus -->
+                                        <div class="relative group/tooltip">
+                                            <button type="button"
+                                                class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                data-uuid="{{ $lembaga->uuid }}" data-nama="{{ addslashes($lembaga->nama) }}">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Hapus
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div id="detail-mobile-{{ $lembaga->uuid }}" class="hidden expandable-content-mobile">
-                                <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
-                                    <div class="space-y-4">
-                                        <div>
-                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Data Admin Lembaga</h4>
-                                            <div class="space-y-2">
-                                                @if($lembaga->admin_nama)
-                                                <div class="flex items-center text-sm">
-                                                    <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                                    </svg>
-                                                    <span class="text-gray-900">{{ $lembaga->admin_nama }}</span>
-                                                </div>
-                                                @endif
-                                                @if($lembaga->admin_telepon)
-                                                <div class="flex items-center text-sm">
-                                                    <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                                    </svg>
-                                                    <span class="text-gray-900">{{ $lembaga->admin_telepon }}</span>
-                                                </div>
-                                                @endif
-                                            </div>
+                            <!-- Mobile Expandable Detail -->
+                            <div id="detail-mobile-{{ $lembaga->uuid }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+                                <div class="space-y-4">
+                                    <!-- Data Admin -->
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                            <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Data Admin Lembaga</h4>
                                         </div>
-
-                                        <div>
-                                            <h4 class="text-sm font-medium text-gray-900 mb-2">Lokasi</h4>
-                                            <div class="flex items-start text-sm">
-                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                </svg>
-                                                <span class="text-gray-900">{{ $lembaga->alamat }}, {{ $lembaga->kota_nama }}</span>
+                                        <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-gray-500">Nama Admin</span>
+                                                <span class="text-xs font-medium text-gray-700">{{ $lembaga->admin_nama ?? '-' }}</span>
                                             </div>
-                                        </div>
-
-                                        <div class="pt-3 border-t border-gray-200">
-                                            <a href="{{ route('lembaga.show', $lembaga->uuid) }}"
-                                                class="inline-flex items-center justify-center w-full px-3 py-2 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-all">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                </svg>
-                                                Lihat Detail Lengkap
-                                            </a>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-gray-500">Telepon Admin</span>
+                                                <span class="text-xs font-medium text-gray-700">{{ $lembaga->admin_telepon ?? '-' }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-gray-500">Email Admin</span>
+                                                <span class="text-xs font-medium text-gray-700 break-all">{{ $lembaga->admin_email ?? '-' }}</span>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <!-- Lokasi -->
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Lokasi Lembaga</h4>
+                                        </div>
+                                        <div class="bg-gray-50 rounded-lg p-3 space-y-2">
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-gray-500">Alamat</span>
+                                                <span class="text-xs font-medium text-gray-700 text-right">{{ $lembaga->alamat_lengkap ?? '-' }}</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span class="text-xs text-gray-500">Kode Lembaga</span>
+                                                <span class="text-xs font-medium text-gray-700">{{ $lembaga->kode_lembaga ?? '-' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Deskripsi -->
+                                    @if($lembaga->deskripsi)
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <svg class="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                <h4 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">Deskripsi</h4>
+                                            </div>
+                                            <div class="bg-gray-50 rounded-lg p-3">
+                                                <p class="text-xs text-gray-600 leading-relaxed">{{ Str::limit($lembaga->deskripsi, 200) }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                @if ($lembagas->hasPages())
-                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
+                <!-- Pagination -->
+                @if($lembagas->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white">
                         {{ $lembagas->links() }}
                     </div>
                 @endif
+
             @else
-                <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
+                <!-- Empty State -->
+                <div class="py-16 text-center">
+                    <div class="relative inline-block">
+                        <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
                     </div>
+
                     @if(request('q') || request('provinsi_kode') || request('status'))
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">Tidak ada lembaga yang sesuai dengan filter yang dipilih.</p>
-                        <a href="{{ route('lembaga.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Reset Filter
-                        </a>
+                        <p class="text-sm text-gray-500 mb-2">Tidak ada lembaga yang sesuai dengan filter yang dipilih</p>
+                        <button onclick="resetAllFilters()"
+                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            Reset filter
+                        </button>
                     @else
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data Lembaga</h3>
-                        <p class="text-sm text-gray-500 mb-6">Mulai tambahkan data lembaga untuk mengelola informasi lembaga.</p>
+                        <p class="text-sm text-gray-500 mb-2">Belum ada data lembaga</p>
                         <a href="{{ route('lembaga.create') }}"
-                            class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            class="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
-                            Tambah Lembaga
+                            Tambah lembaga sekarang
                         </a>
                     @endif
                 </div>
@@ -418,354 +554,256 @@
         </div>
     </div>
 
-    {{-- Dropdown Container --}}
-    <div id="dropdown-container" class="fixed hidden z-50">
-        <div class="w-44 sm:w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-            <div class="py-1">
-                <a href="#" id="dropdown-show-link"
-                    class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
-                    Lihat Detail
-                </a>
-                <a href="#" id="dropdown-edit-link"
-                    class="flex items-center px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                    Edit
-                </a>
-
-                {{-- Toggle Status --}}
-                <button type="button" id="dropdown-toggle-status-btn"
-                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                    <svg id="dropdown-toggle-status-icon-nonaktif" class="w-4 h-4 mr-3 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                    </svg>
-                    <svg id="dropdown-toggle-status-icon-aktif" class="w-4 h-4 mr-3 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span id="dropdown-toggle-status-label">Nonaktifkan</span>
-                </button>
-
-                <div class="border-t border-gray-100 my-1"></div>
-
-                <button type="button" id="dropdown-delete-btn"
-                    class="flex items-center w-full px-3 sm:px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    Hapus
-                </button>
+    <!-- Toggle Status Modal -->
+    <div id="toggle-status-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-center mb-4">
+                    <div id="toggle-status-icon-nonaktif" class="w-14 h-14 bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl flex items-center justify-center shadow-inner hidden">
+                        <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                        </svg>
+                    </div>
+                    <div id="toggle-status-icon-aktif" class="w-14 h-14 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 id="toggle-status-title" class="text-lg font-semibold text-gray-900 mb-2 text-center">Nonaktifkan Lembaga</h3>
+                <p class="text-sm text-gray-500 mb-6 text-center">
+                    Apakah Anda yakin ingin <span id="toggle-status-action" class="font-semibold text-gray-700">menonaktifkan</span>
+                    lembaga "<span id="modal-toggle-lembaga-name" class="font-semibold text-gray-700"></span>"?
+                </p>
+                <div class="flex gap-3">
+                    <button type="button" id="cancel-toggle-status-btn"
+                        class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                        Batal
+                    </button>
+                    <button type="button" id="confirm-toggle-status-btn"
+                        class="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg">
+                        Konfirmasi
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- Toggle Status Modal --}}
-    <div id="toggle-status-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
-            <div class="flex justify-center mb-3 sm:mb-4">
-                <div id="toggle-status-icon-wrapper-nonaktif" class="hidden">
-                    <svg class="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                    </svg>
+    <!-- Delete Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-center mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
                 </div>
-                <div id="toggle-status-icon-wrapper-aktif" class="hidden">
-                    <svg class="h-8 w-8 sm:h-10 sm:w-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Hapus Lembaga</h3>
+                <p class="text-sm text-gray-500 mb-6 text-center">
+                    Apakah Anda yakin ingin menghapus lembaga "<span id="modal-lembaga-name" class="font-semibold text-gray-700"></span>"?
+                    Tindakan ini tidak dapat dibatalkan.
+                </p>
+                <div class="flex gap-3">
+                    <button type="button" id="cancel-delete-btn"
+                        class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                        Batal
+                    </button>
+                    <button type="button" id="confirm-delete-btn"
+                        class="flex-1 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg">
+                        Hapus
+                    </button>
                 </div>
-            </div>
-            <h3 id="toggle-status-modal-title" class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Nonaktifkan Lembaga</h3>
-            <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
-                Apakah Anda yakin ingin
-                <span id="toggle-status-action-label" class="font-semibold text-gray-700">menonaktifkan</span>
-                lembaga "<span id="modal-toggle-lembaga-name" class="font-semibold text-gray-700"></span>"?
-            </p>
-            <p id="toggle-status-modal-desc" class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">
-                Lembaga yang dinonaktifkan tidak akan bisa diakses.
-            </p>
-            <div class="flex justify-center gap-2 sm:gap-3">
-                <button type="button" id="cancel-toggle-status-btn"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                    Batal
-                </button>
-                <button type="button" id="confirm-toggle-status-btn"
-                    class="w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white transition-colors">
-                    Konfirmasi
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- Delete Modal --}}
-    <div id="delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl sm:rounded-2xl bg-white">
-            <div class="flex justify-center mb-3 sm:mb-4">
-                <svg class="h-8 w-8 sm:h-10 sm:w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-1.5 sm:mb-2 text-center">Hapus Lembaga</h3>
-            <p class="text-xs sm:text-sm text-gray-500 mb-1 text-center">
-                Apakah Anda yakin ingin menghapus lembaga
-                "<span id="modal-lembaga-name" class="font-semibold text-gray-700"></span>"?
-            </p>
-            <p class="text-xs sm:text-sm text-gray-500 mb-5 sm:mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
-            <div class="flex justify-center gap-2 sm:gap-3">
-                <button type="button" id="cancel-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg border border-gray-300 px-3 sm:px-4 py-2 sm:py-2.5 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                    Batal
-                </button>
-                <button type="button" id="confirm-delete-btn"
-                    class="w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 bg-red-600 text-xs sm:text-sm font-medium text-white hover:bg-red-700 transition-colors">
-                    Hapus
-                </button>
             </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        let currentDropdownData = null;
-        let currentLembagaIsActive = null;
+<script>
+    let currentToggleData = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownContainer        = document.getElementById('dropdown-container');
-            const showLink                 = document.getElementById('dropdown-show-link');
-            const editLink                 = document.getElementById('dropdown-edit-link');
-            const deleteBtn                = document.getElementById('dropdown-delete-btn');
-            const toggleStatusBtn          = document.getElementById('dropdown-toggle-status-btn');
-            const toggleStatusLabel        = document.getElementById('dropdown-toggle-status-label');
-            const toggleStatusIconNonaktif = document.getElementById('dropdown-toggle-status-icon-nonaktif');
-            const toggleStatusIconAktif    = document.getElementById('dropdown-toggle-status-icon-aktif');
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButton = document.getElementById('filterButton');
+        const filterPanel = document.getElementById('filterPanel');
+        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
-            // ── Desktop Expandable Rows ───────────────────────────────────
-            document.querySelectorAll('.expandable-row').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    const targetRow = document.getElementById(this.getAttribute('data-target'));
-                    const icon = this.querySelector('.expand-icon');
+        if (filterButton && filterPanel) {
+            filterButton.addEventListener('click', function() {
+                filterPanel.classList.toggle('hidden');
+            });
+        }
+
+        if (closeFilterPanelBtn && filterPanel) {
+            closeFilterPanelBtn.addEventListener('click', function() {
+                filterPanel.classList.add('hidden');
+            });
+        }
+
+        // Desktop Expandable row
+        document.querySelectorAll('.expandable-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-btn') || e.target.closest('a') || e.target.closest('.toggle-status-btn')) return;
+                const targetId = this.getAttribute('data-target');
+                const targetRow = document.getElementById(targetId);
+                const icon = this.querySelector('.expand-icon');
+                if (targetRow) {
                     targetRow.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
-                });
-            });
-
-            // ── Mobile Expandable Cards ───────────────────────────────────
-            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a') || e.target.closest('.dropdown-toggle')) return;
-                    const targetContent = document.getElementById(this.getAttribute('data-target'));
-                    const icon = this.querySelector('.expand-icon-mobile');
-                    targetContent.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                });
-            });
-
-            // ── Dropdown ──────────────────────────────────────────────────
-            document.addEventListener('click', function(e) {
-                const toggle = e.target.closest('.dropdown-toggle');
-                if (toggle) {
-                    e.stopPropagation();
-
-                    const dropdownUuid = toggle.getAttribute('data-uuid');
-                    const lembagaName  = toggle.getAttribute('data-nama');
-                    const isActive     = toggle.getAttribute('data-is-active') === '1';
-
-                    if (dropdownContainer.getAttribute('data-current-uuid') === dropdownUuid &&
-                        !dropdownContainer.classList.contains('hidden')) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                        return;
-                    }
-
-                    dropdownContainer.setAttribute('data-current-uuid', dropdownUuid);
-
-                    const rect          = toggle.getBoundingClientRect();
-                    const dropdownWidth = window.innerWidth < 640 ? 176 : 192;
-                    const dropdownHeight = 170;
-
-                    // FIX: gunakan viewport coords langsung (fixed positioning)
-                    let top  = rect.bottom + 4;
-                    let left = rect.right - dropdownWidth;
-
-                    if (left < 10) left = 10;
-                    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
-                    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
-
-                    dropdownContainer.style.top  = top + 'px';
-                    dropdownContainer.style.left = left + 'px';
-
-                    showLink.href = `/lembaga/${dropdownUuid}`;
-                    editLink.href = `/lembaga/${dropdownUuid}/edit`;
-
-                    currentDropdownData    = { uuid: dropdownUuid, name: lembagaName };
-                    currentLembagaIsActive = isActive;
-
-                    // Update toggle status button — tanpa warna-warni
-                    if (isActive) {
-                        toggleStatusLabel.textContent = 'Nonaktifkan';
-                        toggleStatusIconNonaktif.classList.remove('hidden');
-                        toggleStatusIconAktif.classList.add('hidden');
-                    } else {
-                        toggleStatusLabel.textContent = 'Aktifkan';
-                        toggleStatusIconNonaktif.classList.add('hidden');
-                        toggleStatusIconAktif.classList.remove('hidden');
-                    }
-
-                    dropdownContainer.classList.remove('hidden');
-                } else {
-                    if (!dropdownContainer.contains(e.target)) {
-                        dropdownContainer.classList.add('hidden');
-                        dropdownContainer.removeAttribute('data-current-uuid');
-                    }
+                    if (icon) icon.classList.toggle('rotate-90');
                 }
             });
+        });
 
-            // ── Toggle Status ─────────────────────────────────────────────
-            toggleStatusBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!currentDropdownData) return;
-                dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
+        // Mobile Expandable Cards
+        document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.closest('.delete-btn') || e.target.closest('a') || e.target.closest('.toggle-status-btn')) return;
+                const targetId = this.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                const icon = this.querySelector('.expand-icon-mobile');
+                if (targetContent) {
+                    targetContent.classList.toggle('hidden');
+                    if (icon) icon.classList.toggle('rotate-180');
+                }
+            });
+        });
 
-                const isActive            = currentLembagaIsActive;
-                const modal               = document.getElementById('toggle-status-modal');
-                const modalTitle          = document.getElementById('toggle-status-modal-title');
-                const actionLabel         = document.getElementById('toggle-status-action-label');
-                const modalDesc           = document.getElementById('toggle-status-modal-desc');
-                const confirmBtn          = document.getElementById('confirm-toggle-status-btn');
-                const iconWrapperNonaktif = document.getElementById('toggle-status-icon-wrapper-nonaktif');
-                const iconWrapperAktif    = document.getElementById('toggle-status-icon-wrapper-aktif');
+        // Toggle Status button handler
+        const toggleStatusModal = document.getElementById('toggle-status-modal');
+        const toggleStatusTitle = document.getElementById('toggle-status-title');
+        const toggleStatusAction = document.getElementById('toggle-status-action');
+        const confirmToggleBtn = document.getElementById('confirm-toggle-status-btn');
+        const cancelToggleBtn = document.getElementById('cancel-toggle-status-btn');
+        const iconNonaktif = document.getElementById('toggle-status-icon-nonaktif');
+        const iconAktif = document.getElementById('toggle-status-icon-aktif');
 
-                document.getElementById('modal-toggle-lembaga-name').textContent = currentDropdownData.name;
+        document.querySelectorAll('.toggle-status-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const uuid = this.getAttribute('data-uuid');
+                const nama = this.getAttribute('data-nama');
+                const isActive = this.getAttribute('data-is-active') === '1';
+
+                currentToggleData = { uuid, nama, isActive };
+
+                document.getElementById('modal-toggle-lembaga-name').textContent = nama;
 
                 if (isActive) {
-                    modalTitle.textContent    = 'Nonaktifkan Lembaga';
-                    actionLabel.textContent   = 'menonaktifkan';
-                    modalDesc.textContent     = 'Lembaga yang dinonaktifkan tidak akan bisa diakses oleh pengguna.';
-                    confirmBtn.className      = 'w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 transition-colors';
-                    iconWrapperNonaktif.classList.remove('hidden');
-                    iconWrapperAktif.classList.add('hidden');
+                    toggleStatusTitle.textContent = 'Nonaktifkan Lembaga';
+                    toggleStatusAction.textContent = 'menonaktifkan';
+                    confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
+                    iconNonaktif.classList.remove('hidden');
+                    iconAktif.classList.add('hidden');
                 } else {
-                    modalTitle.textContent    = 'Aktifkan Lembaga';
-                    actionLabel.textContent   = 'mengaktifkan';
-                    modalDesc.textContent     = 'Lembaga yang diaktifkan kembali akan bisa diakses oleh pengguna.';
-                    confirmBtn.className      = 'w-24 sm:w-28 rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors';
-                    iconWrapperNonaktif.classList.add('hidden');
-                    iconWrapperAktif.classList.remove('hidden');
+                    toggleStatusTitle.textContent = 'Aktifkan Lembaga';
+                    toggleStatusAction.textContent = 'mengaktifkan';
+                    confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
+                    iconNonaktif.classList.add('hidden');
+                    iconAktif.classList.remove('hidden');
                 }
 
-                modal.classList.remove('hidden');
+                toggleStatusModal.classList.remove('hidden');
             });
-
-            document.getElementById('confirm-toggle-status-btn').addEventListener('click', function() {
-                if (!currentDropdownData) return;
-                const form   = document.createElement('form');
-                form.method  = 'POST';
-                form.action  = `/lembaga/${currentDropdownData.uuid}/toggle-status`;
-                const csrf   = document.createElement('input');
-                csrf.type    = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
-                const method = document.createElement('input');
-                method.type  = 'hidden'; method.name = '_method'; method.value = 'PATCH';
-                form.appendChild(csrf);
-                form.appendChild(method);
-                document.body.appendChild(form);
-                form.submit();
-            });
-
-            document.getElementById('cancel-toggle-status-btn').addEventListener('click', () =>
-                document.getElementById('toggle-status-modal').classList.add('hidden')
-            );
-            document.getElementById('toggle-status-modal').addEventListener('click', function(e) {
-                if (e.target === this) this.classList.add('hidden');
-            });
-
-            // ── Delete ────────────────────────────────────────────────────
-            deleteBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (!currentDropdownData) return;
-                dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
-                document.getElementById('modal-lembaga-name').textContent = currentDropdownData.name;
-                document.getElementById('delete-modal').classList.remove('hidden');
-            });
-
-            document.getElementById('confirm-delete-btn').addEventListener('click', function() {
-                if (!currentDropdownData) return;
-                const form   = document.createElement('form');
-                form.method  = 'POST';
-                form.action  = `/lembaga/${currentDropdownData.uuid}`;
-                const csrf   = document.createElement('input');
-                csrf.type    = 'hidden'; csrf.name = '_token'; csrf.value = '{{ csrf_token() }}';
-                const method = document.createElement('input');
-                method.type  = 'hidden'; method.name = '_method'; method.value = 'DELETE';
-                form.appendChild(csrf);
-                form.appendChild(method);
-                document.body.appendChild(form);
-                form.submit();
-            });
-
-            document.getElementById('cancel-delete-btn').addEventListener('click', () =>
-                document.getElementById('delete-modal').classList.add('hidden')
-            );
-            document.getElementById('delete-modal').addEventListener('click', function(e) {
-                if (e.target === this) this.classList.add('hidden');
-            });
-
-            // ── Close on scroll / resize ──────────────────────────────────
-            const closeDropdown = () => {
-                dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
-            };
-            window.addEventListener('scroll', closeDropdown, true);
-            window.addEventListener('resize', closeDropdown);
         });
 
-        function toggleSearch() {
-            const btn       = document.getElementById('search-button');
-            const form      = document.getElementById('search-form');
-            const input     = document.getElementById('search-input');
-            const container = document.getElementById('search-container');
-            if (form.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                form.classList.remove('hidden');
-                container.style.minWidth = '280px';
-                setTimeout(() => input.focus(), 50);
-            } else {
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = '';
-            }
-        }
+        confirmToggleBtn.addEventListener('click', function() {
+            if (!currentToggleData) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/lembaga/${currentToggleData.uuid}/toggle-status`;
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            const method = document.createElement('input');
+            method.type = 'hidden';
+            method.name = '_method';
+            method.value = 'PATCH';
+            form.appendChild(csrf);
+            form.appendChild(method);
+            document.body.appendChild(form);
+            form.submit();
+        });
 
-        function toggleFilter() {
-            document.getElementById('filter-panel').classList.toggle('hidden');
-        }
+        cancelToggleBtn.addEventListener('click', function() {
+            toggleStatusModal.classList.add('hidden');
+            currentToggleData = null;
+        });
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const form = document.getElementById('search-form');
-                const btn  = document.getElementById('search-button');
-                const container = document.getElementById('search-container');
-                if (!form.classList.contains('hidden')) {
-                    form.classList.add('hidden');
-                    btn.classList.remove('hidden');
-                    container.style.minWidth = '';
-                }
-                document.getElementById('delete-modal').classList.add('hidden');
-                document.getElementById('toggle-status-modal').classList.add('hidden');
+        toggleStatusModal.addEventListener('click', function(e) {
+            if (e.target === toggleStatusModal) {
+                toggleStatusModal.classList.add('hidden');
+                currentToggleData = null;
             }
         });
-    </script>
+
+        // Delete button handler
+        const deleteModal = document.getElementById('delete-modal');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        let currentDeleteData = null;
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const uuid = this.getAttribute('data-uuid');
+                const nama = this.getAttribute('data-nama');
+                currentDeleteData = { uuid, nama };
+                document.getElementById('modal-lembaga-name').textContent = nama;
+                deleteModal.classList.remove('hidden');
+            });
+        });
+
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!currentDeleteData) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/lembaga/${currentDeleteData.uuid}`;
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            const method = document.createElement('input');
+            method.type = 'hidden';
+            method.name = '_method';
+            method.value = 'DELETE';
+            form.appendChild(csrf);
+            form.appendChild(method);
+            document.body.appendChild(form);
+            form.submit();
+        });
+
+        cancelDeleteBtn.addEventListener('click', function() {
+            deleteModal.classList.add('hidden');
+            currentDeleteData = null;
+        });
+
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) {
+                deleteModal.classList.add('hidden');
+                currentDeleteData = null;
+            }
+        });
+    });
+
+    function removeFilter(filterName) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(filterName);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+
+    function resetAllFilters() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        url.searchParams.delete('provinsi_kode');
+        url.searchParams.delete('status');
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
+</script>
 @endpush

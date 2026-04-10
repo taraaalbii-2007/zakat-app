@@ -1,416 +1,482 @@
+{{-- resources/views/superadmin/kategori-bulletin/index.blade.php --}}
+
 @extends('layouts.app')
 
 @section('title', 'Kelola Kategori Bulletin')
 
 @section('content')
-<div class="space-y-4 sm:space-y-6">
+    <div class="space-y-6">
+        <!-- Container utama -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-    <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
-        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                <div>
-                    <h2 class="text-base sm:text-lg font-semibold text-gray-900">Daftar Kategori Bulletin</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $kategoriList->total() }} Kategori</p>
-                </div>
-                <div class="flex items-center gap-2 sm:gap-3">
-                    {{-- Tombol Filter --}}
-                    <button type="button" onclick="toggleFilter()" id="filter-button"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
-                        <span class="hidden sm:inline-block sm:ml-2">Filter</span>
-                        @if(request('q'))
-                            <span class="ml-1.5 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-primary rounded-full">1</span>
-                        @endif
-                    </button>
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <h1 class="text-base font-semibold text-gray-800">Kategori Bulletin</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Kelola dan konfigurasi kategori bulletin</p>
+                    </div>
 
-                    {{-- Tombol Tambah --}}
-                    <a href="{{ route('superadmin.kategori-bulletin.create') }}"
-                       class="group inline-flex items-center justify-center px-3 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        <span class="hidden sm:inline-block sm:ml-2">Tambah Kategori</span>
-                    </a>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <!-- Tombol Filter -->
+                        <button type="button" id="filterButton"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filter & Cari
+                        </button>
+
+                        <!-- Tombol Tambah -->
+                        <a href="{{ route('superadmin.kategori-bulletin.create') }}"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Filter Panel --}}
-        <div id="filter-panel" class="{{ request('q') ? '' : 'hidden' }} border-b border-gray-200 bg-gray-50">
-            <form method="GET" action="{{ route('superadmin.kategori-bulletin.index') }}" class="p-4 sm:p-6">
-                <div class="grid grid-cols-1 gap-4">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-700 mb-2">Cari Kategori</label>
+            <!-- Statistik Bar -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $kategoriList->total() }}</span>
+                        <span class="text-sm text-gray-500">Kategori Bulletin</span>
+                    </div>
+
+                    <!-- Active Filters Tags -->
+                    @if (request('q'))
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-400">Filter aktif:</span>
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                "{{ request('q') }}"
+                                <button onclick="removeFilter('q')"
+                                    class="hover:text-green-900 transition-colors ml-1">×</button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Filter Panel -->
+            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
+                <form method="GET" action="{{ route('superadmin.kategori-bulletin.index') }}" class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex-1">
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
-                            <input type="search" name="q" value="{{ request('q') }}"
-                                   placeholder="Cari nama kategori..."
-                                   class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <input type="text" name="q" id="filterSearchInput" value="{{ request('q') }}"
+                                placeholder="Cari kategori bulletin..."
+                                class="pl-8 pr-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <a href="{{ route('superadmin.kategori-bulletin.index') }}"
-                           class="flex-1 sm:flex-none px-4 py-2 text-sm text-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                            Reset
-                        </a>
                         <button type="submit"
-                                class="flex-1 sm:flex-none px-4 py-2 bg-primary text-white text-sm rounded-lg hover:bg-primary-600 transition-colors">
-                            Terapkan Filter
+                            class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            Terapkan
                         </button>
+                        <button type="button" id="closeFilterPanelBtn"
+                            class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
+                        @if (request('q'))
+                            <a href="{{ route('superadmin.kategori-bulletin.index') }}"
+                                class="px-3 py-1.5 text-gray-500 hover:text-red-600 text-xs font-medium transition-colors">
+                                Reset
+                            </a>
+                        @endif
                     </div>
-                </div>
-            </form>
-        </div>
-
-        @if($kategoriList->count() > 0)
-
-            {{-- Desktop Table --}}
-            <div class="hidden md:block overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">#</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Kategori</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Bulletin</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($kategoriList as $index => $kategori)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                    {{ $kategoriList->firstItem() + $index }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                            </svg>
-                                        </div>
-                                        <span class="text-sm font-medium text-gray-900">{{ $kategori->nama_kategori }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($kategori->bulletins_count > 0)
-                                        <a href="{{ route('superadmin.bulletin.index', ['kategori' => $kategori->id]) }}"
-                                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            {{ $kategori->bulletins_count }} bulletin
-                                        </a>
-                                    @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
-                                            0 bulletin
-                                        </span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-xs text-gray-900">{{ $kategori->created_at->format('d M Y') }}</div>
-                                    <div class="text-xs text-gray-500">{{ $kategori->created_at->diffForHumans() }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <button type="button"
-                                            data-dropdown-toggle="{{ $kategori->uuid }}"
-                                            data-nama="{{ $kategori->nama_kategori }}"
-                                            data-count="{{ $kategori->bulletins_count }}"
-                                            class="dropdown-toggle inline-flex items-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                                        </svg>
-                                    </button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                </form>
             </div>
 
-            {{-- Mobile Cards --}}
-            <div class="md:hidden divide-y divide-gray-200">
-                @foreach($kategoriList as $kategori)
-                    <div class="p-3 hover:bg-gray-50 transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div class="flex items-start gap-2.5 flex-1 min-w-0">
-                                <div class="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                                    </svg>
-                                </div>
+            <!-- Tabel Desktop -->
+            @if ($kategoriList->count() > 0)
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    NO
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    NAMA KATEGORI
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    JUMLAH BULLETIN
+                                </th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    DIBUAT
+                                </th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">
+                                    AKSI
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @foreach ($kategoriList as $index => $kategori)
+                                <tr class="group hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-300">
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm font-medium text-gray-800">{{ $kategoriList->firstItem() + $index }}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-800 group-hover:text-green-700 transition-colors duration-200">
+                                                {{ $kategori->nama_kategori }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @if($kategori->bulletins_count > 0)
+                                            <a href="{{ route('superadmin.bulletin.index', ['kategori' => $kategori->id]) }}"
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                {{ $kategori->bulletins_count }} bulletin
+                                            </a>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
+                                                0 bulletin
+                                            </span>
+                                        @endif
+                                     </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-xs text-gray-900">{{ $kategori->created_at->format('d M Y') }}</div>
+                                        <div class="text-xs text-gray-500">{{ $kategori->created_at->diffForHumans() }}</div>
+                                     </td>
+                                    <td class="px-5 py-3 text-center">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <!-- Ikon Edit dengan Tooltip -->
+                                            <div class="relative group/tooltip">
+                                                <a href="{{ route('superadmin.kategori-bulletin.edit', $kategori->uuid) }}"
+                                                    class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                </a>
+                                                <!-- Tooltip Edit -->
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Edit
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Ikon Hapus dengan Tooltip -->
+                                            <div class="relative group/tooltip">
+                                                <button type="button"
+                                                    class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                    data-uuid="{{ $kategori->uuid }}" 
+                                                    data-nama="{{ $kategori->nama_kategori }}"
+                                                    data-count="{{ $kategori->bulletins_count }}">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                                <!-- Tooltip Hapus -->
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Hapus
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                     </td>
+                                 </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="block md:hidden divide-y divide-gray-100">
+                    @foreach ($kategoriList as $index => $kategori)
+                        <div class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200">
+                            <div class="flex items-start justify-between gap-3">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate">{{ $kategori->nama_kategori }}</p>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <span class="text-[10px] text-gray-400">{{ $kategori->created_at->format('d M Y') }}</span>
-                                        <span class="text-gray-300">•</span>
-                                        <span class="text-[10px] {{ $kategori->bulletins_count > 0 ? 'text-blue-600 font-medium' : 'text-gray-400' }}">
-                                            {{ $kategori->bulletins_count }} bulletin
-                                        </span>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-xs font-medium text-gray-800">{{ $kategoriList->firstItem() + $index }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-sm font-semibold text-gray-800 break-words">
+                                            {{ $kategori->nama_kategori }}
+                                        </h3>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                                        @if($kategori->bulletins_count > 0)
+                                            <a href="{{ route('superadmin.bulletin.index', ['kategori' => $kategori->id]) }}"
+                                                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                {{ $kategori->bulletins_count }} bulletin
+                                            </a>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">
+                                                0 bulletin
+                                            </span>
+                                        @endif
+                                        <span class="text-xs text-gray-400">{{ $kategori->created_at->format('d M Y') }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <!-- Edit dengan Tooltip -->
+                                    <div class="relative group/tooltip">
+                                        <a href="{{ route('superadmin.kategori-bulletin.edit', $kategori->uuid) }}"
+                                            class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
+                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                            Edit
+                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hapus dengan Tooltip -->
+                                    <div class="relative group/tooltip">
+                                        <button type="button"
+                                            class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                            data-uuid="{{ $kategori->uuid }}" 
+                                            data-nama="{{ $kategori->nama_kategori }}"
+                                            data-count="{{ $kategori->bulletins_count }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                            Hapus
+                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <button type="button"
-                                    data-dropdown-toggle="{{ $kategori->uuid }}"
-                                    data-nama="{{ $kategori->nama_kategori }}"
-                                    data-count="{{ $kategori->bulletins_count }}"
-                                    class="dropdown-toggle flex-shrink-0 ml-1.5 inline-flex items-center p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                                </svg>
-                            </button>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Pagination -->
+                @if ($kategoriList->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white">
+                        {{ $kategoriList->links() }}
+                    </div>
+                @endif
+            @else
+                <!-- Empty State -->
+                <div class="py-16 text-center">
+                    <div class="relative inline-block">
+                        <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
                         </div>
                     </div>
-                @endforeach
-            </div>
 
-            {{-- Pagination --}}
-            @if($kategoriList->hasPages())
-                <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
-                    {{ $kategoriList->links() }}
+                    @if (request('q'))
+                        <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk "<span class="font-medium text-gray-700">{{ request('q') }}</span>"</p>
+                        <a href="{{ route('superadmin.kategori-bulletin.index') }}"
+                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            Reset pencarian
+                        </a>
+                    @else
+                        <p class="text-sm text-gray-500 mb-2">Belum ada data kategori bulletin</p>
+                        <a href="{{ route('superadmin.kategori-bulletin.create') }}"
+                            class="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah data sekarang
+                        </a>
+                    @endif
                 </div>
             @endif
+        </div>
+    </div>
 
-        @else
-            {{-- Empty State --}}
-            <div class="p-8 sm:p-12 text-center">
-                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-4">
-                    <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                              d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                    </svg>
-                </div>
-                @if(request('q'))
-                    <h3 class="text-base font-medium text-gray-900 mb-2">Kategori Tidak Ditemukan</h3>
-                    <p class="text-sm text-gray-500 mb-6">Tidak ada kategori yang cocok dengan filter yang diterapkan.</p>
-                    <a href="{{ route('superadmin.kategori-bulletin.index') }}"
-                       class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                        Reset Filter
-                    </a>
-                @else
-                    <h3 class="text-base font-medium text-gray-900 mb-2">Belum Ada Kategori</h3>
-                    <p class="text-sm text-gray-500 mb-6">Mulai dengan membuat kategori pertama.</p>
-                    <a href="{{ route('superadmin.kategori-bulletin.create') }}"
-                       class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+    <!-- Delete Modal -->
+    <div id="delete-modal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl transform transition-all duration-300 animate-scale-in">
+            <div class="p-6">
+                <div class="flex justify-center mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        Tambah Kategori
-                    </a>
-                @endif
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Hapus Kategori Bulletin</h3>
+                <p class="text-sm text-gray-500 mb-2 text-center">
+                    Apakah Anda yakin ingin menghapus "<span id="modal-kategori-name" class="font-semibold text-gray-700"></span>"?
+                </p>
+                
+                <!-- Warning jika masih ada bulletin -->
+                <div id="modal-warning" class="hidden mb-4 px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-xs text-yellow-700 text-center">
+                        <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        Kategori ini masih digunakan oleh <span id="modal-bulletin-count" class="font-semibold"></span> bulletin.
+                        Hapus atau pindahkan bulletin tersebut terlebih dahulu.
+                    </p>
+                </div>
+                
+                <p id="modal-confirm-text" class="text-sm text-gray-500 mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
+                
+                <div class="flex gap-3">
+                    <button type="button" id="cancel-delete-btn"
+                        class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                        Batal
+                    </button>
+                    <form id="delete-form" method="POST" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" id="confirm-delete-btn"
+                            class="w-full px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
             </div>
-        @endif
-    </div>
-</div>
-
-{{-- Dropdown Menu --}}
-<div id="dropdown-container" class="fixed hidden z-50">
-    <div class="w-44 sm:w-48 rounded-xl shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-        <div class="py-1">
-            <a href="#" id="dropdown-edit-link"
-               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Edit
-            </a>
-            <button type="button" id="dropdown-delete-btn"
-                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                Hapus
-            </button>
         </div>
     </div>
-</div>
-
-{{-- Delete Modal --}}
-<div id="delete-modal"
-     class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="p-4 sm:p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl bg-white">
-        <div class="flex justify-center mb-4">
-            <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-        </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Hapus Kategori</h3>
-        <p class="text-sm text-gray-500 mb-1 text-center">
-            Apakah Anda yakin ingin menghapus kategori
-            "<span id="modal-kategori-name" class="font-semibold text-gray-700"></span>"?
-        </p>
-
-        {{-- Warning jika masih ada bulletin --}}
-        <div id="modal-warning" class="hidden mt-3 mb-2 px-3 py-2.5 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p class="text-xs text-yellow-700 text-center">
-                <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                Kategori ini masih digunakan oleh <span id="modal-bulletin-count" class="font-semibold"></span> bulletin.
-                Hapus atau pindahkan bulletin tersebut terlebih dahulu.
-            </p>
-        </div>
-
-        <p id="modal-confirm-text" class="text-sm text-gray-500 mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
-
-        <div class="flex justify-center gap-3">
-            <button type="button" id="cancel-delete-btn"
-                    class="px-5 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                Batal
-            </button>
-            <button type="button" id="confirm-delete-btn"
-                    class="px-5 py-2 rounded-lg bg-red-600 text-sm font-medium text-white hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                Hapus
-            </button>
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
 <script>
-let currentDropdownData = null;
+    let currentDeleteData = null;
+    const baseUrl = "{{ rtrim(route('superadmin.kategori-bulletin.index'), '/') }}";
 
-document.addEventListener('DOMContentLoaded', function () {
-    const dropdownContainer = document.getElementById('dropdown-container');
-    const editLink          = document.getElementById('dropdown-edit-link');
-    const deleteBtn         = document.getElementById('dropdown-delete-btn');
-    const baseUrl           = '{{ url("/kategori-bulletin") }}';
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteModal = document.getElementById('delete-modal');
+        const deleteForm = document.getElementById('delete-form');
+        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+        const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
 
-    // ---- Dropdown toggle ----
-    document.addEventListener('click', function (e) {
-        const toggle = e.target.closest('.dropdown-toggle');
+        // Filter Panel elements
+        const filterButton = document.getElementById('filterButton');
+        const filterPanel = document.getElementById('filterPanel');
+        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
-        if (toggle) {
-            e.stopPropagation();
-            const uuid  = toggle.getAttribute('data-dropdown-toggle');
-            const nama  = toggle.getAttribute('data-nama');
-            const count = parseInt(toggle.getAttribute('data-count'));
+        // Toggle filter panel
+        if (filterButton && filterPanel) {
+            filterButton.addEventListener('click', function() {
+                if (filterPanel.classList.contains('hidden')) {
+                    filterPanel.classList.remove('hidden');
+                } else {
+                    filterPanel.classList.add('hidden');
+                }
+            });
+        }
 
-            if (dropdownContainer.getAttribute('data-current-uuid') === uuid &&
-                !dropdownContainer.classList.contains('hidden')) {
-                dropdownContainer.classList.add('hidden');
-                dropdownContainer.removeAttribute('data-current-uuid');
-                return;
-            }
+        // Tutup filter panel
+        if (closeFilterPanelBtn) {
+            closeFilterPanelBtn.addEventListener('click', function() {
+                filterPanel.classList.add('hidden');
+            });
+        }
 
-           dropdownContainer.setAttribute('data-current-uuid', uuid);
+        // Delete button handler
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const uuid = this.getAttribute('data-uuid');
+                const nama = this.getAttribute('data-nama');
+                const count = parseInt(this.getAttribute('data-count'));
 
-const rect = toggle.getBoundingClientRect();
+                currentDeleteData = { uuid, nama, count };
+                
+                document.getElementById('modal-kategori-name').textContent = nama;
+                
+                const warning = document.getElementById('modal-warning');
+                const countSpan = document.getElementById('modal-bulletin-count');
+                const confirmText = document.getElementById('modal-confirm-text');
+                
+                if (count > 0) {
+                    warning.classList.remove('hidden');
+                    countSpan.textContent = count;
+                    confirmText.textContent = '';
+                    confirmDeleteBtn.disabled = true;
+                } else {
+                    warning.classList.add('hidden');
+                    confirmText.textContent = 'Tindakan ini tidak dapat dibatalkan.';
+                    confirmDeleteBtn.disabled = false;
+                }
+                
+                deleteForm.action = `${baseUrl}/${uuid}`;
+                deleteModal.classList.remove('hidden');
+            });
+        });
 
-editLink.href = baseUrl + '/' + uuid + '/edit';
+        // Confirm delete handler
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function(e) {
+                if (currentDeleteData && currentDeleteData.count > 0) {
+                    e.preventDefault();
+                    return;
+                }
+                // Form akan submit secara normal
+            });
+        }
 
-currentDropdownData = { uuid, nama, count };
+        // Cancel delete
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                deleteModal.classList.add('hidden');
+                currentDeleteData = null;
+            });
+        }
 
-dropdownContainer.style.visibility = 'hidden';
-dropdownContainer.classList.remove('hidden');
-
-requestAnimationFrame(() => {
-    const dropdownWidth  = dropdownContainer.offsetWidth;
-    const dropdownHeight = dropdownContainer.offsetHeight;
-
-    let top  = rect.bottom + 4;
-    let left = rect.right - dropdownWidth;
-
-    if (left < 10) left = 10;
-    if (left + dropdownWidth > window.innerWidth - 10) left = window.innerWidth - dropdownWidth - 10;
-    if (top + dropdownHeight > window.innerHeight) top = rect.top - dropdownHeight - 4;
-    if (top < 4) top = 4;
-
-    dropdownContainer.style.top        = top  + 'px';
-    dropdownContainer.style.left       = left + 'px';
-    dropdownContainer.style.visibility = '';
-});
-        } else if (!dropdownContainer.contains(e.target)) {
-            dropdownContainer.classList.add('hidden');
-            dropdownContainer.removeAttribute('data-current-uuid');
+        // Close modal when clicking outside
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.add('hidden');
+                    currentDeleteData = null;
+                }
+            });
         }
     });
 
-    // ---- Delete button ----
-    deleteBtn.addEventListener('click', function () {
-        if (!currentDropdownData) return;
-        dropdownContainer.classList.add('hidden');
-        dropdownContainer.removeAttribute('data-current-uuid');
-
-        const { nama, count } = currentDropdownData;
-        const warning     = document.getElementById('modal-warning');
-        const countSpan   = document.getElementById('modal-bulletin-count');
-        const confirmText = document.getElementById('modal-confirm-text');
-        const confirmBtn  = document.getElementById('confirm-delete-btn');
-
-        document.getElementById('modal-kategori-name').textContent = nama;
-
-        if (count > 0) {
-            warning.classList.remove('hidden');
-            countSpan.textContent   = count;
-            confirmText.textContent = '';
-            confirmBtn.disabled     = true;
-        } else {
-            warning.classList.add('hidden');
-            confirmText.textContent = 'Tindakan ini tidak dapat dibatalkan.';
-            confirmBtn.disabled     = false;
-        }
-
-        document.getElementById('delete-modal').classList.remove('hidden');
-    });
-
-    // ---- Confirm delete ----
-    document.getElementById('confirm-delete-btn').addEventListener('click', function () {
-        if (!currentDropdownData || currentDropdownData.count > 0) return;
-
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = baseUrl + '/' + currentDropdownData.uuid;
-
-        const csrf = document.createElement('input');
-        csrf.type  = 'hidden';
-        csrf.name  = '_token';
-        csrf.value = '{{ csrf_token() }}';
-
-        const method = document.createElement('input');
-        method.type  = 'hidden';
-        method.name  = '_method';
-        method.value = 'DELETE';
-
-        form.appendChild(csrf);
-        form.appendChild(method);
-        document.body.appendChild(form);
-        form.submit();
-    });
-
-    document.getElementById('cancel-delete-btn').addEventListener('click', function () {
-        document.getElementById('delete-modal').classList.add('hidden');
-    });
-
-    document.getElementById('delete-modal').addEventListener('click', function (e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
-
-    window.addEventListener('scroll', function () {
-        if (!dropdownContainer.classList.contains('hidden')) {
-            dropdownContainer.classList.add('hidden');
-            dropdownContainer.removeAttribute('data-current-uuid');
-        }
-    }, true);
-});
-
-function toggleFilter() {
-    document.getElementById('filter-panel').classList.toggle('hidden');
-}
+    function removeFilter(filterName) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(filterName);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
 </script>
 @endpush

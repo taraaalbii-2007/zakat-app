@@ -3,99 +3,112 @@
 @section('title', 'Data Amil Semua Lembaga')
 
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+    <div class="space-y-6">
+        <!-- Container utama -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            {{-- Header --}}
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Data Amil Semua Lembaga</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1" id="total-info">
-                            Total: {{ $totalAmil }} Amil dari {{ $lembagas->count() }} Lembaga
-                        </p>
+                        <h1 class="text-base font-semibold text-gray-800">Data Amil Semua Lembaga</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Kelola dan konfigurasi data amil dari seluruh lembaga</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        {{-- Filter --}}
-                        <button type="button" onclick="toggleFilter()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
-                            {{ request()->hasAny(['status', 'lembaga_id']) ? 'ring-2 ring-primary' : '' }}"
-                            id="filter-button">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <!-- Tombol Filter -->
+                        <button type="button" id="filterButton"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
+                            Filter & Cari
                         </button>
-
-                        {{-- Search Form --}}
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('q') ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
-                            </button>
-                            
-                            <form method="GET" action="#" id="search-form"
-                                class="{{ request('q') ? '' : 'hidden' }}" onsubmit="applyFilters(); return false;">
-                                @foreach (['status', 'lembaga_id'] as $filter)
-                                    @if (request($filter))
-                                        <input type="hidden" name="{{ $filter }}" value="{{ request($filter) }}">
-                                    @endif
-                                @endforeach
-                                <div class="flex items-center gap-2">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="q" value="{{ request('q') }}"
-                                            id="search-input" placeholder="Cari nama lembaga..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                    @if (request()->hasAny(['q', 'status', 'lembaga_id']))
-                                        <button type="button" onclick="resetFilters()"
-                                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                                            Reset
-                                        </button>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Filter Panel --}}
-            <div id="filter-panel"
-                class="{{ request()->hasAny(['status', 'lembaga_id']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                <form method="GET" action="#" id="filter-form" onsubmit="applyFilters(); return false;">
-                    @if (request('q'))
-                        <input type="hidden" name="q" value="{{ request('q') }}">
+            <!-- Statistik Bar -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $totalAmil }}</span>
+                        <span class="text-sm text-gray-500">Amil dari</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $lembagas->count() }}</span>
+                        <span class="text-sm text-gray-500">Lembaga</span>
+                    </div>
+
+                    <!-- Active Filters Tags -->
+                    @if(request('q') || request('status') || request('lembaga_id'))
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-400">Filter aktif:</span>
+                            
+                            @if(request('q'))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    "{{ request('q') }}"
+                                    <button onclick="removeFilter('q')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                            
+                            @if(request('status'))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Status: {{ request('status') == 'aktif' ? 'Aktif' : (request('status') == 'cuti' ? 'Cuti' : 'Nonaktif') }}
+                                    <button onclick="removeFilter('status')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                            
+                            @if(request('lembaga_id'))
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Lembaga: {{ $lembagas->firstWhere('id', request('lembaga_id'))?->nama ?? request('lembaga_id') }}
+                                    <button onclick="removeFilter('lembaga_id')" class="hover:text-green-900 transition-colors ml-1">×</button>
+                                </div>
+                            @endif
+                        </div>
                     @endif
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                </div>
+            </div>
+
+            <!-- Filter Panel -->
+            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
+                <form method="GET" action="{{ route('superadmin.amil.index') }}" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <!-- Search Field -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Amil</label>
-                            <select name="status" id="filter-status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="applyFilters()">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Lembaga</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                    <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" name="q" value="{{ request('q') }}"
+                                    placeholder="Cari nama lembaga..."
+                                    class="pl-8 pr-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Filter Status -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status Amil</label>
+                            <select name="status"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                                 <option value="">Semua Status</option>
                                 <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                                 <option value="cuti" {{ request('status') == 'cuti' ? 'selected' : '' }}>Cuti</option>
                                 <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
+
+                        <!-- Filter Lembaga -->
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Lembaga</label>
-                            <select name="lembaga_id" id="filter-lembaga"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                onchange="applyFilters()">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Lembaga</label>
+                            <select name="lembaga_id"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                                 <option value="">Semua Lembaga</option>
                                 @foreach ($lembagas as $lembaga)
                                     <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
@@ -105,473 +118,384 @@
                             </select>
                         </div>
                     </div>
-                    @if (request()->hasAny(['status', 'lembaga_id']))
-                        <div class="mt-3 flex justify-end">
-                            <button type="button" onclick="resetFilters()"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+
+                    <div class="flex gap-2 justify-end">
+                        @if (request('q') || request('status') || request('lembaga_id'))
+                            <a href="{{ route('superadmin.amil.index') }}"
+                                class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-all">
                                 Reset Filter
-                            </button>
-                        </div>
-                    @endif
+                            </a>
+                        @endif
+                        <button type="submit"
+                            class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            Terapkan
+                        </button>
+                        <button type="button" id="closeFilterPanelBtn"
+                            class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            {{-- Outer Table --}}
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="w-10 px-4 py-3"></th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembaga</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Alamat</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Amil</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="tbody-lembaga">
-                        @forelse ($lembagas as $lembaga)
-                            <tr class="lembaga-row cursor-pointer hover:bg-primary/5 transition-colors"
-                                data-nama="{{ strtolower($lembaga->nama) }}"
-                                onclick="toggleLembaga('lembaga-{{ $lembaga->id }}', this)">
-                                <td class="px-4 py-3">
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 lembaga-chevron"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-3">
+            <!-- Tabel dengan Expandable Row -->
+            @if ($lembagas->count() > 0)
+                <!-- DESKTOP TABLE -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50/50">
+                                <th class="px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-10"></th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">LEMBAGA</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden lg:table-cell">ALAMAT</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">JUMLAH AMIL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($lembagas as $lembaga)
+                                <!-- Baris Utama (Expandable) -->
+                                <tr class="border-b border-gray-100 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200 group cursor-pointer expandable-row"
+                                    data-target="detail-{{ $lembaga->id }}">
+                                    <td class="px-4 py-4 text-center">
+                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block" 
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </td>
+                                    <td class="px-6 py-4">
                                         <div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
+                                            <span class="text-sm font-medium text-gray-800 group-hover:text-green-700 transition-colors duration-200">
+                                                {{ $lembaga->nama }}
+                                            </span>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat amil</div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-3 hidden md:table-cell">
-                                    <div class="text-sm text-gray-600">{{ Str::limit($lembaga->alamat ?? '-', 50) }}</div>
-                                </td>
-                                <td class="px-6 py-3 text-center">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
-                                        {{ $lembaga->amils->count() }} Amil
-                                    </span>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-6 py-4 hidden lg:table-cell">
+                                        <span class="text-sm text-gray-600">{{ Str::limit($lembaga->alamat ?? '-', 50) }}</span>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
+                                            {{ $lembaga->amils->count() }} Amil
+                                        </span>
+                                    </td>
+                                </tr>
 
-                            {{-- Expandable Row: Tabel Amil dengan JS Pagination --}}
-                            <tr id="lembaga-{{ $lembaga->id }}" class="hidden lembaga-content-row">
-                                <td colspan="4" class="p-0">
-                                    <div class="bg-gradient-to-b from-primary/5 to-gray-50 border-y border-primary/20 px-6 py-4">
-                                        <div class="flex items-center gap-2 mb-3">
-                                            <div class="w-1 h-5 bg-primary rounded-full"></div>
-                                            <h3 class="text-sm font-semibold text-gray-800">
-                                                Daftar Amil — {{ $lembaga->nama }}
-                                            </h3>
-                                        </div>
-
-                                        @if ($lembaga->amils->isEmpty())
-                                            <div class="text-center py-6 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
-                                                Belum ada data amil untuk lembaga ini
+                                <!-- Baris Expandable (Detail Amil) -->
+                                <tr id="detail-{{ $lembaga->id }}" class="hidden border-b border-gray-100 expandable-content">
+                                    <td class="px-4 py-4 align-top bg-gray-50/30"></td>
+                                    <td class="px-6 py-4 align-top bg-gray-50/30" colspan="3">
+                                        <div class="space-y-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-1 h-5 bg-green-500 rounded-full"></div>
+                                                <h3 class="text-sm font-semibold text-gray-800">
+                                                    Daftar Amil — {{ $lembaga->nama }}
+                                                </h3>
                                             </div>
-                                        @else
-                                            @php
-                                                $amilData = $lembaga->amils->map(function ($amil) {
-                                                    $hasFoto = $amil->foto && Storage::disk('public')->exists($amil->foto);
-                                                    $initial = strtoupper(substr($amil->nama_lengkap, 0, 1));
-                                                    $avatarColors = [
-                                                        'ABCD' => 'bg-primary-500',
-                                                        'EFGH' => 'bg-green-500',
-                                                        'IJKL' => 'bg-purple-500',
-                                                        'MNOP' => 'bg-orange-500',
-                                                        'QRST' => 'bg-red-500',
-                                                        'UVWX' => 'bg-teal-500',
-                                                    ];
-                                                    $avatarBg = 'bg-gray-500';
-                                                    foreach ($avatarColors as $letters => $color) {
-                                                        if (in_array($initial, str_split($letters))) {
-                                                            $avatarBg = $color;
-                                                            break;
-                                                        }
-                                                    }
-                                                    return [
-                                                        'nama'          => $amil->nama_lengkap,
-                                                        'kode'          => $amil->kode_amil,
-                                                        'jenis_kelamin' => $amil->jenis_kelamin,
-                                                        'telepon'       => $amil->telepon ?? '-',
-                                                        'email'         => $amil->email ?? '-',
-                                                        'status'        => $amil->status,
-                                                        'foto_url'      => $hasFoto ? Storage::url($amil->foto) : null,
-                                                        'initial'       => $initial,
-                                                        'avatar_bg'     => $avatarBg,
-                                                    ];
-                                                });
-                                            @endphp
 
-                                            <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm"
-                                                 data-amil-table="{{ $lembaga->id }}">
-                                                <table class="min-w-full divide-y divide-gray-200">
-                                                    <thead class="bg-white">
-                                                        <tr>
-                                                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
-                                                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Kontak</th>
-                                                            <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="amil-tbody-{{ $lembaga->id }}" class="bg-white divide-y divide-gray-100"></tbody>
-                                                </table>
-
-                                                <div class="bg-white border-t border-gray-100 px-4 py-2.5 flex items-center justify-between gap-3">
-                                                    <span id="amil-info-{{ $lembaga->id }}" class="text-xs text-gray-500"></span>
-                                                    <div class="flex items-center gap-1" id="amil-pagination-{{ $lembaga->id }}"></div>
+                                            @if ($lembaga->amils->isEmpty())
+                                                <div class="text-center py-8 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
+                                                    Belum ada data amil untuk lembaga ini
                                                 </div>
-                                            </div>
+                                            @else
+                                                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                                                    <table class="min-w-full divide-y divide-gray-200">
+                                                        <thead class="bg-gray-50">
+                                                            <tr>
+                                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">NAMA</th>
+                                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden sm:table-cell">KONTAK</th>
+                                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">STATUS</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="bg-white divide-y divide-gray-100">
+                                                            @foreach ($lembaga->amils as $amil)
+                                                                @php
+                                                                    $hasFoto = $amil->foto && Storage::disk('public')->exists($amil->foto);
+                                                                    $initial = strtoupper(substr($amil->nama_lengkap, 0, 1));
+                                                                    $avatarColors = [
+                                                                        'ABCD' => 'bg-green-500',
+                                                                        'EFGH' => 'bg-blue-500',
+                                                                        'IJKL' => 'bg-purple-500',
+                                                                        'MNOP' => 'bg-orange-500',
+                                                                        'QRST' => 'bg-red-500',
+                                                                        'UVWX' => 'bg-teal-500',
+                                                                    ];
+                                                                    $avatarBg = 'bg-gray-500';
+                                                                    foreach ($avatarColors as $letters => $color) {
+                                                                        if (in_array($initial, str_split($letters))) {
+                                                                            $avatarBg = $color;
+                                                                            break;
+                                                                        }
+                                                                    }
+                                                                    $statusMap = [
+                                                                        'aktif' => ['dot' => 'bg-green-500', 'bg' => 'bg-green-100 text-green-800', 'label' => 'Aktif'],
+                                                                        'cuti' => ['dot' => 'bg-yellow-500', 'bg' => 'bg-yellow-100 text-yellow-800', 'label' => 'Cuti'],
+                                                                        'nonaktif' => ['dot' => 'bg-red-500', 'bg' => 'bg-red-100 text-red-800', 'label' => 'Nonaktif']
+                                                                    ];
+                                                                    $status = $statusMap[$amil->status] ?? $statusMap['nonaktif'];
+                                                                @endphp
+                                                                <tr class="hover:bg-gray-50 transition-colors">
+                                                                    <td class="px-4 py-3">
+                                                                        <div class="flex items-center gap-3">
+                                                                            @if ($hasFoto)
+                                                                                <img class="h-8 w-8 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0" 
+                                                                                    src="{{ Storage::url($amil->foto) }}" alt="{{ $amil->nama_lengkap }}">
+                                                                            @else
+                                                                                <div class="h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center ring-2 ring-gray-100 {{ $avatarBg }}">
+                                                                                    <span class="text-xs font-semibold text-white">{{ $initial }}</span>
+                                                                                </div>
+                                                                            @endif
+                                                                            <div>
+                                                                                <div class="flex items-center gap-1.5">
+                                                                                    <span class="text-sm font-medium text-gray-900">{{ $amil->nama_lengkap }}</span>
+                                                                                    <span class="px-1.5 py-0.5 rounded-full text-xs font-medium {{ $amil->jenis_kelamin == 'L' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700' }}">
+                                                                                        {{ $amil->jenis_kelamin == 'L' ? 'L' : 'P' }}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div class="text-xs text-gray-400">{{ $amil->kode_amil }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td class="px-4 py-3 hidden sm:table-cell">
+                                                                        <div class="text-sm text-gray-700">{{ $amil->telepon ?? '-' }}</div>
+                                                                        <div class="text-xs text-gray-400">{{ Str::limit($amil->email ?? '-', 25) }}</div>
+                                                                    </td>
+                                                                    <td class="px-4 py-3">
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $status['bg'] }}">
+                                                                            <span class="w-1.5 h-1.5 rounded-full {{ $status['dot'] }} mr-1"></span>
+                                                                            {{ $status['label'] }}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                                            <script>
-                                                if (typeof window.amilData === 'undefined') window.amilData = {};
-                                                window.amilData[{{ $lembaga->id }}] = @json($amilData);
-                                            </script>
+                <!-- ==================== MOBILE CARD VIEW ==================== -->
+                <div class="block md:hidden divide-y divide-gray-100">
+                    @foreach ($lembagas as $lembaga)
+                        <div class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200">
+                            <!-- Header Card (klik untuk expand) -->
+                            <div class="expandable-row-mobile cursor-pointer" data-target="detail-mobile-{{ $lembaga->id }}">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile" 
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                            <span class="text-xs text-gray-400">Lembaga</span>
+                                        </div>
+                                        <h3 class="text-sm font-semibold text-gray-800 break-words pr-2">
+                                            {{ $lembaga->nama }}
+                                        </h3>
+
+                                        <!-- Badge Jumlah Amil -->
+                                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-100">
+                                                {{ $lembaga->amils->count() }} Amil
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Chevron -->
+                                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron" 
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Mobile Expandable Detail -->
+                            <div id="detail-mobile-{{ $lembaga->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+                                <div class="space-y-3">
+                                    @if ($lembaga->alamat)
+                                        <div>
+                                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Alamat</h4>
+                                            <p class="text-sm text-gray-600">{{ $lembaga->alamat }}</p>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daftar Amil</h4>
+                                        @if ($lembaga->amils->isEmpty())
+                                            <p class="text-sm text-gray-400 italic">Belum ada data amil</p>
+                                        @else
+                                            <div class="space-y-3">
+                                                @foreach ($lembaga->amils as $amil)
+                                                    @php
+                                                        $hasFoto = $amil->foto && Storage::disk('public')->exists($amil->foto);
+                                                        $initial = strtoupper(substr($amil->nama_lengkap, 0, 1));
+                                                        $statusMap = [
+                                                            'aktif' => ['dot' => 'bg-green-500', 'bg' => 'bg-green-100 text-green-800', 'label' => 'Aktif'],
+                                                            'cuti' => ['dot' => 'bg-yellow-500', 'bg' => 'bg-yellow-100 text-yellow-800', 'label' => 'Cuti'],
+                                                            'nonaktif' => ['dot' => 'bg-red-500', 'bg' => 'bg-red-100 text-red-800', 'label' => 'Nonaktif']
+                                                        ];
+                                                        $status = $statusMap[$amil->status] ?? $statusMap['nonaktif'];
+                                                    @endphp
+                                                    <div class="bg-gray-50 rounded-lg p-3">
+                                                        <div class="flex items-center gap-3">
+                                                            @if ($hasFoto)
+                                                                <img class="h-10 w-10 rounded-full object-cover ring-2 ring-gray-200 flex-shrink-0" 
+                                                                    src="{{ Storage::url($amil->foto) }}" alt="{{ $amil->nama_lengkap }}">
+                                                            @else
+                                                                <div class="h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center bg-green-100">
+                                                                    <span class="text-sm font-semibold text-green-600">{{ $initial }}</span>
+                                                                </div>
+                                                            @endif
+                                                            <div class="flex-1 min-w-0">
+                                                                <div class="flex items-center justify-between">
+                                                                    <p class="text-sm font-medium text-gray-900">{{ $amil->nama_lengkap }}</p>
+                                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $status['bg'] }}">
+                                                                        <span class="w-1.5 h-1.5 rounded-full {{ $status['dot'] }} mr-1"></span>
+                                                                        {{ $status['label'] }}
+                                                                    </span>
+                                                                </div>
+                                                                <p class="text-xs text-gray-500">{{ $amil->kode_amil }}</p>
+                                                                @if ($amil->telepon)
+                                                                    <p class="text-xs text-gray-400 mt-1">{{ $amil->telepon }}</p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         @endif
                                     </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-sm text-gray-400">
-                                    Belum ada data lembaga
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <!-- Empty State -->
+                <div class="py-16 text-center">
+                    <div class="relative inline-block">
+                        <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    @if(request('q') || request('status') || request('lembaga_id'))
+                        <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
+                        <a href="{{ route('superadmin.amil.index') }}"
+                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            Reset semua filter
+                        </a>
+                    @else
+                        <p class="text-sm text-gray-500 mb-2">Belum ada data lembaga</p>
+                        <a href="{{ route('lembaga.create') }}"
+                            class="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Tambah lembaga sekarang
+                        </a>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
+
+    <style>
+        .rotate-90 {
+            transform: rotate(90deg);
+        }
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scale-in {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+        .animate-scale-in {
+            animation: scale-in 0.2s ease-out;
+        }
+    </style>
 @endsection
 
 @push('scripts')
 <script>
-    const PER_PAGE = 10;
-    const amilPages = {};
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter Panel elements
+        const filterButton = document.getElementById('filterButton');
+        const filterPanel = document.getElementById('filterPanel');
+        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
-    // ── Fungsi untuk menerapkan filter dengan AJAX ────────────────────────
-    function applyFilters() {
-        const status = document.getElementById('filter-status')?.value || '';
-        const lembagaId = document.getElementById('filter-lembaga')?.value || '';
-        const searchQuery = document.querySelector('input[name="q"]')?.value || '';
-        
-        const params = new URLSearchParams();
-        if (status) params.append('status', status);
-        if (lembagaId) params.append('lembaga_id', lembagaId);
-        if (searchQuery) params.append('q', searchQuery);
-        params.append('_', Date.now()); // Prevent cache
-        
-        showLoading();
-        
-        fetch(`{{ route('superadmin.amil.index') }}?${params.toString()}`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                updateTableContent(data);
-                hideLoading();
+        // Toggle filter panel
+        if (filterButton && filterPanel) {
+            filterButton.addEventListener('click', function() {
+                filterPanel.classList.toggle('hidden');
+            });
+        }
+
+        // Tutup filter panel
+        if (closeFilterPanelBtn) {
+            closeFilterPanelBtn.addEventListener('click', function() {
+                filterPanel.classList.add('hidden');
+            });
+        }
+
+        // Desktop Expandable row
+        document.querySelectorAll('.expandable-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('data-target');
+                const targetRow = document.getElementById(targetId);
+                const icon = this.querySelector('.expand-icon');
                 
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                window.history.pushState({}, '', newUrl);
-                updateFilterActiveState(status, lembagaId, searchQuery);
-            } else {
-                throw new Error(data.message || 'Gagal memuat data');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            hideLoading();
-            showError('Gagal memuat data: ' + error.message);
-        });
-    }
-    
-    function resetFilters() {
-        const statusSelect = document.getElementById('filter-status');
-        const lembagaSelect = document.getElementById('filter-lembaga');
-        const searchInput = document.querySelector('input[name="q"]');
-        
-        if (statusSelect) statusSelect.value = '';
-        if (lembagaSelect) lembagaSelect.value = '';
-        if (searchInput) searchInput.value = '';
-        
-        applyFilters();
-    }
-    
-    function updateTableContent(data) {
-        const tbody = document.getElementById('tbody-lembaga');
-        if (tbody) tbody.innerHTML = data.html;
-        
-        const totalInfo = document.getElementById('total-info');
-        if (totalInfo) {
-            totalInfo.innerHTML = `Total: ${data.totalAmil} Amil dari ${data.totalLembaga} Lembaga`;
-        }
-        
-        if (data.amilData) {
-            window.amilData = window.amilData || {};
-            Object.assign(window.amilData, data.amilData);
-        }
-        
-        Object.keys(amilPages).forEach(key => delete amilPages[key]);
-    }
-    
-    function updateFilterActiveState(status, lembagaId, searchQuery) {
-        const filterButton = document.getElementById('filter-button');
-        const hasFilter = status || lembagaId;
-        
-        if (filterButton) {
-            if (hasFilter) {
-                filterButton.classList.add('ring-2', 'ring-primary');
-            } else {
-                filterButton.classList.remove('ring-2', 'ring-primary');
-            }
-        }
-        
-        const filterPanel = document.getElementById('filter-panel');
-        if (filterPanel && hasFilter && filterPanel.classList.contains('hidden')) {
-            filterPanel.classList.remove('hidden');
-        }
-        
-        const hasAnyFilter = status || lembagaId || searchQuery;
-        const resetButtons = document.querySelectorAll('button[onclick="resetFilters()"]');
-        resetButtons.forEach(btn => {
-            btn.style.display = hasAnyFilter ? 'inline-flex' : 'none';
-        });
-    }
-    
-    function showLoading() {
-        const tbody = document.getElementById('tbody-lembaga');
-        if (tbody) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="px-6 py-12 text-center">
-                        <div class="flex justify-center">
-                            <svg class="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Memuat data...</p>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-    
-    function hideLoading() {}
-    
-    function showError(message) {
-        const tbody = document.getElementById('tbody-lembaga');
-        if (tbody) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="4" class="px-6 py-12 text-center">
-                        <svg class="h-12 w-12 text-red-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="text-sm text-red-600">${escapeHtml(message)}</p>
-                    </td>
-                </tr>
-            `;
-        }
-    }
-    
-    function renderAmilPage(lembagaId, page) {
-        const data = window.amilData?.[lembagaId] ?? [];
-        const total = data.length;
-        const totalPages = Math.ceil(total / PER_PAGE);
-        page = Math.max(1, Math.min(page, totalPages));
-        amilPages[lembagaId] = page;
-
-        const start = (page - 1) * PER_PAGE;
-        const end = Math.min(start + PER_PAGE, total);
-        const slice = data.slice(start, end);
-
-        const tbody = document.getElementById(`amil-tbody-${lembagaId}`);
-        if (!tbody) return;
-        
-        tbody.innerHTML = slice.map(amil => {
-            const avatarHtml = amil.foto_url
-                ? `<img class="h-8 w-8 rounded-full object-cover ring-2 ring-gray-100 flex-shrink-0" src="${amil.foto_url}" alt="${escapeHtml(amil.nama)}">`
-                : `<div class="h-8 w-8 rounded-full flex-shrink-0 flex items-center justify-center ring-2 ring-gray-100 ${amil.avatar_bg}">
-                       <span class="text-xs font-semibold text-white">${escapeHtml(amil.initial)}</span>
-                   </div>`;
-
-            const jkHtml = amil.jenis_kelamin === 'L'
-                ? '<span class="px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">L</span>'
-                : '<span class="px-1.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-700">P</span>';
-
-            const statusMap = {
-                aktif: { dot: 'bg-green-500', bg: 'bg-green-100 text-green-800', label: 'Aktif' },
-                cuti: { dot: 'bg-yellow-500', bg: 'bg-yellow-100 text-yellow-800', label: 'Cuti' },
-                nonaktif: { dot: 'bg-red-500', bg: 'bg-red-100 text-red-800', label: 'Nonaktif' }
-            };
-            const s = statusMap[amil.status] ?? statusMap.nonaktif;
-            const statusHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${s.bg}">
-                                    <span class="w-1.5 h-1.5 rounded-full ${s.dot} mr-1"></span>${s.label}
-                                </span>`;
-
-            const emailShort = amil.email.length > 25 ? amil.email.substring(0, 25) + '…' : amil.email;
-
-            return `<tr class="hover:bg-gray-50 transition-colors">
-                <td class="px-4 py-3">
-                    <div class="flex items-center gap-3">
-                        ${avatarHtml}
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-sm font-medium text-gray-900">${escapeHtml(amil.nama)}</span>
-                                ${jkHtml}
-                            </div>
-                            <div class="text-xs text-gray-400">${escapeHtml(amil.kode)}</div>
-                        </div>
-                    </div>
-                </td>
-                <td class="px-4 py-3 hidden sm:table-cell">
-                    <div class="text-sm text-gray-700">${escapeHtml(amil.telepon)}</div>
-                    <div class="text-xs text-gray-400">${escapeHtml(emailShort)}</div>
-                </td>
-                <td class="px-4 py-3">${statusHtml}</td>
-            </tr>`;
-        }).join('');
-
-        const info = document.getElementById(`amil-info-${lembagaId}`);
-        if (info) info.textContent = `Menampilkan ${start + 1}–${end} dari ${total} amil`;
-
-        const pag = document.getElementById(`amil-pagination-${lembagaId}`);
-        if (pag) pag.innerHTML = buildPagination(lembagaId, page, totalPages);
-    }
-
-    function buildPagination(lembagaId, current, total) {
-        if (total <= 1) return '';
-
-        const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
-        const btnActive = `${btnBase} bg-primary text-white`;
-        const btnNormal = `${btnBase} text-gray-600 hover:bg-gray-100`;
-        const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
-
-        let html = '';
-
-        if (current > 1) {
-            html += `<button onclick="renderAmilPage(${lembagaId}, ${current - 1})" class="${btnNormal}">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                     </button>`;
-        } else {
-            html += `<button disabled class="${btnDisabled}">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                     </button>`;
-        }
-
-        const range = pageRange(current, total);
-        range.forEach(p => {
-            if (p === '...') {
-                html += `<span class="${btnBase} text-gray-400">…</span>`;
-            } else {
-                const cls = p === current ? btnActive : btnNormal;
-                html += `<button onclick="renderAmilPage(${lembagaId}, ${p})" class="${cls}">${p}</button>`;
-            }
+                if (targetRow) {
+                    targetRow.classList.toggle('hidden');
+                    if (icon) {
+                        icon.classList.toggle('rotate-90');
+                    }
+                }
+            });
         });
 
-        if (current < total) {
-            html += `<button onclick="renderAmilPage(${lembagaId}, ${current + 1})" class="${btnNormal}">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                     </button>`;
-        } else {
-            html += `<button disabled class="${btnDisabled}">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
-                     </button>`;
-        }
-
-        return html;
-    }
-
-    function pageRange(current, total) {
-        if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-        if (current <= 4) return [1, 2, 3, 4, 5, '...', total];
-        if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
-        return [1, '...', current - 1, current, current + 1, '...', total];
-    }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
-
-    function toggleLembaga(id, row) {
-        const content = document.getElementById(id);
-        const chevron = row.querySelector('.lembaga-chevron');
-        const isHidden = content.classList.contains('hidden');
-
-        content.classList.toggle('hidden', !isHidden);
-        if (chevron) chevron.classList.toggle('rotate-90', isHidden);
-
-        if (isHidden) {
-            const lembagaId = parseInt(id.replace('lembaga-', ''));
-            if (window.amilData?.[lembagaId] && !amilPages[lembagaId]) {
-                renderAmilPage(lembagaId, 1);
-            }
-        }
-    }
-
-    function toggleSearch() {
-        const btn = document.getElementById('search-button');
-        const form = document.getElementById('search-form');
-        const input = document.getElementById('search-input');
-        const container = document.getElementById('search-container');
-        
-        if (form.classList.contains('hidden')) {
-            btn.classList.add('hidden');
-            form.classList.remove('hidden');
-            container.style.minWidth = '280px';
-            setTimeout(() => input?.focus(), 50);
-        } else {
-            form.classList.add('hidden');
-            btn.classList.remove('hidden');
-            container.style.minWidth = '';
-        }
-    }
-
-    function toggleFilter() {
-        document.getElementById('filter-panel')?.classList.toggle('hidden');
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const form = document.getElementById('search-form');
-            const btn = document.getElementById('search-button');
-            const container = document.getElementById('search-container');
-            if (form && !form.classList.contains('hidden')) {
-                form.classList.add('hidden');
-                btn?.classList.remove('hidden');
-                container.style.minWidth = '';
-            }
-        }
+        // Mobile Expandable Cards
+        document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+            row.addEventListener('click', function(e) {
+                const targetId = this.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                const icon = this.querySelector('.expand-icon-mobile');
+                const chevron = this.querySelector('.expand-icon-mobile-chevron');
+                
+                if (targetContent) {
+                    targetContent.classList.toggle('hidden');
+                    if (icon) {
+                        icon.classList.toggle('rotate-90');
+                    }
+                    if (chevron) {
+                        chevron.classList.toggle('rotate-90');
+                    }
+                }
+            });
+        });
     });
+
+    function removeFilter(filterName) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(filterName);
+        url.searchParams.set('page', '1');
+        window.location.href = url.toString();
+    }
 </script>
 @endpush
