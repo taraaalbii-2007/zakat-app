@@ -40,8 +40,8 @@ class TerimaSetorKasController extends Controller
             ->groupBy('status')
             ->get()
             ->keyBy('status');
-        
-         $breadcrumbs = [
+
+        $breadcrumbs = [
             'Kelola Setor Kas' => route('admin-lembaga.setor-kas.pending'),
         ];
 
@@ -98,7 +98,6 @@ class TerimaSetorKasController extends Controller
             return redirect()
                 ->route('admin-lembaga.setor-kas.pending')
                 ->with('success', $msg);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal memproses: ' . $e->getMessage());
@@ -116,9 +115,6 @@ class TerimaSetorKasController extends Controller
         return view('admin-lembaga.setor-kas.show', compact('setorKas'));
     }
 
-    // ============================================
-    // RIWAYAT — Semua setoran (semua status)
-    // ============================================
     public function riwayat(Request $request)
     {
         $lembagaId = $this->getLembagaId();
@@ -148,9 +144,11 @@ class TerimaSetorKasController extends Controller
             ->get()
             ->keyBy('status');
 
-        return view('admin-lembaga.setor-kas.riwayat', compact('setorans', 'summary'));
-    }
+        // Hitung jumlah pending untuk badge di tombol
+        $pendingCount = SetorKas::byLembaga($lembagaId)->pending()->count();
 
+        return view('admin-lembaga.setor-kas.riwayat', compact('setorans', 'summary', 'pendingCount'));
+    }
     private function saveSignature(string $base64, string $folder): string
     {
         $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $base64);
