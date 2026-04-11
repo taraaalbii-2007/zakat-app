@@ -3,10 +3,10 @@
 @section('title', 'Setoran Kas Pending')
 
 @section('content')
-<div class="space-y-4 sm:space-y-6">
+<div class="space-y-6">
 
     {{-- Statistics Cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-slide-up">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         @php
             $statPending  = $summary['pending']  ?? null;
             $statDiterima = $summary['diterima'] ?? null;
@@ -14,9 +14,9 @@
         @endphp
 
         {{-- Total Pending --}}
-        <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4">
             <div class="flex items-center">
-                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-amber-100 flex items-center justify-center">
+                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-100 flex items-center justify-center">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -30,9 +30,9 @@
         </div>
 
         {{-- Total Diterima --}}
-        <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4">
             <div class="flex items-center">
-                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -46,9 +46,9 @@
         </div>
 
         {{-- Total Ditolak --}}
-        <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4">
             <div class="flex items-center">
-                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-red-100 flex items-center justify-center">
+                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -62,59 +62,59 @@
         </div>
 
         {{-- Riwayat Lengkap --}}
-        <div class="bg-white rounded-xl shadow-card border border-gray-100 p-4">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4">
             <div class="flex items-center">
-                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-green-100 flex items-center justify-center">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                 </div>
                 <div class="ml-3 flex-1 min-w-0">
                     <p class="text-xs font-medium text-gray-500 truncate">Riwayat Lengkap</p>
                     <a href="{{ route('admin-lembaga.setor-kas.riwayat') }}"
-                        class="text-sm font-semibold text-primary hover:underline">Semua Setoran →</a>
+                        class="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors">Semua Setoran →</a>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- Main Card --}}
-    <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+    {{-- ── Main Card ── --}}
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
         {{-- Header --}}
-        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+        <div class="px-5 py-4 border-b border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h2 class="text-base sm:text-lg font-semibold text-gray-900">Setoran Kas Menunggu Review</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $setorans->total() }} setoran perlu ditindaklanjuti</p>
+                    <h1 class="text-base font-semibold text-gray-800">Setoran Kas Menunggu Review</h1>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ $setorans->total() }} setoran perlu ditindaklanjuti</p>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    {{-- Search --}}
-                    <div id="search-container" class="transition-all duration-300"
-                        style="{{ request('q') ? 'min-width: 280px;' : '' }}">
+
+                {{-- Search --}}
+                <div class="flex gap-2">
+                    <div id="search-container" class="transition-all duration-300">
                         <button type="button" onclick="toggleSearch()" id="search-button"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all {{ request('q') ? 'hidden' : '' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
+                            Cari
                         </button>
                         <form method="GET" action="{{ route('admin-lembaga.setor-kas.pending') }}" id="search-form"
                             class="{{ request('q') ? '' : 'hidden' }}">
                             <div class="flex items-center gap-2">
-                                <div class="relative flex-1">
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                                        <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                         </svg>
                                     </div>
                                     <input type="search" name="q" value="{{ request('q') }}"
                                         id="search-input" placeholder="Cari no. setor / amil..."
-                                        class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                                        class="pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white w-64">
                                 </div>
                                 @if(request('q'))
                                     <a href="{{ route('admin-lembaga.setor-kas.pending') }}"
-                                        class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                                        class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-colors">
                                         Reset
                                     </a>
                                 @endif
@@ -127,215 +127,205 @@
 
         @if($setorans->count() > 0)
 
-            {{-- Desktop View --}}
+            {{-- ── DESKTOP VIEW ── --}}
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="w-12 px-4 py-3"></th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amil & Setoran</th>
-                            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Aksi</th>
+                    <thead>
+                        <tr class="border-b border-gray-200 bg-gray-50/50">
+                            <th class="px-4 py-3 text-center w-10"></th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500">AMIL &amp; SETORAN</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 w-28">AKSI</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200">
                         @foreach($setorans as $setor)
+                            @php
+                                $amilNama = $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-';
+                            @endphp
+
                             {{-- Parent Row --}}
-                            <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row"
+                            <tr class="hover:bg-amber-50/20 transition-colors cursor-pointer expandable-row bg-amber-50/10"
                                 data-target="detail-{{ $setor->uuid }}">
-                                <td class="px-4 py-4">
-                                    <button type="button" class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                        </svg>
-                                    </button>
+                                <td class="px-4 py-4 text-center">
+                                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon inline-block"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            {{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}
-                                        </div>
-                                        <div class="text-xs text-gray-500 mt-0.5">
-                                            {{ $setor->tanggal_setor->format('d/m/Y') }} ·
-                                            <span class="font-mono">{{ $setor->no_setor }}</span> ·
-                                            <span class="font-semibold text-gray-700">{{ $setor->jumlah_disetor_formatted }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-2 mt-2 flex-wrap">
-                                            <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                                                Menunggu Review
-                                            </span>
-                                            <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">
-                                                {{ $setor->periode_dari->format('d M Y') }} s/d {{ $setor->periode_sampai->format('d M Y') }}
-                                            </span>
-                                        </div>
-                                        <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
+                                    <div class="text-sm font-medium text-gray-800">{{ $amilNama }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5">
+                                        {{ $setor->tanggal_setor->format('d/m/Y') }}
+                                        &middot; <span class="font-mono">{{ $setor->no_setor }}</span>
+                                        &middot; <span class="font-semibold text-gray-700">{{ $setor->jumlah_disetor_formatted }}</span>
                                     </div>
+                                    <div class="flex items-center gap-2 mt-2 flex-wrap">
+                                        <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                            Menunggu Review
+                                        </span>
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">
+                                            {{ $setor->periode_dari->format('d M') }} s/d {{ $setor->periode_sampai->format('d M Y') }}
+                                        </span>
+                                        @if($setor->bukti_foto)
+                                            <span class="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
+                                                Ada foto bukti
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1">Klik untuk melihat detail</div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
-                                    <button type="button"
-                                        class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                        data-uuid="{{ $setor->uuid }}"
-                                        data-no="{{ $setor->no_setor }}"
-                                        data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
-                                        data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                        data-periode="{{ $setor->periode_formatted }}"
-                                        data-foto="{{ $setor->bukti_foto }}">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
-                                        </svg>
-                                    </button>
+                                    <div class="flex items-center justify-center gap-1.5">
+
+                                        {{-- Review --}}
+                                        <div class="relative group/tooltip">
+                                            <button type="button"
+                                                data-uuid="{{ $setor->uuid }}"
+                                                data-no="{{ $setor->no_setor }}"
+                                                data-amil="{{ $amilNama }}"
+                                                data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
+                                                data-periode="{{ $setor->periode_formatted }}"
+                                                data-foto="{{ $setor->bukti_foto }}"
+                                                onclick="openReviewModal(this)"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                            </button>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Review
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Detail --}}
+                                        <div class="relative group/tooltip">
+                                            <a href="{{ route('admin-lembaga.setor-kas.show', $setor->uuid) }}"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </a>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Detail
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </td>
                             </tr>
 
                             {{-- Expandable Content Row --}}
-                            <tr id="detail-{{ $setor->uuid }}" class="hidden expandable-content">
-                                <td colspan="3" class="px-0 py-0">
-                                    <div class="bg-gray-50 border-y border-gray-100">
-                                        <div class="px-6 py-4">
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <tr id="detail-{{ $setor->uuid }}" class="hidden expandable-content border-b border-gray-100">
+                                <td class="px-4 py-4 bg-gray-50/30"></td>
+                                <td colspan="2" class="px-6 py-4 bg-gray-50/30">
+                                    <div class="space-y-4">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-1 h-5 bg-amber-500 rounded-full"></div>
+                                            <h3 class="text-sm font-semibold text-gray-800">Detail Setoran — {{ $setor->no_setor }}</h3>
+                                        </div>
 
-                                                {{-- Kolom 1: Info Amil --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Data Amil</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Nama</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">No. Setoran</p>
-                                                                <p class="text-sm font-medium font-mono text-gray-900">{{ $setor->no_setor }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Dibuat</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $setor->created_at->format('d M Y, H:i') }}</p>
-                                                            </div>
-                                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                                            {{-- Kolom 1: Data Amil --}}
+                                            <div>
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Data Amil</h4>
+                                                <div class="space-y-3">
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Nama Amil</p>
+                                                        <p class="text-sm font-medium text-gray-800">{{ $amilNama }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">No. Setoran</p>
+                                                        <p class="text-sm font-medium font-mono text-gray-800">{{ $setor->no_setor }}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Dibuat</p>
+                                                        <p class="text-sm font-medium text-gray-800">{{ $setor->created_at->format('d M Y, H:i') }}</p>
                                                     </div>
                                                 </div>
+                                            </div>
 
-                                                {{-- Kolom 2: Detail Setoran --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Setoran</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Tanggal Setor</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $setor->tanggal_setor->format('d F Y') }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Periode</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $setor->periode_dari->format('d M Y') }}</p>
-                                                                <p class="text-xs text-gray-400">s/d {{ $setor->periode_sampai->format('d M Y') }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jumlah Disetor</p>
-                                                                <p class="text-sm font-semibold text-green-600">{{ $setor->jumlah_disetor_formatted }}</p>
-                                                            </div>
-                                                        </div>
+                                            {{-- Kolom 2: Detail Setoran --}}
+                                            <div>
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Detail Setoran</h4>
+                                                <div class="space-y-3">
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Tanggal Setor</p>
+                                                        <p class="text-sm font-medium text-gray-800">{{ $setor->tanggal_setor->format('d F Y') }}</p>
                                                     </div>
-                                                </div>
-
-                                                {{-- Kolom 3: Status & Foto --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Status & Bukti</h4>
-                                                    <div class="space-y-3">
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Periode</p>
+                                                        <p class="text-sm font-medium text-gray-800">
+                                                            {{ $setor->periode_dari->format('d M Y') }} &mdash; {{ $setor->periode_sampai->format('d M Y') }}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Jumlah Disetor</p>
+                                                        <p class="text-sm font-semibold text-green-600">{{ $setor->jumlah_disetor_formatted }}</p>
+                                                    </div>
+                                                    @if($setor->catatan)
                                                         <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Status Review</p>
-                                                            <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
-                                                                Menunggu Review
-                                                            </span>
+                                                            <p class="text-xs text-gray-400">Catatan</p>
+                                                            <p class="text-sm text-gray-700">{{ $setor->catatan }}</p>
                                                         </div>
-                                                        
-                                                        {{-- Foto Bukti Preview --}}
-                                                        <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Foto Bukti</p>
-                                                            @if($setor->bukti_foto)
-                                                                <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="inline-block">
-                                                                    <div class="w-16 h-16 rounded-lg border border-gray-200 overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity">
-                                                                        <img src="{{ Storage::url($setor->bukti_foto) }}" 
-                                                                             alt="Bukti Setor" 
-                                                                             class="w-full h-full object-cover">
-                                                                    </div>
-                                                                </a>
-                                                                <p class="text-xs text-blue-600 mt-1">Klik untuk perbesar</p>
-                                                            @else
-                                                                <div class="flex items-center text-gray-400 text-xs">
-                                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                                    </svg>
-                                                                    Tidak ada foto
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            {{-- Kolom 3: Status & Bukti --}}
+                                            <div>
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Status &amp; Bukti</h4>
+                                                <div class="space-y-3">
+                                                    <div>
+                                                        <p class="text-xs text-gray-400">Status</p>
+                                                        <span class="mt-1 inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200">
+                                                            Menunggu Review
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs text-gray-400 mb-1.5">Foto Bukti</p>
+                                                        @if($setor->bukti_foto)
+                                                            <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="inline-block">
+                                                                <div class="w-16 h-16 rounded-lg border border-gray-200 overflow-hidden bg-gray-100 hover:opacity-80 transition-opacity">
+                                                                    <img src="{{ Storage::url($setor->bukti_foto) }}" alt="Bukti Setor" class="w-full h-full object-cover">
                                                                 </div>
-                                                            @endif
-                                                        </div>
-
-                                                        @if($setor->catatan)
-                                                            <div class="mt-4 pt-4 border-t border-gray-200">
-                                                                <p class="text-xs text-gray-500 mb-1">Catatan</p>
-                                                                <p class="text-sm text-gray-600">{{ $setor->catatan }}</p>
-                                                            </div>
+                                                            </a>
+                                                            <p class="text-xs text-blue-600 mt-1">Klik untuk perbesar</p>
+                                                        @else
+                                                            <p class="text-xs text-gray-400">Tidak ada foto</p>
                                                         @endif
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {{-- Tombol Aksi di Expandable --}}
-                                            <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-3">
-                                                <div class="text-xs text-gray-500">
-                                                    No. Setoran: <span class="font-medium font-mono text-gray-700">{{ $setor->no_setor }}</span>
-                                                </div>
-                                                <div class="flex gap-2 flex-wrap">
-                                                    <button type="button"
-                                                        data-uuid="{{ $setor->uuid }}"
-                                                        data-no="{{ $setor->no_setor }}"
-                                                        data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
-                                                        data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                                        data-periode="{{ $setor->periode_formatted }}"
-                                                        data-foto="{{ $setor->bukti_foto }}"
-                                                        onclick="openReviewModal(this)"
-                                                        class="inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        Review
-                                                    </button>
-                                                    <a href="{{ route('admin-lembaga.setor-kas.show', $setor->uuid) }}"
-                                                        class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                        </svg>
-                                                        Detail
-                                                    </a>
-                                                </div>
-                                            </div>
+                                        {{-- Action footer di expandable --}}
+                                        <div class="pt-3 border-t border-gray-200 flex justify-end gap-2">
+                                            <button type="button"
+                                                data-uuid="{{ $setor->uuid }}"
+                                                data-no="{{ $setor->no_setor }}"
+                                                data-amil="{{ $amilNama }}"
+                                                data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
+                                                data-periode="{{ $setor->periode_formatted }}"
+                                                data-foto="{{ $setor->bukti_foto }}"
+                                                onclick="openReviewModal(this)"
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Review Setoran
+                                            </button>
+                                            <a href="{{ route('admin-lembaga.setor-kas.show', $setor->uuid) }}"
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-all">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                                Lihat Detail
+                                            </a>
                                         </div>
                                     </div>
                                 </td>
@@ -345,123 +335,101 @@
                 </table>
             </div>
 
-            {{-- Mobile View --}}
-            <div class="md:hidden divide-y divide-gray-200">
+            {{-- ── MOBILE VIEW ── --}}
+            <div class="md:hidden divide-y divide-gray-100">
                 @foreach($setorans as $setor)
-                    <div class="expandable-card">
-                        <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
-                            data-target="detail-mobile-{{ $setor->uuid }}">
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <h3 class="text-sm font-semibold text-gray-900 truncate mr-2">
-                                            {{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}
-                                        </h3>
-                                        <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap">
-                                            Pending
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center mt-1 gap-2">
-                                        <span class="text-xs text-gray-500">{{ $setor->tanggal_setor->format('d/m/Y') }}</span>
-                                        <span class="text-xs text-gray-500">•</span>
-                                        <span class="text-xs font-semibold text-gray-700">{{ $setor->jumlah_disetor_formatted }}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $setor->no_setor }}</p>
-                                    
-                                    {{-- Foto Preview Mobile --}}
-                                    @if($setor->bukti_foto)
-                                        <div class="mt-2 flex items-center gap-1">
-                                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                            <span class="text-xs text-blue-600">Ada foto bukti</span>
-                                        </div>
-                                    @endif
+                    @php
+                        $amilNama = $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-';
+                    @endphp
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile bg-amber-50/10"
+                        data-target="detail-mobile-{{ $setor->uuid }}">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 flex-wrap">
+                                    <h3 class="text-sm font-semibold text-gray-800 truncate">{{ $amilNama }}</h3>
+                                    <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200 whitespace-nowrap">
+                                        Pending
+                                    </span>
                                 </div>
-                                <div class="flex items-center gap-1 ml-2">
-                                    <button type="button"
-                                        class="dropdown-toggle p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                        data-uuid="{{ $setor->uuid }}"
-                                        data-no="{{ $setor->no_setor }}"
-                                        data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
-                                        data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                        data-periode="{{ $setor->periode_formatted }}"
-                                        data-foto="{{ $setor->bukti_foto }}">
-                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                                <div class="flex items-center mt-1 flex-wrap gap-2">
+                                    <span class="text-xs text-gray-500">{{ $setor->tanggal_setor->format('d/m/Y') }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">{{ $setor->jumlah_disetor_formatted }}</span>
+                                    <span class="text-xs text-gray-400 font-mono">{{ $setor->no_setor }}</span>
+                                </div>
+                                @if($setor->bukti_foto)
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                         </svg>
-                                    </button>
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    </svg>
-                                </div>
+                                        <span class="text-xs text-blue-600">Ada foto bukti</span>
+                                    </div>
+                                @endif
+                                <div class="text-xs text-gray-400 mt-1">Klik untuk detail</div>
                             </div>
+                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile flex-shrink-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
                         </div>
 
                         {{-- Mobile Expandable Content --}}
-                        <div id="detail-mobile-{{ $setor->uuid }}" class="hidden expandable-content-mobile">
-                            <div class="bg-gray-50 px-4 py-3 border-t border-gray-100">
-                                <div class="space-y-4">
-                                    <div>
-                                        <h4 class="text-sm font-medium text-gray-900 mb-2">Detail Setoran</h4>
-                                        <div class="space-y-2">
-                                            <div class="flex items-center text-sm">
-                                                <svg class="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                                </svg>
-                                                <span class="text-gray-600 mr-1">Periode:</span>
-                                                <span class="text-gray-900">{{ $setor->periode_dari->format('d M Y') }} s/d {{ $setor->periode_sampai->format('d M Y') }}</span>
-                                            </div>
-                                            <div class="flex items-center text-sm">
-                                                <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                <span class="font-semibold text-green-600">{{ $setor->jumlah_disetor_formatted }}</span>
-                                            </div>
-                                            
-                                            {{-- Foto Bukti Mobile --}}
-                                            @if($setor->bukti_foto)
-                                                <div class="mt-3">
-                                                    <p class="text-xs text-gray-500 mb-1">Foto Bukti:</p>
-                                                    <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="block">
-                                                        <div class="w-full h-32 rounded-lg border border-gray-200 overflow-hidden bg-gray-100">
-                                                            <img src="{{ Storage::url($setor->bukti_foto) }}" 
-                                                                 alt="Bukti Setor" 
-                                                                 class="w-full h-full object-contain">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        </div>
+                        <div id="detail-mobile-{{ $setor->uuid }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Data Setoran</h4>
+                                    <div class="space-y-1 text-sm">
+                                        <p><span class="text-gray-500">No. Setoran:</span> <span class="font-mono">{{ $setor->no_setor }}</span></p>
+                                        <p><span class="text-gray-500">Tanggal:</span> {{ $setor->tanggal_setor->format('d F Y') }}</p>
+                                        <p><span class="text-gray-500">Amil:</span> {{ $amilNama }}</p>
                                     </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Periode &amp; Nominal</h4>
+                                    <div class="space-y-1 text-sm">
+                                        <p><span class="text-gray-500">Periode:</span>
+                                            {{ $setor->periode_dari->format('d M Y') }} &mdash; {{ $setor->periode_sampai->format('d M Y') }}
+                                        </p>
+                                        <p><span class="text-gray-500">Jumlah:</span>
+                                            <span class="font-semibold text-green-600">{{ $setor->jumlah_disetor_formatted }}</span>
+                                        </p>
+                                    </div>
+                                </div>
 
-                                    <div class="pt-3 border-t border-gray-200">
-                                        <div class="flex gap-2">
-                                            <button type="button"
-                                                data-uuid="{{ $setor->uuid }}"
-                                                data-no="{{ $setor->no_setor }}"
-                                                data-amil="{{ $setor->amil->nama_lengkap ?? $setor->amil->pengguna->username ?? '-' }}"
-                                                data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
-                                                data-periode="{{ $setor->periode_formatted }}"
-                                                data-foto="{{ $setor->bukti_foto }}"
-                                                onclick="openReviewModal(this)"
-                                                class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                Review
-                                            </button>
-                                            <a href="{{ route('admin-lembaga.setor-kas.show', $setor->uuid) }}"
-                                                class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                </svg>
-                                                Detail
-                                            </a>
-                                        </div>
+                                @if($setor->bukti_foto)
+                                    <div>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Foto Bukti</h4>
+                                        <a href="{{ Storage::url($setor->bukti_foto) }}" target="_blank" class="block">
+                                            <div class="w-full h-32 rounded-lg border border-gray-200 overflow-hidden bg-gray-100">
+                                                <img src="{{ Storage::url($setor->bukti_foto) }}" alt="Bukti Setor" class="w-full h-full object-contain">
+                                            </div>
+                                        </a>
                                     </div>
+                                @endif
+
+                                {{-- Mobile Action Buttons --}}
+                                <div class="pt-2 flex items-center gap-2 flex-wrap">
+                                    <button type="button"
+                                        data-uuid="{{ $setor->uuid }}"
+                                        data-no="{{ $setor->no_setor }}"
+                                        data-amil="{{ $amilNama }}"
+                                        data-jumlah="{{ $setor->jumlah_disetor_formatted }}"
+                                        data-periode="{{ $setor->periode_formatted }}"
+                                        data-foto="{{ $setor->bukti_foto }}"
+                                        onclick="openReviewModal(this)"
+                                        class="flex items-center justify-center p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-xs ml-1">Review</span>
+                                    </button>
+                                    <a href="{{ route('admin-lembaga.setor-kas.show', $setor->uuid) }}"
+                                        class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        <span class="text-xs ml-1">Detail</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -470,30 +438,27 @@
             </div>
 
             @if($setorans->hasPages())
-                <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
+                <div class="px-5 py-3 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white">
                     {{ $setorans->links() }}
                 </div>
             @endif
 
         @else
-            <div class="p-8 sm:p-12 text-center">
-                <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-green-100 mb-4">
-                    <svg class="w-7 h-7 sm:w-8 sm:h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            {{-- Empty State --}}
+            <div class="py-16 text-center">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                    <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 @if(request('q'))
-                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                    <p class="text-sm text-gray-500 mb-6">Tidak ada setoran yang sesuai pencarian</p>
+                    <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk pencarian tersebut</p>
                     <a href="{{ route('admin-lembaga.setor-kas.pending') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        Reset Pencarian
+                        class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                        Reset pencarian
                     </a>
                 @else
-                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Semua setoran sudah diproses</h3>
+                    <p class="text-sm font-medium text-gray-700 mb-1">Semua setoran sudah diproses</p>
                     <p class="text-sm text-gray-500">Tidak ada setoran kas yang menunggu konfirmasi.</p>
                 @endif
             </div>
@@ -501,43 +466,21 @@
     </div>
 </div>
 
-{{-- Dropdown Container --}}
-<div id="dropdown-container" class="fixed hidden z-[9999]" style="min-width:200px;">
-    <div class="w-52 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
-        <div class="py-1">
-            <a href="#" id="dd-detail"
-                class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <svg class="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                </svg>
-                Lihat Detail
-            </a>
-            <button type="button" id="dd-review"
-                class="flex items-center w-full px-4 py-2.5 text-sm text-amber-700 hover:bg-amber-50 transition-colors">
-                <svg class="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Review Setoran
-            </button>
-        </div>
-    </div>
-</div>
+{{-- ── Modal: Review Setoran ── --}}
+<div id="review-modal"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[10000] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col" style="max-height:85vh;">
 
-{{-- Modal: Review Setoran --}}
-<div id="review-modal" class="fixed inset-0 bg-gray-900/60 hidden z-[10000] flex items-center justify-center p-4" style="backdrop-filter: blur(2px);">
-    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col" style="max-height: 85vh;">
-
-        {{-- Modal Header — tanpa tombol X --}}
-        <div class="px-5 py-3.5 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
-            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+        {{-- Modal Header --}}
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-3 flex-shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
                 <h3 class="text-sm font-semibold text-gray-900">Review Setoran Kas</h3>
-                <p class="text-xs text-gray-400 font-mono" id="modal-no-setor"></p>
+                <p class="text-xs text-gray-400 font-mono mt-0.5" id="modal-no-setor"></p>
             </div>
         </div>
 
@@ -551,7 +494,7 @@
                     <div id="modal-alert" class="hidden px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700"></div>
 
                     {{-- Info Setoran --}}
-                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3.5 space-y-2 text-sm">
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-3.5 space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-xs text-gray-500">Amil</span>
                             <span class="text-sm font-semibold text-gray-900" id="modal-amil"></span>
@@ -591,7 +534,7 @@
                             <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-medium">Rp</span>
                             <input type="number" name="jumlah_dihitung_fisik" id="jumlah_dihitung_fisik"
                                 placeholder="0" min="0" step="1000"
-                                class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                         </div>
                     </div>
 
@@ -601,15 +544,21 @@
                             Keputusan <span class="text-red-500">*</span>
                         </label>
                         <div class="grid grid-cols-2 gap-2.5">
-                            <label id="label-diterima" class="flex items-center gap-2.5 p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-green-300">
-                                <input type="radio" name="aksi" value="diterima" class="w-3.5 h-3.5 text-green-600 flex-shrink-0" onchange="toggleAksi(this)">
+                            <label id="label-diterima"
+                                class="flex items-center gap-2.5 p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-green-300">
+                                <input type="radio" name="aksi" value="diterima"
+                                    class="w-3.5 h-3.5 text-green-600 flex-shrink-0"
+                                    onchange="toggleAksi(this)">
                                 <div>
                                     <p class="text-xs font-semibold text-gray-900">✓ Terima</p>
                                     <p class="text-[10px] text-gray-400 mt-0.5">Konfirmasi setoran</p>
                                 </div>
                             </label>
-                            <label id="label-ditolak" class="flex items-center gap-2.5 p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-red-300">
-                                <input type="radio" name="aksi" value="ditolak" class="w-3.5 h-3.5 text-red-600 flex-shrink-0" onchange="toggleAksi(this)">
+                            <label id="label-ditolak"
+                                class="flex items-center gap-2.5 p-3 rounded-xl border-2 border-gray-200 cursor-pointer transition-all hover:border-red-300">
+                                <input type="radio" name="aksi" value="ditolak"
+                                    class="w-3.5 h-3.5 text-red-600 flex-shrink-0"
+                                    onchange="toggleAksi(this)">
                                 <div>
                                     <p class="text-xs font-semibold text-gray-900">✕ Tolak</p>
                                     <p class="text-[10px] text-gray-400 mt-0.5">Kembalikan ke amil</p>
@@ -646,7 +595,7 @@
                         <div class="relative rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden">
                             <canvas id="signature-pad-penerima"
                                 class="block w-full cursor-crosshair touch-none"
-                                style="height: 110px;"></canvas>
+                                style="height:110px;"></canvas>
                             <div id="ttd-placeholder" class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <div class="text-center">
                                     <svg class="w-6 h-6 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -662,143 +611,70 @@
                 </div>
 
                 {{-- Modal Footer --}}
-                <div class="px-5 py-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-3 sticky bottom-0">
-                    <div id="modal-keputusan-info" class="hidden">
-                        <span id="modal-keputusan-text" class="text-xs"></span>
-                    </div>
-                    <div class="flex gap-2 ml-auto">
-                        <button type="button" onclick="closeReviewModal()"
-                            class="px-4 py-2 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                            Batal
-                        </button>
-                        <button type="submit" id="btn-submit-review"
-                            class="px-4 py-2 text-xs font-medium text-white bg-primary hover:bg-primary-600 rounded-lg transition-colors shadow-sm inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Simpan Keputusan
-                        </button>
-                    </div>
+                <div class="px-5 py-3.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-end gap-2 sticky bottom-0">
+                    <button type="button" onclick="closeModal('review-modal')"
+                        class="px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" id="btn-submit-review"
+                        class="px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded-xl text-sm font-medium text-white transition-all shadow-sm inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Simpan Keputusan
+                    </button>
                 </div>
             </form>
         </div>
-
     </div>
 </div>
+
+<style>
+    .rotate-90  { transform: rotate(90deg); }
+    .rotate-180 { transform: rotate(180deg); }
+</style>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Referensi elemen
-    const dropdown = document.getElementById('dropdown-container');
-    const ddDetail = document.getElementById('dd-detail');
-    const ddReview = document.getElementById('dd-review');
-
-    // Desktop expandable rows
-    document.querySelectorAll('.expandable-row').forEach(row => {
+    // ── Desktop expandable rows ──
+    document.querySelectorAll('.expandable-row').forEach(function (row) {
         row.addEventListener('click', function (e) {
-            if (e.target.closest('a, .dropdown-toggle, button')) return;
-            const target = document.getElementById(this.dataset.target);
-            const icon   = this.querySelector('.expand-icon');
-            target.classList.toggle('hidden');
-            icon.classList.toggle('rotate-90');
-        });
-    });
-
-    // Mobile expandable cards
-    document.querySelectorAll('.expandable-row-mobile').forEach(row => {
-        row.addEventListener('click', function (e) {
-            if (e.target.closest('a, .dropdown-toggle, button')) return;
-            const target = document.getElementById(this.dataset.target);
-            const icon   = this.querySelector('.expand-icon-mobile');
-            target.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
-        });
-    });
-
-    // Dropdown functionality
-    function closeDropdown() {
-        dropdown.classList.add('hidden');
-        dropdown.removeAttribute('data-uuid');
-    }
-
-    function positionDropdown(toggle) {
-        const rect   = toggle.getBoundingClientRect();
-        const ddW    = 208;
-        const ddH    = dropdown.offsetHeight || 120;
-        const margin = 6;
-        const vpW    = window.innerWidth;
-        const vpH    = window.innerHeight;
-
-        let left = rect.right - ddW;
-        if (left < margin) left = margin;
-        if (left + ddW > vpW - margin) left = vpW - ddW - margin;
-
-        let top = rect.bottom + margin;
-        if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
-        if (top < margin) top = margin;
-
-        dropdown.style.top  = top  + 'px';
-        dropdown.style.left = left + 'px';
-    }
-
-    document.addEventListener('click', function (e) {
-        const toggle = e.target.closest('.dropdown-toggle');
-
-        if (toggle) {
-            e.stopPropagation();
-
-            const uuid    = toggle.dataset.uuid;
-            const no      = toggle.dataset.no;
-            const amil    = toggle.dataset.amil;
-            const jumlah  = toggle.dataset.jumlah;
-            const periode = toggle.dataset.periode;
-            const foto    = toggle.dataset.foto;
-
-            if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
-                closeDropdown(); return;
+            if (e.target.closest('a, button')) return;
+            var target = document.getElementById(this.dataset.target);
+            var icon   = this.querySelector('.expand-icon');
+            if (target && icon) {
+                target.classList.toggle('hidden');
+                icon.classList.toggle('rotate-90');
             }
-
-            dropdown.dataset.uuid = uuid;
-
-            ddDetail.href = `/admin-setor-kas/${uuid}`;
-            ddReview.onclick = () => {
-                closeDropdown();
-                openReviewModal({ 
-                    dataset: { 
-                        uuid, 
-                        no, 
-                        amil, 
-                        jumlah, 
-                        periode,
-                        foto 
-                    } 
-                });
-            };
-
-            dropdown.classList.remove('hidden');
-            positionDropdown(toggle);
-
-        } else if (!dropdown.contains(e.target)) {
-            closeDropdown();
-        }
+        });
     });
 
-    window.addEventListener('scroll', closeDropdown, true);
-    window.addEventListener('resize', closeDropdown);
+    // ── Mobile expandable cards ──
+    document.querySelectorAll('.expandable-row-mobile').forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('a, button')) return;
+            var target = document.getElementById(this.dataset.target);
+            var icon   = this.querySelector('.expand-icon-mobile');
+            if (target && icon) {
+                target.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    });
 
-    // Backdrop klik modal
+    // ── Modal backdrop & ESC ──
     document.getElementById('review-modal').addEventListener('click', function (e) {
-        if (e.target === this) closeReviewModal();
+        if (e.target === this) closeModal('review-modal');
     });
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeReviewModal();
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal('review-modal');
     });
 
-    // Validasi sebelum submit
+    // ── Validasi & submit form review ──
     document.getElementById('review-form').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -819,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (!form.action || form.action.endsWith('#') || !form.action.includes('/proses')) {
+        if (!form.action || !form.action.includes('/proses')) {
             showModalAlert('Terjadi kesalahan konfigurasi form. Coba tutup dan buka modal kembali.');
             return;
         }
@@ -830,37 +706,25 @@ document.addEventListener('DOMContentLoaded', function () {
             try { ttdInput.value = window.sigCanvas.toDataURL('image/png'); } catch(_) {}
         }
 
-        const formData = new FormData(form);
         const btnSubmit = document.getElementById('btn-submit-review');
         btnSubmit.disabled = true;
         btnSubmit.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Menyimpan...';
 
         fetch(form.action, {
             method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json, text/html',
-            },
+            body: new FormData(form),
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json, text/html' },
             credentials: 'same-origin',
         })
         .then(res => {
-            if (res.redirected) {
-                window.location.href = res.url;
-                return;
-            }
-            if (res.ok) {
-                window.location.reload();
-                return;
-            }
-            return res.text().then(text => {
-                throw new Error('Server error: ' + res.status);
-            });
+            if (res.redirected) { window.location.href = res.url; return; }
+            if (res.ok) { window.location.reload(); return; }
+            throw new Error('Server error: ' + res.status);
         })
         .catch(err => {
             console.error(err);
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Simpan Keputusan';
+            btnSubmit.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Simpan Keputusan';
             showModalAlert('Gagal menyimpan. Silakan coba lagi.');
         });
     });
@@ -868,47 +732,55 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('alasan_penolakan').addEventListener('input', function () {
         this.classList.remove('ring-2', 'ring-red-400');
     });
-
-    function showModalAlert(msg) {
-        const el = document.getElementById('modal-alert');
-        if (el) {
-            el.textContent = msg;
-            el.classList.remove('hidden');
-            setTimeout(() => el.classList.add('hidden'), 4000);
-        } else {
-            alert(msg);
-        }
-    }
 });
 
-// Search functionality
-function toggleSearch() {
-    const btn       = document.getElementById('search-button');
-    const form      = document.getElementById('search-form');
-    const input     = document.getElementById('search-input');
-    const container = document.getElementById('search-container');
-    if (form.classList.contains('hidden')) {
-        btn.classList.add('hidden');
-        form.classList.remove('hidden');
-        container.style.minWidth = '280px';
-        setTimeout(() => input.focus(), 50);
+// ── Modal helpers ──
+function openModal(id) {
+    document.getElementById(id).classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+window.closeModal = function (id) {
+    document.getElementById(id).classList.add('hidden');
+    document.body.style.overflow = '';
+};
+
+function showModalAlert(msg) {
+    var el = document.getElementById('modal-alert');
+    if (el) {
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(function () { el.classList.add('hidden'); }, 4000);
     } else {
-        form.classList.add('hidden');
-        btn.classList.remove('hidden');
-        container.style.minWidth = '';
+        alert(msg);
     }
 }
 
-// Review Modal Functions
+// ── Search toggle ──
+function toggleSearch() {
+    var btn  = document.getElementById('search-button');
+    var form = document.getElementById('search-form');
+    var inp  = document.getElementById('search-input');
+    if (form.classList.contains('hidden')) {
+        btn.classList.add('hidden');
+        form.classList.remove('hidden');
+        setTimeout(function () { inp.focus(); }, 50);
+    } else {
+        form.classList.add('hidden');
+        btn.classList.remove('hidden');
+    }
+}
+
+// ── Review Modal ──
 function openReviewModal(btn) {
     document.getElementById('modal-no-setor').textContent = btn.dataset.no;
     document.getElementById('modal-amil').textContent     = btn.dataset.amil;
     document.getElementById('modal-jumlah').textContent   = btn.dataset.jumlah;
     document.getElementById('modal-periode').textContent  = btn.dataset.periode;
-    document.getElementById('review-form').action         = `/admin-setor-kas/${btn.dataset.uuid}/proses`;
+    document.getElementById('review-form').action         = '/admin-setor-kas/' + btn.dataset.uuid + '/proses';
 
     // Reset semua field
-    document.querySelectorAll('input[name="aksi"]').forEach(r => r.checked = false);
+    document.querySelectorAll('input[name="aksi"]').forEach(function (r) { r.checked = false; });
     document.getElementById('alasan-container').classList.add('hidden');
     document.getElementById('ttd-container').classList.add('hidden');
     document.getElementById('alasan_penolakan').value      = '';
@@ -916,111 +788,81 @@ function openReviewModal(btn) {
     document.getElementById('jumlah_dihitung_fisik').value = '';
     document.getElementById('ttd_penerima_input').value    = '';
 
-    // Reset style label radio
-    document.getElementById('label-diterima').className = document.getElementById('label-diterima').className
-        .replace(/border-green-\d+|bg-green-\d+/g, '').trim() + ' border-gray-200';
-    document.getElementById('label-ditolak').className = document.getElementById('label-ditolak').className
-        .replace(/border-red-\d+|bg-red-\d+/g, '').trim() + ' border-gray-200';
+    // Reset label radio
+    ['label-diterima', 'label-ditolak'].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.classList.remove('border-green-400', 'bg-green-50', 'border-red-400', 'bg-red-50');
+        el.classList.add('border-gray-200');
+    });
 
-    // Tampilkan foto bukti
-    const fotoContainer = document.getElementById('modal-foto-bukti');
-    if (btn.dataset.foto && btn.dataset.foto !== 'null' && btn.dataset.foto !== '') {
-        const fotoUrl = '/storage/' + btn.dataset.foto;
-        fotoContainer.innerHTML = `
-            <div class="relative">
-                <img src="${fotoUrl}" alt="Foto Bukti Setoran" class="w-full h-auto max-h-64 object-contain bg-gray-100">
-                <a href="${fotoUrl}" target="_blank" class="absolute bottom-2 right-2 bg-white rounded-lg p-2 shadow-md hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                    </svg>
-                </a>
-            </div>
-        `;
+    // Foto bukti
+    var fotoContainer = document.getElementById('modal-foto-bukti');
+    var foto = btn.dataset.foto;
+    if (foto && foto !== 'null' && foto !== '') {
+        var fotoUrl = '/storage/' + foto;
+        fotoContainer.innerHTML = '<div class="relative"><img src="' + fotoUrl + '" alt="Foto Bukti" class="w-full h-auto max-h-64 object-contain bg-gray-100"><a href="' + fotoUrl + '" target="_blank" class="absolute bottom-2 right-2 bg-white rounded-lg p-2 shadow-md hover:bg-gray-50 transition-colors"><svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a></div>';
     } else {
-        fotoContainer.innerHTML = `
-            <div class="flex items-center justify-center p-8 text-center text-gray-400">
-                <div>
-                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <p class="text-sm">Tidak ada foto bukti</p>
-                </div>
-            </div>
-        `;
+        fotoContainer.innerHTML = '<div class="flex items-center justify-center p-8 text-center text-gray-400"><div><svg class="w-10 h-10 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><p class="text-sm">Tidak ada foto bukti</p></div></div>';
     }
 
-    document.getElementById('review-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    // Reset submit button
+    var btnSubmit = document.getElementById('btn-submit-review');
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Simpan Keputusan';
 
-    // Inisialisasi canvas setelah modal visible
-    setTimeout(() => {
-        initSignaturePad();
-    }, 120);
+    openModal('review-modal');
+    setTimeout(initSignaturePad, 120);
 }
 
-function closeReviewModal() {
-    document.getElementById('review-modal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
+// ── Toggle Aksi Radio ──
 function toggleAksi(radio) {
-    const alasanBox = document.getElementById('alasan-container');
-    const ttdBox    = document.getElementById('ttd-container');
-    const infoEl    = document.getElementById('modal-keputusan-info');
-    const textEl    = document.getElementById('modal-keputusan-text');
+    var alasanBox = document.getElementById('alasan-container');
+    var ttdBox    = document.getElementById('ttd-container');
 
-    // Style label
-    document.getElementById('label-diterima').classList.remove('border-green-400', 'bg-green-50', 'border-red-400', 'bg-red-50');
-    document.getElementById('label-ditolak').classList.remove('border-green-400', 'bg-green-50', 'border-red-400', 'bg-red-50');
-    document.getElementById('label-diterima').classList.add('border-gray-200');
-    document.getElementById('label-ditolak').classList.add('border-gray-200');
+    ['label-diterima', 'label-ditolak'].forEach(function (id) {
+        var el = document.getElementById(id);
+        el.classList.remove('border-green-400', 'bg-green-50', 'border-red-400', 'bg-red-50');
+        el.classList.add('border-gray-200');
+    });
 
     if (radio.value === 'diterima') {
         document.getElementById('label-diterima').classList.remove('border-gray-200');
         document.getElementById('label-diterima').classList.add('border-green-400', 'bg-green-50');
         alasanBox.classList.add('hidden');
         ttdBox.classList.remove('hidden');
-        infoEl.classList.remove('hidden');
-        textEl.className = 'text-xs text-green-600 font-medium';
         setTimeout(initSignaturePad, 80);
     } else {
         document.getElementById('label-ditolak').classList.remove('border-gray-200');
         document.getElementById('label-ditolak').classList.add('border-red-400', 'bg-red-50');
         alasanBox.classList.remove('hidden');
         ttdBox.classList.add('hidden');
-        infoEl.classList.remove('hidden');
-        textEl.textContent = '✕ Setoran akan dikembalikan ke amil';
-        textEl.className = 'text-xs text-red-600 font-medium';
-        setTimeout(() => document.getElementById('alasan_penolakan').focus(), 50);
+        setTimeout(function () { document.getElementById('alasan_penolakan').focus(); }, 50);
     }
 }
 
-// Signature Pad for Penerima
-let sigCanvas, sigCtx, sigDrawing = false, sigLastX = 0, sigLastY = 0;
+// ── Signature Pad ──
+var sigCanvas, sigCtx, sigDrawing = false, sigLastX = 0, sigLastY = 0;
 
 function initSignaturePad() {
     sigCanvas = document.getElementById('signature-pad-penerima');
     if (!sigCanvas) return;
-    
-    // Make canvas globally accessible
     window.sigCanvas = sigCanvas;
     sigCtx = sigCanvas.getContext('2d');
 
-    const container = sigCanvas.parentElement;
-    const rect      = container.getBoundingClientRect();
-    const dpr       = window.devicePixelRatio || 1;
+    var container = sigCanvas.parentElement;
+    var rect      = container.getBoundingClientRect();
+    var dpr       = window.devicePixelRatio || 1;
 
-    sigCanvas.width  = rect.width  * dpr;
-    sigCanvas.height = 140         * dpr;
+    sigCanvas.width        = rect.width * dpr;
+    sigCanvas.height       = 140 * dpr;
     sigCanvas.style.width  = rect.width + 'px';
     sigCanvas.style.height = '140px';
     sigCtx.scale(dpr, dpr);
-
     sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
     document.getElementById('ttd-placeholder').style.display = 'flex';
     document.getElementById('ttd_penerima_input').value = '';
 
-    const newCanvas = sigCanvas.cloneNode(true);
+    var newCanvas = sigCanvas.cloneNode(true);
     sigCanvas.parentNode.replaceChild(newCanvas, sigCanvas);
     sigCanvas = newCanvas;
     window.sigCanvas = sigCanvas;
@@ -1028,7 +870,7 @@ function initSignaturePad() {
     sigCtx.scale(dpr, dpr);
 
     function getPos(e) {
-        const r = sigCanvas.getBoundingClientRect();
+        var r = sigCanvas.getBoundingClientRect();
         if (e.touches) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
         return { x: e.clientX - r.left, y: e.clientY - r.top };
     }
@@ -1037,14 +879,13 @@ function initSignaturePad() {
         e.preventDefault();
         sigDrawing = true;
         document.getElementById('ttd-placeholder').style.display = 'none';
-        const p = getPos(e);
-        sigLastX = p.x; sigLastY = p.y;
+        var p = getPos(e); sigLastX = p.x; sigLastY = p.y;
     }
 
     function draw(e) {
         e.preventDefault();
         if (!sigDrawing) return;
-        const p = getPos(e);
+        var p = getPos(e);
         sigCtx.beginPath();
         sigCtx.moveTo(sigLastX, sigLastY);
         sigCtx.lineTo(p.x, p.y);
@@ -1071,14 +912,9 @@ function initSignaturePad() {
     sigCanvas.addEventListener('touchend',   endDraw);
 }
 
-function signatureHasContent() {
-    return window.sigCanvas
-        && document.getElementById('ttd_penerima_input').value.length > 100;
-}
-
 function clearSignaturePenerima() {
     if (!window.sigCanvas || !sigCtx) return;
-    const dpr = window.devicePixelRatio || 1;
+    var dpr = window.devicePixelRatio || 1;
     sigCtx.clearRect(0, 0, window.sigCanvas.width / dpr, window.sigCanvas.height / dpr);
     document.getElementById('ttd_penerima_input').value = '';
     document.getElementById('ttd-placeholder').style.display = 'flex';
