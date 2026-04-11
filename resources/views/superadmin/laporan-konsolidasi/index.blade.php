@@ -3,102 +3,122 @@
 @section('title', 'Laporan Konsolidasi')
 
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+    <div class="space-y-6">
+        <!-- Container utama -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            {{-- ── Header ── --}}
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Laporan Konsolidasi</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">
-                            {{ $grandTotal['lembaga'] }} Lembaga · Tahun {{ $tahun }}
-                        </p>
+                        <h1 class="text-base font-semibold text-gray-800">Laporan Konsolidasi</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Laporan keuangan konsolidasi semua lembaga</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
 
-                        {{-- Filter --}}
-                        <button type="button" onclick="toggleFilter()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
-                            {{ ($search || $lembagaId || $bulan) ? 'ring-2 ring-primary' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <button type="button" id="filterButton"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Filter</span>
+                            Filter & Cari
                         </button>
-
-                        {{-- Search --}}
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ $search ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ $search ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                                <span class="hidden sm:inline-block sm:ml-2 group-hover:inline-block transition-all duration-300">Cari</span>
-                            </button>
-                            <form method="GET" action="{{ route('laporan-konsolidasi.index') }}" id="search-form"
-                                class="{{ $search ? '' : 'hidden' }}">
-                                <input type="hidden" name="tahun" value="{{ $tahun }}">
-                                @if($bulan)<input type="hidden" name="bulan" value="{{ $bulan }}">@endif
-                                @if($lembagaId)<input type="hidden" name="lembaga_id" value="{{ $lembagaId }}">@endif
-                                <div class="flex items-center gap-2">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="search" value="{{ $search }}"
-                                            id="search-input" placeholder="Cari lembaga..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                    @if($search)
-                                        <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}"
-                                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                                            Reset
-                                        </a>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
-
                     </div>
                 </div>
             </div>
 
-            {{-- ── Filter Panel ── --}}
-            <div id="filter-panel"
-                class="{{ ($search || $lembagaId || $bulan) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                <form method="GET" action="{{ route('laporan-konsolidasi.index') }}" id="filter-form">
-                    @if($search)<input type="hidden" name="search" value="{{ $search }}">@endif
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <!-- Statistik Bar -->
+            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ number_format($grandTotal['lembaga'] ?? $laporanPerLembaga->count()) }}</span>
+                        <span class="text-sm text-gray-500">Lembaga</span>
+                        <span class="text-sm text-gray-400 mx-1">•</span>
+                        <span class="text-sm text-gray-600">Tahun:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $tahun }}</span>
+                    </div>
+
+                    <!-- Stats Ringkasan Desktop -->
+                    <div class="hidden md:flex items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-xs text-gray-500">Total Penerimaan:</span>
+                            <span class="text-xs font-semibold text-gray-700">Rp {{ number_format($grandTotal['total_penerimaan'] ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                            </svg>
+                            <span class="text-xs text-gray-500">Total Penyaluran:</span>
+                            <span class="text-xs font-semibold text-gray-700">Rp {{ number_format($grandTotal['total_penyaluran'] ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    @if($search || $lembagaId || $bulan)
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs text-gray-400">Filter aktif:</span>
+                            @if($search)
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    "{{ $search }}"
+                                    <button onclick="removeFilter('search')" class="hover:text-green-900 ml-1">×</button>
+                                </div>
+                            @endif
+                            @if($lembagaId)
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Lembaga: {{ $allLembagas->firstWhere('id', $lembagaId)?->nama ?? $lembagaId }}
+                                    <button onclick="removeFilter('lembaga_id')" class="hover:text-green-900 ml-1">×</button>
+                                </div>
+                            @endif
+                            @if($bulan)
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                    Bulan: {{ ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][$bulan - 1] ?? $bulan }}
+                                    <button onclick="removeFilter('bulan')" class="hover:text-green-900 ml-1">×</button>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Filter Panel -->
+            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
+                <form method="GET" action="{{ route('laporan-konsolidasi.index') }}" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Lembaga</label>
-                            <select name="lembaga_id" onchange="document.getElementById('filter-form').submit()"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Lembaga</label>
+                            <input type="text" name="search" value="{{ $search }}"
+                                placeholder="Cari nama lembaga..."
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Lembaga</label>
+                            <select name="lembaga_id"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
                                 <option value="">Semua Lembaga</option>
-                                @foreach($allLembagas as $m)
-                                    <option value="{{ $m->id }}" {{ $lembagaId == $m->id ? 'selected' : '' }}>{{ $m->nama }}</option>
+                                @foreach($allLembagas as $l)
+                                    <option value="{{ $l->id }}" {{ $lembagaId == $l->id ? 'selected' : '' }}>
+                                        {{ $l->nama }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Tahun</label>
-                            <select name="tahun" onchange="document.getElementById('filter-form').submit()"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tahun</label>
+                            <select name="tahun"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
                                 @foreach($availableYears as $y)
                                     <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Bulan</label>
-                            <select name="bulan" onchange="document.getElementById('filter-form').submit()"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Bulan</label>
+                            <select name="bulan"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
                                 <option value="">Semua Bulan</option>
                                 @foreach(['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'] as $i => $nm)
                                     <option value="{{ $i + 1 }}" {{ $bulan == ($i + 1) ? 'selected' : '' }}>{{ $nm }}</option>
@@ -106,70 +126,69 @@
                             </select>
                         </div>
                     </div>
-                    @if($search || $lembagaId || $bulan)
-                        <div class="mt-3 flex justify-end">
+                    <div class="flex gap-2 justify-end">
+                        @if($search || $lembagaId || $bulan)
                             <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                                Reset Filter
-                            </a>
-                        </div>
-                    @endif
+                                class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Reset Filter</a>
+                        @endif
+                        <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg">Terapkan</button>
+                        <button type="button" id="closeFilterPanelBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Tutup</button>
+                    </div>
                 </form>
             </div>
 
-            {{-- ── Tabel ── --}}
             @if(count($laporanPerLembaga) > 0)
-
-                {{-- Desktop --}}
+                <!-- DESKTOP TABLE -->
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="w-10 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lembaga</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Penerimaan</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Penyaluran</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Setor Kas</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo Akhir</th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Aksi</th>
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50/50">
+                                <th class="px-4 py-4 text-center w-10"></th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500">LEMBAGA</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500">PENERIMAAN</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500">PENYALURAN</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 hidden lg:table-cell">SETOR KAS</th>
+                                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500">SALDO AKHIR</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 w-24">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody>
                             @foreach($laporanPerLembaga as $item)
                                 @php $lembaga = $item['lembaga']; @endphp
-
-                                {{-- Baris Lembaga --}}
-                                <tr class="lembaga-row cursor-pointer hover:bg-primary/5 transition-colors"
-                                    onclick="toggleLembaga('lembaga-{{ $lembaga->id }}', this)">
-                                    <td class="px-4 py-3">
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 lembaga-chevron"
+                                
+                                <tr class="border-b border-gray-100 hover:bg-green-50/20 cursor-pointer expandable-row"
+                                    data-target="detail-{{ $lembaga->id }}">
+                                    <td class="px-4 py-4 text-center">
+                                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon inline-block" 
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
                                     </td>
-                                    <td class="px-6 py-3">
-                                        <div class="text-sm font-semibold text-gray-900">{{ $lembaga->nama }}</div>
-                                        <div class="text-xs text-gray-400 mt-0.5">{{ $lembaga->kode_lembaga }} · Klik untuk lihat per bulan</div>
+                                    <td class="px-6 py-4">
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-800 group-hover:text-green-700">
+                                                {{ $lembaga->nama }}
+                                            </span>
+                                            <div class="text-xs text-gray-400 mt-0.5">{{ $lembaga->kode_lembaga ?? 'LBL-' . str_pad($lembaga->id, 3, '0', STR_PAD_LEFT) }}</div>
+                                            <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat rincian per bulan</div>
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                    <td class="px-6 py-4 text-right">
                                         <span class="text-sm font-semibold text-green-600">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                    <td class="px-6 py-4 text-right">
                                         <span class="text-sm font-semibold text-red-600">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-3 text-right whitespace-nowrap hidden lg:table-cell">
+                                    <td class="px-6 py-4 text-right hidden lg:table-cell">
                                         <span class="text-sm font-semibold text-indigo-600">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-3 text-right whitespace-nowrap">
+                                    <td class="px-6 py-4 text-right">
                                         <span class="text-sm font-bold text-blue-600">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</span>
                                     </td>
-                                    <td class="px-6 py-3 text-center" onclick="event.stopPropagation()">
-                                        <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}"
-                                            class="inline-flex items-center px-2.5 py-1.5 bg-primary hover:bg-primary-600 text-white text-xs font-medium rounded-lg transition-colors shadow-sm">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                                        <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}?tahun={{ $tahun }}&bulan={{ $bulan }}"
+                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
@@ -178,81 +197,82 @@
                                     </td>
                                 </tr>
 
-                                {{-- Expandable: Tabel per Bulan --}}
-                                <tr id="lembaga-{{ $lembaga->id }}" class="hidden lembaga-content-row">
-                                    <td colspan="7" class="p-0">
-                                        <div class="bg-gradient-to-b from-primary/5 to-gray-50 border-y border-primary/20 px-6 py-4">
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <div class="w-1 h-5 bg-primary rounded-full"></div>
-                                                <h3 class="text-sm font-semibold text-gray-800">
-                                                    Rincian per Bulan — {{ $lembaga->nama }}
-                                                </h3>
+                                <!-- Expandable Row dengan Rincian per Bulan -->
+                                <tr id="detail-{{ $lembaga->id }}" class="hidden border-b border-gray-100">
+                                    <td class="px-4 py-4 bg-gray-50/30"></td>
+                                    <td colspan="6" class="px-6 py-4 bg-gray-50/30">
+                                        <div class="space-y-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-1 h-5 bg-green-500 rounded-full"></div>
+                                                <h3 class="text-sm font-semibold text-gray-800">Rincian per Bulan — {{ $lembaga->nama }}</h3>
                                             </div>
 
                                             @if(count($item['periodes']) === 0)
-                                                <div class="text-center py-6 text-sm text-gray-400 bg-white rounded-xl border border-gray-100">
-                                                    Belum ada data transaksi untuk lembaga ini pada periode yang dipilih
-                                                </div>
+                                                <div class="text-center py-8 text-sm text-gray-400 bg-white rounded-xl border">Belum ada data transaksi untuk periode yang dipilih</div>
                                             @else
-                                                <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                                                <div class="rounded-xl border border-gray-200 bg-white overflow-hidden">
                                                     <table class="min-w-full divide-y divide-gray-200">
-                                                        <thead class="bg-white">
+                                                        <thead class="bg-gray-50">
                                                             <tr>
-                                                                <th class="px-4 py-2.5 text-left text-xs font-medium text-gray-500 uppercase">Periode</th>
-                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Penerimaan</th>
-                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Penyaluran</th>
-                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase hidden md:table-cell">Setor Kas</th>
-                                                                <th class="px-4 py-2.5 text-right text-xs font-medium text-gray-500 uppercase">Saldo</th>
-                                                                <th class="px-4 py-2.5 text-center text-xs font-medium text-gray-500 uppercase hidden lg:table-cell">Muzakki / Mustahik</th>
+                                                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500">PERIODE</th>
+                                                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">PENERIMAAN</th>
+                                                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">PENYALURAN</th>
+                                                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 hidden md:table-cell">SETOR KAS</th>
+                                                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500">SALDO</th>
+                                                                <th class="px-4 py-3 text-center text-xs font-semibold text-gray-500 hidden lg:table-cell">MUZAKKI / MUSTAHIK</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody class="bg-white divide-y divide-gray-100">
+                                                        <tbody class="divide-y divide-gray-100">
                                                             @foreach($item['periodes'] as $periode)
                                                                 <tr class="hover:bg-gray-50 transition-colors">
-                                                                    <td class="px-4 py-2.5">
+                                                                    <td class="px-4 py-3">
                                                                         <span class="text-sm font-medium text-gray-800">{{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 text-right">
+                                                                    <td class="px-4 py-3 text-right">
                                                                         <span class="text-sm text-green-600 font-medium">Rp {{ number_format($periode['total_penerimaan'], 0, ',', '.') }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 text-right">
+                                                                    <td class="px-4 py-3 text-right">
                                                                         <span class="text-sm text-red-600 font-medium">Rp {{ number_format($periode['total_penyaluran'], 0, ',', '.') }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 text-right hidden md:table-cell">
+                                                                    <td class="px-4 py-3 text-right hidden md:table-cell">
                                                                         <span class="text-sm text-indigo-600 font-medium">Rp {{ number_format($periode['total_setor_kas'], 0, ',', '.') }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 text-right">
-                                                                        <span class="text-sm text-blue-700 font-bold">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
+                                                                    <td class="px-4 py-3 text-right">
+                                                                        <span class="text-sm font-bold text-blue-700">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
                                                                     </td>
-                                                                    <td class="px-4 py-2.5 text-center hidden lg:table-cell">
-                                                                        <span class="text-xs text-purple-700 font-semibold">{{ number_format($periode['jumlah_muzakki']) }}</span>
-                                                                        <span class="text-xs text-gray-400 mx-1">/</span>
-                                                                        <span class="text-xs text-orange-600 font-semibold">{{ number_format($periode['jumlah_mustahik']) }}</span>
+                                                                    <td class="px-4 py-3 text-center hidden lg:table-cell">
+                                                                        <div class="flex items-center justify-center gap-1">
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-700">{{ number_format($periode['jumlah_muzakki'] ?? 0) }}</span>
+                                                                            <span class="text-xs text-gray-400">/</span>
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700">{{ number_format($periode['jumlah_mustahik'] ?? 0) }}</span>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
                                                         <tfoot class="bg-gray-50 border-t border-gray-200">
                                                             <tr>
-                                                                <td class="px-4 py-2.5 text-xs font-bold text-gray-700 uppercase">Subtotal</td>
-                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-green-700">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</td>
-                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-red-700">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</td>
-                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-indigo-700 hidden md:table-cell">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</td>
-                                                                <td class="px-4 py-2.5 text-right text-sm font-bold text-blue-800">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</td>
-                                                                <td class="px-4 py-2.5 text-center hidden lg:table-cell">
-                                                                    <span class="text-xs font-bold text-purple-800">{{ number_format($item['jumlah_muzakki']) }}</span>
-                                                                    <span class="text-xs text-gray-400 mx-1">/</span>
-                                                                    <span class="text-xs font-bold text-orange-800">{{ number_format($item['jumlah_mustahik']) }}</span>
-                                                                </td>
+                                                                <td class="px-4 py-3 text-xs font-bold text-gray-700 uppercase">TOTAL</td>
+                                                                <td class="px-4 py-3 text-right text-sm font-bold text-green-700">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-3 text-right text-sm font-bold text-red-700">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-3 text-right text-sm font-bold text-indigo-700 hidden md:table-cell">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-3 text-right text-sm font-bold text-blue-800">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</td>
+                                                                <td class="px-4 py-3 text-center hidden lg:table-cell">
+                                                                    <div class="flex items-center justify-center gap-1">
+                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-purple-200 text-purple-800">{{ number_format($item['jumlah_muzakki']) }}</span>
+                                                                        <span class="text-xs text-gray-400">/</span>
+                                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-orange-200 text-orange-800">{{ number_format($item['jumlah_mustahik']) }}</span>
+                                                                    </div>
+                                                                 </td>
                                                             </tr>
                                                         </tfoot>
                                                     </table>
                                                 </div>
 
-                                                <div class="mt-3 flex justify-end">
-                                                    <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}"
-                                                        class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all shadow-sm">
-                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="flex justify-end">
+                                                    <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}?tahun={{ $tahun }}&bulan={{ $bulan }}"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                                         </svg>
                                                         Lihat Detail Lengkap (Chart & Breakdown)
@@ -267,157 +287,180 @@
                     </table>
                 </div>
 
-                {{-- Mobile --}}
-                <div class="md:hidden divide-y divide-gray-200">
+                <!-- MOBILE VIEW -->
+                <div class="block md:hidden divide-y divide-gray-100">
                     @foreach($laporanPerLembaga as $item)
                         @php $lembaga = $item['lembaga']; @endphp
-                        <div>
-                            <div class="p-4 hover:bg-primary/5 cursor-pointer transition-colors"
-                                onclick="toggleLembagaMobile('mob-{{ $lembaga->id }}', this)">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-semibold text-gray-900 truncate">{{ $lembaga->nama }}</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">
-                                            Saldo: <span class="font-semibold text-blue-600">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</span>
-                                        </p>
+                        
+                        <div class="p-4">
+                            <div class="expandable-row-mobile cursor-pointer" data-target="detail-mobile-{{ $lembaga->id }}">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile" 
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                            <span class="text-xs text-gray-400">Lembaga</span>
+                                        </div>
+                                        <h3 class="text-sm font-semibold text-gray-800">{{ $lembaga->nama }}</h3>
+                                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                                            <span class="text-xs text-gray-500">Saldo Akhir:</span>
+                                            <span class="text-sm font-bold text-blue-600">Rp {{ number_format($item['saldo_akhir'], 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-2 mt-1">
+                                            <span class="text-xs text-green-600">+Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</span>
+                                            <span class="text-xs text-red-600">-Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</span>
+                                        </div>
                                     </div>
-                                    <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 mob-chevron flex-shrink-0 ml-2"
+                                    <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron" 
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </div>
                             </div>
+                            <div id="detail-mobile-{{ $lembaga->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
+                                <div class="space-y-3">
+                                    <!-- Ringkasan -->
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="bg-gray-50 rounded-lg p-2.5">
+                                            <p class="text-xs text-gray-500">Penerimaan</p>
+                                            <p class="text-sm font-bold text-green-600">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</p>
+                                        </div>
+                                        <div class="bg-gray-50 rounded-lg p-2.5">
+                                            <p class="text-xs text-gray-500">Penyaluran</p>
+                                            <p class="text-sm font-bold text-red-600">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</p>
+                                        </div>
+                                        <div class="bg-gray-50 rounded-lg p-2.5">
+                                            <p class="text-xs text-gray-500">Setor Kas</p>
+                                            <p class="text-sm font-bold text-indigo-600">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</p>
+                                        </div>
+                                        <div class="bg-gray-50 rounded-lg p-2.5">
+                                            <p class="text-xs text-gray-500">Muzakki / Mustahik</p>
+                                            <p class="text-sm font-bold">
+                                                <span class="text-purple-600">{{ number_format($item['jumlah_muzakki']) }}</span>
+                                                <span class="text-gray-400">/</span>
+                                                <span class="text-orange-600">{{ number_format($item['jumlah_mustahik']) }}</span>
+                                            </p>
+                                        </div>
+                                    </div>
 
-                            <div id="mob-{{ $lembaga->id }}" class="hidden bg-gray-50 border-t border-gray-100 px-4 py-4 space-y-3">
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
-                                        <p class="text-xs text-gray-500">Penerimaan</p>
-                                        <p class="text-sm font-bold text-green-600 mt-0.5">Rp {{ number_format($item['total_penerimaan'], 0, ',', '.') }}</p>
-                                    </div>
-                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
-                                        <p class="text-xs text-gray-500">Penyaluran</p>
-                                        <p class="text-sm font-bold text-red-600 mt-0.5">Rp {{ number_format($item['total_penyaluran'], 0, ',', '.') }}</p>
-                                    </div>
-                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
-                                        <p class="text-xs text-gray-500">Setor Kas</p>
-                                        <p class="text-sm font-bold text-indigo-600 mt-0.5">Rp {{ number_format($item['total_setor_kas'], 0, ',', '.') }}</p>
-                                    </div>
-                                    <div class="bg-white rounded-lg p-2.5 border border-gray-200">
-                                        <p class="text-xs text-gray-500">Muzakki / Mustahik</p>
-                                        <p class="text-sm font-bold text-purple-600 mt-0.5">{{ $item['jumlah_muzakki'] }} / {{ $item['jumlah_mustahik'] }}</p>
-                                    </div>
+                                    <!-- Rincian per Bulan -->
+                                    @if(count($item['periodes']) > 0)
+                                        <div>
+                                            <h4 class="text-xs font-semibold text-gray-500 mb-2">Rincian per Bulan</h4>
+                                            <div class="space-y-2">
+                                                @foreach($item['periodes'] as $periode)
+                                                    <div class="bg-white border border-gray-200 rounded-lg p-2.5">
+                                                        <div class="flex justify-between items-center">
+                                                            <span class="text-xs font-semibold text-gray-700">{{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}</span>
+                                                            <span class="text-xs font-bold text-blue-600">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
+                                                        </div>
+                                                        <div class="flex justify-between mt-1">
+                                                            <span class="text-xs text-green-600">+Rp {{ number_format($periode['total_penerimaan'], 0, ',', '.') }}</span>
+                                                            <span class="text-xs text-red-600">-Rp {{ number_format($periode['total_penyaluran'], 0, ',', '.') }}</span>
+                                                        </div>
+                                                        <div class="flex justify-between mt-1 text-xs text-gray-500">
+                                                            <span>Muzakki: {{ number_format($periode['jumlah_muzakki'] ?? 0) }}</span>
+                                                            <span>Mustahik: {{ number_format($periode['jumlah_mustahik'] ?? 0) }}</span>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}?tahun={{ $tahun }}&bulan={{ $bulan }}"
+                                        class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Lihat Detail Lengkap
+                                    </a>
                                 </div>
-
-                                @if(count($item['periodes']) > 0)
-                                    <div class="rounded-lg border border-gray-200 overflow-hidden">
-                                        <div class="bg-gray-100 px-3 py-2">
-                                            <p class="text-xs font-semibold text-gray-600 uppercase">Rincian per Bulan</p>
-                                        </div>
-                                        <div class="divide-y divide-gray-100">
-                                            @foreach($item['periodes'] as $periode)
-                                                <div class="px-3 py-2.5 bg-white">
-                                                    <div class="flex justify-between items-center">
-                                                        <span class="text-xs font-medium text-gray-700">{{ $periode['bulan_nama'] }} {{ $periode['tahun'] }}</span>
-                                                        <span class="text-xs font-bold text-blue-600">Rp {{ number_format($periode['saldo_akhir'], 0, ',', '.') }}</span>
-                                                    </div>
-                                                    <div class="flex gap-3 mt-1 text-xs">
-                                                        <span class="text-green-600">+{{ number_format($periode['total_penerimaan'], 0, ',', '.') }}</span>
-                                                        <span class="text-red-600">-{{ number_format($periode['total_penyaluran'], 0, ',', '.') }}</span>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <a href="{{ route('laporan-konsolidasi.detail', $lembaga->id) }}"
-                                    class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-all">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                    Lihat Detail Lengkap
-                                </a>
                             </div>
                         </div>
                     @endforeach
                 </div>
-
             @else
-                <div class="p-8 sm:p-12 text-center">
-                    <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                <div class="py-16 text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
                     @if($search || $lembagaId || $bulan)
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">Tidak ada data yang sesuai dengan filter yang dipilih.</p>
-                        <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            Reset Filter
-                        </a>
+                        <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
+                        <a href="{{ route('laporan-konsolidasi.index', ['tahun' => $tahun]) }}" class="text-sm text-green-600 hover:text-green-700">Reset semua filter</a>
                     @else
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Data</h3>
-                        <p class="text-sm text-gray-500">Tidak ada data transaksi untuk tahun {{ $tahun }}.</p>
+                        <p class="text-sm text-gray-500 mb-2">Belum ada data transaksi</p>
+                        <p class="text-xs text-gray-400">Tidak ada data transaksi untuk tahun {{ $tahun }}</p>
                     @endif
                 </div>
             @endif
-
         </div>
     </div>
+
+    <style>
+        .rotate-90 { transform: rotate(90deg); }
+        .rotate-180 { transform: rotate(180deg); }
+    </style>
 @endsection
 
 @push('scripts')
 <script>
-    function toggleLembaga(id, row) {
-        const content = document.getElementById(id);
-        const chevron = row.querySelector('.lembaga-chevron');
-        const isHidden = content.classList.contains('hidden');
-        content.classList.toggle('hidden', !isHidden);
-        chevron.classList.toggle('rotate-90', isHidden);
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButton = document.getElementById('filterButton');
+    const filterPanel = document.getElementById('filterPanel');
+    const closeBtn = document.getElementById('closeFilterPanelBtn');
+    
+    if (filterButton && filterPanel) {
+        filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
+    }
+    if (closeBtn && filterPanel) {
+        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
     }
 
-    function toggleLembagaMobile(id, row) {
-        const content = document.getElementById(id);
-        const chevron = row.querySelector('.mob-chevron');
-        const isHidden = content.classList.contains('hidden');
-        content.classList.toggle('hidden', !isHidden);
-        chevron.classList.toggle('rotate-180', isHidden);
-    }
-
-    function toggleSearch() {
-        var btn       = document.getElementById('search-button');
-        var form      = document.getElementById('search-form');
-        var input     = document.getElementById('search-input');
-        var container = document.getElementById('search-container');
-        if (form.classList.contains('hidden')) {
-            btn.classList.add('hidden');
-            form.classList.remove('hidden');
-            container.style.minWidth = '280px';
-            setTimeout(function() { input.focus(); }, 50);
-        } else {
-            form.classList.add('hidden');
-            btn.classList.remove('hidden');
-            container.style.minWidth = '';
-        }
-    }
-
-    function toggleFilter() {
-        document.getElementById('filter-panel').classList.toggle('hidden');
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            var form      = document.getElementById('search-form');
-            var btn       = document.getElementById('search-button');
-            var container = document.getElementById('search-container');
-            if (!form.classList.contains('hidden')) {
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = '';
+    // Desktop expandable
+    document.querySelectorAll('.expandable-row').forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a') || e.target.closest('button')) return;
+            const targetId = this.getAttribute('data-target');
+            const targetRow = document.getElementById(targetId);
+            const icon = this.querySelector('.expand-icon');
+            if (targetRow) {
+                const isHidden = targetRow.classList.contains('hidden');
+                targetRow.classList.toggle('hidden');
+                if (icon) icon.classList.toggle('rotate-90');
             }
-        }
+        });
     });
+
+    // Mobile expandable
+    document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+        row.addEventListener('click', function(e) {
+            if (e.target.closest('a') || e.target.closest('button')) return;
+            const targetId = this.getAttribute('data-target');
+            const targetContent = document.getElementById(targetId);
+            const icon = this.querySelector('.expand-icon-mobile');
+            const chevron = this.querySelector('.expand-icon-mobile-chevron');
+            if (targetContent) {
+                const isHidden = targetContent.classList.contains('hidden');
+                targetContent.classList.toggle('hidden');
+                if (icon) icon.classList.toggle('rotate-90');
+                if (chevron) chevron.classList.toggle('rotate-90');
+            }
+        });
+    });
+});
+
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    url.searchParams.set('tahun', '{{ $tahun }}');
+    window.location.href = url.toString();
+}
 </script>
 @endpush
