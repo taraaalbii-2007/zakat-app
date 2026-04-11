@@ -93,13 +93,13 @@ class LogAktivitas extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('aktivitas', 'like', "%{$search}%")
-              ->orWhere('modul', 'like', "%{$search}%")
-              ->orWhere('deskripsi', 'like', "%{$search}%")
-              ->orWhere('peran', 'like', "%{$search}%")
-              ->orWhereHas('pengguna', function ($q) use ($search) {
-                  $q->where('nama_lengkap', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-              });
+                ->orWhere('modul', 'like', "%{$search}%")
+                ->orWhere('deskripsi', 'like', "%{$search}%")
+                ->orWhere('peran', 'like', "%{$search}%")
+                ->orWhereHas('pengguna', function ($q) use ($search) {
+                    $q->where('username', 'like', "%{$search}%")  // ✅ Ganti dengan username
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
         });
     }
 
@@ -108,9 +108,8 @@ class LogAktivitas extends Model
      */
     public function getNamaPenggunaAttribute()
     {
-        return $this->pengguna?->nama_lengkap ?? 'Sistem';
+        return $this->pengguna?->username ?? 'Sistem';  // Ganti nama_lengkap dengan username
     }
-
     /**
      * Helper untuk mendapatkan email pengguna
      */
@@ -140,7 +139,7 @@ class LogAktivitas extends Model
      */
     public function getBadgeColorAttribute()
     {
-        return match($this->aktivitas) {
+        return match ($this->aktivitas) {
             'login' => 'bg-blue-100 text-blue-700',
             'logout' => 'bg-gray-100 text-gray-700',
             'create' => 'bg-green-100 text-green-700',
