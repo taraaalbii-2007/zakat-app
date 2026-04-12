@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            <!-- Header -->
+ <!-- Header - DIPERBAIKI -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,9 +16,11 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
+                        <!-- Tombol Filter - DIPERBAIKI -->
                         <button type="button" id="filterButton"
-                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
+                            {{ request()->hasAny(['q', 'lembaga_id']) ? 'bg-green-50' : '' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
@@ -28,8 +30,8 @@
                 </div>
             </div>
 
-            <!-- Statistik Bar -->
-            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+            <!-- Statistik Bar - DIPERBAIKI -->
+            <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600">Total:</span>
@@ -38,60 +40,86 @@
                         <span class="text-sm font-semibold text-gray-800">{{ $lembagas->count() }}</span>
                         <span class="text-sm text-gray-500">Lembaga</span>
                     </div>
-
-                    @if(request('q') || request('lembaga_id'))
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs text-gray-400">Filter aktif:</span>
-                            @if(request('q'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    "{{ request('q') }}"
-                                    <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                            @if(request('lembaga_id'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Lembaga: {{ $lembagas->firstWhere('id', request('lembaga_id'))?->nama ?? request('lembaga_id') }}
-                                    <button onclick="removeFilter('lembaga_id')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
                 </div>
             </div>
 
-            <!-- Filter Panel -->
-            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
-                <form method="GET" action="{{ route('muzaki.index') }}" class="space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Lembaga/Muzaki</label>
-                            <input type="text" name="q" value="{{ request('q') }}"
-                                placeholder="Cari nama lembaga atau muzaki..."
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Lembaga</label>
-                            <select name="lembaga_id"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
-                                <option value="">Semua Lembaga</option>
-                                @foreach ($lembagas as $lembaga)
-                                    <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
-                                        {{ $lembaga->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
+            <!-- Filter Panel - DIPERBAIKI -->
+            <div id="filterPanel" class="{{ request()->hasAny(['q', 'lembaga_id']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
+                <form method="GET" action="{{ route('muzaki.index') }}" id="filter-form">
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <!-- Search Field -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Cari Lembaga/Muzaki</label>
+                                <div class="relative">
+                                    <input type="text" name="q" value="{{ request('q') }}"
+                                        placeholder="Cari nama lembaga atau muzaki..."
+                                        class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
+                                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Filter Lembaga -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Lembaga</label>
+                                <select name="lembaga_id"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Lembaga</option>
+                                    @foreach ($lembagas as $lembaga)
+                                        <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
+                                            {{ $lembaga->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div></div>
                         </div>
                     </div>
-                    <div class="flex gap-2 justify-end">
-                        @if (request('q') || request('lembaga_id'))
+                    <div class="flex gap-2 justify-end mt-4">
+                        @if (request()->hasAny(['q', 'lembaga_id']))
                             <a href="{{ route('muzaki.index') }}"
-                                class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Reset Filter</a>
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors">
+                                Reset Filter
+                            </a>
                         @endif
-                        <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg">Terapkan</button>
-                        <button type="button" id="closeFilterPanelBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Tutup</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                            Terapkan
+                        </button>
+                        <button type="button" onclick="toggleFilter()"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
                     </div>
                 </form>
             </div>
+
+            <!-- Active Filter Tags - DIPERBAIKI -->
+            @if(request()->hasAny(['q', 'lembaga_id']))
+                <div class="px-5 py-2.5 border-b border-gray-100">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs text-gray-400">Filter aktif:</span>
+                        @if(request('q'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                "{{ request('q') }}"
+                                <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('lembaga_id'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Lembaga: {{ $lembagas->firstWhere('id', request('lembaga_id'))?->nama ?? request('lembaga_id') }}
+                                <button onclick="removeFilter('lembaga_id')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             @if ($lembagas->count() > 0)
                 <!-- DESKTOP TABLE -->
