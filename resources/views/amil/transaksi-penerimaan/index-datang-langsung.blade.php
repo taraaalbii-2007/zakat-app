@@ -766,12 +766,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <div class="pt-2 border-t border-gray-200">
-                                                <p class="text-xs text-gray-400">ID Transaksi: <span
-                                                        class="font-medium text-gray-600">{{ $trx->id }}</span>
-                                                </p>
-                                            </div>
                                         </div>
                                     </td>
                                 </tr>

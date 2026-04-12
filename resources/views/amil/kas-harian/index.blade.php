@@ -338,131 +338,112 @@
                                 <td class="px-6 py-4 text-right">
                                     <span class="text-sm font-semibold text-green-700">{{ $trx->jumlah_formatted }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <a href="{{ route('kas-harian.show', $trx->uuid) }}"
-                                        class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                        Detail
-                                    </a>
-                                </td>
+                               {{-- Ganti isi cell aksi --}}
+<td class="px-6 py-4 text-center">
+    <div class="flex items-center justify-center gap-2">
+        {{-- Tombol Detail --}}
+        <div class="relative group/tooltip">
+            <a href="{{ route('kas-harian.show', $trx->uuid) }}"
+                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </a>
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                Detail
+                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+            </div>
+        </div>
+    </div>
+</td>
                             </tr>
 
-                            {{-- Expandable Row Penerimaan --}}
-                            <tr id="detail-trx-in-{{ $trx->uuid }}" class="hidden expandable-content">
-                                <td colspan="4" class="px-0 py-0">
-                                    <div class="bg-gray-50 border-y border-gray-100">
-                                        <div class="px-6 py-4">
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {{-- Kolom 1: Data Muzakki --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Data Muzakki</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Nama</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->muzakki_nama }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @if($trx->muzakki && $trx->muzakki->telepon)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Telepon</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->muzakki->telepon }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
+{{-- Ganti expandable row penerimaan --}}
+<tr id="detail-trx-in-{{ $trx->uuid }}" class="hidden expandable-content">
+    {{-- Kolom pertama (icon expand) --}}
+    <td class="px-4 py-4 bg-gray-50/30"></td>
+    
+    {{-- Kolom kedua dan ketiga digabung (colspan="2") agar sejajar dengan kolom MUZAKKI & TRANSAKSI --}}
+    <td colspan="2" class="px-6 py-4 bg-gray-50/30">
+        <div class="space-y-4">
+            
+            {{-- Header dengan garis hijau --}}
+            <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-green-500 rounded-full"></div>
+                <h3 class="text-sm font-semibold text-gray-800">Detail Transaksi — {{ $trx->muzakki_nama ?? '-' }}</h3>
+            </div>
 
-                                                {{-- Kolom 2: Detail Transaksi --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Transaksi</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Waktu</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->created_at->format('d F Y, H:i') }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jenis Zakat</p>
-                                                                <p class="text-sm font-medium text-gray-900">
-                                                                    {{ $trx->jenisZakat->nama ?? '-' }}
-                                                                    @if($trx->tipeZakat)
-                                                                        <span class="text-gray-400">· {{ $trx->tipeZakat->nama }}</span>
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jumlah</p>
-                                                                <p class="text-sm font-semibold text-green-700">{{ $trx->jumlah_formatted }}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+            {{-- Grid 2 kolom agar rapi --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                
+                {{-- Kolom Kiri --}}
+                <div class="space-y-3">
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Nama</div>
+                        <div class="text-sm font-medium text-gray-800">{{ $trx->muzakki_nama ?? '-' }}</div>
+                    </div>
+                    @if($trx->muzakki_alamat)
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Alamat</div>
+                        <div class="text-sm text-gray-700">{{ $trx->muzakki_alamat }}</div>
+                    </div>
+                    @endif
+                    @if($trx->muzakki && $trx->muzakki->telepon)
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Telepon</div>
+                        <div class="text-sm text-gray-800">{{ $trx->muzakki->telepon }}</div>
+                    </div>
+                    @endif
+                </div>
 
-                                                {{-- Kolom 3: Metode & Petugas --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Metode &amp; Petugas</h4>
-                                                    <div class="space-y-3">
-                                                        <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Metode Penerimaan</p>
-                                                            {!! $trx->metode_penerimaan_badge !!}
-                                                        </div>
-                                                        <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Metode Pembayaran</p>
-                                                            {!! $trx->metode_pembayaran_badge !!}
-                                                        </div>
-                                                        @if($trx->amil)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Petugas</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->amil->nama_lengkap }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {{-- Footer expandable --}}
-                                            <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-3">
-                                                <div class="text-xs text-gray-500">
-                                                    No. Transaksi: <span class="font-medium text-gray-700 font-mono">{{ $trx->no_transaksi }}</span>
-                                                </div>
-                                                <a href="{{ route('kas-harian.show', $trx->uuid) }}"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                    </svg>
-                                                    Lihat Detail
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                {{-- Kolom Kanan --}}
+                <div class="space-y-3">
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">No. Transaksi</div>
+                        <div class="text-sm font-mono font-medium text-gray-800">{{ $trx->no_transaksi }}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Tanggal & Waktu</div>
+                        <div class="text-sm text-gray-800">
+                            {{ $trx->created_at->format('d F Y') }}
+                            <span class="text-gray-500">({{ $trx->created_at->format('H:i') }})</span>
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Jenis Zakat</div>
+                        <div class="text-sm text-gray-800">
+                            {{ $trx->jenisZakat->nama ?? '-' }}
+                            @if($trx->tipeZakat)
+                                <span class="text-gray-500">({{ $trx->tipeZakat->nama }})</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Jumlah</div>
+                        <div class="text-sm font-semibold text-green-600">{{ $trx->jumlah_formatted }}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Metode</div>
+                        <div class="text-sm flex gap-1">
+                            {!! $trx->metode_penerimaan_badge !!}
+                            {!! $trx->metode_pembayaran_badge !!}
+                        </div>
+                    </div>
+                    @if($trx->amil)
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Petugas</div>
+                        <div class="text-sm text-gray-800">{{ $trx->amil->nama_lengkap }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </td>
+    
+    {{-- Kolom keempat (aksi) --}}
+    <td class="px-6 py-4 bg-gray-50/30"></td>
+</tr>
                             @endforeach
                         </tbody>
                         <tfoot class="bg-gray-50">
@@ -594,153 +575,100 @@
                                 <td class="px-6 py-4 text-right">
                                     <span class="text-sm font-semibold text-orange-700">{{ $trx->jumlah_formatted }}</span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <a href="{{ route('transaksi-penyaluran.show', $trx->uuid) }}"
-                                        class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                        Detail
-                                    </a>
-                                </td>
+                                {{-- Ganti isi cell aksi --}}
+<td class="px-6 py-4 text-center">
+    <div class="flex items-center justify-center gap-2">
+        {{-- Tombol Detail --}}
+        <div class="relative group/tooltip">
+            <a href="{{ route('transaksi-penyaluran.show', $trx->uuid) }}"
+                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            </a>
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                Detail
+                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+            </div>
+        </div>
+    </div>
+</td>
                             </tr>
 
-                            {{-- Expandable Row Penyaluran --}}
-                            <tr id="detail-trx-out-{{ $trx->uuid }}" class="hidden expandable-content">
-                                <td colspan="4" class="px-0 py-0">
-                                    <div class="bg-gray-50 border-y border-gray-100">
-                                        <div class="px-6 py-4">
-                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {{-- Kolom 1: Data Mustahik --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Data Mustahik</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Nama</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->mustahik->nama_lengkap ?? '-' }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Kategori</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->kategoriMustahik->nama ?? '-' }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @if($trx->mustahik && $trx->mustahik->telepon)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Telepon</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->mustahik->telepon }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
+<tr id="detail-trx-out-{{ $trx->uuid }}" class="hidden expandable-content">
+    <td class="px-4 py-4 bg-gray-50/30"></td>
+    <td colspan="2" class="px-6 py-4 bg-gray-50/30">
+        <div class="space-y-4">
+            
+            <div class="flex items-center gap-2">
+                <div class="w-1 h-5 bg-orange-500 rounded-full"></div>
+                <h3 class="text-sm font-semibold text-gray-800">Detail Penyaluran — {{ $trx->mustahik->nama_lengkap ?? '-' }}</h3>
+            </div>
 
-                                                {{-- Kolom 2: Detail Penyaluran --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Detail Penyaluran</h4>
-                                                    <div class="space-y-3">
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Tanggal</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->tanggal_penyaluran->format('d F Y') }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @if($trx->jenisZakat)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jenis Zakat</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->jenisZakat->nama }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-orange-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Jumlah</p>
-                                                                <p class="text-sm font-semibold text-orange-700">{{ $trx->jumlah_formatted }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @if($trx->metode_penyaluran === 'barang' && $trx->detail_barang)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Detail Barang</p>
-                                                                <p class="text-sm text-gray-700">{{ Str::limit($trx->detail_barang, 80) }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                
+                {{-- Kolom Kiri: Data Mustahik --}}
+                <div class="space-y-3">
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Nama</div>
+                        <div class="text-sm font-medium text-gray-800">{{ $trx->mustahik->nama_lengkap ?? '-' }}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Kategori</div>
+                        <div class="text-sm text-gray-800">{{ $trx->kategoriMustahik->nama ?? '-' }}</div>
+                    </div>
+                    @if($trx->mustahik && $trx->mustahik->alamat)
+                    <div class="flex">
+                        <div class="w-24 text-xs text-gray-400 flex-shrink-0">Alamat</div>
+                        <div class="text-sm text-gray-700">{{ $trx->mustahik->alamat }}</div>
+                    </div>
+                    @endif
+                </div>
 
-                                                {{-- Kolom 3: Status --}}
-                                                <div>
-                                                    <h4 class="text-sm font-medium text-gray-900 mb-3">Status &amp; Amil</h4>
-                                                    <div class="space-y-3">
-                                                        <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Status</p>
-                                                            {!! $trx->status_badge !!}
-                                                        </div>
-                                                        <div>
-                                                            <p class="text-xs text-gray-500 mb-1">Metode</p>
-                                                            {!! $trx->metode_penyaluran_badge !!}
-                                                        </div>
-                                                        @if($trx->amil)
-                                                        <div class="flex items-start">
-                                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                            </svg>
-                                                            <div>
-                                                                <p class="text-xs text-gray-500">Amil</p>
-                                                                <p class="text-sm font-medium text-gray-900">{{ $trx->amil->nama_lengkap }}</p>
-                                                            </div>
-                                                        </div>
-                                                        @endif
-                                                        @if($trx->status === 'dibatalkan' && $trx->alasan_pembatalan)
-                                                        <div class="p-2 bg-red-50 border border-red-200 rounded-lg">
-                                                            <p class="text-xs text-red-600 font-medium">Alasan Ditolak:</p>
-                                                            <p class="text-xs text-red-700">{{ $trx->alasan_pembatalan }}</p>
-                                                        </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center flex-wrap gap-3">
-                                                <div class="text-xs text-gray-500">
-                                                    No. Transaksi: <span class="font-medium text-gray-700 font-mono">{{ $trx->no_transaksi }}</span>
-                                                </div>
-                                                <a href="{{ route('transaksi-penyaluran.show', $trx->uuid) }}"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                    </svg>
-                                                    Lihat Detail
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                {{-- Kolom Kanan: Detail Penyaluran --}}
+                <div class="space-y-3">
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">No. Transaksi</div>
+                        <div class="text-sm font-mono font-medium text-gray-800">{{ $trx->no_transaksi }}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Tanggal</div>
+                        <div class="text-sm text-gray-800">
+                            {{ $trx->tanggal_penyaluran->format('d F Y') }}
+                            <span class="text-gray-500">({{ $trx->tanggal_penyaluran->format('H:i') }})</span>
+                        </div>
+                    </div>
+                    @if($trx->jenisZakat)
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Jenis Zakat</div>
+                        <div class="text-sm text-gray-800">{{ $trx->jenisZakat->nama }}</div>
+                    </div>
+                    @endif
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Jumlah</div>
+                        <div class="text-sm font-semibold text-orange-600">{{ $trx->jumlah_formatted }}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Status</div>
+                        <div class="text-sm">{!! $trx->status_badge !!}</div>
+                    </div>
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Metode</div>
+                        <div class="text-sm">{!! $trx->metode_penyaluran_badge !!}</div>
+                    </div>
+                    @if($trx->amil)
+                    <div class="flex">
+                        <div class="w-28 text-xs text-gray-400 flex-shrink-0">Amil</div>
+                        <div class="text-sm text-gray-800">{{ $trx->amil->nama_lengkap }}</div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </td>
+    <td class="px-6 py-4 bg-gray-50/30"></td>
+</tr>
                             @endforeach
                         </tbody>
                         <tfoot class="bg-gray-50">

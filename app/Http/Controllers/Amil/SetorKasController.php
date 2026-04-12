@@ -25,45 +25,61 @@ class SetorKasController extends Controller
     // ============================================
     // INDEX — Riwayat setoran milik amil ini
     // ============================================
-    public function index(Request $request)
-    {
-        $amil = $this->getAmil();
-        if (!$amil) abort(403);
+  public function index(Request $request)
+{
+    $amil = $this->getAmil();
+    if (!$amil) abort(403);
 
-        $query = SetorKas::byAmil($amil->id)
-            ->with(['lembaga', 'penerimaSetoran'])
-            ->latest();
+    $query = SetorKas::byAmil($amil->id)
+        ->with(['lembaga', 'penerimaSetoran']) 
+        ->latest();
 
-        // Filter status
-        if ($request->filled('status') && in_array($request->status, ['pending', 'diterima', 'ditolak'])) {
-            $query->byStatus($request->status);
-        }
-
-        // Filter tanggal dari
-        if ($request->filled('dari')) {
-            $query->whereDate('tanggal_setor', '>=', $request->dari);
-        }
-
-        // Filter tanggal sampai
-        if ($request->filled('sampai')) {
-            $query->whereDate('tanggal_setor', '<=', $request->sampai);
-        }
-
-        $setorans = $query->paginate(10);
-
-        // Summary counts
-        $summary = SetorKas::byAmil($amil->id)
-            ->selectRaw('status, COUNT(*) as total, SUM(jumlah_disetor) as jumlah')
-            ->groupBy('status')
-            ->get()
-            ->keyBy('status');
-
-        $breadcrumbs = [
-            'Data Setor Kas Saya' => route('amil.setor-kas.index'),
-        ];
-
-        return view('amil.setor-kas.index', compact('setorans', 'summary', 'amil', 'breadcrumbs'));
+    // ========== TAMBAHKAN INI ==========
+    // Fitur Pencarian (Search)
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('no_setor', 'like', "%{$search}%")
+              ->orWhereHas('lembaga', function($q) use ($search) {
+                  $q->where('nama', 'like', "%{$search}%");
+              })
+              ->orWhereHas('amil', function($q) use ($search) {
+                  $q->where('nama_lengkap', 'like', "%{$search}%");
+              });
+        });
     }
+    // ===================================
+
+    // Filter status
+    if ($request->filled('status') && in_array($request->status, ['pending', 'diterima', 'ditolak'])) {
+        $query->byStatus($request->status);
+    }
+
+    // Filter tanggal dari
+    if ($request->filled('dari')) {
+        $query->whereDate('tanggal_setor', '>=', $request->dari);
+    }
+
+    // Filter tanggal sampai
+    if ($request->filled('sampai')) {
+        $query->whereDate('tanggal_setor', '<=', $request->sampai);
+    }
+
+    $setorans = $query->paginate(10);
+
+    // Summary counts
+    $summary = SetorKas::byAmil($amil->id)
+        ->selectRaw('status, COUNT(*) as total, SUM(jumlah_disetor) as jumlah')
+        ->groupBy('status')
+        ->get()
+        ->keyBy('status');
+
+    $breadcrumbs = [
+        'Data Setor Kas Saya' => route('amil.setor-kas.index'),
+    ];
+
+    return view('amil.setor-kas.index', compact('setorans', 'summary', 'amil', 'breadcrumbs'));
+}
 
     // ============================================
     // CREATE — Form buat setoran baru

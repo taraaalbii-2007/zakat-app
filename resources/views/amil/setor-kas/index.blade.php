@@ -52,17 +52,17 @@
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full bg-green-500"></div>
                             <span class="text-xs text-gray-500">Diterima:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ $stats['total_diterima'] ?? 0 }}</span>
+                            <span class="text-xs font-semibold text-gray-700">{{ $summary['diterima']->total ?? 0 }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
                             <span class="text-xs text-gray-500">Pending:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ $stats['total_pending'] ?? 0 }}</span>
+                            <span class="text-xs font-semibold text-gray-700">{{ $summary['pending']->total ?? 0 }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full bg-red-500"></div>
                             <span class="text-xs text-gray-500">Ditolak:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ $stats['total_ditolak'] ?? 0 }}</span>
+                            <span class="text-xs font-semibold text-gray-700">{{ $summary['ditolak']->total ?? 0 }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
                             </svg>
                             <span class="text-xs text-gray-500">Total Nominal:</span>
                             <span class="text-xs font-semibold text-gray-700">Rp
-                                {{ number_format($stats['total_nominal'] ?? 0, 0, ',', '.') }}</span>
+                                {{ number_format($summary->sum('jumlah'), 0, ',', '.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -79,32 +79,48 @@
 
             {{-- Filter Panel --}}
             <div id="filter-panel"
-                class="{{ request()->hasAny(['status', 'dari', 'sampai']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
+                class="{{ request()->hasAny(['search', 'status', 'dari', 'sampai']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
                 <form method="GET" action="{{ route('amil.setor-kas.index') }}" id="filter-form">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="space-y-3">
+                        {{-- Search Input --}}
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
-                            <select name="status"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
-                                <option value="">Semua Status</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                            </select>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Setoran</label>
+                            <div class="relative">
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    placeholder="Cari berdasarkan No. Setoran, Masjid, atau Amil..."
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
+                                <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Cari berdasarkan nomor setoran, nama masjid, atau nama amil</p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Dari Tanggal</label>
-                            <input type="date" name="dari" value="{{ request('dari') }}"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Sampai Tanggal</label>
-                            <input type="date" name="sampai" value="{{ request('sampai') }}"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                                <select name="status"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Status</option>
+                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                                    <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Dari Tanggal</label>
+                                <input type="date" name="dari" value="{{ request('dari') }}"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Sampai Tanggal</label>
+                                <input type="date" name="sampai" value="{{ request('sampai') }}"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                            </div>
                         </div>
                     </div>
                     <div class="flex gap-2 justify-end mt-4">
-                        @if (request()->hasAny(['status', 'dari', 'sampai']))
+                        @if (request()->hasAny(['search', 'status', 'dari', 'sampai']))
                             <a href="{{ route('amil.setor-kas.index') }}"
                                 class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors">
                                 Reset Filter
@@ -123,10 +139,17 @@
             </div>
 
             {{-- Active Filter Tags --}}
-            @if (request()->hasAny(['status', 'dari', 'sampai']))
+            @if (request()->hasAny(['search', 'status', 'dari', 'sampai']))
                 <div class="px-5 py-2.5 border-b border-gray-100">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs text-gray-400">Filter aktif:</span>
+                        @if (request('search'))
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Pencarian: "{{ request('search') }}"
+                                <button onclick="removeFilter('search')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
                         @if (request('status'))
                             <div
                                 class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
@@ -472,7 +495,7 @@
                         </div>
                     </div>
 
-                    @if (request()->hasAny(['status', 'dari', 'sampai']))
+                    @if (request()->hasAny(['search', 'status', 'dari', 'sampai']))
                         <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
                         <a href="{{ route('amil.setor-kas.index') }}"
                             class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
