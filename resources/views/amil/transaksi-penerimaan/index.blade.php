@@ -10,11 +10,11 @@
 @section('title', 'Pemantauan Transaksi Penerimaan')
 
 @section('content')
-    <div class="space-y-4 sm:space-y-6">
+    <div class="space-y-6">
 
         {{-- ── Stats Cards ── --}}
         {{-- Toggle button khusus mobile --}}
-        <div class="sm:hidden mb-2">
+        <div class="sm:hidden">
             <button type="button" onclick="toggleStatsMobile()"
                 class="w-full flex items-center justify-between px-4 py-2.5 bg-white rounded-xl border border-gray-100 shadow-sm text-sm font-medium text-gray-700">
                 <span class="flex items-center gap-2">
@@ -33,25 +33,30 @@
 
         <div id="stats-mobile-panel" class="hidden sm:block">
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4">
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-col gap-1">
+                <div
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 sm:py-4 flex flex-col gap-1 transition-all duration-300 hover:shadow-md">
                     <span class="text-xs text-gray-500 font-medium">Total Transaksi</span>
                     <span class="text-2xl font-bold text-gray-900">{{ number_format($stats['total'] ?? 0) }}</span>
                 </div>
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-col gap-1">
+                <div
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 sm:py-4 flex flex-col gap-1 transition-all duration-300 hover:shadow-md">
                     <span class="text-xs text-gray-500 font-medium">Total Nominal</span>
                     <span class="text-lg font-bold text-green-600">Rp
                         {{ number_format($stats['total_nominal'] ?? 0, 0, ',', '.') }}</span>
                 </div>
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-col gap-1">
+                <div
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 sm:py-4 flex flex-col gap-1 transition-all duration-300 hover:shadow-md">
                     <span class="text-xs text-gray-500 font-medium">Datang Langsung</span>
                     <span
                         class="text-2xl font-bold text-blue-600">{{ number_format($stats['datang_langsung'] ?? 0) }}</span>
                 </div>
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-col gap-1">
+                <div
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 sm:py-4 flex flex-col gap-1 transition-all duration-300 hover:shadow-md">
                     <span class="text-xs text-gray-500 font-medium">Dijemput</span>
                     <span class="text-2xl font-bold text-amber-600">{{ number_format($stats['dijemput'] ?? 0) }}</span>
                 </div>
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex flex-col gap-1">
+                <div
+                    class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 sm:py-4 flex flex-col gap-1 transition-all duration-300 hover:shadow-md">
                     <span class="text-xs text-gray-500 font-medium">Daring</span>
                     <span class="text-2xl font-bold text-purple-600">{{ number_format($stats['daring'] ?? 0) }}</span>
                     @if (($stats['menunggu_konfirmasi'] ?? 0) > 0)
@@ -63,11 +68,12 @@
         </div>
 
         {{-- Stats Beras --}}
-        <div id="stats-mobile-extra" class="hidden sm:block space-y-4 sm:space-y-4">
+        <div id="stats-mobile-extra" class="hidden sm:block space-y-4">
 
             @if (($stats['total_beras_kg'] ?? 0) > 0 || ($stats['total_transaksi_beras'] ?? 0) > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-4">
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-4 transition-all duration-300 hover:shadow-md">
                         <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
                             <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -79,12 +85,13 @@
                             <span class="text-xl font-bold text-amber-600">
                                 {{ number_format($stats['total_beras_kg'] ?? 0, 1, ',', '.') }} kg
                             </span>
-                            <span class="text-xs text-gray-400">
+                            <span class="text-xs text-gray-400 block mt-0.5">
                                 dari {{ number_format($stats['total_transaksi_beras'] ?? 0) }} transaksi
                             </span>
                         </div>
                     </div>
-                    <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-4">
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-4 transition-all duration-300 hover:shadow-md">
                         <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
                             <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -97,7 +104,7 @@
                                 {{ number_format(($stats['total_beras_kg'] ?? 0) > 0 ? floor(($stats['total_beras_kg'] ?? 0) / 2.5) : 0) }}
                                 jiwa
                             </span>
-                            <span class="text-xs text-gray-400">@ 2,5 kg/jiwa (BAZNAS)</span>
+                            <span class="text-xs text-gray-400 block mt-0.5">@ 2,5 kg/jiwa (BAZNAS)</span>
                         </div>
                     </div>
                 </div>
@@ -106,18 +113,18 @@
             {{-- Stats Fidyah (Tambahan) --}}
             @if (($stats['total_fidyah'] ?? 0) > 0)
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2">
-                        <span class="text-xs text-gray-600 font-medium">Fidyah Mentah</span>
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2.5 transition-all duration-300 hover:bg-gray-100">
+                        <span class="text-xs text-gray-600 font-medium block mb-1">Fidyah Mentah</span>
                         <span
                             class="block text-lg font-bold text-gray-800">{{ number_format($stats['fidyah_mentah'] ?? 0) }}</span>
                     </div>
-                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2">
-                        <span class="text-xs text-gray-600 font-medium">Fidyah Matang</span>
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2.5 transition-all duration-300 hover:bg-gray-100">
+                        <span class="text-xs text-gray-600 font-medium block mb-1">Fidyah Matang</span>
                         <span
                             class="block text-lg font-bold text-gray-800">{{ number_format($stats['fidyah_matang'] ?? 0) }}</span>
                     </div>
-                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2">
-                        <span class="text-xs text-gray-600 font-medium">Fidyah Tunai</span>
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 px-4 py-2.5 transition-all duration-300 hover:bg-gray-100">
+                        <span class="text-xs text-gray-600 font-medium block mb-1">Fidyah Tunai</span>
                         <span
                             class="block text-lg font-bold text-gray-800">{{ number_format($stats['fidyah_tunai'] ?? 0) }}</span>
                     </div>
@@ -126,48 +133,46 @@
         </div>
 
         {{-- ── Main Card ── --}}
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
             {{-- Header --}}
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">Daftar Transaksi Penerimaan</h2>
-                        <p class="text-xs sm:text-sm text-gray-500 mt-1">Total: {{ $transaksis->total() }} Transaksi</p>
+                        <h1 class="text-lg font-semibold text-gray-800">Daftar Transaksi Penerimaan</h1>
+                        <p class="text-xs text-gray-500 mt-0.5">Total: {{ $transaksis->total() }} Transaksi</p>
                     </div>
-                    <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
 
+                    <div class="flex flex-col sm:flex-row gap-2">
                         {{-- ── Tombol Export (dropdown) ── --}}
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" type="button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all w-full sm:w-auto">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2">Export</span>
-                                <svg class="w-4 h-4 ml-1 transition-transform duration-200" :class="{ 'rotate-180': open }"
+                                Export
+                                <svg class="w-3 h-3 ml-1 transition-transform duration-200" :class="{ 'rotate-180': open }"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
                             <div x-show="open" @click.away="open = false" x-transition
-                                class="absolute right-0 mt-2 w-48 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-20">
                                 <div class="py-1">
                                     <a href="{{ route('pemantauan-transaksi.export.pdf', request()->query()) }}"
-                                        class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <svg class="w-4 h-4 mr-3 text-red-500 flex-shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors duration-150">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                                         </svg>
                                         Export PDF
                                     </a>
                                     <a href="{{ route('pemantauan-transaksi.export.excel', request()->query()) }}"
-                                        class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                                        <svg class="w-4 h-4 mr-3 text-green-600 flex-shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
+                                        class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors duration-150">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -178,14 +183,13 @@
                         </div>
 
                         {{-- Filter --}}
-                        <button type="button" onclick="toggleFilter()"
-                            class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto
-                        {{ request()->hasAny(['jenis_zakat_id', 'metode_pembayaran', 'status', 'metode_penerimaan', 'konfirmasi_status', 'status_penjemputan', 'start_date', 'end_date', 'periode', 'tahun', 'fidyah_tipe']) ? 'ring-2 ring-primary' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button type="button" id="filterButton"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="hidden sm:inline-block sm:ml-2">Filter</span>
+                            Filter & Cari
                             @if (request()->hasAny([
                                     'jenis_zakat_id',
                                     'metode_pembayaran',
@@ -199,83 +203,98 @@
                                     'fidyah_tipe',
                                 ]))
                                 <span
-                                    class="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-xs font-bold bg-primary text-white rounded-full">
+                                    class="ml-1 inline-flex items-center justify-center w-4 h-4 text-xs font-bold bg-green-600 text-white rounded-full">
                                     {{ collect(['jenis_zakat_id', 'metode_pembayaran', 'status', 'metode_penerimaan', 'konfirmasi_status', 'status_penjemputan', 'start_date', 'periode', 'fidyah_tipe'])->filter(fn($k) => request($k))->count() }}
                                 </span>
                             @endif
                         </button>
+                    </div>
+                </div>
+            </div>
 
-                        {{-- Search --}}
-                        <div id="search-container" class="transition-all duration-300"
-                            style="{{ request('q') ? 'min-width: 280px;' : '' }}">
-                            <button type="button" onclick="toggleSearch()" id="search-button"
-                                class="group inline-flex items-center justify-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all w-full sm:w-auto {{ request('q') ? 'hidden' : '' }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {{-- Statistik Bar --}}
+            <div class="px-6 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Total:</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $transaksis->total() }}</span>
+                        <span class="text-sm text-gray-500">Transaksi</span>
+                    </div>
+
+                    <!-- Active Filters Tags -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        @if (request('q'))
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
-                                <span class="hidden sm:inline-block sm:ml-2">Cari</span>
-                            </button>
-                            <form method="GET" action="{{ route('pemantauan-transaksi.index') }}" id="search-form"
-                                class="{{ request('q') ? '' : 'hidden' }}">
-                                @foreach (['jenis_zakat_id', 'metode_pembayaran', 'status', 'metode_penerimaan', 'konfirmasi_status', 'status_penjemputan', 'start_date', 'end_date', 'periode', 'tahun', 'fidyah_tipe'] as $filter)
-                                    @if (request($filter))
-                                        <input type="hidden" name="{{ $filter }}"
-                                            value="{{ request($filter) }}">
-                                    @endif
-                                @endforeach
-                                <div class="flex items-center gap-2">
-                                    <div class="relative flex-1">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                        </div>
-                                        <input type="search" name="q" value="{{ request('q') }}"
-                                            id="search-input" placeholder="Cari nama, no transaksi..."
-                                            class="block w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                                    </div>
-                                    @if (request()->hasAny([
-                                            'q',
-                                            'jenis_zakat_id',
-                                            'metode_pembayaran',
-                                            'status',
-                                            'metode_penerimaan',
-                                            'konfirmasi_status',
-                                            'status_penjemputan',
-                                            'start_date',
-                                            'end_date',
-                                            'periode',
-                                            'fidyah_tipe',
-                                        ]))
-                                        <a href="{{ route('pemantauan-transaksi.index') }}"
-                                            class="inline-flex items-center px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                                            Reset
-                                        </a>
-                                    @endif
-                                </div>
-                            </form>
-                        </div>
+                                "{{ request('q') }}"
+                                <button onclick="removeFilter('q')"
+                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                            </div>
+                        @endif
+
+                        @if (request('metode_penerimaan'))
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Metode: {{ ucfirst(str_replace('_', ' ', request('metode_penerimaan'))) }}
+                                <button onclick="removeFilter('metode_penerimaan')"
+                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                            </div>
+                        @endif
+
+                        @if (request('status'))
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Status: {{ ucfirst(request('status')) }}
+                                <button onclick="removeFilter('status')"
+                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                            </div>
+                        @endif
+
+                        @if (request('jenis_zakat_id'))
+                            @php
+                                $jenisZakat = ($jenisZakatList ?? collect())->firstWhere('id', request('jenis_zakat_id'));
+                            @endphp
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Jenis: {{ $jenisZakat?->nama ?? 'N/A' }}
+                                <button onclick="removeFilter('jenis_zakat_id')"
+                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                            </div>
+                        @endif
+
+                        @if (request('periode'))
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Periode: {{ \Carbon\Carbon::parse(request('periode'))->format('F Y') }}
+                                <button onclick="removeFilter('periode')"
+                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
             {{-- ── Filter Panel ── --}}
-            <div id="filter-panel"
-                class="{{ request()->hasAny(['jenis_zakat_id', 'metode_pembayaran', 'status', 'metode_penerimaan', 'konfirmasi_status', 'status_penjemputan', 'start_date', 'end_date', 'periode', 'fidyah_tipe']) ? '' : 'hidden' }} px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-b border-gray-200">
-                <form method="GET" action="{{ route('pemantauan-transaksi.index') }}" id="filter-form">
-                    @if (request('q'))
-                        <input type="hidden" name="q" value="{{ request('q') }}">
-                    @endif
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div id="filterPanel" class="px-6 py-4 border-b border-gray-100 bg-green-50/30 hidden">
+                <form method="GET" action="{{ route('pemantauan-transaksi.index') }}">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                        <!-- Search Field -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Transaksi</label>
+                            <input type="text" name="q" value="{{ request('q') }}"
+                                placeholder="Cari nama, no transaksi..."
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                        </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Metode Penerimaan</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Metode Penerimaan</label>
                             <select name="metode_penerimaan"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua Metode</option>
                                 <option value="datang_langsung"
                                     {{ request('metode_penerimaan') == 'datang_langsung' ? 'selected' : '' }}>Datang
@@ -288,10 +307,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Jenis Zakat</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Zakat</label>
                             <select name="jenis_zakat_id"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua Jenis</option>
                                 @foreach ($jenisZakatList ?? [] as $jenis)
                                     <option value="{{ $jenis->id }}"
@@ -303,10 +321,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Tipe Fidyah</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tipe Fidyah</label>
                             <select name="fidyah_tipe"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua</option>
                                 <option value="mentah" {{ request('fidyah_tipe') == 'mentah' ? 'selected' : '' }}>Mentah
                                 </option>
@@ -318,10 +335,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
                             <select name="status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua Status</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
                                 </option>
@@ -333,10 +349,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Konfirmasi (Daring)</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status Konfirmasi (Daring)</label>
                             <select name="konfirmasi_status"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua</option>
                                 <option value="menunggu_konfirmasi"
                                     {{ request('konfirmasi_status') == 'menunggu_konfirmasi' ? 'selected' : '' }}>Menunggu
@@ -350,11 +365,10 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Status Penjemputan
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status Penjemputan
                                 (Dijemput)</label>
                             <select name="status_penjemputan"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua</option>
                                 <option value="menunggu"
                                     {{ request('status_penjemputan') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
@@ -373,10 +387,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Metode Pembayaran</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Metode Pembayaran</label>
                             <select name="metode_pembayaran"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua</option>
                                 <option value="tunai" {{ request('metode_pembayaran') == 'tunai' ? 'selected' : '' }}>
                                     Tunai</option>
@@ -396,17 +409,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Periode (Bulan)</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Periode (Bulan)</label>
                             <input type="month" name="periode" value="{{ request('periode') }}"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Tahun</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tahun</label>
                             <select name="tahun"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                 <option value="">Semua Tahun</option>
                                 @foreach (range(date('Y'), 2020) as $year)
                                     <option value="{{ $year }}"
@@ -418,43 +429,47 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal Mulai</label>
                             <input type="date" name="start_date" value="{{ request('start_date') }}"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Akhir</label>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal Akhir</label>
                             <input type="date" name="end_date" value="{{ request('end_date') }}"
-                                class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                                onchange="this.form.submit()">
+                                class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                         </div>
                     </div>
 
-                    @if (request()->hasAny([
-                            'jenis_zakat_id',
-                            'metode_pembayaran',
-                            'status',
-                            'metode_penerimaan',
-                            'konfirmasi_status',
-                            'status_penjemputan',
-                            'start_date',
-                            'end_date',
-                            'periode',
-                            'fidyah_tipe',
-                        ]))
-                        <div class="mt-3 flex justify-end">
-                            <a href="{{ route('pemantauan-transaksi.index', request('q') ? ['q' => request('q')] : []) }}"
-                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Reset Filter
+                    <!-- Tombol di ujung kanan -->
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                            Terapkan
+                        </button>
+                        <button type="button" id="closeFilterPanelBtn"
+                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
+                        @if (request()->hasAny([
+                                'q',
+                                'jenis_zakat_id',
+                                'metode_pembayaran',
+                                'status',
+                                'metode_penerimaan',
+                                'konfirmasi_status',
+                                'status_penjemputan',
+                                'start_date',
+                                'end_date',
+                                'periode',
+                                'fidyah_tipe',
+                            ]))
+                            <a href="{{ route('pemantauan-transaksi.index') }}"
+                                class="px-4 py-2 text-gray-500 hover:text-red-600 text-sm font-medium transition-colors">
+                                Reset
                             </a>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 </form>
             </div>
 
@@ -462,18 +477,21 @@
 
                 {{-- ── Desktop View dengan Expandable Table ── --}}
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="w-12 px-4 py-3"></th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th
+                                    class="px-4 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-10">
+                                </th>
+                                <th
+                                    class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     Muzakki & Transaksi</th>
                                 <th
-                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                                    class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">
                                     Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="divide-y divide-gray-50">
                             @foreach ($transaksis as $trx)
                                 @php
                                     $menungguKonfirmasi =
@@ -582,25 +600,22 @@
                                 @endphp
 
                                 {{-- Parent Row --}}
-                                <tr class="hover:bg-gray-50 transition-colors cursor-pointer expandable-row
+                                <tr class="border-b border-gray-100 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200 group cursor-pointer expandable-row
                                 {{ $menungguKonfirmasi || $isPending ? 'bg-yellow-50/30' : '' }}
                                 {{ $isFidyah ? 'bg-amber-50/20' : '' }}"
                                     data-target="detail-{{ $trx->uuid }}">
-                                    <td class="px-4 py-4">
-                                        <button type="button"
-                                            class="expand-btn p-1 rounded-lg hover:bg-gray-100 transition-all">
-                                            <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </button>
+                                    <td class="px-4 py-4 text-center">
+                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex-1">
-                                            <div class="text-sm font-medium text-gray-900">
+                                            <div class="text-sm font-medium text-gray-800 group-hover:text-green-700 transition-colors duration-200">
                                                 {{ $trx->muzakki_nama ?? '-' }}</div>
-                                            <div class="text-xs text-gray-500 mt-0.5">
+                                            <div class="text-xs text-gray-400 mt-0.5">
                                                 {{ $trx->tanggal_transaksi->format('d/m/Y') }}
                                                 @if ($trx->waktu_transaksi)
                                                     &middot;
@@ -649,534 +664,179 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <div class="text-xs text-gray-400 mt-1">Klik baris untuk melihat detail</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-center">
-                                        <button type="button"
-                                            class="dropdown-toggle inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                                            data-uuid="{{ $trx->uuid }}" data-nama="{{ $trx->muzakki_nama ?? '-' }}">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path
-                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                            </svg>
-                                        </button>
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            <!-- Detail -->
+                                            <div class="relative group/tooltip">
+                                                <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
+                                                    class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </a>
+                                                <div
+                                                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                    Detail
+                                                    <div
+                                                        class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
 
-                                {{-- Expandable Content Row --}}
-                                <tr id="detail-{{ $trx->uuid }}" class="hidden expandable-content">
-                                    <td colspan="3" class="px-0 py-0">
-                                        <div class="bg-gray-50 border-y border-gray-100">
-                                            <div class="px-6 py-4">
-                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                                                    {{-- Kolom 1: Data Muzakki --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-semibold text-gray-900 mb-3">Data Muzakki
-                                                        </h4>
-                                                        <div class="space-y-3">
-                                                            <div class="flex items-start gap-2">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                    fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Nama</p>
-                                                                    <p class="text-sm font-medium text-gray-900">
-                                                                        {{ $trx->muzakki_nama ?? '-' }}</p>
-                                                                </div>
-                                                            </div>
-                                                            @if ($trx->muzakki_nik)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">NIK</p>
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $trx->muzakki_nik }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->muzakki_telepon)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Telepon</p>
-                                                                        <p class="text-sm font-medium text-gray-900">
-                                                                            {{ $trx->muzakki_telepon }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->muzakki_alamat)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Alamat</p>
-                                                                        <p class="text-sm text-gray-700">
-                                                                            {{ $trx->muzakki_alamat }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->muzakki_email)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Email</p>
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $trx->muzakki_email }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
+                                {{-- Baris Expandable (Detail) --}}
+                                <tr id="detail-{{ $trx->uuid }}" class="hidden border-b border-gray-100 expandable-content">
+                                    <td class="px-4 py-4 align-top bg-gray-50/30"></td>
+                                    <td class="px-6 py-4 align-top bg-gray-50/30" colspan="2">
+                                        <div class="space-y-3">
+                                            <div>
+                                                <h4
+                                                    class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                                    Informasi Lengkap</h4>
+                                                <div class="bg-white rounded-lg p-3 border border-gray-100 space-y-2">
+                                                    <div class="grid grid-cols-2 gap-4">
+                                                        <div>
+                                                            <span class="text-xs text-gray-500">No. Transaksi</span>
+                                                            <p class="text-sm font-mono text-gray-900 mt-0.5">
+                                                                {{ $trx->no_transaksi }}</p>
                                                         </div>
-                                                    </div>
-
-                                                    {{-- Kolom 2: Detail Transaksi --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-semibold text-gray-900 mb-3">Detail
-                                                            Transaksi</h4>
-                                                        <div class="space-y-3">
-                                                            <div class="flex items-start gap-2">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                    fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">No. Transaksi</p>
-                                                                    <p class="text-sm font-mono text-gray-900">
-                                                                        {{ $trx->no_transaksi }}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex items-start gap-2">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                    fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Tanggal</p>
-                                                                    <p class="text-sm font-medium text-gray-900">
-                                                                        {{ $trx->tanggal_transaksi->format('d F Y') }}
-                                                                        @if ($trx->waktu_transaksi)
-                                                                            <span class="text-gray-500">
-                                                                                ({{ \Carbon\Carbon::parse($trx->waktu_transaksi)->format('H:i') }})
-                                                                            </span>
-                                                                        @endif
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                            @if ($trx->jenisZakat)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Jenis Zakat</p>
-                                                                        <p class="text-sm font-medium text-gray-900">
-                                                                            {{ $trx->jenisZakat->nama }}
-                                                                            @if ($trx->tipeZakat)
-                                                                                <span
-                                                                                    class="text-gray-500">({{ $trx->tipeZakat->nama }})</span>
-                                                                            @endif
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->programZakat)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Program Zakat</p>
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $trx->programZakat->nama_program }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-
-                                                            {{-- Tampilkan jumlah sesuai tipe --}}
-                                                            @if ($isFidyah && $trx->fidyah_tipe == 'mentah')
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Fidyah Bahan
-                                                                            Mentah</p>
-                                                                        <p class="text-sm font-semibold text-amber-600">
-                                                                            {{ $trx->fidyah_jumlah_hari }} hari ×
-                                                                            {{ $trx->fidyah_berat_per_hari_gram }} gram
-                                                                        </p>
-                                                                        <p class="text-sm text-gray-700">
-                                                                            Total: {{ $trx->fidyah_total_berat_kg }} kg
-                                                                            ({{ $trx->fidyah_nama_bahan }})
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            @elseif ($isFidyah && $trx->fidyah_tipe == 'matang')
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Fidyah Makanan
-                                                                            Matang</p>
-                                                                        <p class="text-sm font-semibold text-orange-600">
-                                                                            {{ $trx->fidyah_jumlah_hari }} hari ×
-                                                                            {{ $trx->fidyah_jumlah_box }} box
-                                                                        </p>
-                                                                        <p class="text-sm text-gray-700">
-                                                                            Menu: {{ $trx->fidyah_menu_makanan ?? '-' }}
-                                                                        </p>
-                                                                        @if ($trx->fidyah_harga_per_box > 0)
-                                                                            <p class="text-xs text-gray-500">@ Rp
-                                                                                {{ number_format($trx->fidyah_harga_per_box, 0, ',', '.') }}/box
-                                                                            </p>
-                                                                        @endif
-                                                                        <p class="text-xs text-gray-500 mt-1">Cara Serah:
-                                                                            @if ($trx->fidyah_cara_serah == 'dibagikan')
-                                                                                Dibagikan
-                                                                            @elseif($trx->fidyah_cara_serah == 'dijamu')
-                                                                                Dijamu
-                                                                            @elseif($trx->fidyah_cara_serah == 'via_lembaga')
-                                                                                Via Lembaga
-                                                                            @endif
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            @elseif ($isFidyah && $trx->fidyah_tipe == 'tunai')
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Fidyah Tunai</p>
-                                                                        <p class="text-sm font-semibold text-emerald-600">
-                                                                            {{ $trx->fidyah_jumlah_hari }} hari × Rp
-                                                                            {{ number_format($trx->jumlah / $trx->fidyah_jumlah_hari, 0, ',', '.') }}
-                                                                        </p>
-                                                                        <p class="text-sm text-gray-700">
-                                                                            Total: Rp
-                                                                            {{ number_format($trx->jumlah, 0, ',', '.') }}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            @elseif ($trx->jumlah > 0)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah (Uang)</p>
-                                                                        <p class="text-sm font-semibold text-green-600">
-                                                                            Rp
-                                                                            {{ number_format($trx->jumlah, 0, ',', '.') }}
-                                                                        </p>
-                                                                        @if ($trx->jumlah_infaq > 0)
-                                                                            <p class="text-xs text-gray-500">+ Infaq Rp
-                                                                                {{ number_format($trx->jumlah_infaq, 0, ',', '.') }}
-                                                                            </p>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                            @if ($trx->jumlah_beras_kg > 0)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah (Beras)</p>
-                                                                        <p class="text-sm font-semibold text-amber-600">
-                                                                            {{ $trx->jumlah_beras_kg }} kg
-                                                                        </p>
-                                                                        @if ($trx->jumlah_beras_liter > 0)
-                                                                            <p class="text-xs text-gray-500">
-                                                                                ({{ $trx->jumlah_beras_liter }} liter)</p>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-
-                                                            {{-- Nama Jiwa (jika ada) --}}
-                                                            @if ($hasNamaJiwa)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">
-                                                                            Nama Jiwa
-                                                                            <span
-                                                                                class="text-gray-400 ml-1">({{ count($namaJiwaList) }}
-                                                                                orang)</span>
-                                                                        </p>
-                                                                        <div class="flex flex-wrap gap-1 mt-1">
-                                                                            @foreach ($namaJiwaList as $idx => $nama)
-                                                                                @if ($nama && trim($nama) !== '')
-                                                                                    <span
-                                                                                        class="inline-flex items-center bg-white border border-gray-200 rounded px-2 py-0.5 text-xs">
-                                                                                        <span
-                                                                                            class="text-gray-400 mr-1">{{ $idx + 1 }}.</span>
-                                                                                        {{ $nama }}
-                                                                                    </span>
-                                                                                @endif
-                                                                            @endforeach
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-
-                                                            @if ($trx->keterangan)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Keterangan</p>
-                                                                        <p class="text-sm text-gray-700">
-                                                                            {{ $trx->keterangan }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-
-                                                    {{-- Kolom 3: Metode & Status --}}
-                                                    <div>
-                                                        <h4 class="text-sm font-semibold text-gray-900 mb-3">Metode &
-                                                            Status</h4>
-                                                        <div class="space-y-3">
-                                                            <div class="flex items-start gap-2">
-                                                                <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                    fill="none" stroke="currentColor"
-                                                                    viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        stroke-width="2"
-                                                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                                                </svg>
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500">Metode Penerimaan</p>
-                                                                    <span
-                                                                        class="inline-block px-2 py-0.5 text-xs font-medium rounded-full {{ $warnaMetode }}">
-                                                                        {{ ucfirst(str_replace('_', ' ', $trx->metode_penerimaan)) }}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            @if ($trx->metode_pembayaran)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Metode Pembayaran
-                                                                        </p>
-                                                                        <span
-                                                                            class="inline-block px-2 py-0.5 text-xs font-medium rounded-full
-                                                                        @if ($trx->metode_pembayaran == 'tunai') bg-gray-100 text-gray-800
-                                                                        @elseif($trx->metode_pembayaran == 'transfer') bg-indigo-100 text-indigo-800
-                                                                        @elseif($trx->metode_pembayaran == 'qris') bg-emerald-100 text-emerald-800
-                                                                        @elseif($trx->metode_pembayaran == 'beras') bg-amber-100 text-amber-800
-                                                                        @elseif($trx->metode_pembayaran == 'makanan_matang') bg-orange-100 text-orange-800
-                                                                        @elseif($trx->metode_pembayaran == 'bahan_mentah') bg-amber-100 text-amber-800
-                                                                        @else bg-gray-100 text-gray-600 @endif">
-                                                                            @if ($trx->metode_pembayaran == 'makanan_matang')
-                                                                                Makanan Matang
-                                                                            @elseif($trx->metode_pembayaran == 'bahan_mentah')
-                                                                                Bahan Mentah
-                                                                            @else
-                                                                                {{ ucfirst($trx->metode_pembayaran) }}
-                                                                            @endif
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
+                                                        @if ($trx->muzakki_telepon)
                                                             <div>
-                                                                <p class="text-xs text-gray-500 mb-1">Status</p>
-                                                                {!! $statusBadge !!}
+                                                                <span class="text-xs text-gray-500">Telepon</span>
+                                                                <p class="text-sm text-gray-900 mt-0.5">
+                                                                    {{ $trx->muzakki_telepon }}</p>
                                                             </div>
-
-                                                            @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status)
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500 mb-1">Status Konfirmasi
-                                                                    </p>
-                                                                    {!! $konfirmasiBadge !!}
-                                                                </div>
-                                                            @endif
-
-                                                            @if ($trx->metode_penerimaan == 'dijemput' && $trx->status_penjemputan)
-                                                                <div>
-                                                                    <p class="text-xs text-gray-500 mb-1">Status
-                                                                        Penjemputan</p>
-                                                                    {!! $penjemputanBadge !!}
-                                                                </div>
-                                                            @endif
-
-                                                            @if ($trx->status == 'rejected' && $trx->alasan_penolakan)
-                                                                <div
-                                                                    class="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                                                                    <p class="text-xs text-red-600 font-medium">Alasan
-                                                                        Ditolak:</p>
-                                                                    <p class="text-xs text-red-700">
-                                                                        {{ $trx->alasan_penolakan }}</p>
-                                                                </div>
-                                                            @endif
-
-                                                            @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status == 'ditolak' && $trx->catatan_konfirmasi)
-                                                                <div
-                                                                    class="mt-2 p-2 bg-rose-50 border border-rose-200 rounded-lg">
-                                                                    <p class="text-xs text-rose-600 font-medium">Catatan
-                                                                        Penolakan:</p>
-                                                                    <p class="text-xs text-rose-700">
-                                                                        {{ $trx->catatan_konfirmasi }}</p>
-                                                                </div>
-                                                            @endif
-
-                                                            @if ($trx->verified_at)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Diverifikasi Pada
-                                                                        </p>
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}
-                                                                        </p>
-                                                                        @if ($trx->amil)
-                                                                            <p class="text-xs text-gray-500">Oleh:
-                                                                                {{ $trx->amil->nama_lengkap }}</p>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-
-                                                            {{-- SESUDAH --}}
-                                                            @php
-                                                                $jumlahJiwaAktual = $hasNamaJiwa
-                                                                    ? count($namaJiwaList)
-                                                                    : $trx->jumlah_jiwa ?? 0;
-                                                            @endphp
-                                                            @if ($jumlahJiwaAktual > 0)
-                                                                <div class="flex items-start gap-2">
-                                                                    <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0"
-                                                                        fill="none" stroke="currentColor"
-                                                                        viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round"
-                                                                            stroke-linejoin="round" stroke-width="2"
-                                                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                                    </svg>
-                                                                    <div>
-                                                                        <p class="text-xs text-gray-500">Jumlah Jiwa</p>
-                                                                        <p class="text-sm text-gray-900">
-                                                                            {{ $jumlahJiwaAktual }}</p>
-                                                                        @if ($trx->nominal_per_jiwa > 0)
-                                                                            <p class="text-xs text-gray-400">@ Rp
-                                                                                {{ number_format($trx->nominal_per_jiwa, 0, ',', '.') }}/jiwa
-                                                                            </p>
-                                                                        @endif
-                                                                    </div>
-                                                                </div>
-                                                            @endif
+                                                        @endif
+                                                        @if ($trx->jenisZakat)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Jenis Zakat</span>
+                                                                <p class="text-sm font-medium text-gray-900 mt-0.5">
+                                                                    {{ $trx->jenisZakat->nama }}
+                                                                    @if ($trx->tipeZakat)
+                                                                        <span
+                                                                            class="text-gray-500">({{ $trx->tipeZakat->nama }})</span>
+                                                                    @endif
+                                                                </p>
+                                                            </div>
+                                                        @endif
+                                                        <div>
+                                                            <span class="text-xs text-gray-500">Metode Penerimaan</span>
+                                                            <p class="text-sm text-gray-900 mt-0.5">
+                                                                <span
+                                                                    class="inline-block px-2 py-0.5 text-xs font-medium rounded-full {{ $warnaMetode }}">
+                                                                    {{ ucfirst(str_replace('_', ' ', $trx->metode_penerimaan)) }}
+                                                                </span>
+                                                            </p>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                {{-- Tombol Aksi — hanya Detail --}}
-                                                <div class="mt-4 pt-4 border-t border-gray-200 flex gap-2">
-                                                    <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
-                                                        class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                        </svg>
-                                                        Lihat Detail
-                                                    </a>
                                                 </div>
                                             </div>
+
+                                            @if ($isFidyah || $trx->jumlah > 0 || $trx->jumlah_beras_kg > 0)
+                                                <div>
+                                                    <h4
+                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                                        Detail Pembayaran</h4>
+                                                    <div class="bg-white rounded-lg p-3 border border-gray-100 space-y-2">
+                                                        {{-- Fidyah Mentah --}}
+                                                        @if ($isFidyah && $trx->fidyah_tipe == 'mentah')
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Fidyah Bahan Mentah</span>
+                                                                <p class="text-sm font-semibold text-amber-600 mt-0.5">
+                                                                    {{ $trx->fidyah_jumlah_hari }} hari ×
+                                                                    {{ $trx->fidyah_berat_per_hari_gram }} gram
+                                                                </p>
+                                                                <p class="text-sm text-gray-700 mt-0.5">
+                                                                    Total: {{ $trx->fidyah_total_berat_kg }} kg
+                                                                    ({{ $trx->fidyah_nama_bahan }})
+                                                                </p>
+                                                            </div>
+                                                        @elseif ($isFidyah && $trx->fidyah_tipe == 'matang')
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Fidyah Makanan Matang</span>
+                                                                <p class="text-sm font-semibold text-orange-600 mt-0.5">
+                                                                    {{ $trx->fidyah_jumlah_hari }} hari ×
+                                                                    {{ $trx->fidyah_jumlah_box }} box
+                                                                </p>
+                                                                <p class="text-sm text-gray-700 mt-0.5">
+                                                                    Menu: {{ $trx->fidyah_menu_makanan ?? '-' }}
+                                                                </p>
+                                                            </div>
+                                                        @elseif ($isFidyah && $trx->fidyah_tipe == 'tunai')
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Fidyah Tunai</span>
+                                                                <p class="text-sm font-semibold text-emerald-600 mt-0.5">
+                                                                    {{ $trx->fidyah_jumlah_hari }} hari × Rp
+                                                                    {{ number_format($trx->jumlah / $trx->fidyah_jumlah_hari, 0, ',', '.') }}
+                                                                </p>
+                                                                <p class="text-sm text-gray-700 mt-0.5">
+                                                                    Total: Rp {{ number_format($trx->jumlah, 0, ',', '.') }}
+                                                                </p>
+                                                            </div>
+                                                        @elseif ($trx->jumlah > 0)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Jumlah (Uang)</span>
+                                                                <p class="text-sm font-semibold text-green-600 mt-0.5">
+                                                                    Rp {{ number_format($trx->jumlah, 0, ',', '.') }}
+                                                                </p>
+                                                            </div>
+                                                        @endif
+                                                        @if ($trx->jumlah_beras_kg > 0)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Jumlah (Beras)</span>
+                                                                <p class="text-sm font-semibold text-amber-600 mt-0.5">
+                                                                    {{ $trx->jumlah_beras_kg }} kg
+                                                                </p>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if ($trx->verified_at || $konfirmasiBadge || $penjemputanBadge)
+                                                <div>
+                                                    <h4
+                                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                                                        Status & Verifikasi</h4>
+                                                    <div class="bg-white rounded-lg p-3 border border-gray-100 space-y-2">
+                                                        @if ($konfirmasiBadge)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500 block mb-1">Status
+                                                                    Konfirmasi</span>
+                                                                {!! $konfirmasiBadge !!}
+                                                            </div>
+                                                        @endif
+                                                        @if ($penjemputanBadge)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500 block mb-1">Status
+                                                                    Penjemputan</span>
+                                                                {!! $penjemputanBadge !!}
+                                                            </div>
+                                                        @endif
+                                                        @if ($trx->verified_at)
+                                                            <div>
+                                                                <span class="text-xs text-gray-500">Diverifikasi Pada</span>
+                                                                <p class="text-sm text-gray-900 mt-0.5">
+                                                                    {{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}
+                                                                </p>
+                                                                @if ($trx->amil)
+                                                                    <p class="text-xs text-gray-500 mt-0.5">Oleh:
+                                                                        {{ $trx->amil->nama_lengkap }}</p>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -1186,7 +846,7 @@
                 </div>
 
                 {{-- ── Mobile View dengan Expandable Cards ── --}}
-                <div class="md:hidden divide-y divide-gray-200">
+                <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($transaksis as $trx)
                         @php
                             $menungguKonfirmasi =
@@ -1244,295 +904,127 @@
                             }
                         @endphp
                         <div
-                            class="expandable-card {{ $menungguKonfirmasi || $isPending ? 'bg-yellow-50/30' : '' }} {{ $isFidyah ? 'bg-amber-50/20' : '' }}">
-                            <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer expandable-row-mobile"
+                            class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200 {{ $menungguKonfirmasi || $isPending ? 'bg-yellow-50/30' : '' }} {{ $isFidyah ? 'bg-amber-50/20' : '' }}">
+                            <div class="expandable-row-mobile cursor-pointer"
                                 data-target="detail-mobile-{{ $trx->uuid }}">
-                                <div class="flex items-start justify-between gap-2">
+                                <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <h3 class="text-sm font-semibold text-gray-900 truncate">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                            <h3 class="text-sm font-semibold text-gray-800 break-words flex-1">
                                                 {{ $trx->muzakki_nama ?? '-' }}</h3>
+                                        </div>
+                                        <p class="text-xs text-gray-400 ml-6">{{ $trx->no_transaksi }}</p>
+                                        <div class="flex items-center gap-2 mt-2 ml-6 flex-wrap">
                                             {!! $statusBadge !!}
-                                        </div>
-                                        <div class="flex items-center mt-1 flex-wrap gap-2">
-                                            <span
-                                                class="text-xs text-gray-500">{{ $trx->tanggal_transaksi->format('d/m/Y') }}</span>
-
-                                            @if ($isFidyah && $trx->fidyah_tipe == 'mentah' && $trx->fidyah_total_berat_kg > 0)
-                                                <span
-                                                    class="text-xs font-semibold text-amber-600">{{ $trx->fidyah_total_berat_kg }}
-                                                    kg</span>
-                                            @elseif ($isFidyah && $trx->fidyah_tipe == 'matang' && $trx->fidyah_jumlah_box > 0)
-                                                <span
-                                                    class="text-xs font-semibold text-orange-600">{{ $trx->fidyah_jumlah_box }}
-                                                    box</span>
-                                            @elseif ($trx->jumlah > 0)
-                                                <span class="text-xs font-semibold text-green-600">Rp
-                                                    {{ number_format($trx->jumlah, 0, ',', '.') }}</span>
-                                            @elseif($trx->jumlah_beras_kg > 0)
-                                                <span
-                                                    class="text-xs font-semibold text-amber-600">{{ $trx->jumlah_beras_kg }}
-                                                    kg</span>
-                                            @endif
-
-                                            @if ($hasNamaJiwa)
-                                                <span class="text-xs text-blue-600">{{ count($namaJiwaList) }}
-                                                    jiwa</span>
-                                            @endif
-                                        </div>
-                                        <div class="flex flex-wrap gap-1 mt-1.5">
                                             <span
                                                 class="px-2 py-0.5 text-xs font-medium rounded-full {{ $warnaMetode }}">
                                                 {{ ucfirst(str_replace('_', ' ', $trx->metode_penerimaan)) }}
                                             </span>
                                             {!! $fidyahBadgeMobile !!}
-                                            @if ($trx->metode_penerimaan === 'daring' && $trx->konfirmasi_status === 'menunggu_konfirmasi')
-                                                <span
-                                                    class="px-2 py-0.5 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">
-                                                    Perlu Konfirmasi
-                                                </span>
-                                            @endif
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-1 ml-1 flex-shrink-0">
-                                        <button type="button"
-                                            class="dropdown-toggle p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
-                                            data-uuid="{{ $trx->uuid }}"
-                                            data-nama="{{ $trx->muzakki_nama ?? '-' }}">
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path
-                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                            </svg>
-                                        </button>
-                                        <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M19 9l-7 7-7-7" />
-                                        </svg>
+
+                                    <div class="flex items-center gap-1 flex-shrink-0">
+                                        <!-- Detail -->
+                                        <div class="relative group/tooltip">
+                                            <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
+                                            <div
+                                                class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Detail
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Mobile Expandable Content --}}
-                            <div id="detail-mobile-{{ $trx->uuid }}" class="hidden expandable-content-mobile">
-                                <div class="bg-gray-50 px-4 py-3 border-t border-gray-100 space-y-3">
-
-                                    {{-- No Transaksi --}}
-                                    <div class="flex items-start gap-2 text-sm">
-                                        <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                                        </svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">No. Transaksi</p>
-                                            <p class="text-sm font-mono text-gray-900">{{ $trx->no_transaksi }}</p>
-                                        </div>
+                            <div id="detail-mobile-{{ $trx->uuid }}"
+                                class="hidden mt-3 pt-3 border-t border-gray-100">
+                                <div class="space-y-3">
+                                    <div>
+                                        <p class="text-xs text-gray-500">Tanggal</p>
+                                        <p class="text-sm font-medium text-gray-900">
+                                            {{ $trx->tanggal_transaksi->format('d/m/Y') }}
+                                            @if ($trx->waktu_transaksi)
+                                                {{ \Carbon\Carbon::parse($trx->waktu_transaksi)->format('H:i') }}
+                                            @endif
+                                        </p>
                                     </div>
-
                                     @if ($trx->muzakki_telepon)
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Telepon</p>
-                                                <p class="text-sm text-gray-900">{{ $trx->muzakki_telepon }}</p>
-                                            </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500">Telepon</p>
+                                            <p class="text-sm font-medium text-gray-900">{{ $trx->muzakki_telepon }}</p>
                                         </div>
                                     @endif
-
                                     @if ($trx->jenisZakat)
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Jenis Zakat</p>
-                                                <p class="text-sm font-medium text-gray-900">{{ $trx->jenisZakat->nama }}
-                                                    @if ($trx->tipeZakat)
-                                                        <span class="text-gray-500">({{ $trx->tipeZakat->nama }})</span>
-                                                    @endif
-                                                </p>
-                                            </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500">Jenis Zakat</p>
+                                            <p class="text-sm font-medium text-gray-900">{{ $trx->jenisZakat->nama }}
+                                                @if ($trx->tipeZakat)
+                                                    <span class="text-gray-500">({{ $trx->tipeZakat->nama }})</span>
+                                                @endif
+                                            </p>
                                         </div>
                                     @endif
 
-                                    {{-- Tampilkan detail fidyah mobile --}}
+                                    {{-- Detail jumlah --}}
                                     @if ($isFidyah && $trx->fidyah_tipe == 'mentah')
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Fidyah Mentah</p>
-                                                <p class="text-sm text-gray-900">{{ $trx->fidyah_jumlah_hari }} hari</p>
-                                                <p class="text-sm text-amber-600">{{ $trx->fidyah_total_berat_kg }} kg
-                                                    ({{ $trx->fidyah_nama_bahan }})
-                                                </p>
-                                            </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500">Fidyah Mentah</p>
+                                            <p class="text-sm text-gray-900">{{ $trx->fidyah_jumlah_hari }} hari</p>
+                                            <p class="text-sm text-amber-600">{{ $trx->fidyah_total_berat_kg }} kg
+                                                ({{ $trx->fidyah_nama_bahan }})
+                                            </p>
                                         </div>
                                     @elseif($isFidyah && $trx->fidyah_tipe == 'matang')
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Fidyah Matang</p>
-                                                <p class="text-sm text-gray-900">{{ $trx->fidyah_jumlah_hari }} hari</p>
-                                                <p class="text-sm text-orange-600">{{ $trx->fidyah_jumlah_box }} box</p>
-                                                <p class="text-xs text-gray-600">{{ $trx->fidyah_menu_makanan }}</p>
-                                            </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500">Fidyah Matang</p>
+                                            <p class="text-sm text-gray-900">{{ $trx->fidyah_jumlah_hari }} hari</p>
+                                            <p class="text-sm text-orange-600">{{ $trx->fidyah_jumlah_box }} box</p>
                                         </div>
                                     @elseif($isFidyah && $trx->fidyah_tipe == 'tunai')
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Fidyah Tunai</p>
-                                                <p class="text-sm text-gray-900">{{ $trx->fidyah_jumlah_hari }} hari</p>
-                                                <p class="text-sm font-semibold text-emerald-600">Rp
-                                                    {{ number_format($trx->jumlah, 0, ',', '.') }}</p>
-                                            </div>
+                                        <div>
+                                            <p class="text-xs text-gray-500">Fidyah Tunai</p>
+                                            <p class="text-sm font-semibold text-emerald-600">Rp
+                                                {{ number_format($trx->jumlah, 0, ',', '.') }}</p>
+                                        </div>
+                                    @elseif($trx->jumlah > 0)
+                                        <div>
+                                            <p class="text-xs text-gray-500">Jumlah</p>
+                                            <p class="text-sm font-semibold text-green-600">Rp
+                                                {{ number_format($trx->jumlah, 0, ',', '.') }}</p>
                                         </div>
                                     @endif
 
-                                    {{-- Metode Penerimaan Mobile --}}
-                                    <div class="flex items-start gap-2 text-sm">
-                                        <svg class="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                        </svg>
+                                    @if ($trx->jumlah_beras_kg > 0)
                                         <div>
-                                            <p class="text-xs text-gray-500">Metode Penerimaan</p>
-                                            <span
-                                                class="inline-block mt-0.5 px-2 py-0.5 text-xs font-medium rounded-full {{ $warnaMetode }}">
-                                                {{ ucfirst(str_replace('_', ' ', $trx->metode_penerimaan)) }}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Di bagian Metode Pembayaran --}}
-                                    @if ($trx->metode_pembayaran)
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Metode Pembayaran</p>
-                                            <span
-                                                class="inline-block mt-0.5 px-2 py-0.5 text-xs font-medium rounded-full
-        @if ($trx->metode_pembayaran == 'tunai') bg-gray-100 text-gray-800
-        @elseif($trx->metode_pembayaran == 'transfer') bg-indigo-100 text-indigo-800
-        @elseif($trx->metode_pembayaran == 'qris') bg-emerald-100 text-emerald-800
-        @elseif($trx->metode_pembayaran == 'beras') bg-amber-100 text-amber-800
-        @elseif($trx->metode_pembayaran == 'makanan_matang') bg-orange-100 text-orange-800
-        @elseif($trx->metode_pembayaran == 'bahan_mentah') bg-amber-100 text-amber-800
-        @else bg-gray-100 text-gray-600 @endif">
-                                                @if ($trx->metode_pembayaran == 'makanan_matang')
-                                                    Makanan Matang
-                                                @elseif($trx->metode_pembayaran == 'bahan_mentah')
-                                                    Bahan Mentah
-                                                @else
-                                                    {{ ucfirst($trx->metode_pembayaran) }}
-                                                @endif
-                                            </span>
-                                        </div>
-                                    @endif
-
-                                    {{-- Status --}}
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Status</p>
-                                        {!! $statusBadge !!}
-                                    </div>
-
-                                    {{-- Status Konfirmasi (Daring) --}}
-                                    @if ($trx->metode_penerimaan == 'daring' && $trx->konfirmasi_status)
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Status Konfirmasi</p>
-                                            @php
-                                                $konfirmasiBadgeMobile = match ($trx->konfirmasi_status) {
-                                                    'menunggu_konfirmasi'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 text-orange-800">Menunggu Konfirmasi</span>',
-                                                    'dikonfirmasi'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-800">Dikonfirmasi</span>',
-                                                    'ditolak'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-rose-100 text-rose-800">Ditolak</span>',
-                                                    default => '',
-                                                };
-                                            @endphp
-                                            {!! $konfirmasiBadgeMobile !!}
-                                        </div>
-                                    @endif
-
-                                    {{-- Status Penjemputan (Dijemput) --}}
-                                    @if ($trx->metode_penerimaan == 'dijemput' && $trx->status_penjemputan)
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-1">Status Penjemputan</p>
-                                            @php
-                                                $penjemputanBadgeMobile = match ($trx->status_penjemputan) {
-                                                    'menunggu'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">Menunggu</span>',
-                                                    'diterima'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">Diterima Amil</span>',
-                                                    'dalam_perjalanan'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800">Dalam Perjalanan</span>',
-                                                    'sampai_lokasi'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">Sampai Lokasi</span>',
-                                                    'selesai'
-                                                        => '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Selesai</span>',
-                                                    default => '',
-                                                };
-                                            @endphp
-                                            {!! $penjemputanBadgeMobile !!}
-                                        </div>
-                                    @endif
-
-                                    @if ($trx->status == 'rejected' && $trx->alasan_penolakan)
-                                        <div class="p-2 bg-red-50 border border-red-200 rounded-lg">
-                                            <p class="text-xs text-red-600 font-medium">Alasan Ditolak:</p>
-                                            <p class="text-xs text-red-700">{{ $trx->alasan_penolakan }}</p>
+                                            <p class="text-xs text-gray-500">Beras</p>
+                                            <p class="text-sm font-semibold text-amber-600">
+                                                {{ $trx->jumlah_beras_kg }} kg</p>
                                         </div>
                                     @endif
 
                                     @if ($trx->verified_at)
-                                        <div class="flex items-start gap-2 text-sm">
-                                            <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <div>
-                                                <p class="text-xs text-gray-500">Diverifikasi</p>
-                                                <p class="text-sm text-gray-900">
-                                                    {{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}
-                                                </p>
-                                            </div>
+                                        <div class="pt-2 text-xs text-gray-400">
+                                            <p>Diverifikasi:
+                                                {{ \Carbon\Carbon::parse($trx->verified_at)->format('d/m/Y H:i') }}
+                                            </p>
                                         </div>
                                     @endif
-
-                                    {{-- Tombol Mobile --}}
-                                    <div class="pt-2 border-t border-gray-200 flex gap-2">
-                                        <a href="{{ route('pemantauan-transaksi.show', $trx->uuid) }}"
-                                            class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs font-medium rounded-lg transition-all">
-                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                            Detail
-                                        </a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1541,21 +1033,24 @@
 
                 {{-- Pagination --}}
                 @if ($transaksis->hasPages())
-                    <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200">
+                    <div class="px-6 py-3 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white">
                         {{ $transaksis->withQueryString()->links() }}
                     </div>
                 @endif
             @else
                 {{-- Empty State --}}
-                <div class="p-8 sm:p-12 text-center">
-                    <div
-                        class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-50 mb-4">
-                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
+                <div class="py-16 text-center">
+                    <div class="relative inline-block">
+                        <div
+                            class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
                     </div>
+
                     @if (request()->hasAny([
                             'q',
                             'jenis_zakat_id',
@@ -1569,142 +1064,124 @@
                             'periode',
                             'fidyah_tipe',
                         ]))
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Data Tidak Ditemukan</h3>
-                        <p class="text-sm text-gray-500 mb-6">Tidak ada transaksi yang sesuai dengan filter yang dipilih
-                        </p>
+                        <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
                         <a href="{{ route('pemantauan-transaksi.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                            Reset Pencarian
+                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                            Reset semua filter
                         </a>
                     @else
-                        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Belum Ada Transaksi</h3>
-                        <p class="text-sm text-gray-500">Belum ada data transaksi penerimaan zakat</p>
+                        <p class="text-sm text-gray-500 mb-2">Belum ada data transaksi</p>
                     @endif
                 </div>
             @endif
         </div>
     </div>
 
-    {{-- ── Dropdown (hanya Detail) ── --}}
-    <div id="dropdown-container" class="fixed hidden z-[9999]" style="min-width:160px;">
-        <div class="w-40 rounded-xl shadow-xl bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
-            <div class="py-1">
-                <a href="#" id="dd-detail"
-                    class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                    <svg class="w-4 h-4 mr-3 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Lihat Detail
-                </a>
-            </div>
-        </div>
-    </div>
+    <style>
+        .rotate-90 {
+            transform: rotate(90deg);
+        }
+
+        .rotate-180 {
+            transform: rotate(180deg);
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scale-in {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.2s ease-out;
+        }
+
+        .animate-scale-in {
+            animation: scale-in 0.2s ease-out;
+        }
+    </style>
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Filter Panel
+            const filterButton = document.getElementById('filterButton');
+            const filterPanel = document.getElementById('filterPanel');
+            const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
-            var dropdown = document.getElementById('dropdown-container');
-            var ddDetail = document.getElementById('dd-detail');
-
-            // ── Desktop expand ──────────────────────────────────────────
-            document.querySelectorAll('.expandable-row').forEach(function(row) {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    var target = document.getElementById(this.dataset.target);
-                    var icon = this.querySelector('.expand-icon');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
+            if (filterButton && filterPanel) {
+                filterButton.addEventListener('click', function() {
+                    filterPanel.classList.toggle('hidden');
                 });
-            });
-
-            // ── Mobile expand ───────────────────────────────────────────
-            document.querySelectorAll('.expandable-row-mobile').forEach(function(row) {
-                row.addEventListener('click', function(e) {
-                    if (e.target.closest('a, .dropdown-toggle, button')) return;
-                    var target = document.getElementById(this.dataset.target);
-                    var icon = this.querySelector('.expand-icon-mobile');
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                });
-            });
-
-            // ── Dropdown ────────────────────────────────────────────────
-            function closeDropdown() {
-                dropdown.classList.add('hidden');
-                dropdown.removeAttribute('data-uuid');
             }
 
-            function positionDropdown(toggle) {
-                var rect = toggle.getBoundingClientRect();
-                var ddW = 160;
-                var ddH = dropdown.offsetHeight || 80;
-                var margin = 6;
-                var vpW = window.innerWidth;
-                var vpH = window.innerHeight;
-                var left = rect.right - ddW;
-                if (left < margin) left = margin;
-                if (left + ddW > vpW - margin) left = vpW - ddW - margin;
-                var top = rect.bottom + margin;
-                if (top + ddH > vpH - margin) top = rect.top - ddH - margin;
-                if (top < margin) top = margin;
-                dropdown.style.top = top + 'px';
-                dropdown.style.left = left + 'px';
+            if (closeFilterPanelBtn) {
+                closeFilterPanelBtn.addEventListener('click', function() {
+                    filterPanel.classList.add('hidden');
+                });
             }
 
-            document.addEventListener('click', function(e) {
-                var toggle = e.target.closest('.dropdown-toggle');
-                if (toggle) {
-                    e.stopPropagation();
-                    var uuid = toggle.dataset.uuid;
-                    if (dropdown.dataset.uuid === uuid && !dropdown.classList.contains('hidden')) {
-                        closeDropdown();
-                        return;
+            // Desktop Expandable row
+            document.querySelectorAll('.expandable-row').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    if (e.target.closest('a')) return;
+
+                    const targetId = this.getAttribute('data-target');
+                    const targetRow = document.getElementById(targetId);
+                    const icon = this.querySelector('.expand-icon');
+
+                    if (targetRow) {
+                        targetRow.classList.toggle('hidden');
+                        if (icon) {
+                            icon.classList.toggle('rotate-90');
+                        }
                     }
-                    dropdown.dataset.uuid = uuid;
-                    ddDetail.href = '/pemantauan-transaksi/' + uuid;
-                    dropdown.classList.remove('hidden');
-                    positionDropdown(toggle);
-                } else if (!dropdown.contains(e.target)) {
-                    closeDropdown();
-                }
+                });
             });
 
-            window.addEventListener('scroll', closeDropdown, true);
-            window.addEventListener('resize', closeDropdown);
+            // Mobile Expandable Cards
+            document.querySelectorAll('.expandable-row-mobile').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    if (e.target.closest('a')) return;
+
+                    const targetId = this.getAttribute('data-target');
+                    const targetContent = document.getElementById(targetId);
+                    const icon = this.querySelector('.expand-icon-mobile');
+
+                    if (targetContent) {
+                        targetContent.classList.toggle('hidden');
+                        if (icon) {
+                            icon.classList.toggle('rotate-180');
+                        }
+                    }
+                });
+            });
         });
 
-        // ── Search & Filter ─────────────────────────────────────────
-        function toggleSearch() {
-            var btn = document.getElementById('search-button');
-            var form = document.getElementById('search-form');
-            var input = document.getElementById('search-input');
-            var container = document.getElementById('search-container');
-            if (form.classList.contains('hidden')) {
-                btn.classList.add('hidden');
-                form.classList.remove('hidden');
-                container.style.minWidth = '280px';
-                setTimeout(function() {
-                    input.focus();
-                }, 50);
-            } else {
-                form.classList.add('hidden');
-                btn.classList.remove('hidden');
-                container.style.minWidth = '';
-            }
-        }
-
-        function toggleFilter() {
-            document.getElementById('filter-panel').classList.toggle('hidden');
+        function removeFilter(filterName) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete(filterName);
+            url.searchParams.set('page', '1');
+            window.location.href = url.toString();
         }
 
         function toggleStatsMobile() {
