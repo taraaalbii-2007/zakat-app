@@ -229,7 +229,8 @@ details.sb-group > summary::-webkit-details-marker { display: none; }
 /* Transition untuk semua interaksi */
 .sb-item, .sb-sub-item, .sb-icon, .sb-chevron {
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}    </style>
+}  
+</style>
 
     {{-- Logo Section --}}
     <div class="logo-container">

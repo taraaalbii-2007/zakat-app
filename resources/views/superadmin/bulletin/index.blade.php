@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            <!-- Header -->
+           <!-- Header - DIPERBAIKI -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,20 +16,21 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <!-- Tombol Filter -->
+                        <!-- Tombol Filter - DIPERBAIKI -->
                         <button type="button" id="filterButton"
-                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
+                            {{ request()->hasAny(['q', 'status', 'kategori', 'sumber']) ? 'bg-green-50' : '' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
                             Filter & Cari
                         </button>
 
-                        <!-- Tombol Tambah -->
+                        <!-- Tombol Tambah - DIPERBAIKI -->
                         <a href="{{ route('superadmin.bulletin.create') }}"
-                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                             </svg>
                             Buat Bulletin
@@ -38,9 +39,9 @@
                 </div>
             </div>
 
-            <!-- Pending Alert -->
+            <!-- Pending Alert - DIPERBAIKI -->
             @if($pendingCount > 0)
-                <div class="mx-5 mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+                <div class="mx-5 mt-4 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
                     <svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -49,132 +50,142 @@
                         Ada <strong>{{ $pendingCount }} bulletin</strong> dari lembaga yang menunggu persetujuan Anda.
                     </p>
                     <a href="{{ route('superadmin.bulletin.index', ['status' => 'pending']) }}"
-                       class="flex-shrink-0 text-xs font-medium text-amber-700 hover:text-amber-900 underline">
-                        Lihat Sekarang →
+                       class="flex-shrink-0 inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
+                        Lihat
+                        <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                     </a>
                 </div>
             @endif
 
-            <!-- Statistik Bar -->
-            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+            <!-- Statistik Bar - DIPERBAIKI -->
+            <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600">Total:</span>
                         <span class="text-sm font-semibold text-gray-800">{{ $bulletins->total() }}</span>
                         <span class="text-sm text-gray-500">Bulletin</span>
                     </div>
-
-                    <!-- Active Filters Tags -->
-                    @if(request('q') || request('status') || request('kategori') || request('sumber'))
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs text-gray-400">Filter aktif:</span>
-                            
-                            @if(request('q'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                    "{{ request('q') }}"
-                                    <button onclick="removeFilter('q')" class="hover:text-green-900 transition-colors ml-1">×</button>
-                                </div>
-                            @endif
-                            
-                            @if(request('status'))
-                                @php $statusLabels = ['pending' => 'Pending', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'draft' => 'Draft']; @endphp
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Status: {{ $statusLabels[request('status')] ?? request('status') }}
-                                    <button onclick="removeFilter('status')" class="hover:text-green-900 transition-colors ml-1">×</button>
-                                </div>
-                            @endif
-                            
-                            @if(request('kategori'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Kategori: {{ $kategoriList->firstWhere('id', request('kategori'))?->nama_kategori ?? request('kategori') }}
-                                    <button onclick="removeFilter('kategori')" class="hover:text-green-900 transition-colors ml-1">×</button>
-                                </div>
-                            @endif
-                            
-                            @if(request('sumber'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Sumber: {{ request('sumber') === 'lembaga' ? 'Dari Lembaga' : request('sumber') }}
-                                    <button onclick="removeFilter('sumber')" class="hover:text-green-900 transition-colors ml-1">×</button>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
                 </div>
             </div>
 
-            <!-- Filter Panel -->
-            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
-                <form method="GET" action="{{ route('superadmin.bulletin.index') }}" class="flex flex-col gap-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <!-- Search Field -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Bulletin</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                                    <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Filter Panel - DIPERBAIKI -->
+            <div id="filterPanel" class="{{ request()->hasAny(['q', 'status', 'kategori', 'sumber']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
+                <form method="GET" action="{{ route('superadmin.bulletin.index') }}" id="filter-form">
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                            <!-- Search Field -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Cari Bulletin</label>
+                                <div class="relative">
+                                    <input type="text" name="q" value="{{ request('q') }}"
+                                        placeholder="Cari judul, konten, lokasi..."
+                                        class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
+                                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
-                                <input type="text" name="q" value="{{ request('q') }}"
-                                    placeholder="Cari judul, konten, lokasi..."
-                                    class="pl-8 pr-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
+                            </div>
+
+                            <!-- Status Filter -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                                <select name="status"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Status</option>
+                                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                                </select>
+                            </div>
+
+                            <!-- Kategori Filter -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
+                                <select name="kategori"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach($kategoriList as $kat)
+                                        <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
+                                            {{ $kat->nama_kategori }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Sumber Filter -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Sumber</label>
+                                <select name="sumber"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Sumber</option>
+                                    <option value="superadmin" {{ request('sumber') == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
+                                    <option value="lembaga" {{ request('sumber') == 'lembaga' ? 'selected' : '' }}>Lembaga</option>
+                                </select>
                             </div>
                         </div>
-
-                        <!-- Status Filter -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
-                            <select name="status"
-                                class="px-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
-                                <option value="">Semua Status</option>
-                                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                            </select>
-                        </div>
-
-                        <!-- Kategori Filter -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
-                            <select name="kategori"
-                                class="px-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
-                                <option value="">Semua Kategori</option>
-                                @foreach($kategoriList as $kat)
-                                    <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
-                                        {{ $kat->nama_kategori }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Sumber Filter -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Sumber</label>
-                            <select name="sumber"
-                                class="px-3 py-1.5 w-full text-xs bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
-                                <option value="">Semua Sumber</option>
-                                <option value="superadmin" {{ request('sumber') == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
-                                <option value="lembaga" {{ request('sumber') == 'lembaga' ? 'selected' : '' }}>Lembaga</option>
-                            </select>
-                        </div>
                     </div>
-
-                    <div class="flex gap-2 justify-end">
+                    <div class="flex gap-2 justify-end mt-4">
+                        @if (request()->hasAny(['q', 'status', 'kategori', 'sumber']))
+                            <a href="{{ route('superadmin.bulletin.index') }}"
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors">
+                                Reset Filter
+                            </a>
+                        @endif
                         <button type="submit"
-                            class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-all">
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
                             Terapkan
                         </button>
-                        <button type="button" id="closeFilterPanelBtn"
-                            class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg transition-all">
+                        <button type="button" onclick="toggleFilter()"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
                             Tutup
                         </button>
                     </div>
                 </form>
             </div>
+
+            <!-- Active Filter Tags - DIPERBAIKI -->
+            @if(request()->hasAny(['q', 'status', 'kategori', 'sumber']))
+                <div class="px-5 py-2.5 border-b border-gray-100">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs text-gray-400">Filter aktif:</span>
+                        @php $statusLabels = ['pending' => 'Pending', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'draft' => 'Draft']; @endphp
+                        
+                        @if(request('q'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                "{{ request('q') }}"
+                                <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        
+                        @if(request('status'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Status: {{ $statusLabels[request('status')] ?? request('status') }}
+                                <button onclick="removeFilter('status')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        
+                        @if(request('kategori'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Kategori: {{ $kategoriList->firstWhere('id', request('kategori'))?->nama_kategori ?? request('kategori') }}
+                                <button onclick="removeFilter('kategori')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        
+                        @if(request('sumber'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Sumber: {{ request('sumber') === 'lembaga' ? 'Dari Lembaga' : request('sumber') }}
+                                <button onclick="removeFilter('sumber')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             <!-- Tabel -->
             @if($bulletins->count() > 0)
