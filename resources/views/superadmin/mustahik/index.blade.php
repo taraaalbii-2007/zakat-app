@@ -364,7 +364,7 @@ function renderMustahikPage(lembagaId, page) {
                     <td class="px-4 py-3">
                         <div class="text-sm font-medium text-gray-900">${escapeHtml(m.no_registrasi)}</div>
                         <div class="text-xs text-gray-400">${escapeHtml(m.tanggal)}</div>
-                    </td>
+                     </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -375,10 +375,10 @@ function renderMustahikPage(lembagaId, page) {
                                 ${m.nik ? `<div class="text-xs text-gray-400">NIK: ${escapeHtml(m.nik)}</div>` : ''}
                             </div>
                         </div>
-                    </td>
+                     </td>
                     <td class="px-4 py-3 hidden sm:table-cell">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${escapeHtml(m.kategori)}</span>
-                    </td>
+                     </td>
                     <td class="px-4 py-3">
                         <div class="space-y-1">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${v.bg}">
@@ -386,8 +386,8 @@ function renderMustahikPage(lembagaId, page) {
                             </span>
                             ${m.is_active ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 ml-1">Aktif</span>' : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500 ml-1">Nonaktif</span>'}
                         </div>
-                    </td>
-                </tr>`;
+                     </td>
+                 </tr>`;
             }).join('');
         }
     }
@@ -475,7 +475,6 @@ function buildPagination(lembagaId, current, total) {
 function buildMobilePagination(lembagaId, current, total) {
     if (total <= 1) return '';
     const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
-    const btnActive = `${btnBase} bg-green-600 text-white`;
     const btnNormal = `${btnBase} text-gray-600 hover:bg-gray-100`;
     const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
     
@@ -505,14 +504,17 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', function() {
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeBtn = document.getElementById('closeFilterPanelBtn');
+    // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+    // const closeBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
         filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
     }
-    if (closeBtn && filterPanel) {
-        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
-    }
+    
+    // HAPUS block ini karena closeBtn tidak ada
+    // if (closeBtn && filterPanel) {
+    //     closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
+    // }
 
     // Desktop expandable
     document.querySelectorAll('.expandable-row').forEach(row => {
@@ -575,6 +577,14 @@ function removeFilter(filterName) {
     url.searchParams.delete(filterName);
     url.searchParams.set('page', '1');
     window.location.href = url.toString();
+}
+
+// Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
 }
 </script>
 @endpush

@@ -350,21 +350,19 @@
             // Filter Panel elements
             const filterButton = document.getElementById('filterButton');
             const filterPanel = document.getElementById('filterPanel');
-            const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
-
+          
             // Toggle filter panel
-            filterButton.addEventListener('click', function() {
-                if (filterPanel.classList.contains('hidden')) {
-                    filterPanel.classList.remove('hidden');
-                } else {
-                    filterPanel.classList.add('hidden');
-                }
-            });
-
-            // Tutup filter panel
-            closeFilterPanelBtn.addEventListener('click', function() {
-                filterPanel.classList.add('hidden');
-            });
+            if (filterButton) {  // Tambahkan pengecekan
+                filterButton.addEventListener('click', function() {
+                    if (filterPanel) {
+                        if (filterPanel.classList.contains('hidden')) {
+                            filterPanel.classList.remove('hidden');
+                        } else {
+                            filterPanel.classList.add('hidden');
+                        }
+                    }
+                });
+            }
 
             // Delete button handler
             document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -376,25 +374,38 @@
                         uuid,
                         nama
                     };
-                    document.getElementById('modal-zakat-name').textContent = nama;
-                    deleteForm.action = `/jenis-zakat/${uuid}`;
-                    deleteModal.classList.remove('hidden');
+                    const modalZakatName = document.getElementById('modal-zakat-name');
+                    if (modalZakatName) {
+                        modalZakatName.textContent = nama;
+                    }
+                    if (deleteForm) {
+                        deleteForm.action = `/jenis-zakat/${uuid}`;
+                    }
+                    if (deleteModal) {
+                        deleteModal.classList.remove('hidden');
+                    }
                 });
             });
 
             // Cancel delete
-            cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.add('hidden');
-                currentDeleteData = null;
-            });
+            if (cancelDeleteBtn) {
+                cancelDeleteBtn.addEventListener('click', function() {
+                    if (deleteModal) {
+                        deleteModal.classList.add('hidden');
+                    }
+                    currentDeleteData = null;
+                });
+            }
 
             // Close modal when clicking outside
-            deleteModal.addEventListener('click', function(e) {
-                if (e.target === deleteModal) {
-                    deleteModal.classList.add('hidden');
-                    currentDeleteData = null;
-                }
-            });
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function(e) {
+                    if (e.target === deleteModal) {
+                        deleteModal.classList.add('hidden');
+                        currentDeleteData = null;
+                    }
+                });
+            }
         });
 
         function removeFilter(filterName) {
@@ -402,6 +413,14 @@
             url.searchParams.delete(filterName);
             url.searchParams.set('page', '1');
             window.location.href = url.toString();
+        }
+        
+        // Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+        function toggleFilter() {
+            const filterPanel = document.getElementById('filterPanel');
+            if (filterPanel) {
+                filterPanel.classList.add('hidden');
+            }
         }
     </script>
 @endpush

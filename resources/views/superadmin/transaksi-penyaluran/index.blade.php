@@ -427,6 +427,8 @@
 const PENYALURAN_PER_PAGE = 10;
 const penyaluranPages = {};
 
+// ==================== FUNGSI UTAMA ====================
+
 function renderPenyaluranPage(lembagaId, page) {
     const data = window.penyaluranData?.[lembagaId] ?? [];
     const total = data.length;
@@ -439,6 +441,13 @@ function renderPenyaluranPage(lembagaId, page) {
     const end = Math.min(start + slice.length, total);
 
     // Desktop
+    renderDesktopPenyaluran(lembagaId, slice, start, end, total);
+    
+    // Mobile view
+    renderMobilePenyaluran(lembagaId, page, totalPages);
+}
+
+function renderDesktopPenyaluran(lembagaId, slice, start, end, total) {
     const tbody = document.getElementById(`penyaluran-tbody-${lembagaId}`);
     if (tbody) {
         if (slice.length === 0) {
@@ -460,18 +469,18 @@ function renderPenyaluranPage(lembagaId, page) {
                             </div>
                             <div class="text-sm font-medium text-gray-900">${escapeHtml(t.mustahik_nama)}</div>
                         </div>
-                      </td>
+                       </td>
                     <td class="px-4 py-3 hidden sm:table-cell">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">${escapeHtml(t.metode)}</span>
-                      </td>
+                       </td>
                     <td class="px-4 py-3 text-right">
                         <span class="text-sm font-semibold text-gray-800">${jumlahFormatted}</span>
-                      </td>
+                       </td>
                     <td class="px-4 py-3 text-center">
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.status_bg}">
                             <span class="w-1.5 h-1.5 rounded-full ${t.status_dot} mr-1"></span>${escapeHtml(t.status_label)}
                         </span>
-                      </td>
+                       </td>
                   </tr>`;
             }).join('');
         }
@@ -482,9 +491,6 @@ function renderPenyaluranPage(lembagaId, page) {
 
     const pag = document.getElementById(`penyaluran-pagination-${lembagaId}`);
     if (pag) pag.innerHTML = buildPagination(lembagaId, page, totalPages);
-
-    // Mobile view
-    renderMobilePenyaluran(lembagaId, page, totalPages);
 }
 
 function renderMobilePenyaluran(lembagaId, page, totalPages) {
@@ -492,7 +498,6 @@ function renderMobilePenyaluran(lembagaId, page, totalPages) {
     const total = data.length;
     const start = (page - 1) * PENYALURAN_PER_PAGE;
     const slice = data.slice(start, start + PENYALURAN_PER_PAGE);
-    const end = Math.min(start + slice.length, total);
 
     const container = document.getElementById(`mobile-penyaluran-container-${lembagaId}`);
     if (container) {
@@ -538,6 +543,8 @@ function renderMobilePenyaluran(lembagaId, page, totalPages) {
     if (mobilePag) mobilePag.innerHTML = buildMobilePagination(lembagaId, page, totalPages);
 }
 
+// ==================== FUNGSI PAGINATION ====================
+
 function buildPagination(lembagaId, current, total) {
     if (total <= 1) return '';
     const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
@@ -580,25 +587,60 @@ function getPageRange(current, total) {
     return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
+// ==================== FUNGSI FILTER ====================
+
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.toggle('hidden');
+    }
+}
+
+function closeFilterPanel() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
+}
+
+function openFilterPanel() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.remove('hidden');
+    }
+}
+
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Event Listeners
+// ==================== EVENT LISTENERS ====================
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Filter Panel Toggle
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeBtn = document.getElementById('closeFilterPanelBtn');
+    const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
-        filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
+        filterButton.addEventListener('click', openFilterPanel);
     }
-    if (closeBtn && filterPanel) {
-        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
+    
+    if (closeFilterPanelBtn && filterPanel) {
+        closeFilterPanelBtn.addEventListener('click', closeFilterPanel);
     }
 
-    // Desktop expandable
+    // Desktop expandable rows
     document.querySelectorAll('.expandable-row').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
@@ -619,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mobile expandable
+    // Mobile expandable rows
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
@@ -643,11 +685,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function removeFilter(filterName) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete(filterName);
-    url.searchParams.set('page', '1');
-    window.location.href = url.toString();
-}
+// ==================== EXPORT KE GLOBAL SCOPE ====================
+// Pastikan fungsi-fungsi ini tersedia secara global untuk onclick
+window.renderPenyaluranPage = renderPenyaluranPage;
+window.toggleFilter = toggleFilter;
+window.closeFilterPanel = closeFilterPanel;
+window.openFilterPanel = openFilterPanel;
+window.removeFilter = removeFilter;
 </script>
 @endpush

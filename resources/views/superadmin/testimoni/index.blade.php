@@ -532,14 +532,17 @@ function positionDropdown(toggle) {
 document.addEventListener('DOMContentLoaded', function() {
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeBtn = document.getElementById('closeFilterPanelBtn');
+    // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+    // const closeBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
         filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
     }
-    if (closeBtn && filterPanel) {
-        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
-    }
+    
+    // HAPUS block ini karena closeBtn tidak ada
+    // if (closeBtn && filterPanel) {
+    //     closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
+    // }
 
     // Desktop expandable
     document.querySelectorAll('.expandable-row').forEach(row => {
@@ -580,6 +583,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = this.dataset.id;
             const dropdown = document.getElementById('dropdown-container');
             const ddActions = document.getElementById('dd-actions');
+            
+            if (!dropdown || !ddActions) return;
             
             if (dropdown.dataset.id === id && !dropdown.classList.contains('hidden')) {
                 closeDropdown();
@@ -636,6 +641,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = this.dataset.id;
             const dropdown = document.getElementById('dropdown-container');
             const ddActions = document.getElementById('dd-actions');
+            
+            if (!dropdown || !ddActions) return;
             
             if (dropdown.dataset.id === id && !dropdown.classList.contains('hidden')) {
                 closeDropdown();
@@ -703,6 +710,14 @@ function removeFilter(filterName) {
     url.searchParams.delete(filterName);
     url.searchParams.set('page', '1');
     window.location.href = url.toString();
+}
+
+// Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
 }
 </script>
 @endpush

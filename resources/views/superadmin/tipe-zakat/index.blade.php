@@ -573,7 +573,8 @@
 
         const filterButton = document.getElementById('filterButton');
         const filterPanel = document.getElementById('filterPanel');
-        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
+        // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+        // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
         if (filterButton && filterPanel) {
             filterButton.addEventListener('click', function() {
@@ -581,11 +582,12 @@
             });
         }
 
-        if (closeFilterPanelBtn && filterPanel) {
-            closeFilterPanelBtn.addEventListener('click', function() {
-                filterPanel.classList.add('hidden');
-            });
-        }
+        // HAPUS block ini karena closeFilterPanelBtn tidak ada
+        // if (closeFilterPanelBtn && filterPanel) {
+        //     closeFilterPanelBtn.addEventListener('click', function() {
+        //         filterPanel.classList.add('hidden');
+        //     });
+        // }
 
         // Desktop Expandable row
         document.querySelectorAll('.expandable-row').forEach(row => {
@@ -621,23 +623,34 @@
                 e.stopPropagation();
                 const uuid = this.getAttribute('data-uuid');
                 const nama = this.getAttribute('data-nama');
-                document.getElementById('modal-zakat-name').textContent = nama;
-                deleteForm.action = `/tipe-zakat/${uuid}`;
-                deleteModal.classList.remove('hidden');
+                const modalZakatName = document.getElementById('modal-zakat-name');
+                if (modalZakatName) {
+                    modalZakatName.textContent = nama;
+                }
+                if (deleteForm) {
+                    deleteForm.action = `/tipe-zakat/${uuid}`;
+                }
+                if (deleteModal) {
+                    deleteModal.classList.remove('hidden');
+                }
             });
         });
 
         if (cancelDeleteBtn) {
             cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.add('hidden');
+                if (deleteModal) {
+                    deleteModal.classList.add('hidden');
+                }
             });
         }
 
-        deleteModal.addEventListener('click', function(e) {
-            if (e.target === deleteModal) {
-                deleteModal.classList.add('hidden');
-            }
-        });
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.add('hidden');
+                }
+            });
+        }
     });
 
     function removeFilter(filterName) {
@@ -659,6 +672,14 @@
         url.searchParams.delete('sort_order');
         url.searchParams.set('page', '1');
         window.location.href = url.toString();
+    }
+
+    // Fungsi toggleFilter untuk tombol "Tutup" di filter panel
+    function toggleFilter() {
+        const filterPanel = document.getElementById('filterPanel');
+        if (filterPanel) {
+            filterPanel.classList.add('hidden');
+        }
     }
 </script>
 @endpush

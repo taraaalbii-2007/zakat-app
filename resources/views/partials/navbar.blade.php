@@ -203,14 +203,14 @@
 @endphp
 
 {{-- ═══════════════════════════════════════════════════════════════
-     STYLES
+     STYLES - TINGGI DISAMAKAN DENGAN SIDEBAR
      ═══════════════════════════════════════════════════════════════ --}}
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
     :root {
-        --nav-h: 64px;
-        --nav-bg: rgba(255,255,255,0.92);
+        --nav-h: 72px;
+        --nav-bg: rgba(255,255,255,0.96);
         --nav-border: rgba(0,0,0,0.06);
         --surface: #ffffff;
         --surface-hover: #f8f8fa;
@@ -257,7 +257,7 @@
         align-items: center;
         justify-content: space-between;
         height: 100%;
-        padding: 0 24px;
+        padding: 0 28px;
         gap: 12px;
     }
 
@@ -270,7 +270,7 @@
     }
 
     .page-title {
-        font-size: 14.5px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--text-primary);
         letter-spacing: -0.025em;
@@ -289,15 +289,15 @@
     .nav-actions {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 8px;
         margin-left: auto;
     }
 
     .nav-divider {
         width: 1px;
-        height: 20px;
+        height: 28px;
         background: var(--nav-border);
-        margin: 0 6px;
+        margin: 0 8px;
         opacity: 0.8;
     }
 
@@ -307,8 +307,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
         border-radius: var(--radius-sm);
         border: none;
         background: transparent;
@@ -335,8 +335,8 @@
     }
 
     .nav-icon-btn svg {
-        width: 18px;
-        height: 18px;
+        width: 19px;
+        height: 19px;
         transition: transform 0.2s ease;
     }
 
@@ -347,8 +347,8 @@
     /* ── Notification Badge ── */
     .notif-dot {
         position: absolute;
-        top: 7px;
-        right: 7px;
+        top: 8px;
+        right: 8px;
         width: 8px;
         height: 8px;
         background: var(--danger);
@@ -366,8 +366,8 @@
     .user-menu-btn {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 5px 10px 5px 5px;
+        gap: 12px;
+        padding: 6px 12px 6px 6px;
         border-radius: var(--radius-md);
         border: 1.5px solid transparent;
         background: transparent;
@@ -392,8 +392,8 @@
     }
 
     .user-avatar {
-        width: 34px;
-        height: 34px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         overflow: hidden;
         flex-shrink: 0;
@@ -408,7 +408,7 @@
     .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .user-avatar-initial {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: #15803d;
         font-family: Poppins;
@@ -418,7 +418,7 @@
     @media (min-width: 1024px) { .user-info { display: block; } }
 
     .user-name {
-        font-size: 13px;
+        font-size: 13.5px;
         font-weight: 600;
         color: var(--text-primary);
         letter-spacing: -0.02em;
@@ -443,13 +443,11 @@
     @media (min-width: 1024px) { .chevron-icon { display: block; } }
     .user-menu-btn.open .chevron-icon { transform: rotate(180deg); color: var(--text-secondary); }
 
-    /* ══════════════════════════════════════════
-       DROPDOWN BASE
-    ══════════════════════════════════════════ */
+    /* ── Dropdown Base ── */
     .nav-dropdown {
         position: absolute;
         right: 0;
-        top: calc(100% + 10px);
+        top: calc(100% + 12px);
         background: var(--surface);
         border: 1px solid var(--nav-border);
         border-radius: var(--radius-lg);
@@ -475,19 +473,19 @@
 
     /* ── Notification Dropdown ── */
     .notif-dropdown {
-        width: 380px;
+        width: 400px;
     }
 
     .dropdown-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 14px 16px 12px;
+        padding: 14px 18px 12px;
         border-bottom: 1px solid var(--nav-border);
     }
 
     .dropdown-header-title {
-        font-size: 13.5px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--text-primary);
         letter-spacing: -0.02em;
@@ -513,7 +511,7 @@
     }
 
     .notif-list {
-        max-height: 360px;
+        max-height: 380px;
         overflow-y: auto;
         scrollbar-width: thin;
         scrollbar-color: #e5e7eb transparent;
@@ -522,7 +520,7 @@
     .notif-item {
         display: flex;
         gap: 12px;
-        padding: 12px 16px;
+        padding: 14px 18px;
         text-decoration: none;
         transition: background 0.12s ease;
         border-bottom: 1px solid rgba(0,0,0,0.03);
@@ -533,8 +531,8 @@
 
     .notif-icon-wrap {
         flex-shrink: 0;
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
         border-radius: var(--radius-sm);
         background: var(--surface-hover);
         display: flex;
@@ -543,7 +541,7 @@
         margin-top: 1px;
     }
 
-    .notif-icon-wrap svg { width: 15px; height: 15px; color: var(--text-secondary); }
+    .notif-icon-wrap svg { width: 16px; height: 16px; color: var(--text-secondary); }
 
     .notif-icon-wrap.type-transfer { background: #eff6ff; }
     .notif-icon-wrap.type-transfer svg { color: #3b82f6; }
@@ -557,7 +555,7 @@
     .notif-icon-wrap.type-truck svg { color: #8b5cf6; }
 
     .notif-title {
-        font-size: 12.5px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-primary);
         line-height: 1.3;
@@ -567,14 +565,14 @@
     .notif-body {
         font-size: 12px;
         color: var(--text-secondary);
-        margin-top: 2px;
+        margin-top: 3px;
         line-height: 1.5;
     }
 
     .notif-time {
         font-size: 10.5px;
         color: var(--text-muted);
-        margin-top: 4px;
+        margin-top: 5px;
         display: flex;
         align-items: center;
         gap: 3px;
@@ -584,38 +582,38 @@
     .notif-time svg { width: 11px; height: 11px; }
 
     .notif-empty {
-        padding: 40px 16px;
+        padding: 45px 20px;
         text-align: center;
     }
 
     .notif-empty-icon {
-        width: 48px;
-        height: 48px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         background: var(--surface-hover);
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 12px;
+        margin: 0 auto 14px;
     }
 
-    .notif-empty-icon svg { width: 22px; height: 22px; color: var(--text-muted); }
+    .notif-empty-icon svg { width: 24px; height: 24px; color: var(--text-muted); }
 
     .notif-empty-title {
-        font-size: 13px;
+        font-size: 13.5px;
         font-weight: 600;
         color: var(--text-secondary);
         letter-spacing: -0.01em;
     }
 
     .notif-empty-sub {
-        font-size: 11.5px;
+        font-size: 12px;
         color: var(--text-muted);
-        margin-top: 3px;
+        margin-top: 4px;
     }
 
     .dropdown-footer {
-        padding: 10px 16px;
+        padding: 12px 18px;
         border-top: 1px solid var(--nav-border);
     }
 
@@ -623,12 +621,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
-        font-size: 12px;
+        gap: 6px;
+        font-size: 12.5px;
         font-weight: 600;
         color: var(--accent);
         text-decoration: none;
-        padding: 6px;
+        padding: 8px;
         border-radius: var(--radius-sm);
         transition: background 0.12s ease, color 0.12s ease;
         letter-spacing: -0.01em;
@@ -639,23 +637,23 @@
 
     /* ── User Dropdown ── */
     .user-dropdown {
-        width: 240px;
+        width: 260px;
     }
 
     .user-dropdown-header {
-        padding: 14px 16px;
+        padding: 16px 18px;
         border-bottom: 1px solid var(--nav-border);
     }
 
     .user-dropdown-meta {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
     .user-dropdown-avatar {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border-radius: 50%;
         overflow: hidden;
         flex-shrink: 0;
@@ -668,10 +666,10 @@
     }
 
     .user-dropdown-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .user-dropdown-avatar-initial { font-size: 15px; font-weight: 700; color: #15803d; font-family: Poppins; }
+    .user-dropdown-avatar-initial { font-size: 16px; font-weight: 700; color: #15803d; font-family: Poppins; }
 
     .user-dropdown-name {
-        font-size: 13.5px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--text-primary);
         letter-spacing: -0.02em;
@@ -681,9 +679,9 @@
     }
 
     .user-dropdown-email {
-        font-size: 11px;
+        font-size: 11.5px;
         color: var(--text-muted);
-        margin-top: 1px;
+        margin-top: 2px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -697,7 +695,7 @@
         border-radius: 20px;
         font-size: 10px;
         font-weight: 700;
-        margin-top: 5px;
+        margin-top: 10px;
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
@@ -709,14 +707,14 @@
     .role-default    { background: var(--surface-hover); color: var(--text-secondary); }
 
     /* ── Menu Items ── */
-    .menu-section { padding: 6px 0; }
+    .menu-section { padding: 8px 0; }
     .menu-section + .menu-section { border-top: 1px solid var(--nav-border); }
 
     .menu-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 9px 14px;
+        gap: 12px;
+        padding: 10px 18px;
         font-size: 13px;
         font-weight: 500;
         color: var(--text-secondary);
@@ -735,8 +733,8 @@
     .menu-item.active { background: var(--surface-active); color: var(--text-primary); font-weight: 600; }
 
     .menu-item svg {
-        width: 16px;
-        height: 16px;
+        width: 17px;
+        height: 17px;
         flex-shrink: 0;
         color: var(--text-muted);
         transition: color 0.1s ease;
@@ -748,13 +746,13 @@
     .menu-item-label { flex: 1; }
 
     .menu-badge {
-        font-size: 9.5px;
+        font-size: 10px;
         font-weight: 700;
         color: white;
         background: var(--danger);
         border-radius: 20px;
-        padding: 1.5px 6px;
-        min-width: 18px;
+        padding: 2px 7px;
+        min-width: 20px;
         text-align: center;
     }
 
@@ -762,9 +760,9 @@
     .menu-item-danger:hover { background: #fff1f1 !important; }
     .menu-item-danger svg { color: var(--danger) !important; }
 
-    /* ══════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
        LOGOUT MODAL
-    ══════════════════════════════════════════ */
+       ═══════════════════════════════════════════════════════════════ */
     #logout-modal {
         font-family: Poppins;
     }
@@ -773,59 +771,59 @@
         background: white;
         border-radius: var(--radius-xl);
         width: 100%;
-        max-width: 360px;
+        max-width: 380px;
         margin: 0 16px;
         overflow: hidden;
         box-shadow: 0 24px 60px rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.08);
     }
 
-    .logout-card-body { padding: 28px 28px 24px; }
+    .logout-card-body { padding: 32px 32px 28px; }
 
     .logout-icon-wrap {
-        width: 56px;
-        height: 56px;
+        width: 60px;
+        height: 60px;
         border-radius: var(--radius-md);
         background: #fff1f1;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 18px;
+        margin: 0 auto 20px;
     }
 
-    .logout-icon-wrap svg { width: 24px; height: 24px; color: var(--danger); }
+    .logout-icon-wrap svg { width: 26px; height: 26px; color: var(--danger); }
 
     .logout-title {
-        font-size: 17px;
+        font-size: 18px;
         font-weight: 700;
         color: var(--text-primary);
         text-align: center;
         letter-spacing: -0.03em;
-        margin-bottom: 5px;
+        margin-bottom: 6px;
     }
 
     .logout-desc {
-        font-size: 12.5px;
+        font-size: 13px;
         color: var(--text-muted);
         text-align: center;
         line-height: 1.6;
-        margin-bottom: 20px;
+        margin-bottom: 24px;
         font-weight: 400;
     }
 
     .logout-user-card {
         display: flex;
         align-items: center;
-        gap: 11px;
-        padding: 11px 13px;
+        gap: 12px;
+        padding: 12px 15px;
         background: var(--surface-hover);
         border-radius: var(--radius-md);
         border: 1px solid var(--nav-border);
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
 
     .logout-user-avatar {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         overflow: hidden;
         flex-shrink: 0;
@@ -836,17 +834,17 @@
     }
 
     .logout-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .logout-user-avatar-initial { font-size: 14px; font-weight: 700; color: #15803d; }
+    .logout-user-avatar-initial { font-size: 15px; font-weight: 700; color: #15803d; }
 
-    .logout-user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .logout-user-email { font-size: 11px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .logout-user-role { font-size: 10px; color: var(--text-muted); font-weight: 500; flex-shrink: 0; }
+    .logout-user-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logout-user-email { font-size: 11px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .logout-user-role { font-size: 10.5px; color: var(--text-muted); font-weight: 500; flex-shrink: 0; }
 
-    .logout-actions { display: flex; gap: 10px; }
+    .logout-actions { display: flex; gap: 12px; }
 
     .btn-cancel {
         flex: 1;
-        padding: 10px 16px;
+        padding: 11px 18px;
         border-radius: var(--radius-md);
         font-size: 13px;
         font-weight: 600;
@@ -863,7 +861,7 @@
 
     .btn-logout {
         flex: 1;
-        padding: 10px 16px;
+        padding: 11px 18px;
         border-radius: var(--radius-md);
         font-size: 13px;
         font-weight: 600;
@@ -882,12 +880,10 @@
 
     .btn-logout:hover { background: #dc2626; transform: translateY(-1px); }
     .btn-logout:active { transform: translateY(0); }
-    .btn-logout svg { width: 14px; height: 14px; }
+    .btn-logout svg { width: 15px; height: 15px; }
 </style>
 
-{{-- ═══════════════════════════════════════════════════════════════
-     LOGOUT MODAL
-     ═══════════════════════════════════════════════════════════════ --}}
+{{-- LOGOUT MODAL --}}
 <div id="logout-modal" class="fixed inset-0 z-[9999] flex items-center justify-center hidden" aria-modal="true" role="dialog">
     <div id="logout-backdrop"
         class="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-300"
@@ -938,9 +934,7 @@
     </div>
 </div>
 
-{{-- ═══════════════════════════════════════════════════════════════
-     NAVBAR UTAMA
-     ═══════════════════════════════════════════════════════════════ --}}
+{{-- NAVBAR UTAMA --}}
 <header id="main-navbar" class="navbar-shell">
     <div class="navbar-inner">
 

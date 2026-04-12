@@ -444,14 +444,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
         filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
     }
-    if (closeBtn && filterPanel) {
-        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
-    }
+    
 
     // Desktop expandable
     document.querySelectorAll('.expandable-row').forEach(row => {
@@ -491,6 +488,14 @@ function removeFilter(filterName) {
     url.searchParams.delete(filterName);
     url.searchParams.set('tahun', '{{ $tahun }}');
     window.location.href = url.toString();
+}
+
+// Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
 }
 </script>
 @endpush

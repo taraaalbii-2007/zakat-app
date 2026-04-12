@@ -409,6 +409,8 @@
 const TRANSAKSI_PER_PAGE = 10;
 const transaksiPages = {};
 
+// ==================== FUNGSI UTAMA ====================
+
 function renderTransaksiPage(lembagaId, page) {
     const data = window.transaksiData?.[lembagaId] ?? [];
     const total = data.length;
@@ -420,7 +422,14 @@ function renderTransaksiPage(lembagaId, page) {
     const slice = data.slice(start, start + TRANSAKSI_PER_PAGE);
     const end = Math.min(start + slice.length, total);
 
-    // Desktop
+    // Desktop table
+    renderDesktopTransaksi(lembagaId, slice, start, end, total);
+    
+    // Mobile view
+    renderMobileTransaksi(lembagaId, page, totalPages);
+}
+
+function renderDesktopTransaksi(lembagaId, slice, start, end, total) {
     const tbody = document.getElementById(`transaksi-tbody-${lembagaId}`);
     if (tbody) {
         if (slice.length === 0) {
@@ -440,7 +449,7 @@ function renderTransaksiPage(lembagaId, page) {
                     <td class="px-4 py-3">
                         <div class="text-sm font-medium text-gray-900">${escapeHtml(t.no_transaksi)}</div>
                         <div class="text-xs text-gray-400">${escapeHtml(t.tanggal)} • ${escapeHtml(t.waktu)}</div>
-                     </td>
+                    </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -448,19 +457,19 @@ function renderTransaksiPage(lembagaId, page) {
                             </div>
                             <div class="text-sm font-medium text-gray-900">${escapeHtml(t.muzakki_nama)}</div>
                         </div>
-                     </td>
+                    </td>
                     <td class="px-4 py-3 hidden sm:table-cell">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${escapeHtml(t.jenis_zakat)}</span>
-                     </td>
+                    </td>
                     <td class="px-4 py-3 text-right">
                         <span class="text-sm font-semibold text-gray-800">${jumlahFormatted}</span>
-                     </td>
+                    </td>
                     <td class="px-4 py-3 text-center">
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${s.bg}">
                             <span class="w-1.5 h-1.5 rounded-full ${s.dot} mr-1"></span>${s.label}
                         </span>
-                     </td>
-                 </tr>`;
+                    </td>
+                </tr>`;
             }).join('');
         }
     }
@@ -470,9 +479,6 @@ function renderTransaksiPage(lembagaId, page) {
 
     const pag = document.getElementById(`transaksi-pagination-${lembagaId}`);
     if (pag) pag.innerHTML = buildPagination(lembagaId, page, totalPages);
-
-    // Mobile view
-    renderMobileTransaksi(lembagaId, page, totalPages);
 }
 
 function renderMobileTransaksi(lembagaId, page, totalPages) {
@@ -532,6 +538,8 @@ function renderMobileTransaksi(lembagaId, page, totalPages) {
     if (mobilePag) mobilePag.innerHTML = buildMobilePagination(lembagaId, page, totalPages);
 }
 
+// ==================== FUNGSI PAGINATION ====================
+
 function buildPagination(lembagaId, current, total) {
     if (total <= 1) return '';
     const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
@@ -574,35 +582,75 @@ function getPageRange(current, total) {
     return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
+// ==================== FUNGSI FILTER ====================
+
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.toggle('hidden');
+    }
+}
+
+function closeFilterPanel() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
+}
+
+function openFilterPanel() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.remove('hidden');
+    }
+}
+
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+// ==================== UTILITY FUNCTIONS ====================
+
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Event Listeners
+// ==================== EVENT LISTENERS ====================
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Filter Panel Toggle
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeBtn = document.getElementById('closeFilterPanelBtn');
+    const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
-        filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
+        filterButton.addEventListener('click', openFilterPanel);
     }
-    if (closeBtn && filterPanel) {
-        closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
+    
+    if (closeFilterPanelBtn && filterPanel) {
+        closeFilterPanelBtn.addEventListener('click', closeFilterPanel);
     }
 
-    // Desktop expandable
+    // Desktop Expandable Rows
     document.querySelectorAll('.expandable-row').forEach(row => {
         row.addEventListener('click', function(e) {
+            // Jangan expand jika klik pada link atau button di dalam row
             if (e.target.closest('a') || e.target.closest('button')) return;
+            
             const targetId = this.getAttribute('data-target');
             const targetRow = document.getElementById(targetId);
             const icon = this.querySelector('.expand-icon');
+            
             if (targetRow) {
                 const isHidden = targetRow.classList.contains('hidden');
                 targetRow.classList.toggle('hidden');
                 if (icon) icon.classList.toggle('rotate-90');
+                
+                // Load data jika baru pertama kali dibuka
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-', ''));
                     if ((window.transaksiData?.[lembagaId] || window.transaksiDataMobile?.[lembagaId]) && !transaksiPages[lembagaId]) {
@@ -613,19 +661,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mobile expandable
+    // Mobile Expandable Rows
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
+            
             const targetId = this.getAttribute('data-target');
             const targetContent = document.getElementById(targetId);
             const icon = this.querySelector('.expand-icon-mobile');
             const chevron = this.querySelector('.expand-icon-mobile-chevron');
+            
             if (targetContent) {
                 const isHidden = targetContent.classList.contains('hidden');
                 targetContent.classList.toggle('hidden');
                 if (icon) icon.classList.toggle('rotate-90');
                 if (chevron) chevron.classList.toggle('rotate-90');
+                
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-mobile-', ''));
                     if ((window.transaksiData?.[lembagaId] || window.transaksiDataMobile?.[lembagaId]) && !transaksiPages[lembagaId]) {
@@ -637,11 +688,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function removeFilter(filterName) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete(filterName);
-    url.searchParams.set('page', '1');
-    window.location.href = url.toString();
-}
+// ==================== EXPORT KE GLOBAL SCOPE ====================
+// Pastikan fungsi-fungsi ini tersedia secara global untuk onclick
+window.renderTransaksiPage = renderTransaksiPage;
+window.toggleFilter = toggleFilter;
+window.closeFilterPanel = closeFilterPanel;
+window.openFilterPanel = openFilterPanel;
+window.removeFilter = removeFilter;
 </script>
 @endpush

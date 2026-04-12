@@ -638,7 +638,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const filterButton = document.getElementById('filterButton');
         const filterPanel = document.getElementById('filterPanel');
-        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
+        // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+        // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
         if (filterButton && filterPanel) {
             filterButton.addEventListener('click', function() {
@@ -646,11 +647,12 @@
             });
         }
 
-        if (closeFilterPanelBtn && filterPanel) {
-            closeFilterPanelBtn.addEventListener('click', function() {
-                filterPanel.classList.add('hidden');
-            });
-        }
+        // HAPUS block ini karena closeFilterPanelBtn tidak ada
+        // if (closeFilterPanelBtn && filterPanel) {
+        //     closeFilterPanelBtn.addEventListener('click', function() {
+        //         filterPanel.classList.add('hidden');
+        //     });
+        // }
 
         // Desktop Expandable row
         document.querySelectorAll('.expandable-row').forEach(row => {
@@ -698,56 +700,71 @@
 
                 currentToggleData = { uuid, nama, isActive };
 
-                document.getElementById('modal-toggle-lembaga-name').textContent = nama;
-
-                if (isActive) {
-                    toggleStatusTitle.textContent = 'Nonaktifkan Lembaga';
-                    toggleStatusAction.textContent = 'menonaktifkan';
-                    confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
-                    iconNonaktif.classList.remove('hidden');
-                    iconAktif.classList.add('hidden');
-                } else {
-                    toggleStatusTitle.textContent = 'Aktifkan Lembaga';
-                    toggleStatusAction.textContent = 'mengaktifkan';
-                    confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
-                    iconNonaktif.classList.add('hidden');
-                    iconAktif.classList.remove('hidden');
+                const modalToggleLembagaName = document.getElementById('modal-toggle-lembaga-name');
+                if (modalToggleLembagaName) {
+                    modalToggleLembagaName.textContent = nama;
                 }
 
-                toggleStatusModal.classList.remove('hidden');
+                if (isActive) {
+                    if (toggleStatusTitle) toggleStatusTitle.textContent = 'Nonaktifkan Lembaga';
+                    if (toggleStatusAction) toggleStatusAction.textContent = 'menonaktifkan';
+                    if (confirmToggleBtn) {
+                        confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
+                    }
+                    if (iconNonaktif) iconNonaktif.classList.remove('hidden');
+                    if (iconAktif) iconAktif.classList.add('hidden');
+                } else {
+                    if (toggleStatusTitle) toggleStatusTitle.textContent = 'Aktifkan Lembaga';
+                    if (toggleStatusAction) toggleStatusAction.textContent = 'mengaktifkan';
+                    if (confirmToggleBtn) {
+                        confirmToggleBtn.className = 'flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg';
+                    }
+                    if (iconNonaktif) iconNonaktif.classList.add('hidden');
+                    if (iconAktif) iconAktif.classList.remove('hidden');
+                }
+
+                if (toggleStatusModal) {
+                    toggleStatusModal.classList.remove('hidden');
+                }
             });
         });
 
-        confirmToggleBtn.addEventListener('click', function() {
-            if (!currentToggleData) return;
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/lembaga/${currentToggleData.uuid}/toggle-status`;
-            const csrf = document.createElement('input');
-            csrf.type = 'hidden';
-            csrf.name = '_token';
-            csrf.value = '{{ csrf_token() }}';
-            const method = document.createElement('input');
-            method.type = 'hidden';
-            method.name = '_method';
-            method.value = 'PATCH';
-            form.appendChild(csrf);
-            form.appendChild(method);
-            document.body.appendChild(form);
-            form.submit();
-        });
+        if (confirmToggleBtn) {
+            confirmToggleBtn.addEventListener('click', function() {
+                if (!currentToggleData) return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/lembaga/${currentToggleData.uuid}/toggle-status`;
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'PATCH';
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
 
-        cancelToggleBtn.addEventListener('click', function() {
-            toggleStatusModal.classList.add('hidden');
-            currentToggleData = null;
-        });
-
-        toggleStatusModal.addEventListener('click', function(e) {
-            if (e.target === toggleStatusModal) {
-                toggleStatusModal.classList.add('hidden');
+        if (cancelToggleBtn) {
+            cancelToggleBtn.addEventListener('click', function() {
+                if (toggleStatusModal) toggleStatusModal.classList.add('hidden');
                 currentToggleData = null;
-            }
-        });
+            });
+        }
+
+        if (toggleStatusModal) {
+            toggleStatusModal.addEventListener('click', function(e) {
+                if (e.target === toggleStatusModal) {
+                    toggleStatusModal.classList.add('hidden');
+                    currentToggleData = null;
+                }
+            });
+        }
 
         // Delete button handler
         const deleteModal = document.getElementById('delete-modal');
@@ -761,41 +778,54 @@
                 const uuid = this.getAttribute('data-uuid');
                 const nama = this.getAttribute('data-nama');
                 currentDeleteData = { uuid, nama };
-                document.getElementById('modal-lembaga-name').textContent = nama;
-                deleteModal.classList.remove('hidden');
+                
+                const modalLembagaName = document.getElementById('modal-lembaga-name');
+                if (modalLembagaName) {
+                    modalLembagaName.textContent = nama;
+                }
+                
+                if (deleteModal) {
+                    deleteModal.classList.remove('hidden');
+                }
             });
         });
 
-        confirmDeleteBtn.addEventListener('click', function() {
-            if (!currentDeleteData) return;
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/lembaga/${currentDeleteData.uuid}`;
-            const csrf = document.createElement('input');
-            csrf.type = 'hidden';
-            csrf.name = '_token';
-            csrf.value = '{{ csrf_token() }}';
-            const method = document.createElement('input');
-            method.type = 'hidden';
-            method.name = '_method';
-            method.value = 'DELETE';
-            form.appendChild(csrf);
-            form.appendChild(method);
-            document.body.appendChild(form);
-            form.submit();
-        });
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (!currentDeleteData) return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/lembaga/${currentDeleteData.uuid}`;
+                const csrf = document.createElement('input');
+                csrf.type = 'hidden';
+                csrf.name = '_token';
+                csrf.value = '{{ csrf_token() }}';
+                const method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'DELETE';
+                form.appendChild(csrf);
+                form.appendChild(method);
+                document.body.appendChild(form);
+                form.submit();
+            });
+        }
 
-        cancelDeleteBtn.addEventListener('click', function() {
-            deleteModal.classList.add('hidden');
-            currentDeleteData = null;
-        });
-
-        deleteModal.addEventListener('click', function(e) {
-            if (e.target === deleteModal) {
-                deleteModal.classList.add('hidden');
+        if (cancelDeleteBtn) {
+            cancelDeleteBtn.addEventListener('click', function() {
+                if (deleteModal) deleteModal.classList.add('hidden');
                 currentDeleteData = null;
-            }
-        });
+            });
+        }
+
+        if (deleteModal) {
+            deleteModal.addEventListener('click', function(e) {
+                if (e.target === deleteModal) {
+                    deleteModal.classList.add('hidden');
+                    currentDeleteData = null;
+                }
+            });
+        }
     });
 
     function removeFilter(filterName) {
@@ -812,6 +842,14 @@
         url.searchParams.delete('status');
         url.searchParams.set('page', '1');
         window.location.href = url.toString();
+    }
+
+    // Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+    function toggleFilter() {
+        const filterPanel = document.getElementById('filterPanel');
+        if (filterPanel) {
+            filterPanel.classList.add('hidden');
+        }
     }
 </script>
 @endpush

@@ -635,5 +635,12 @@ function removeFilter(filterName) {
     url.searchParams.set('page', '1');
     window.location.href = url.toString();
 }
+
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
+}
 </script>
 @endpush

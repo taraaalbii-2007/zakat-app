@@ -550,7 +550,8 @@
             // Filter Panel elements
             const filterButton = document.getElementById('filterButton');
             const filterPanel = document.getElementById('filterPanel');
-            const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
+            // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+            // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
             // Toggle filter panel
             if (filterButton && filterPanel) {
@@ -559,12 +560,13 @@
                 });
             }
 
-            // Tutup filter panel
-            if (closeFilterPanelBtn) {
-                closeFilterPanelBtn.addEventListener('click', function() {
-                    filterPanel.classList.add('hidden');
-                });
-            }
+            // HAPUS block ini karena closeFilterPanelBtn tidak ada
+            // Tutup filter panel - gunakan tombol "Tutup" yang sudah ada di dalam filterPanel dengan onclick="toggleFilter()"
+            // if (closeFilterPanelBtn) {
+            //     closeFilterPanelBtn.addEventListener('click', function() {
+            //         filterPanel.classList.add('hidden');
+            //     });
+            // }
 
             // Desktop Expandable row
             document.querySelectorAll('.expandable-row').forEach(row => {
@@ -608,6 +610,14 @@
             url.searchParams.delete(filterName);
             url.searchParams.set('page', '1');
             window.location.href = url.toString();
+        }
+
+        // Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+        function toggleFilter() {
+            const filterPanel = document.getElementById('filterPanel');
+            if (filterPanel) {
+                filterPanel.classList.add('hidden');
+            }
         }
     </script>
 @endpush

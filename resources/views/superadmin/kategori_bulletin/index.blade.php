@@ -401,7 +401,8 @@
         // Filter Panel elements
         const filterButton = document.getElementById('filterButton');
         const filterPanel = document.getElementById('filterPanel');
-        const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
+        // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
+        // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
         // Toggle filter panel
         if (filterButton && filterPanel) {
@@ -414,12 +415,13 @@
             });
         }
 
-        // Tutup filter panel
-        if (closeFilterPanelBtn) {
-            closeFilterPanelBtn.addEventListener('click', function() {
-                filterPanel.classList.add('hidden');
-            });
-        }
+        // HAPUS block ini karena closeFilterPanelBtn tidak ada
+        // Tutup filter panel - gunakan tombol "Tutup" yang sudah ada di dalam filterPanel dengan onclick="toggleFilter()"
+        // if (closeFilterPanelBtn) {
+        //     closeFilterPanelBtn.addEventListener('click', function() {
+        //         filterPanel.classList.add('hidden');
+        //     });
+        // }
 
         // Delete button handler
         document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -430,25 +432,33 @@
 
                 currentDeleteData = { uuid, nama, count };
                 
-                document.getElementById('modal-kategori-name').textContent = nama;
+                const modalKategoriName = document.getElementById('modal-kategori-name');
+                if (modalKategoriName) {
+                    modalKategoriName.textContent = nama;
+                }
                 
                 const warning = document.getElementById('modal-warning');
                 const countSpan = document.getElementById('modal-bulletin-count');
                 const confirmText = document.getElementById('modal-confirm-text');
                 
                 if (count > 0) {
-                    warning.classList.remove('hidden');
-                    countSpan.textContent = count;
-                    confirmText.textContent = '';
-                    confirmDeleteBtn.disabled = true;
+                    if (warning) warning.classList.remove('hidden');
+                    if (countSpan) countSpan.textContent = count;
+                    if (confirmText) confirmText.textContent = '';
+                    if (confirmDeleteBtn) confirmDeleteBtn.disabled = true;
                 } else {
-                    warning.classList.add('hidden');
-                    confirmText.textContent = 'Tindakan ini tidak dapat dibatalkan.';
-                    confirmDeleteBtn.disabled = false;
+                    if (warning) warning.classList.add('hidden');
+                    if (confirmText) confirmText.textContent = 'Tindakan ini tidak dapat dibatalkan.';
+                    if (confirmDeleteBtn) confirmDeleteBtn.disabled = false;
                 }
                 
-                deleteForm.action = `${baseUrl}/${uuid}`;
-                deleteModal.classList.remove('hidden');
+                if (deleteForm) {
+                    deleteForm.action = `${baseUrl}/${uuid}`;
+                }
+                
+                if (deleteModal) {
+                    deleteModal.classList.remove('hidden');
+                }
             });
         });
 
@@ -466,7 +476,9 @@
         // Cancel delete
         if (cancelDeleteBtn) {
             cancelDeleteBtn.addEventListener('click', function() {
-                deleteModal.classList.add('hidden');
+                if (deleteModal) {
+                    deleteModal.classList.add('hidden');
+                }
                 currentDeleteData = null;
             });
         }
@@ -487,6 +499,14 @@
         url.searchParams.delete(filterName);
         url.searchParams.set('page', '1');
         window.location.href = url.toString();
+    }
+
+    // Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
+    function toggleFilter() {
+        const filterPanel = document.getElementById('filterPanel');
+        if (filterPanel) {
+            filterPanel.classList.add('hidden');
+        }
     }
 </script>
 @endpush
