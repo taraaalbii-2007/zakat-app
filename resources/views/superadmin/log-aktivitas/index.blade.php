@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            <!-- Header -->
+      <!-- Header - DIPERBAIKI -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,9 +16,11 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
+                        <!-- Tombol Filter - DIPERBAIKI -->
                         <button type="button" id="filterButton"
-                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-xs font-medium rounded-lg transition-all">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
+                            {{ request()->anyFilled(['q', 'aktivitas', 'modul', 'tanggal', 'peran']) ? 'bg-green-50' : '' }}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
@@ -28,8 +30,8 @@
                 </div>
             </div>
 
-            <!-- Statistik Bar -->
-            <div class="px-6 py-4 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+            <!-- Statistik Bar - DIPERBAIKI -->
+            <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
                         <span class="text-sm text-gray-600">Total:</span>
@@ -60,101 +62,137 @@
                             Hapus
                         </a>
                     </div>
-
-                    @if(request()->anyFilled(['q', 'aktivitas', 'modul', 'tanggal', 'peran']))
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs text-gray-400">Filter aktif:</span>
-                            @if(request('q'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    "{{ request('q') }}"
-                                    <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                            @if(request('aktivitas'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Aktivitas: {{ request('aktivitas') }}
-                                    <button onclick="removeFilter('aktivitas')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                            @if(request('modul'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Modul: {{ request('modul') }}
-                                    <button onclick="removeFilter('modul')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                            @if(request('peran'))
-                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                    Peran: {{ request('peran') }}
-                                    <button onclick="removeFilter('peran')" class="hover:text-green-900 ml-1">×</button>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
                 </div>
             </div>
 
-            <!-- Filter Panel -->
-            <div id="filterPanel" class="px-5 py-3 border-b border-gray-100 bg-green-50/30 hidden">
-                <form method="GET" action="{{ route('log-aktivitas.index') }}" class="space-y-3">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Pencarian</label>
-                            <input type="text" name="q" value="{{ request('q') }}"
-                                placeholder="Cari aktivitas..."
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Aktivitas</label>
-                            <select name="aktivitas"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
-                                <option value="">Semua Aktivitas</option>
-                                @foreach($aktivitasList as $akt)
-                                    <option value="{{ $akt }}" {{ request('aktivitas') == $akt ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $akt)) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Modul</label>
-                            <select name="modul"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
-                                <option value="">Semua Modul</option>
-                                @foreach($modulList as $mod)
-                                    <option value="{{ $mod }}" {{ request('modul') == $mod ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $mod)) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Peran</label>
-                            <select name="peran"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg">
-                                <option value="">Semua Peran</option>
-                                @foreach($peranList as $per)
-                                    <option value="{{ $per }}" {{ request('peran') == $per ? 'selected' : '' }}>
-                                        {{ ucfirst(str_replace('_', ' ', $per)) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal</label>
-                            <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500">
+            <!-- Filter Panel - DIPERBAIKI -->
+            <div id="filterPanel" class="{{ request()->anyFilled(['q', 'aktivitas', 'modul', 'tanggal', 'peran']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
+                <form method="GET" action="{{ route('log-aktivitas.index') }}" id="filter-form">
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                            <!-- Search Field -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Pencarian</label>
+                                <div class="relative">
+                                    <input type="text" name="q" value="{{ request('q') }}"
+                                        placeholder="Cari aktivitas..."
+                                        class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
+                                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Filter Aktivitas -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Aktivitas</label>
+                                <select name="aktivitas"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Aktivitas</option>
+                                    @foreach($aktivitasList as $akt)
+                                        <option value="{{ $akt }}" {{ request('aktivitas') == $akt ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $akt)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Modul -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Modul</label>
+                                <select name="modul"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Modul</option>
+                                    @foreach($modulList as $mod)
+                                        <option value="{{ $mod }}" {{ request('modul') == $mod ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $mod)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Peran -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Peran</label>
+                                <select name="peran"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                    <option value="">Semua Peran</option>
+                                    @foreach($peranList as $per)
+                                        <option value="{{ $per }}" {{ request('peran') == $per ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $per)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Tanggal -->
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Tanggal</label>
+                                <input type="date" name="tanggal" value="{{ request('tanggal') }}"
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                            </div>
                         </div>
                     </div>
-                    <div class="flex gap-2 justify-end">
+                    <div class="flex gap-2 justify-end mt-4">
                         @if(request()->anyFilled(['q', 'aktivitas', 'modul', 'tanggal', 'peran']))
                             <a href="{{ route('log-aktivitas.index') }}"
-                                class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Reset Filter</a>
+                                class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors">
+                                Reset Filter
+                            </a>
                         @endif
-                        <button type="submit" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg">Terapkan</button>
-                        <button type="button" id="closeFilterPanelBtn" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-medium rounded-lg">Tutup</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                            Terapkan
+                        </button>
+                        <button type="button" onclick="toggleFilter()"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
+                            Tutup
+                        </button>
                     </div>
                 </form>
             </div>
+
+            <!-- Active Filter Tags - DIPERBAIKI -->
+            @if(request()->anyFilled(['q', 'aktivitas', 'modul', 'tanggal', 'peran']))
+                <div class="px-5 py-2.5 border-b border-gray-100">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs text-gray-400">Filter aktif:</span>
+                        @if(request('q'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                "{{ request('q') }}"
+                                <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('aktivitas'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Aktivitas: {{ request('aktivitas') }}
+                                <button onclick="removeFilter('aktivitas')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('modul'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Modul: {{ request('modul') }}
+                                <button onclick="removeFilter('modul')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('peran'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Peran: {{ request('peran') }}
+                                <button onclick="removeFilter('peran')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('tanggal'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Tanggal: {{ request('tanggal') }}
+                                <button onclick="removeFilter('tanggal')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
 
             @if($logs->count() > 0)
                 <!-- DESKTOP TABLE -->
