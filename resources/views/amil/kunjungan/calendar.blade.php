@@ -45,14 +45,16 @@
         font-weight: 600 !important;
     }
     .fc-button-primary { 
-        background-color: #2563eb !important; 
-        border-color: #2563eb !important; 
+        background-color: #16a34a !important; 
+        border-color: #16a34a !important; 
     }
     .fc-button-primary:hover { 
-        background-color: #1d4ed8 !important; 
+        background-color: #15803d !important;
+        border-color: #15803d !important;
     }
     .fc-button-active { 
-        background-color: #1e40af !important; 
+        background-color: #166534 !important;
+        border-color: #166534 !important;
     }
     .fc .fc-button-group { 
         gap: 4px !important; 
@@ -66,7 +68,7 @@
         margin-left: 0 !important; 
     }
     .fc-day-today { 
-        background: #eff6ff !important; 
+        background: #f0fdf4 !important; 
     }
     .fc-daygrid-day-number { 
         font-size: 0.7rem; 
@@ -80,7 +82,7 @@
         padding: 8px 4px !important;
     }
     .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-        background: #2563eb;
+        background: #16a34a;
         color: #fff;
         width: 24px;
         height: 24px;
@@ -147,10 +149,11 @@
 @endpush
 
 @section('content')
-<div class="px-3 sm:px-5 py-4 max-w-7xl mx-auto">
+<div class="space-y-6">
+
     {{-- ===== FLASH MESSAGES ===== --}}
     @if(session('success'))
-    <div class="flex items-center gap-3 px-4 py-3 mb-4 bg-green-50 border border-green-200 rounded-xl animate-slide-up">
+    <div class="flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl animate-slide-up">
         <div class="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-green-100 flex items-center justify-center">
             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -160,7 +163,7 @@
     </div>
     @endif
     @if(session('error'))
-    <div class="flex items-center gap-3 px-4 py-3 mb-4 bg-red-50 border border-red-200 rounded-xl animate-slide-up">
+    <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl animate-slide-up">
         <div class="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-red-100 flex items-center justify-center">
             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -170,12 +173,12 @@
     </div>
     @endif
 
-    {{-- ===== STATISTIK CARDS (Grid 1 kolom mobile, 3 kolom desktop) ===== --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 animate-slide-up">
+    {{-- ===== STATISTIK CARDS ===== --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 animate-slide-up">
         {{-- Card 1: Total --}}
-        <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
-            <div class="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-blue-50 flex items-center justify-center">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 transition-all duration-300">
+            <div class="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-green-50 flex items-center justify-center">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
@@ -188,22 +191,22 @@
         </div>
 
         {{-- Card 2: Direncanakan --}}
-        <div class="bg-white rounded-xl border border-blue-200 p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
-            <div class="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-blue-50 flex items-center justify-center">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 transition-all duration-300">
+            <div class="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-yellow-50 flex items-center justify-center">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <p class="text-xs font-medium text-blue-600">Direncanakan</p>
-                <p class="text-xl sm:text-3xl font-bold text-blue-700">{{ $stats['direncanakan'] }}</p>
-                <p class="text-xs text-blue-400 mt-0.5">jadwal aktif</p>
+                <p class="text-xs font-medium text-gray-500">Direncanakan</p>
+                <p class="text-xl sm:text-3xl font-bold text-gray-800">{{ $stats['direncanakan'] }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">jadwal aktif</p>
             </div>
         </div>
 
         {{-- Card 3: Selesai --}}
-        <div class="bg-white rounded-xl border border-green-200 p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:shadow-md transition-shadow">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 transition-all duration-300">
             <div class="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-green-50 flex items-center justify-center">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -211,49 +214,49 @@
                 </svg>
             </div>
             <div>
-                <p class="text-xs font-medium text-green-600">Selesai</p>
-                <p class="text-xl sm:text-3xl font-bold text-green-700">{{ $stats['selesai'] }}</p>
-                <p class="text-xs text-green-400 mt-0.5">kunjungan selesai</p>
+                <p class="text-xs font-medium text-gray-500">Selesai</p>
+                <p class="text-xl sm:text-3xl font-bold text-gray-800">{{ $stats['selesai'] }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">kunjungan selesai</p>
             </div>
         </div>
     </div>
 
     {{-- ===== MAIN CARD ===== --}}
-    <div class="bg-white rounded-xl sm:rounded-2xl border border-gray-200 overflow-hidden animate-slide-up">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300 animate-slide-up">
+
         {{-- Header --}}
-        <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
-            <div class="flex flex-col gap-3">
+        <div class="px-5 py-4 border-b border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                    <h2 class="text-base sm:text-lg font-bold text-gray-900">Kunjungan Mustahik</h2>
-                    <p class="text-xs sm:text-sm text-gray-500 mt-0.5">{{ now()->translatedFormat('l, d F Y') }}</p>
+                    <h1 class="text-base font-semibold text-gray-800">Kunjungan Mustahik</h1>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ now()->translatedFormat('l, d F Y') }}</p>
                 </div>
-                
-                {{-- Action Buttons Grid Mobile --}}
-                <div class="grid grid-cols-2 sm:flex sm:flex-row gap-2">
+
+                <div class="flex flex-col sm:flex-row gap-2">
                     {{-- Date picker --}}
-                    <form method="GET" action="{{ route('amil.kunjungan.index') }}" class="w-full sm:w-auto">
+                    <form method="GET" action="{{ route('amil.kunjungan.index') }}">
                         <input type="date"
                             name="tanggal"
                             value="{{ request('tanggal', now()->format('Y-m-d')) }}"
                             max="{{ now()->format('Y-m-d') }}"
                             onchange="this.form.submit()"
-                            class="w-full px-3 py-2 text-xs sm:text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                            class="w-full px-3 py-2 text-xs border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                     </form>
 
                     {{-- Filter button --}}
                     <button type="button" id="btn-filter" onclick="toggleFilterPanel()"
-                        class="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
                         </svg>
                         Filter
-                        <span id="filter-count-badge" class="hidden px-1.5 py-0.5 text-xs font-semibold bg-blue-600 text-white rounded-full leading-none">0</span>
+                        <span id="filter-count-badge" class="hidden px-1.5 py-0.5 text-xs font-semibold bg-green-600 text-white rounded-full leading-none">0</span>
                     </button>
 
                     {{-- Catatan --}}
                     <button type="button" onclick="openCatatanModal()"
-                        class="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 text-sm font-medium rounded-lg transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -263,7 +266,7 @@
 
                     {{-- Tambah Jadwal --}}
                     <a href="{{ route('amil.kunjungan.create') }}"
-                        class="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-sm">
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -273,25 +276,53 @@
             </div>
         </div>
 
-        {{-- Tabs + View Toggle (Mobile Friendly) --}}
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 border-b border-gray-200">
+        {{-- Statistik Bar --}}
+        <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Total:</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ $stats['total'] }}</span>
+                    <span class="text-sm text-gray-500">Kunjungan Bulan Ini</span>
+                </div>
+                <div class="hidden md:flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                        <span class="text-xs text-gray-500">Direncanakan:</span>
+                        <span class="text-xs font-semibold text-gray-700">{{ $stats['direncanakan'] }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                        <span class="text-xs text-gray-500">Selesai:</span>
+                        <span class="text-xs font-semibold text-gray-700">{{ $stats['selesai'] }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                        <span class="text-xs text-gray-500">Dibatalkan:</span>
+                        <span class="text-xs font-semibold text-gray-700">{{ $stats['dibatalkan'] ?? 0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tabs + View Toggle --}}
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-5 border-b border-gray-100">
             <nav class="flex gap-0 overflow-x-auto scrollbar-hide" id="kunjungan-tabs">
                 <button type="button" onclick="switchTab('direncanakan')" id="tab-direncanakan"
-                    class="tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-blue-600 text-blue-600 transition-all whitespace-nowrap">
+                    class="tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-green-600 text-green-600 transition-all whitespace-nowrap">
                     Direncanakan
-                    <span class="ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700">{{ $stats['direncanakan'] }}</span>
+                    <span class="ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-700">{{ $stats['direncanakan'] }}</span>
                 </button>
                 <button type="button" onclick="switchTab('selesai')" id="tab-selesai"
                     class="tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-all whitespace-nowrap">
                     Selesai
-                    <span class="ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-700">{{ $stats['selesai'] }}</span>
+                    <span class="ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600">{{ $stats['selesai'] }}</span>
                 </button>
             </nav>
-            
+
             {{-- View Toggle --}}
             <div class="flex rounded-lg overflow-hidden border border-gray-200 w-fit mb-2 sm:mb-0">
                 <button id="btn-calendar-view" onclick="setView('calendar')"
-                    class="px-3 py-1.5 text-xs font-medium bg-blue-600 text-white transition-colors" title="Kalender">
+                    class="px-3 py-1.5 text-xs font-medium bg-green-600 text-white transition-colors" title="Kalender">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -307,17 +338,17 @@
         </div>
 
         {{-- Filter dropdown panel --}}
-        <div id="filter-panel" class="hidden flex-col sm:flex-row px-4 sm:px-6 py-3 border-b border-gray-100 bg-blue-50/40 gap-2 sm:items-center sm:gap-3">
+        <div id="filter-panel" class="hidden flex-col sm:flex-row px-5 py-3 border-b border-gray-100 bg-green-50/30 gap-2 sm:items-center sm:gap-3">
             <span class="text-xs font-medium text-gray-500">Filter:</span>
             <select id="filter-tujuan"
-                class="text-xs border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                 <option value="">Semua Tujuan</option>
                 @foreach($tujuanOptions as $val => $label)
                     <option value="{{ $val }}">{{ $label }}</option>
                 @endforeach
             </select>
             <select id="filter-status"
-                class="text-xs border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
                 <option value="">Semua Status</option>
                 @foreach($statusOptions as $val => $label)
                     <option value="{{ $val }}">{{ $label }}</option>
@@ -325,7 +356,7 @@
             </select>
             <button id="btn-reset-filter" class="text-xs text-gray-400 hover:text-red-500 underline transition-colors">Reset</button>
             <div class="flex items-center gap-3 text-xs text-gray-500 sm:ml-auto flex-wrap">
-                <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500"></span>Direncanakan</span>
+                <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-500"></span>Direncanakan</span>
                 <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500"></span>Selesai</span>
                 <span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500"></span>Dibatalkan</span>
             </div>
@@ -338,10 +369,10 @@
 
         {{-- View: List --}}
         <div id="view-list" class="hidden">
-            <div class="px-4 sm:px-6 py-3 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                <h3 class="text-sm font-semibold text-gray-900">Daftar Kunjungan</h3>
+            <div class="px-5 py-3 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <h3 class="text-sm font-semibold text-gray-800">Daftar Kunjungan</h3>
                 <input type="month" id="filter-bulan" value="{{ now()->format('Y-m') }}"
-                    class="text-xs border border-gray-300 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all">
             </div>
             <div id="list-loading" class="py-10 text-center">
                 <svg class="w-5 h-5 animate-spin mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24">
@@ -353,56 +384,56 @@
             <div id="list-table" class="hidden">
                 {{-- Desktop Table --}}
                 <div class="hidden md:block overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-100">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Tanggal</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Mustahik</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Tujuan</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Waktu</th>
-                                <th class="px-6 py-3 w-20"></th>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50/50">
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mustahik</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tujuan</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Waktu</th>
+                                <th class="px-6 py-3 w-20 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="list-tbody" class="bg-white divide-y divide-gray-50"></tbody>
+                        <tbody id="list-tbody" class="bg-white divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
                 {{-- Mobile Cards --}}
                 <div id="list-mobile" class="md:hidden divide-y divide-gray-100"></div>
                 <div id="list-pagination"
-                    class="px-4 sm:px-6 py-3 border-t border-gray-100 flex items-center justify-center gap-2 flex-wrap bg-gray-50/50"></div>
+                    class="px-5 py-3 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white flex items-center justify-center gap-2 flex-wrap"></div>
             </div>
         </div>
-    </div>
-</div>
+
+    </div>{{-- /main card --}}
+
+</div>{{-- /space-y-6 --}}
 
 {{-- ===== MODAL: CATATAN ===== --}}
-<div id="catatan-modal" class="fixed inset-0 bg-black/50 hidden z-[10000] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full mx-4 overflow-hidden shadow-xl">
-        <div class="p-5 sm:p-6">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div id="catatan-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[10000] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+        <div class="p-6">
+            <div class="flex justify-center mb-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl flex items-center justify-center shadow-inner">
+                    <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
                 </div>
-                <div>
-                    <h3 class="text-base font-semibold text-gray-900">Catatan Kunjungan</h3>
-                    <p class="text-xs text-gray-500">Tambahkan catatan untuk hari ini</p>
-                </div>
             </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-1 text-center">Catatan Kunjungan</h3>
+            <p class="text-xs text-gray-400 mb-5 text-center">Tambahkan catatan untuk hari ini</p>
             <form method="POST" action="#">
                 @csrf
                 <textarea name="catatan" rows="4" placeholder="Tulis catatan (opsional)..."
-                    class="block w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none mb-4"></textarea>
-                <div class="flex justify-end gap-3">
+                    class="block w-full px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all resize-none mb-4"></textarea>
+                <div class="flex gap-3">
                     <button type="button" onclick="closeModal('catatan-modal')"
-                        class="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        class="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
                         Batal
                     </button>
                     <button type="submit"
-                        class="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-sm font-semibold text-white transition-colors">
+                        class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-xl text-sm font-medium text-white transition-all">
                         Simpan
                     </button>
                 </div>
@@ -412,9 +443,9 @@
 </div>
 
 {{-- ===== MODAL: EVENT DETAIL ===== --}}
-<div id="event-modal" class="fixed inset-0 bg-black/50 hidden z-[10000] flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-sm w-full mx-4 overflow-hidden shadow-xl">
-        <div class="p-5 sm:p-6">
+<div id="event-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[10000] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+        <div class="p-6">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex-1 min-w-0">
                     <h3 class="text-base font-semibold text-gray-900 truncate" id="modal-title">-</h3>
@@ -440,13 +471,13 @@
                     <span id="modal-status-badge"></span>
                 </div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-3">
                 <button type="button" onclick="closeModal('event-modal')"
-                    class="flex-1 inline-flex items-center justify-center px-3 py-2.5 text-sm font-medium border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-xl transition-colors">
+                    class="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
                     Tutup
                 </button>
                 <a id="modal-detail-btn" href="#"
-                    class="flex-1 inline-flex items-center justify-center px-3 py-2.5 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors">
+                    class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-xl text-sm font-medium text-white transition-all text-center">
                     Lihat Detail
                 </a>
             </div>
@@ -461,7 +492,7 @@
 let calendar, currentView = 'calendar', filterTujuan = '', filterStatus = '', activeTab = 'direncanakan';
 
 const STATUS_BADGE = {
-    direncanakan: '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Direncanakan</span>',
+    direncanakan: '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">Direncanakan</span>',
     selesai:      '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">Selesai</span>',
     dibatalkan:   '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">Dibatalkan</span>',
 };
@@ -527,11 +558,13 @@ function switchTab(tab) {
     ['direncanakan', 'selesai'].forEach(function (t) {
         const btn = document.getElementById('tab-' + t);
         if (t === tab) { 
-            btn.classList.add('border-blue-600', 'text-blue-600'); 
-            btn.classList.remove('border-transparent', 'text-gray-500'); 
+            btn.classList.add('border-green-600', 'text-green-600'); 
+            btn.classList.remove('border-transparent', 'text-gray-500');
+            btn.querySelector('span').className = 'ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-green-100 text-green-700';
         } else { 
-            btn.classList.remove('border-blue-600', 'text-blue-600'); 
-            btn.classList.add('border-transparent', 'text-gray-500'); 
+            btn.classList.remove('border-green-600', 'text-green-600'); 
+            btn.classList.add('border-transparent', 'text-gray-500');
+            btn.querySelector('span').className = 'ml-1.5 px-1.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-600';
         }
     });
     calendar.refetchEvents();
@@ -543,9 +576,9 @@ function setView(view) {
     const isCal = view === 'calendar';
     document.getElementById('view-calendar').classList.toggle('hidden', !isCal);
     document.getElementById('view-list').classList.toggle('hidden', isCal);
-    const c = `px-3 py-1.5 text-xs font-medium transition-colors`;
-    document.getElementById('btn-calendar-view').className = c + (isCal ? ' bg-blue-600 text-white' : ' bg-white text-gray-600 hover:bg-gray-50');
-    document.getElementById('btn-list-view').className = c + ' border-l border-gray-200' + (!isCal ? ' bg-blue-600 text-white' : ' bg-white text-gray-600 hover:bg-gray-50');
+    const base = `px-3 py-1.5 text-xs font-medium transition-colors`;
+    document.getElementById('btn-calendar-view').className = base + (isCal ? ' bg-green-600 text-white' : ' bg-white text-gray-600 hover:bg-gray-50');
+    document.getElementById('btn-list-view').className = base + ' border-l border-gray-200' + (!isCal ? ' bg-green-600 text-white' : ' bg-white text-gray-600 hover:bg-gray-50');
     if (view === 'list') loadList();
 }
 
@@ -568,12 +601,12 @@ function loadList(page = 1) {
 function renderListDesktop(rows) {
     const tbody = document.getElementById('list-tbody');
     if (!rows || !rows.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-14 text-center">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gray-100 mb-3">
-                <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
-            <p class="text-sm font-semibold text-gray-800">Tidak Ada Kunjungan</p>
-            <p class="text-xs text-gray-400 mt-1">Belum ada kunjungan pada bulan ini</p>
+        tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-16 text-center">
+            <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+            <p class="text-sm font-medium text-gray-500 mb-1">Tidak Ada Kunjungan</p>
+            <p class="text-xs text-gray-400">Belum ada kunjungan pada bulan ini</p>
         </td></tr>`;
         return;
     }
@@ -582,13 +615,20 @@ function renderListDesktop(rows) {
         const waktu = k.waktu_mulai ? k.waktu_mulai.slice(0,5) + (k.waktu_selesai ? ' – ' + k.waktu_selesai.slice(0,5) : '') : '-';
         const sb = STATUS_BADGE[k.status] ?? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">${k.status}</span>`;
         const tb = TUJUAN_BADGE[k.tujuan] ?? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">${k.tujuan}</span>`;
-        return `<tr class="hover:bg-gray-50 transition-colors">
+        return `<tr class="hover:bg-green-50/20 transition-colors">
             <td class="px-6 py-4 text-sm text-gray-700 whitespace-nowrap">${tgl}</td>
-            <td class="px-6 py-4"><p class="text-sm font-semibold text-gray-900">${k.mustahik?.nama_lengkap ?? '-'}</p><p class="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">${k.mustahik?.alamat ?? ''}</p></td>
+            <td class="px-6 py-4"><p class="text-sm font-medium text-gray-800">${k.mustahik?.nama_lengkap ?? '-'}</p><p class="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">${k.mustahik?.alamat ?? ''}</p></td>
             <td class="px-6 py-4">${tb}</td>
             <td class="px-6 py-4">${sb}</td>
             <td class="px-6 py-4 text-xs text-gray-500 whitespace-nowrap">${waktu}</td>
-            <td class="px-6 py-4 text-center"><a href="/kunjungan/${k.uuid}" class="inline-flex items-center px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-all">Detail</a></td>
+            <td class="px-6 py-4 text-center">
+                <a href="/kunjungan/${k.uuid}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200 inline-flex">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </a>
+            </td>
         </tr>`;
     }).join('');
 }
@@ -599,10 +639,10 @@ function renderListMobile(rows) {
     el.innerHTML = rows.map(k => {
         const tgl = new Date(k.tanggal_kunjungan).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         const waktu = k.waktu_mulai ? k.waktu_mulai.slice(0,5) + (k.waktu_selesai ? ' – ' + k.waktu_selesai.slice(0,5) : '') : '-';
-        return `<div class="p-4 hover:bg-gray-50 transition-colors">
+        return `<div class="p-4 hover:bg-green-50/20 transition-colors">
             <div class="flex items-start justify-between gap-2">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-gray-900 truncate">${k.mustahik?.nama_lengkap ?? '-'}</p>
+                    <p class="text-sm font-medium text-gray-800 truncate">${k.mustahik?.nama_lengkap ?? '-'}</p>
                     <div class="flex items-center gap-2 mt-1 flex-wrap">
                         <span class="text-xs text-gray-500">${tgl}</span>
                         <span class="text-gray-300">·</span>
@@ -610,7 +650,12 @@ function renderListMobile(rows) {
                     </div>
                     <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">${TUJUAN_BADGE[k.tujuan]??''} ${STATUS_BADGE[k.status]??''}</div>
                 </div>
-                <a href="/kunjungan/${k.uuid}" class="flex-shrink-0 inline-flex items-center px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-all">Detail</a>
+                <a href="/kunjungan/${k.uuid}" class="flex-shrink-0 flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </a>
             </div>
         </div>`;
     }).join('');
@@ -622,7 +667,7 @@ function renderPagination(data) {
     let html = '';
     for (let p = 1; p <= data.last_page; p++) {
         const a = p === data.current_page;
-        html += `<button onclick="loadList(${p})" class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${a ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'}">${p}</button>`;
+        html += `<button onclick="loadList(${p})" class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${a ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}">${p}</button>`;
     }
     el.innerHTML = html;
 }
@@ -647,13 +692,12 @@ function toggleFilterPanel() {
     if (panel.style.display === 'flex' || panel.classList.contains('open')) {
         panel.classList.remove('open');
         panel.style.display = 'none';
-        btn.classList.remove('bg-blue-100', 'text-blue-700');
-        btn.classList.add('bg-gray-100', 'text-gray-700');
+        btn.classList.remove('bg-green-50', 'text-green-600', 'border-green-500');
+        btn.classList.add('bg-white', 'text-green-600', 'border-green-500');
     } else {
         panel.classList.add('open');
         panel.style.display = 'flex';
-        btn.classList.add('bg-blue-100', 'text-blue-700');
-        btn.classList.remove('bg-gray-100', 'text-gray-700');
+        btn.classList.add('bg-green-50');
     }
 }
 

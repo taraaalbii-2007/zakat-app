@@ -147,6 +147,15 @@
 
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+     <!-- HAMBURGER BUTTON - TAMBAHKAN INI -->
+    <button id="sidebar-toggle"
+        class="lg:hidden fixed top-4 left-4 z-50 p-2.5 rounded-xl bg-white text-gray-600 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
+        style="border: 1px solid #eef2f7;">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+    </button>
     
     <div class="min-h-screen flex relative">
         <!-- Sidebar -->
