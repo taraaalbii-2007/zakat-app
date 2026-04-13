@@ -18,7 +18,7 @@ class SuperadminTransaksiPenerimaanController extends Controller
             
             // Filter status
             if ($request->has('status') && $request->status) {
-                $q->where('status', $request->status);
+                $q->where('status_verifikasi', $request->status);
             }
             
             // Filter jenis zakat
@@ -45,7 +45,7 @@ class SuperadminTransaksiPenerimaanController extends Controller
         ->withCount(['transaksiPenerimaan' => function ($q) use ($request) {
             // Filter status untuk count
             if ($request->has('status') && $request->status) {
-                $q->where('status', $request->status);
+                $q->where('status_verifikasi', $request->status);
             }
             
             // Filter jenis zakat untuk count
@@ -83,28 +83,36 @@ class SuperadminTransaksiPenerimaanController extends Controller
         // Urutkan lembaga berdasarkan nama
         $query->orderBy('nama');
         
-        $lembagas = $query->get();
+        // 🔥 INI PERUBAHAN PENTING: Gunakan paginate() BUKAN get()
+        $perPage = $request->get('per_page', 10); // 10 data per halaman
+        $lembagas = $query->paginate($perPage);
         
-        // Hitung statistik dengan filter
-        $totalTransaksi = $lembagas->sum(function($lembaga) {
+        // Ambil SEMUA lembaga untuk dropdown filter (tanpa pagination)
+        $allLembagas = Lembaga::orderBy('nama')->get();
+        
+        // Hitung statistik dengan filter dari SEMUA data (bukan hanya halaman ini)
+        // Clone query untuk mengambil semua data yang memenuhi filter
+        $statistikQuery = clone $query;
+        $allFilteredLembagas = $statistikQuery->get();
+        
+        $totalTransaksi = $allFilteredLembagas->sum(function($lembaga) {
             return $lembaga->transaksiPenerimaan->count();
         });
         
-        $totalVerified = $lembagas->sum(function($lembaga) {
-            return $lembaga->transaksiPenerimaan->where('status', 'verified')->count();
+        $totalVerified = $allFilteredLembagas->sum(function($lembaga) {
+            return $lembaga->transaksiPenerimaan->where('status_verifikasi', 'verified')->count();
         });
         
-        $totalPending = $lembagas->sum(function($lembaga) {
-            return $lembaga->transaksiPenerimaan->where('status', 'pending')->count();
+        $totalPending = $allFilteredLembagas->sum(function($lembaga) {
+            return $lembaga->transaksiPenerimaan->where('status_verifikasi', 'pending')->count();
         });
         
-        $totalNominal = $lembagas->sum(function($lembaga) {
+        $totalNominal = $allFilteredLembagas->sum(function($lembaga) {
             return $lembaga->transaksiPenerimaan->sum('jumlah');
         });
         
         // Ambil daftar jenis zakat untuk filter
-        $jenisZakatList = JenisZakat::orderBy('nama')
-            ->get();
+        $jenisZakatList = JenisZakat::orderBy('nama')->get();
         
         // Jika request AJAX, return JSON
         if ($request->ajax() || $request->wantsJson()) {
@@ -114,13 +122,15 @@ class SuperadminTransaksiPenerimaanController extends Controller
                 foreach ($lembagas as $lembaga) {
                     $trxData[$lembaga->id] = $lembaga->transaksiPenerimaan->map(function ($trx) {
                         return [
+                            'id'              => $trx->id,
                             'muzakki_nama'    => $trx->muzakki_nama ?? '-',
                             'no_transaksi'    => $trx->no_transaksi ?? '-',
-                            'tanggal'         => optional($trx->tanggal_transaksi)->format('d/m/Y') ?? '-',
-                            'waktu'           => optional($trx->waktu_transaksi)->format('H:i') ?? '',
+                            'tanggal'         => optional($trx->tanggal_transaksi)->format('d M Y') ?? '-',
+                            'waktu'           => optional($trx->created_at)->format('H:i') ?? '-',
+                            'initial'         => strtoupper(substr($trx->muzakki_nama ?? 'T', 0, 1)),
                             'jenis_zakat'     => $trx->jenisZakat->nama ?? '-',
                             'jumlah'          => (float) ($trx->jumlah ?? 0),
-                            'status'          => $trx->status ?? '-',
+                            'status'          => $trx->status_verifikasi ?? 'pending',
                         ];
                     })->toArray();
                 }
@@ -135,8 +145,9 @@ class SuperadminTransaksiPenerimaanController extends Controller
                     'totalVerified' => $totalVerified,
                     'totalPending' => $totalPending,
                     'totalNominal' => $totalNominal,
-                    'totalLembaga' => $lembagas->count(),
-                    'trxData' => $trxData
+                    'totalLembaga' => $allFilteredLembagas->count(),
+                    'trxData' => $trxData,
+                    'pagination' => (string) $lembagas->links()
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
@@ -150,7 +161,15 @@ class SuperadminTransaksiPenerimaanController extends Controller
             'Kelola Transaksi' => null,
         ];
         
-        return view('superadmin.transaksi-penerimaan.index',
-            compact('lembagas', 'totalTransaksi', 'totalVerified', 'totalPending', 'totalNominal', 'jenisZakatList', 'breadcrumbs'));
+        return view('superadmin.transaksi-penerimaan.index', compact(
+            'lembagas',        // Paginator object
+            'allLembagas',     // Collection untuk dropdown
+            'totalTransaksi',
+            'totalVerified', 
+            'totalPending', 
+            'totalNominal', 
+            'jenisZakatList', 
+            'breadcrumbs'
+        ));
     }
 }

@@ -261,8 +261,8 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Setujui (pending only) -->
-                                            @if($bulletin->isPending())
+                                         @if($bulletin->isPending())
+                                                {{-- Setujui --}}
                                                 <div class="relative group/tooltip">
                                                     <form action="{{ route('superadmin.bulletin.approve', $bulletin->uuid) }}" method="POST" class="inline">
                                                         @csrf
@@ -276,6 +276,21 @@
                                                     </form>
                                                     <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
                                                         Setujui
+                                                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
+                                                    </div>
+                                                </div>
+                                                {{-- Tolak --}}
+                                                <div class="relative group/tooltip">
+                                                    <button type="button"
+                                                        class="reject-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                                                        data-judul="{{ addslashes($bulletin->judul) }}"
+                                                        data-action="{{ route('superadmin.bulletin.reject', $bulletin->uuid) }}">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                        Tolak
                                                         <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
                                                     </div>
                                                 </div>
@@ -451,8 +466,8 @@
                                             </a>
                                         </div>
 
-                                        <!-- Setujui (pending only) -->
-                                        @if($bulletin->isPending())
+                      @if($bulletin->isPending())
+                                            {{-- Setujui --}}
                                             <div class="relative group/tooltip">
                                                 <form action="{{ route('superadmin.bulletin.approve', $bulletin->uuid) }}" method="POST" class="inline">
                                                     @csrf
@@ -464,6 +479,17 @@
                                                         </svg>
                                                     </button>
                                                 </form>
+                                            </div>
+                                            {{-- Tolak --}}
+                                            <div class="relative">
+                                                <button type="button"
+                                                    class="reject-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                    data-judul="{{ addslashes($bulletin->judul) }}"
+                                                    data-action="{{ route('superadmin.bulletin.reject', $bulletin->uuid) }}">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                    </svg>
+                                                </button>
                                             </div>
                                         @endif
 
@@ -598,6 +624,51 @@
                 </div>
             @endif
         </div>
+
+        {{-- Reject Modal --}}
+    <div id="reject-modal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl">
+            <div class="p-6">
+                <div class="flex justify-center mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl flex items-center justify-center shadow-inner">
+                        <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Tolak Bulletin</h3>
+                <p class="text-sm text-gray-500 mb-4 text-center">
+                    Anda akan menolak bulletin "<span id="reject-modal-judul" class="font-semibold text-gray-700"></span>".
+                </p>
+                <form id="reject-form" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="block text-xs font-medium text-gray-700 mb-1.5">
+                            Alasan Penolakan <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="rejection_reason" id="reject-reason"
+                            rows="3" required maxlength="500"
+                            placeholder="Tulis alasan penolakan yang jelas untuk admin lembaga..."
+                            class="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none"></textarea>
+                        <div class="flex justify-end mt-1">
+                            <span id="reject-char-count" class="text-xs text-gray-400">0/500</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" id="cancel-reject-btn"
+                            class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl text-sm font-medium text-white transition-all shadow-md hover:shadow-lg active:scale-95">
+                            Tolak Bulletin
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Delete Modal -->
@@ -639,6 +710,42 @@
 
 @push('scripts')
 <script>
+
+    // Reject button handler
+        const rejectModal  = document.getElementById('reject-modal');
+        const rejectForm   = document.getElementById('reject-form');
+        const cancelReject = document.getElementById('cancel-reject-btn');
+        const rejectReason = document.getElementById('reject-reason');
+        const charCount    = document.getElementById('reject-char-count');
+
+        document.querySelectorAll('.reject-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('reject-modal-judul').textContent = this.getAttribute('data-judul');
+                rejectForm.action = this.getAttribute('data-action');
+                rejectReason.value = '';
+                charCount.textContent = '0/500';
+                rejectModal.classList.remove('hidden');
+                setTimeout(() => rejectReason.focus(), 100);
+            });
+        });
+
+        if (rejectReason) {
+            rejectReason.addEventListener('input', function() {
+                charCount.textContent = this.value.length + '/500';
+            });
+        }
+
+        if (cancelReject) {
+            cancelReject.addEventListener('click', () => rejectModal.classList.add('hidden'));
+        }
+
+        if (rejectModal) {
+            rejectModal.addEventListener('click', function(e) {
+                if (e.target === rejectModal) rejectModal.classList.add('hidden');
+            });
+        }
+        
     document.addEventListener('DOMContentLoaded', function() {
         const deleteModal = document.getElementById('delete-modal');
         const deleteForm  = document.getElementById('delete-form');

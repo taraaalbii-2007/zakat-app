@@ -174,7 +174,7 @@
                                             'id' => $m->id,
                                             'no_registrasi' => $m->no_registrasi ?? '-',
                                             'tanggal' => optional($m->created_at)->format('d M Y') ?? '-',
-                                            'nama' => $m->nama ?? $m->user->name ?? '-',
+                                            'nama' => $m->nama_lengkap ?? $m->user->name ?? '-',
                                             'nik' => $m->nik ?? null,
                                             'initial' => strtoupper(substr($m->nama ?? $m->user->name ?? 'M', 0, 1)),
                                             'kategori' => $m->kategoriMustahik->nama ?? '-',

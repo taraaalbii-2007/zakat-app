@@ -37,7 +37,7 @@
                         <span class="text-sm text-gray-600">Total:</span>
                         <span class="text-sm font-semibold text-gray-800">{{ number_format($totalTransaksi) }}</span>
                         <span class="text-sm text-gray-500">Transaksi dari</span>
-                        <span class="text-sm font-semibold text-gray-800">{{ $lembagas->count() }}</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ $lembagas->total() }}</span>
                         <span class="text-sm text-gray-500">Lembaga</span>
                     </div>
 
@@ -88,7 +88,7 @@
                                 <select name="lembaga_id"
                                     class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                                     <option value="">Semua Lembaga</option>
-                                    @foreach ($lembagas as $lembaga)
+                                    @foreach ($allLembagas as $lembaga)
                                         <option value="{{ $lembaga->id }}" {{ request('lembaga_id') == $lembaga->id ? 'selected' : '' }}>
                                             {{ $lembaga->nama }}
                                         </option>
@@ -174,13 +174,13 @@
                         @endif
                         @if(request('status'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                Status: {{ request('status') }}
+                                Status: {{ request('status') == 'verified' ? 'Verified' : (request('status') == 'pending' ? 'Pending' : 'Rejected') }}
                                 <button onclick="removeFilter('status')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
                         @if(request('lembaga_id'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                Lembaga: {{ $lembagas->firstWhere('id', request('lembaga_id'))?->nama ?? request('lembaga_id') }}
+                                Lembaga: {{ $allLembagas->firstWhere('id', request('lembaga_id'))?->nama ?? request('lembaga_id') }}
                                 <button onclick="removeFilter('lembaga_id')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
@@ -188,6 +188,18 @@
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 Jenis Zakat: {{ $jenisZakatList->firstWhere('id', request('jenis_zakat_id'))?->nama ?? request('jenis_zakat_id') }}
                                 <button onclick="removeFilter('jenis_zakat_id')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('start_date'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Mulai: {{ request('start_date') }}
+                                <button onclick="removeFilter('start_date')" class="hover:text-green-900 ml-1">×</button>
+                            </div>
+                        @endif
+                        @if(request('end_date'))
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                                Akhir: {{ request('end_date') }}
+                                <button onclick="removeFilter('end_date')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
                     </div>
@@ -205,18 +217,19 @@
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 hidden lg:table-cell">ALAMAT</th>
                                 <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500">TOTAL TRANSAKSI</th>
                                 <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 hidden lg:table-cell">TOTAL NOMINAL</th>
-                             </tr>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach ($lembagas as $lembaga)
                                 @php
-                                    $transaksiArray = collect($lembaga->transaksiPenerimaan ?? [])->map(function($t) {
+                                    $transaksiArray = $lembaga->transaksiPenerimaan->map(function($t) {
                                         return [
                                             'id' => $t->id,
                                             'no_transaksi' => $t->no_transaksi ?? '-',
                                             'tanggal' => optional($t->tanggal_transaksi)->format('d M Y') ?? '-',
                                             'waktu' => optional($t->created_at)->format('H:i') ?? '-',
                                             'muzakki_nama' => $t->muzakki_nama ?? '-',
+                                            'initial' => strtoupper(substr($t->muzakki_nama ?? 'T', 0, 1)),
                                             'jenis_zakat' => $t->jenisZakat->nama ?? '-',
                                             'jumlah' => $t->jumlah ?? 0,
                                             'status' => $t->status_verifikasi ?? 'pending',
@@ -302,11 +315,11 @@
                     </table>
                 </div>
 
-                <!-- ==================== MOBILE CARD VIEW (DIPERBAIKI) ==================== -->
+                <!-- MOBILE CARD VIEW -->
                 <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($lembagas as $lembaga)
                         @php
-                            $transaksiArray = collect($lembaga->transaksiPenerimaan ?? [])->map(function($t) {
+                            $transaksiArray = $lembaga->transaksiPenerimaan->map(function($t) {
                                 return [
                                     'id' => $t->id,
                                     'no_transaksi' => $t->no_transaksi ?? '-',
@@ -324,7 +337,6 @@
                         @endphp
                         
                         <div class="p-4">
-                            <!-- Header Card (klik untuk expand) - HANYA SATU ICON -->
                             <div class="expandable-row-mobile cursor-pointer" 
                                 data-target="detail-mobile-{{ $lembaga->id }}">
                                 <div class="flex items-start justify-between gap-3">
@@ -345,7 +357,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- HANYA SATU CHEVRON (tidak ada icon lain) -->
                                     <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron" 
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -353,7 +364,6 @@
                                 </div>
                             </div>
 
-                            <!-- Mobile Expandable Detail -->
                             <div id="detail-mobile-{{ $lembaga->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
                                 <div class="space-y-3">
                                     @if ($lembaga->alamat)
@@ -367,9 +377,7 @@
                                         @if (empty($transaksiArray))
                                             <p class="text-sm text-gray-400 italic">Belum ada data transaksi</p>
                                         @else
-                                            <div class="space-y-3" id="mobile-transaksi-container-{{ $lembaga->id }}">
-                                                <!-- Akan diisi JS -->
-                                            </div>
+                                            <div class="space-y-3" id="mobile-transaksi-container-{{ $lembaga->id }}"></div>
                                             <div class="mt-3 flex justify-center" id="mobile-pagination-{{ $lembaga->id }}"></div>
                                         @endif
                                     </div>
@@ -383,6 +391,11 @@
                         </script>
                     @endforeach
                 </div>
+
+                <!-- PAGINATION UNTUK LEMBAGA (seperti di mustahik) -->
+                <div class="px-5 py-4 border-t border-gray-100 bg-gray-50/30">
+                    {{ $lembagas->withQueryString()->links() }}
+                </div>
             @else
                 <div class="py-16 text-center">
                     <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -390,7 +403,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                     </div>
-                    @if(request('q') || request('status') || request('lembaga_id') || request('jenis_zakat_id') || request('start_date') || request('end_date'))
+                    @if(request()->hasAny(['q', 'status', 'lembaga_id', 'jenis_zakat_id', 'start_date', 'end_date']))
                         <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
                         <a href="{{ route('superadmin.transaksi-penerimaan.index') }}" class="text-sm text-green-600 hover:text-green-700">Reset semua filter</a>
                     @else
@@ -412,8 +425,6 @@
 const TRANSAKSI_PER_PAGE = 10;
 const transaksiPages = {};
 
-// ==================== FUNGSI UTAMA ====================
-
 function renderTransaksiPage(lembagaId, page) {
     const data = window.transaksiData?.[lembagaId] ?? [];
     const total = data.length;
@@ -425,10 +436,10 @@ function renderTransaksiPage(lembagaId, page) {
     const slice = data.slice(start, start + TRANSAKSI_PER_PAGE);
     const end = Math.min(start + slice.length, total);
 
-    // Desktop table
+    // Desktop
     renderDesktopTransaksi(lembagaId, slice, start, end, total);
     
-    // Mobile view
+    // Mobile
     renderMobileTransaksi(lembagaId, page, totalPages);
 }
 
@@ -456,7 +467,7 @@ function renderDesktopTransaksi(lembagaId, slice, start, end, total) {
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                <span class="text-xs font-semibold text-green-600">${escapeHtml(t.muzakki_nama.charAt(0).toUpperCase())}</span>
+                                <span class="text-xs font-semibold text-green-600">${escapeHtml(t.initial)}</span>
                             </div>
                             <div class="text-sm font-medium text-gray-900">${escapeHtml(t.muzakki_nama)}</div>
                         </div>
@@ -541,8 +552,6 @@ function renderMobileTransaksi(lembagaId, page, totalPages) {
     if (mobilePag) mobilePag.innerHTML = buildMobilePagination(lembagaId, page, totalPages);
 }
 
-// ==================== FUNGSI PAGINATION ====================
-
 function buildPagination(lembagaId, current, total) {
     if (total <= 1) return '';
     const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
@@ -569,11 +578,14 @@ function buildMobilePagination(lembagaId, current, total) {
     if (total <= 1) return '';
     const btnBase = 'inline-flex items-center justify-center w-7 h-7 rounded-md text-xs font-medium transition-colors';
     const btnNormal = `${btnBase} text-gray-600 hover:bg-gray-100`;
+    const btnDisabled = `${btnBase} text-gray-300 cursor-not-allowed`;
     
     let html = '<div class="flex items-center gap-1">';
     if (current > 1) html += `<button type="button" onclick="renderTransaksiPage(${lembagaId}, ${current - 1})" class="${btnNormal}">‹</button>`;
+    else html += `<button disabled class="${btnDisabled}">‹</button>`;
     html += `<span class="text-xs text-gray-500 mx-2">Halaman ${current} dari ${total}</span>`;
     if (current < total) html += `<button type="button" onclick="renderTransaksiPage(${lembagaId}, ${current + 1})" class="${btnNormal}">›</button>`;
+    else html += `<button disabled class="${btnDisabled}">›</button>`;
     html += '</div>';
     return html;
 }
@@ -585,57 +597,34 @@ function getPageRange(current, total) {
     return [1, '...', current - 1, current, current + 1, '...', total];
 }
 
-// ==================== FUNGSI FILTER ====================
-
-function toggleFilter() {
-    const filterPanel = document.getElementById('filterPanel');
-    if (filterPanel) {
-        filterPanel.classList.toggle('hidden');
-    }
-}
-
-function removeFilter(filterName) {
-    const url = new URL(window.location.href);
-    url.searchParams.delete(filterName);
-    url.searchParams.set('page', '1');
-    window.location.href = url.toString();
-}
-
-// ==================== UTILITY FUNCTIONS ====================
-
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// ==================== EVENT LISTENERS ====================
-
+// Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Filter Panel Toggle
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
     
     if (filterButton && filterPanel) {
-        filterButton.addEventListener('click', toggleFilter);
+        filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
     }
 
-    // Desktop Expandable Rows
+    // Desktop expandable
     document.querySelectorAll('.expandable-row').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
-            
             const targetId = this.getAttribute('data-target');
             const targetRow = document.getElementById(targetId);
             const icon = this.querySelector('.expand-icon');
-            
             if (targetRow) {
                 const isHidden = targetRow.classList.contains('hidden');
                 targetRow.classList.toggle('hidden');
                 if (icon) icon.classList.toggle('rotate-90');
-                
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-', ''));
-                    if ((window.transaksiData?.[lembagaId] || window.transaksiDataMobile?.[lembagaId]) && !transaksiPages[lembagaId]) {
+                    if (window.transaksiData?.[lembagaId] && !transaksiPages[lembagaId]) {
                         renderTransaksiPage(lembagaId, 1);
                     }
                 }
@@ -643,23 +632,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mobile Expandable Rows - HANYA SATU ICON (chevron)
+    // Mobile expandable
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
-            
             const targetId = this.getAttribute('data-target');
             const targetContent = document.getElementById(targetId);
             const chevron = this.querySelector('.expand-icon-mobile-chevron');
-            
             if (targetContent) {
                 const isHidden = targetContent.classList.contains('hidden');
                 targetContent.classList.toggle('hidden');
                 if (chevron) chevron.classList.toggle('rotate-90');
-                
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-mobile-', ''));
-                    if ((window.transaksiData?.[lembagaId] || window.transaksiDataMobile?.[lembagaId]) && !transaksiPages[lembagaId]) {
+                    if (window.transaksiDataMobile?.[lembagaId] && !transaksiPages[lembagaId]) {
                         renderTransaksiPage(lembagaId, 1);
                     }
                 }
@@ -668,9 +654,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// ==================== EXPORT KE GLOBAL SCOPE ====================
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+function toggleFilter() {
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterPanel) {
+        filterPanel.classList.add('hidden');
+    }
+}
+
+// Global exports
 window.renderTransaksiPage = renderTransaksiPage;
-window.toggleFilter = toggleFilter;
 window.removeFilter = removeFilter;
+window.toggleFilter = toggleFilter;
 </script>
 @endpush
