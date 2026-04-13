@@ -4,19 +4,16 @@
 
 @section('content')
     <div class="space-y-6">
-        <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-           <!-- Header - DIPERBAIKI -->
+            <!-- Header -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                         <h1 class="text-base font-semibold text-gray-800">Kelola Bulletin</h1>
                         <p class="text-xs text-gray-500 mt-0.5">Kelola dan konfigurasi bulletin</p>
                     </div>
-
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <!-- Tombol Filter - DIPERBAIKI -->
                         <button type="button" id="filterButton"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
                             {{ request()->hasAny(['q', 'status', 'kategori', 'sumber']) ? 'bg-green-50' : '' }}">
@@ -26,8 +23,6 @@
                             </svg>
                             Filter & Cari
                         </button>
-
-                        <!-- Tombol Tambah - DIPERBAIKI -->
                         <a href="{{ route('superadmin.bulletin.create') }}"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +34,7 @@
                 </div>
             </div>
 
-            <!-- Pending Alert - DIPERBAIKI -->
+            <!-- Pending Alert -->
             @if($pendingCount > 0)
                 <div class="mx-5 mt-4 flex items-center gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
                     <svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,76 +54,65 @@
                 </div>
             @endif
 
-            <!-- Statistik Bar - DIPERBAIKI -->
+            <!-- Statistik Bar -->
             <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm text-gray-600">Total:</span>
-                        <span class="text-sm font-semibold text-gray-800">{{ $bulletins->total() }}</span>
-                        <span class="text-sm text-gray-500">Bulletin</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-gray-600">Total:</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ $bulletins->total() }}</span>
+                    <span class="text-sm text-gray-500">Bulletin</span>
                 </div>
             </div>
 
-            <!-- Filter Panel - DIPERBAIKI -->
+            <!-- Filter Panel -->
             <div id="filterPanel" class="{{ request()->hasAny(['q', 'status', 'kategori', 'sumber']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
                 <form method="GET" action="{{ route('superadmin.bulletin.index') }}" id="filter-form">
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                            <!-- Search Field -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Cari Bulletin</label>
-                                <div class="relative">
-                                    <input type="text" name="q" value="{{ request('q') }}"
-                                        placeholder="Cari judul, konten, lokasi..."
-                                        class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
-                                    <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Cari Bulletin</label>
+                            <div class="relative">
+                                <input type="text" name="q" value="{{ request('q') }}"
+                                    placeholder="Cari judul, konten, lokasi..."
+                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white pl-8">
+                                <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
                             </div>
-
-                            <!-- Status Filter -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
-                                <select name="status"
-                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
-                                    <option value="">Semua Status</option>
-                                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                                </select>
-                            </div>
-
-                            <!-- Kategori Filter -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
-                                <select name="kategori"
-                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
-                                    <option value="">Semua Kategori</option>
-                                    @foreach($kategoriList as $kat)
-                                        <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
-                                            {{ $kat->nama_kategori }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <!-- Sumber Filter -->
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Sumber</label>
-                                <select name="sumber"
-                                    class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
-                                    <option value="">Semua Sumber</option>
-                                    <option value="superadmin" {{ request('sumber') == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
-                                    <option value="lembaga" {{ request('sumber') == 'lembaga' ? 'selected' : '' }}>Lembaga</option>
-                                </select>
-                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
+                            <select name="status"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                <option value="">Semua Status</option>
+                                <option value="draft"    {{ request('status') == 'draft'    ? 'selected' : '' }}>Draft</option>
+                                <option value="pending"  {{ request('status') == 'pending'  ? 'selected' : '' }}>Pending</option>
+                                <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Kategori</label>
+                            <select name="kategori"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                <option value="">Semua Kategori</option>
+                                @foreach($kategoriList as $kat)
+                                    <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
+                                        {{ $kat->nama_kategori }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Sumber</label>
+                            <select name="sumber"
+                                class="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
+                                <option value="">Semua Sumber</option>
+                                <option value="superadmin" {{ request('sumber') == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
+                                <option value="lembaga"    {{ request('sumber') == 'lembaga'    ? 'selected' : '' }}>Lembaga</option>
+                            </select>
                         </div>
                     </div>
                     <div class="flex gap-2 justify-end mt-4">
-                        @if (request()->hasAny(['q', 'status', 'kategori', 'sumber']))
+                        @if(request()->hasAny(['q', 'status', 'kategori', 'sumber']))
                             <a href="{{ route('superadmin.bulletin.index') }}"
                                 class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm font-medium rounded-lg transition-colors">
                                 Reset Filter
@@ -146,13 +130,12 @@
                 </form>
             </div>
 
-            <!-- Active Filter Tags - DIPERBAIKI -->
+            <!-- Active Filter Tags -->
             @if(request()->hasAny(['q', 'status', 'kategori', 'sumber']))
                 <div class="px-5 py-2.5 border-b border-gray-100">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs text-gray-400">Filter aktif:</span>
                         @php $statusLabels = ['pending' => 'Pending', 'approved' => 'Disetujui', 'rejected' => 'Ditolak', 'draft' => 'Draft']; @endphp
-                        
                         @if(request('q'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,24 +145,21 @@
                                 <button onclick="removeFilter('q')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
-                        
                         @if(request('status'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 Status: {{ $statusLabels[request('status')] ?? request('status') }}
                                 <button onclick="removeFilter('status')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
-                        
                         @if(request('kategori'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 Kategori: {{ $kategoriList->firstWhere('id', request('kategori'))?->nama_kategori ?? request('kategori') }}
                                 <button onclick="removeFilter('kategori')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
-                        
                         @if(request('sumber'))
                             <div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
-                                Sumber: {{ request('sumber') === 'lembaga' ? 'Dari Lembaga' : request('sumber') }}
+                                Sumber: {{ request('sumber') === 'lembaga' ? 'Dari Lembaga' : 'Superadmin' }}
                                 <button onclick="removeFilter('sumber')" class="hover:text-green-900 ml-1">×</button>
                             </div>
                         @endif
@@ -187,7 +167,6 @@
                 </div>
             @endif
 
-            <!-- Tabel -->
             @if($bulletins->count() > 0)
                 <!-- DESKTOP TABLE -->
                 <div class="hidden md:block overflow-x-auto">
@@ -218,7 +197,7 @@
                                 <tr class="group hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-300 cursor-pointer expandable-row {{ $bulletin->isPending() ? 'bg-amber-50/30' : '' }}"
                                     data-target="detail-{{ $bulletin->uuid }}">
                                     <td class="px-4 py-4 text-center">
-                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block" 
+                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block"
                                              fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
@@ -267,15 +246,13 @@
                                     </td>
                                     <td class="px-5 py-3 text-center">
                                         <div class="flex items-center justify-center gap-2">
-                                            <!-- Ikon Lihat dengan Tooltip -->
+                                            <!-- Lihat -->
                                             <div class="relative group/tooltip">
                                                 <a href="{{ route('superadmin.bulletin.show', $bulletin->uuid) }}"
                                                     class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                     </svg>
                                                 </a>
                                                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
@@ -284,7 +261,7 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Ikon Setujui (hanya untuk pending) -->
+                                            <!-- Setujui (pending only) -->
                                             @if($bulletin->isPending())
                                                 <div class="relative group/tooltip">
                                                     <form action="{{ route('superadmin.bulletin.approve', $bulletin->uuid) }}" method="POST" class="inline">
@@ -304,7 +281,7 @@
                                                 </div>
                                             @endif
 
-                                            <!-- Ikon Edit (hanya untuk superadmin) -->
+                                            <!-- Edit (superadmin only) -->
                                             @if(is_null($bulletin->lembaga_id))
                                                 <div class="relative group/tooltip">
                                                     <a href="{{ route('superadmin.bulletin.edit', $bulletin->uuid) }}"
@@ -321,11 +298,12 @@
                                                 </div>
                                             @endif
 
-                                            <!-- Ikon Hapus dengan Tooltip -->
+                                            <!-- Hapus -->
                                             <div class="relative group/tooltip">
                                                 <button type="button"
                                                     class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                                                    data-uuid="{{ $bulletin->uuid }}" data-judul="{{ addslashes($bulletin->judul) }}">
+                                                    data-judul="{{ addslashes($bulletin->judul) }}"
+                                                    data-action="{{ route('superadmin.bulletin.destroy', $bulletin->uuid) }}">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -340,67 +318,76 @@
                                     </td>
                                 </tr>
 
-                                <!-- Baris Expandable Desktop -->
+                                <!-- Expandable Row Desktop -->
                                 <tr id="detail-{{ $bulletin->uuid }}" class="hidden border-b border-gray-100 expandable-content">
                                     <td class="px-4 py-4 bg-gray-50/30"></td>
                                     <td colspan="5" class="px-6 py-4 bg-gray-50/30">
                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <!-- Kolom 1: Informasi Dasar -->
-                                            <div>
-                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Informasi Dasar</h4>
-                                                <div class="space-y-2">
-                                                    <div class="flex justify-between">
+                                            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Informasi Dasar</h4>
+                                                <div class="space-y-2.5">
+                                                    <div class="flex justify-between items-center">
                                                         <span class="text-xs text-gray-500">Author</span>
                                                         <span class="text-xs font-medium text-gray-700">{{ $bulletin->author->username ?? 'Admin' }}</span>
                                                     </div>
-                                                    <div class="flex justify-between">
+                                                    <div class="flex justify-between items-center">
                                                         <span class="text-xs text-gray-500">Kategori</span>
                                                         <span class="text-xs font-medium text-gray-700">{{ $bulletin->kategoriBulletin->nama_kategori ?? '-' }}</span>
                                                     </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-xs text-gray-500">Sumber</span>
+                                                        <span class="text-xs font-medium text-gray-700">{{ $bulletin->lembaga?->nama ?? 'Superadmin' }}</span>
+                                                    </div>
                                                     @if($bulletin->lokasi)
-                                                        <div class="flex justify-between">
+                                                        <div class="flex justify-between items-center">
                                                             <span class="text-xs text-gray-500">Lokasi</span>
                                                             <span class="text-xs font-medium text-gray-700">{{ $bulletin->lokasi }}</span>
                                                         </div>
                                                     @endif
+                                                    <div class="flex justify-between items-center pt-1.5 border-t border-gray-100">
+                                                        <span class="text-xs text-gray-500">Status</span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $statusCls }}">{{ $statusLbl }}</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <!-- Kolom 2: Ringkasan Konten -->
-                                            <div>
-                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ringkasan Konten</h4>
+                                            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Ringkasan Konten</h4>
                                                 @if($bulletin->konten)
-                                                    <p class="text-xs text-gray-600">{{ Str::limit(strip_tags($bulletin->konten), 150) }}</p>
+                                                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                                        <p class="text-xs text-gray-600 leading-relaxed">{{ Str::limit(strip_tags($bulletin->konten), 200) }}</p>
+                                                    </div>
                                                 @else
                                                     <p class="text-xs text-gray-400 italic">Tidak ada konten</p>
                                                 @endif
                                             </div>
 
-                                            <!-- Kolom 3: Metadata & Catatan -->
-                                            <div>
-                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Riwayat</h4>
-                                                <div class="space-y-1.5 text-xs">
-                                                    <div class="flex justify-between">
+                                            <!-- Kolom 3: Riwayat -->
+                                            <div class="bg-white rounded-xl border border-gray-200 p-4">
+                                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Riwayat</h4>
+                                                <div class="space-y-2.5 text-xs">
+                                                    <div class="flex justify-between items-center">
                                                         <span class="text-gray-500">Dibuat</span>
                                                         <span class="font-medium text-gray-700">{{ $bulletin->created_at->format('d/m/Y H:i') }}</span>
                                                     </div>
                                                     @if($bulletin->updated_at != $bulletin->created_at)
-                                                        <div class="flex justify-between">
+                                                        <div class="flex justify-between items-center">
                                                             <span class="text-gray-500">Diperbarui</span>
                                                             <span class="font-medium text-gray-700">{{ $bulletin->updated_at->format('d/m/Y H:i') }}</span>
                                                         </div>
                                                     @endif
                                                     @if($bulletin->approved_at)
-                                                        <div class="flex justify-between">
+                                                        <div class="flex justify-between items-center">
                                                             <span class="text-gray-500">Disetujui</span>
                                                             <span class="font-medium text-green-700">{{ $bulletin->approved_at->format('d/m/Y H:i') }}</span>
                                                         </div>
                                                     @endif
                                                 </div>
-
                                                 @if($bulletin->catatan_penolakan && $bulletin->status === 'rejected')
-                                                    <div class="mt-3 p-2 bg-red-50 rounded-lg border border-red-100">
-                                                        <p class="text-xs font-medium text-red-700 mb-0.5">Catatan Penolakan</p>
+                                                    <div class="mt-3 p-3 bg-red-50 rounded-lg border border-red-100">
+                                                        <p class="text-xs font-semibold text-red-700 mb-1">Catatan Penolakan</p>
                                                         <p class="text-xs text-red-600">{{ $bulletin->catatan_penolakan }}</p>
                                                     </div>
                                                 @endif
@@ -430,7 +417,7 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center gap-2 mb-1">
-                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile" 
+                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
                                                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                             </svg>
@@ -451,23 +438,17 @@
                                             <span class="text-xs text-gray-400">{{ $bulletin->created_at->format('d M Y') }}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="flex items-center gap-1 flex-shrink-0">
-                                        <!-- Lihat Detail -->
+                                        <!-- Lihat -->
                                         <div class="relative group/tooltip">
                                             <a href="{{ route('superadmin.bulletin.show', $bulletin->uuid) }}"
                                                 class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
                                             </a>
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                Lihat
-                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
-                                            </div>
                                         </div>
 
                                         <!-- Setujui (pending only) -->
@@ -483,10 +464,6 @@
                                                         </svg>
                                                     </button>
                                                 </form>
-                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                    Setujui
-                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
-                                                </div>
                                             </div>
                                         @endif
 
@@ -500,10 +477,6 @@
                                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </a>
-                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                    Edit
-                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
-                                                </div>
                                             </div>
                                         @endif
 
@@ -511,16 +484,13 @@
                                         <div class="relative group/tooltip">
                                             <button type="button"
                                                 class="delete-btn flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                                                data-uuid="{{ $bulletin->uuid }}" data-judul="{{ addslashes($bulletin->judul) }}">
+                                                data-judul="{{ addslashes($bulletin->judul) }}"
+                                                data-action="{{ route('superadmin.bulletin.destroy', $bulletin->uuid) }}">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                Hapus
-                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5 border-4 border-transparent border-t-gray-800"></div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -529,19 +499,20 @@
                             <!-- Mobile Expandable Detail -->
                             <div id="detail-mobile-{{ $bulletin->uuid }}" class="hidden mt-3 pt-3 border-t border-gray-100">
                                 <div class="space-y-3">
-                                    <div>
-                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Informasi Dasar</h4>
-                                        <div class="bg-gray-50 rounded-lg p-3 space-y-2">
-                                            <div class="flex justify-between">
+                                    <!-- Informasi Dasar -->
+                                    <div class="bg-white rounded-xl border border-gray-200 p-3">
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2.5">Informasi Dasar</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between items-center">
                                                 <span class="text-xs text-gray-500">Author</span>
                                                 <span class="text-xs font-medium text-gray-700">{{ $bulletin->author->username ?? 'Admin' }}</span>
                                             </div>
-                                            <div class="flex justify-between">
+                                            <div class="flex justify-between items-center">
                                                 <span class="text-xs text-gray-500">Kategori</span>
                                                 <span class="text-xs font-medium text-gray-700">{{ $bulletin->kategoriBulletin->nama_kategori ?? '-' }}</span>
                                             </div>
                                             @if($bulletin->lokasi)
-                                                <div class="flex justify-between">
+                                                <div class="flex justify-between items-center">
                                                     <span class="text-xs text-gray-500">Lokasi</span>
                                                     <span class="text-xs font-medium text-gray-700">{{ $bulletin->lokasi }}</span>
                                                 </div>
@@ -549,21 +520,38 @@
                                         </div>
                                     </div>
 
+                                    <!-- Ringkasan Konten -->
                                     @if($bulletin->konten)
-                                        <div>
-                                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Ringkasan</h4>
-                                            <div class="bg-gray-50 rounded-lg p-3">
-                                                <p class="text-xs text-gray-600">{{ Str::limit(strip_tags($bulletin->konten), 100) }}</p>
+                                        <div class="bg-white rounded-xl border border-gray-200 p-3">
+                                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2.5">Ringkasan</h4>
+                                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                                                <p class="text-xs text-gray-600 leading-relaxed">{{ Str::limit(strip_tags($bulletin->konten), 150) }}</p>
                                             </div>
                                         </div>
                                     @endif
 
-                                    @if($bulletin->catatan_penolakan && $bulletin->status === 'rejected')
-                                        <div class="p-3 bg-red-50 rounded-lg border border-red-100">
-                                            <p class="text-xs font-medium text-red-700 mb-1">Catatan Penolakan</p>
-                                            <p class="text-xs text-red-600">{{ $bulletin->catatan_penolakan }}</p>
+                                    <!-- Riwayat -->
+                                    <div class="bg-white rounded-xl border border-gray-200 p-3">
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2.5">Riwayat</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-xs text-gray-500">Dibuat</span>
+                                                <span class="text-xs font-medium text-gray-700">{{ $bulletin->created_at->format('d/m/Y H:i') }}</span>
+                                            </div>
+                                            @if($bulletin->approved_at)
+                                                <div class="flex justify-between items-center">
+                                                    <span class="text-xs text-gray-500">Disetujui</span>
+                                                    <span class="text-xs font-medium text-green-700">{{ $bulletin->approved_at->format('d/m/Y H:i') }}</span>
+                                                </div>
+                                            @endif
                                         </div>
-                                    @endif
+                                        @if($bulletin->catatan_penolakan && $bulletin->status === 'rejected')
+                                            <div class="mt-3 p-2 bg-red-50 rounded-lg border border-red-100">
+                                                <p class="text-xs font-semibold text-red-700 mb-1">Catatan Penolakan</p>
+                                                <p class="text-xs text-red-600">{{ $bulletin->catatan_penolakan }}</p>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -573,22 +561,19 @@
                 <!-- Pagination -->
                 @if($bulletins->hasPages())
                     <div class="px-6 py-4 border-t border-gray-100 bg-gradient-to-r from-gray-50/30 to-white">
-                        {{ $bulletins->links() }}
+                        {{ $bulletins->withQueryString()->links() }}
                     </div>
                 @endif
 
             @else
                 <!-- Empty State -->
                 <div class="py-16 text-center">
-                    <div class="relative inline-block">
-                        <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
-                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                            </svg>
-                        </div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        </svg>
                     </div>
-
                     @if(request('q') || request('status') || request('kategori') || request('sumber'))
                         <p class="text-sm text-gray-500 mb-2">
                             @if(request('q'))
@@ -597,8 +582,7 @@
                                 Tidak ada data yang sesuai dengan filter yang dipilih
                             @endif
                         </p>
-                        <button onclick="resetAllFilters()"
-                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                        <button onclick="resetAllFilters()" class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
                             Reset filter
                         </button>
                     @else
@@ -618,8 +602,8 @@
 
     <!-- Delete Modal -->
     <div id="delete-modal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 animate-fade-in">
-        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl transform transition-all duration-300 animate-scale-in">
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-2xl transform transition-all duration-300">
             <div class="p-6">
                 <div class="flex justify-center mb-4">
                     <div class="w-14 h-14 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl flex items-center justify-center shadow-inner">
@@ -657,33 +641,20 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const deleteModal = document.getElementById('delete-modal');
-        const deleteForm = document.getElementById('delete-form');
-        const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
-
+        const deleteForm  = document.getElementById('delete-form');
+        const cancelBtn   = document.getElementById('cancel-delete-btn');
         const filterButton = document.getElementById('filterButton');
-        const filterPanel = document.getElementById('filterPanel');
-        // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
-        // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
+        const filterPanel  = document.getElementById('filterPanel');
 
         if (filterButton && filterPanel) {
-            filterButton.addEventListener('click', function() {
-                filterPanel.classList.toggle('hidden');
-            });
+            filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
         }
 
-        // HAPUS block ini karena closeFilterPanelBtn tidak ada
-        // if (closeFilterPanelBtn && filterPanel) {
-        //     closeFilterPanelBtn.addEventListener('click', function() {
-        //         filterPanel.classList.add('hidden');
-        //     });
-        // }
-
-        // Desktop Expandable row
+        // Desktop expandable row
         document.querySelectorAll('.expandable-row').forEach(row => {
             row.addEventListener('click', function(e) {
-                if (e.target.closest('.delete-btn') || e.target.closest('a') || e.target.closest('button[type="submit"]')) return;
-                const targetId = this.getAttribute('data-target');
-                const targetRow = document.getElementById(targetId);
+                if (e.target.closest('a') || e.target.closest('button') || e.target.closest('form')) return;
+                const targetRow = document.getElementById(this.getAttribute('data-target'));
                 const icon = this.querySelector('.expand-icon');
                 if (targetRow) {
                     targetRow.classList.toggle('hidden');
@@ -692,12 +663,11 @@
             });
         });
 
-        // Mobile Expandable Cards
+        // Mobile expandable card
         document.querySelectorAll('.expandable-row-mobile').forEach(row => {
             row.addEventListener('click', function(e) {
-                if (e.target.closest('.delete-btn') || e.target.closest('a') || e.target.closest('button[type="submit"]')) return;
-                const targetId = this.getAttribute('data-target');
-                const targetContent = document.getElementById(targetId);
+                if (e.target.closest('a') || e.target.closest('button') || e.target.closest('form')) return;
+                const targetContent = document.getElementById(this.getAttribute('data-target'));
                 const icon = this.querySelector('.expand-icon-mobile');
                 if (targetContent) {
                     targetContent.classList.toggle('hidden');
@@ -706,43 +676,21 @@
             });
         });
 
-        // Delete button handler
+        // Delete button handler — ambil URL dari data-action (BUKAN hardcode)
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                const uuid = this.getAttribute('data-uuid');
-                const judul = this.getAttribute('data-judul');
-                
-                const modalJudul = document.getElementById('modal-judul');
-                if (modalJudul) {
-                    modalJudul.textContent = judul;
-                }
-                
-                if (deleteForm) {
-                    deleteForm.action = `/bulletin/${uuid}`;
-                }
-                
-                if (deleteModal) {
-                    deleteModal.classList.remove('hidden');
-                }
+                document.getElementById('modal-judul').textContent = this.getAttribute('data-judul');
+                deleteForm.action = this.getAttribute('data-action'); // ← pakai data-action dari Blade
+                deleteModal.classList.remove('hidden');
             });
         });
 
-        if (cancelDeleteBtn) {
-            cancelDeleteBtn.addEventListener('click', function() {
-                if (deleteModal) {
-                    deleteModal.classList.add('hidden');
-                }
-            });
-        }
+        cancelBtn.addEventListener('click', () => deleteModal.classList.add('hidden'));
 
-        if (deleteModal) {
-            deleteModal.addEventListener('click', function(e) {
-                if (e.target === deleteModal) {
-                    deleteModal.classList.add('hidden');
-                }
-            });
-        }
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) deleteModal.classList.add('hidden');
+        });
     });
 
     function removeFilter(filterName) {
@@ -754,20 +702,14 @@
 
     function resetAllFilters() {
         const url = new URL(window.location.href);
-        url.searchParams.delete('q');
-        url.searchParams.delete('status');
-        url.searchParams.delete('kategori');
-        url.searchParams.delete('sumber');
+        ['q', 'status', 'kategori', 'sumber'].forEach(f => url.searchParams.delete(f));
         url.searchParams.set('page', '1');
         window.location.href = url.toString();
     }
 
-    // Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
     function toggleFilter() {
         const filterPanel = document.getElementById('filterPanel');
-        if (filterPanel) {
-            filterPanel.classList.add('hidden');
-        }
+        if (filterPanel) filterPanel.classList.add('hidden');
     }
 </script>
 @endpush

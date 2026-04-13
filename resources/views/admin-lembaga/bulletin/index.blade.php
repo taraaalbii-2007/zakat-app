@@ -536,7 +536,8 @@
                     const judul = this.getAttribute('data-judul');
 
                     document.getElementById('modal-bulletin-judul').textContent = judul;
-                    deleteForm.action = `/admin-lembaga/bulletin/${uuid}`;
+                    let deleteUrl = "{{ route('admin-lembaga.bulletin.destroy', ':uuid') }}";
+                    deleteForm.action = deleteUrl.replace(':uuid', uuid);
                     deleteModal.classList.remove('hidden');
                 });
             });
@@ -576,7 +577,8 @@
         }
 
         function submitBulletin(uuid) {
-            fetch(`/admin-lembaga/bulletin/${uuid}/submit`, {
+            let submitUrl = "{{ route('admin-lembaga.bulletin.submit', ':uuid') }}";
+            fetch(submitUrl.replace(':uuid', uuid), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
