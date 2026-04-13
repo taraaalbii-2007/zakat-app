@@ -3,7 +3,8 @@
 @section('title', 'Tambah Bulletin')
 
 @push('styles')
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+{{-- Gunakan CDN yang lebih stabil --}}
+<link href="https://unpkg.com/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
 <style>
     .ql-editor { min-height: 300px; font-size: 15px; }
     .ql-container { font-family: inherit; }

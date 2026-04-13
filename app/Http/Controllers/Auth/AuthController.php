@@ -403,255 +403,245 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * VERIFY OTP
-     */
-    public function showVerifyOtp(Request $request)
-    {
-        $email = $request->query('email')
-            ?? $request->session()->get('otp_email')
-            ?? $request->session()->get('email');
+public function showVerifyOtp(Request $request)
+{
+    $email = $request->query('email')
+        ?? $request->session()->get('otp_email')
+        ?? $request->session()->get('email');
 
-        if (!$email) {
-            return redirect()->route('register')
-                ->with('error', 'Sesi telah berakhir. Silakan daftar ulang.');
-        }
-
-        $normalizedEmail = strtolower(trim($email));
-
-        $cacheKey = 'otp_registration_' . $normalizedEmail;
-        $otpData = Cache::get($cacheKey);
-
-        if (!$otpData) {
-            return redirect()->route('register')
-                ->with('error', 'OTP telah kedaluwarsa. Silakan daftar ulang.');
-        }
-
-        $expiresAt = $otpData['expires_at'];
-
-        $cooldownKey = 'otp_cooldown_' . $normalizedEmail;
-        $canResendAt = Cache::get($cooldownKey);
-
-        $request->session()->put('otp_email', $normalizedEmail);
-        $request->session()->put('email', $normalizedEmail);
-        $request->session()->put('otp_session_start', now()->toDateTimeString());
-
-        // Mask email untuk tampilan
-        $maskedEmail = $this->maskEmail($email);
-
-        // Tambahkan reCAPTCHA site key
-        $recaptchaConfig = RecaptchaConfig::first();
-        $recaptchaSiteKey = $recaptchaConfig?->RECAPTCHA_SITE_KEY ?? null;
-
-        return view('auth.verify-otp', compact(
-            'email',
-            'maskedEmail',
-            'expiresAt',
-            'canResendAt',
-            'recaptchaSiteKey' // TAMBAHKAN INI
-        ));
+    if (!$email) {
+        return redirect()->route('register')
+            ->with('error', 'Sesi telah berakhir. Silakan daftar ulang.');
     }
 
-    /**
-     * VERIFY OTP
-     */
-    public function verifyOtp(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email'           => 'required|email',
-            'otp'             => 'required|string|size:6',
-            'recaptcha_token' => 'nullable|string',
-        ], [
-            'email.required' => 'Email tidak valid',
-            'otp.required'   => 'Kode OTP harus diisi',
-            'otp.size'       => 'Kode OTP harus 6 digit',
+    // ✅ FIX: Normalize email agar cocok dengan cache key yang disimpan saat register
+    $normalizedEmail = strtolower(trim($email));
+
+    $cacheKey = 'otp_registration_' . $normalizedEmail;
+    $otpData = Cache::get($cacheKey);
+
+    if (!$otpData) {
+        return redirect()->route('register')
+            ->with('error', 'OTP telah kedaluwarsa. Silakan daftar ulang.');
+    }
+
+    $expiresAt = $otpData['expires_at'];
+
+    $cooldownKey = 'otp_cooldown_' . $normalizedEmail;
+    $canResendAt = Cache::get($cooldownKey);
+
+    $request->session()->put('otp_email', $normalizedEmail);
+    $request->session()->put('email', $normalizedEmail);
+    $request->session()->put('otp_session_start', now()->toDateTimeString());
+
+    $maskedEmail = $this->maskEmail($normalizedEmail); // ✅ FIX: pakai normalizedEmail
+
+    $recaptchaConfig = RecaptchaConfig::first();
+    $recaptchaSiteKey = $recaptchaConfig?->RECAPTCHA_SITE_KEY ?? null;
+
+    return view('auth.verify-otp', compact(
+        'email',
+        'maskedEmail',
+        'expiresAt',
+        'canResendAt',
+        'recaptchaSiteKey'
+    ));
+}
+
+public function verifyOtp(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email'           => 'required|email',
+        'otp'             => 'required|string|size:6',
+        'recaptcha_token' => 'nullable|string',
+    ], [
+        'email.required' => 'Email tidak valid',
+        'otp.required'   => 'Kode OTP harus diisi',
+        'otp.size'       => 'Kode OTP harus 6 digit',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->with('email', $request->email);
+    }
+
+    if (!$this->verifyRecaptcha($request->recaptcha_token, 'verify_otp')) {
+        return redirect()->back()
+            ->with('email', $request->email)
+            ->withErrors(['otp' => 'Verifikasi reCAPTCHA gagal. Silakan coba lagi.']);
+    }
+
+    // ✅ FIX: Normalize email agar cache key cocok
+    $email = strtolower(trim($request->email));
+
+    $cacheKey = 'otp_registration_' . $email;
+    $otpData  = Cache::get($cacheKey);
+
+    if (!$otpData) {
+        return redirect()->back()
+            ->with('email', $email)
+            ->withErrors(['otp' => 'OTP telah kedaluwarsa. Silakan minta kode baru.']);
+    }
+
+    if ($otpData['otp'] !== $request->otp) {
+        return redirect()->back()
+            ->with('email', $email)
+            ->withErrors(['otp' => 'Kode OTP tidak valid.']);
+    }
+
+    // ✅ FIX: Ambil role dari cache, fallback ke session, fallback ke default
+    $role = $otpData['role'] ?? session('otp_role', 'admin_lembaga');
+
+    DB::beginTransaction();
+
+    try {
+        $pengguna = Pengguna::where('email', $email)->first();
+
+        if (!$pengguna) {
+            $pengguna = Pengguna::create([
+                'uuid'              => (string) Str::uuid(),
+                'email'             => $email,
+                'email_verified_at' => now(),
+                'peran'             => $role,
+                'is_active'         => false,
+            ]);
+        } else {
+            $updateData = [];
+            if (!$pengguna->email_verified_at) {
+                $updateData['email_verified_at'] = now();
+            }
+            if (!$pengguna->is_active) {
+                $updateData['peran'] = $role;
+            }
+            if (!empty($updateData)) {
+                $pengguna->update($updateData);
+            }
+        }
+
+        Cache::forget($cacheKey);
+        Cache::forget('otp_cooldown_' . $email);
+        session()->forget('otp_role');
+        session()->forget('otp_email');
+        session()->forget('email');
+        session()->forget('otp_session_start');
+
+        $profileToken = (string) Str::uuid();
+
+        $cacheData = [
+            'email'       => $email,
+            'pengguna_id' => $pengguna->id,
+            'token'       => $profileToken,
+            'role'        => $role,
+            'created_at'  => now()->toDateTimeString(),
+        ];
+
+        Cache::put('complete_profile_' . $email, $cacheData, 3600);
+        Cache::put('token_map_' . $profileToken, $email, 3600);
+
+        DB::commit();
+
+        $redirectRoute = $role === 'muzakki'
+            ? 'complete-profile-muzakki'
+            : 'complete-profile';
+
+        return redirect()->route($redirectRoute, ['token' => $profileToken])
+            ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('OTP Verification Error: ' . $e->getMessage(), [
+            'email' => $email,
+            'role'  => $role,
+            'trace' => $e->getTraceAsString()
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->with('email', $request->email);
-        }
+        return redirect()->back()
+            ->with('email', $email)
+            ->withErrors(['otp' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
+}
 
-        // Verifikasi reCAPTCHA
-        if (!$this->verifyRecaptcha($request->recaptcha_token, 'verify_otp')) {
-            return redirect()->back()
-                ->with('email', $request->email)
-                ->withErrors(['otp' => 'Verifikasi reCAPTCHA gagal. Silakan coba lagi.']);
-        }
+public function resendOtp(Request $request)
+{
+    // ✅ FIX: Normalize email
+    $email = strtolower(trim($request->input('email')));
+    $recaptchaToken = $request->input('recaptcha_token');
 
-        $cacheKey = 'otp_registration_' . $request->email;
-        $otpData  = Cache::get($cacheKey);
-
-        if (!$otpData) {
-            return redirect()->back()
-                ->with('email', $request->email)
-                ->withErrors(['otp' => 'OTP telah kedaluwarsa. Silakan minta kode baru.']);
-        }
-
-        if ($otpData['otp'] !== $request->otp) {
-            return redirect()->back()
-                ->with('email', $request->email)
-                ->withErrors(['otp' => 'Kode OTP tidak valid.']);
-        }
-
-        // Ambil role dari cache
-        $role = $otpData['role'] ?? session('otp_role', 'admin_lembaga');
-
-        DB::beginTransaction();
-
-        try {
-            // Cari pengguna berdasarkan email
-            $pengguna = Pengguna::where('email', $request->email)->first();
-
-            if (!$pengguna) {
-                // Buat pengguna baru dengan role yang benar
-                $pengguna = Pengguna::create([
-                    'uuid'              => (string) Str::uuid(),
-                    'email'             => $request->email,
-                    'email_verified_at' => now(),
-                    'peran'             => $role,
-                    'is_active'         => false,
-                ]);
-            } else {
-                // Update pengguna yang sudah ada
-                $updateData = [];
-
-                if (!$pengguna->email_verified_at) {
-                    $updateData['email_verified_at'] = now();
-                }
-
-                if (!$pengguna->is_active) {
-                    $updateData['peran'] = $role;
-                }
-
-                if (!empty($updateData)) {
-                    $pengguna->update($updateData);
-                }
-            }
-
-            // Hapus semua cache OTP
-            Cache::forget($cacheKey);
-            Cache::forget('otp_cooldown_' . $request->email);
-            session()->forget('otp_role');
-            session()->forget('otp_email');
-            session()->forget('email');
-            session()->forget('otp_session_start');
-
-            // Buat token untuk complete profile
-            $profileToken = (string) Str::uuid();
-
-            $cacheData = [
-                'email'       => $request->email,
-                'pengguna_id' => $pengguna->id,
-                'token'       => $profileToken,
-                'role'        => $role,
-                'created_at'  => now()->toDateTimeString(),
-            ];
-
-            // Simpan ke cache dengan waktu 1 jam
-            Cache::put('complete_profile_' . $request->email, $cacheData, 3600);
-            Cache::put('token_map_' . $profileToken, $request->email, 3600);
-
-            DB::commit();
-
-            // Tentukan route redirect berdasarkan role
-            $redirectRoute = $role === 'muzakki'
-                ? 'complete-profile-muzakki'
-                : 'complete-profile';
-
-            return redirect()->route($redirectRoute, ['token' => $profileToken])
-                ->with('success', 'Email berhasil diverifikasi. Silakan lengkapi profil Anda.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            // Log error untuk debugging
-            Log::error('OTP Verification Error: ' . $e->getMessage(), [
-                'email' => $request->email,
-                'role' => $role,
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return redirect()->back()
-                ->with('email', $request->email)
-                ->withErrors(['otp' => 'Terjadi kesalahan: ' . $e->getMessage()]);
-        }
+    // ✅ FIX: Validasi format email
+    if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Email tidak valid.'
+        ], 400);
     }
 
-    public function resendOtp(Request $request)
-    {
-        $email = $request->input('email');
-        $recaptchaToken = $request->input('recaptcha_token'); // TAMBAHKAN INI
+    if (!$this->verifyRecaptcha($recaptchaToken, 'resend_otp')) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Verifikasi reCAPTCHA gagal.'
+        ], 400);
+    }
 
-        if (!$email) {
+    try {
+        $cooldownKey = 'otp_cooldown_' . $email;
+        $canResendAt = Cache::get($cooldownKey);
+
+        if ($canResendAt && Carbon::now()->isBefore($canResendAt)) {
+            $remainingSeconds = (int) Carbon::now()->diffInSeconds($canResendAt);
             return response()->json([
-                'success' => false,
-                'message' => 'Email tidak valid.'
+                'success'     => false,
+                'message'     => "Tunggu {$remainingSeconds} detik sebelum mengirim ulang OTP.",
+                'canResendIn' => $remainingSeconds,
             ], 400);
         }
 
-        // Verifikasi reCAPTCHA
-        if (!$this->verifyRecaptcha($recaptchaToken, 'resend_otp')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Verifikasi reCAPTCHA gagal.'
-            ], 400);
+        // ✅ FIX: Ambil role dari cache lama agar tidak hilang saat resend
+        $cacheKey    = 'otp_registration_' . $email;
+        $existingData = Cache::get($cacheKey);
+        $role        = $existingData['role'] ?? session('otp_role', 'admin_lembaga');
+
+        $otp       = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $expiresAt = Carbon::now()->addMinutes(self::OTP_EXPIRY_MINUTES);
+
+        // ✅ FIX: Simpan ulang dengan role yang dipertahankan
+        Cache::put($cacheKey, [
+            'email'      => $email,
+            'otp'        => $otp,
+            'expires_at' => $expiresAt,
+            'role'       => $role,
+            'created_at' => now()->toDateTimeString(),
+        ], self::OTP_EXPIRY_MINUTES * 60);
+
+        Cache::put($cooldownKey, Carbon::now()->addSeconds(self::RESEND_COOLDOWN_SECONDS), self::RESEND_COOLDOWN_SECONDS);
+
+        $mailConfigLoaded = $this->loadMailConfig();
+
+        if ($mailConfigLoaded) {
+            Mail::send('emails.otp-verification', [
+                'otp'              => $otp,
+                'email'            => $email,
+                'expiresInMinutes' => self::OTP_EXPIRY_MINUTES,
+            ], function ($message) use ($email) {
+                $message->to($email)
+                    ->subject('Kode OTP Baru - Niat Zakat');
+            });
         }
 
-        try {
-            $cooldownKey = 'otp_cooldown_' . $email;
-            $canResendAt = Cache::get($cooldownKey);
+        return response()->json([
+            'success'     => true,
+            'message'     => 'OTP baru telah dikirim ke email Anda.',
+            'canResendIn' => self::RESEND_COOLDOWN_SECONDS, // ✅ FIX: selalu kembalikan nilai ini
+        ]);
 
-            if ($canResendAt && Carbon::now()->isBefore($canResendAt)) {
-                $remainingSeconds = Carbon::now()->diffInSeconds($canResendAt);
-                return response()->json([
-                    'success' => false,
-                    'message' => "Tunggu {$remainingSeconds} detik sebelum mengirim ulang OTP."
-                ], 400);
-            }
-
-            // Generate OTP baru
-            $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-            $expiresAt = Carbon::now()->addMinutes(self::OTP_EXPIRY_MINUTES);
-
-            $cacheKey = 'otp_registration_' . $email;
-            $existingData = Cache::get($cacheKey);
-
-            Cache::put($cacheKey, [
-                'email' => $email,
-                'otp' => $otp,
-                'expires_at' => $expiresAt,
-                'created_at' => now()->toDateTimeString(),
-            ], self::OTP_EXPIRY_MINUTES * 60);
-
-            // Set cooldown
-            Cache::put($cooldownKey, Carbon::now()->addSeconds(self::RESEND_COOLDOWN_SECONDS), self::RESEND_COOLDOWN_SECONDS);
-
-            // Kirim email
-            $mailConfigLoaded = $this->loadMailConfig();
-
-            if ($mailConfigLoaded) {
-                Mail::send('emails.otp-verification', [
-                    'otp' => $otp,
-                    'email' => $email,
-                    'expiresInMinutes' => self::OTP_EXPIRY_MINUTES,
-                ], function ($message) use ($email) {
-                    $message->to($email)
-                        ->subject('Kode OTP Baru - Niat Zakat');
-                });
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'OTP baru telah dikirim ke email Anda.'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan. Silakan coba lagi.'
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        Log::error('ResendOtp Error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan. Silakan coba lagi.'
+        ], 500);
     }
+}
 
     /**
      * FORGOT PASSWORD

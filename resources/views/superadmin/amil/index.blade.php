@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-            <!-- Header - DIPERBAIKI -->
+            <!-- Header -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <!-- Tombol Filter - DIPERBAIKI -->
+                        <!-- Tombol Filter -->
                         <button type="button" id="filterButton"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
                             {{ request()->hasAny(['q', 'status', 'lembaga_id']) ? 'bg-green-50' : '' }}">
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <!-- Statistik Bar - DIPERBAIKI -->
+            <!-- Statistik Bar -->
             <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- Filter Panel - DIPERBAIKI -->
+            <!-- Filter Panel -->
             <div id="filterPanel"
                 class="{{ request()->hasAny(['q', 'status', 'lembaga_id']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
                 <form method="GET" action="{{ route('superadmin.amil.index') }}" id="filter-form">
@@ -113,7 +113,7 @@
                 </form>
             </div>
 
-            <!-- Active Filter Tags - DIPERBAIKI -->
+            <!-- Active Filter Tags -->
             @if (request()->hasAny(['q', 'status', 'lembaga_id']))
                 <div class="px-5 py-2.5 border-b border-gray-100">
                     <div class="flex flex-wrap items-center gap-2">
@@ -152,7 +152,6 @@
                 </div>
             @endif
 
-
             <!-- Tabel dengan Expandable Row -->
             @if ($lembagas->count() > 0)
                 <!-- DESKTOP TABLE -->
@@ -180,7 +179,7 @@
                                 <tr class="border-b border-gray-100 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200 group cursor-pointer expandable-row"
                                     data-target="detail-{{ $lembaga->id }}">
                                     <td class="px-4 py-4 text-center">
-                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-block"
+                                        <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon inline-flex"
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M9 5l7 7-7 7" />
@@ -342,22 +341,16 @@
                     </table>
                 </div>
 
-                <!-- ==================== MOBILE CARD VIEW ==================== -->
+                <!-- ==================== MOBILE CARD VIEW (DIPERBAIKI) ==================== -->
                 <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($lembagas as $lembaga)
-                        <div
-                            class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200">
-                            <!-- Header Card (klik untuk expand) -->
+                        <div class="p-4 hover:bg-gradient-to-r hover:from-green-50/20 hover:to-transparent transition-all duration-200">
+                            <!-- Header Card (klik untuk expand) - HANYA SATU ICON -->
                             <div class="expandable-row-mobile cursor-pointer"
                                 data-target="detail-mobile-{{ $lembaga->id }}">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <svg class="w-4 h-4 text-gray-400 transform transition-transform duration-200 expand-icon-mobile"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                        <div class="mb-1">
                                             <span class="text-xs text-gray-400">Lembaga</span>
                                         </div>
                                         <h3 class="text-sm font-semibold text-gray-800 break-words pr-2">
@@ -373,7 +366,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Chevron -->
+                                    <!-- HANYA SATU CHEVRON (tidak ada icon lain) -->
                                     <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -516,7 +509,6 @@
             from {
                 opacity: 0;
             }
-
             to {
                 opacity: 1;
             }
@@ -527,7 +519,6 @@
                 transform: scale(0.95);
                 opacity: 0;
             }
-
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -550,8 +541,6 @@
             // Filter Panel elements
             const filterButton = document.getElementById('filterButton');
             const filterPanel = document.getElementById('filterPanel');
-            // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
-            // const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
 
             // Toggle filter panel
             if (filterButton && filterPanel) {
@@ -559,14 +548,6 @@
                     filterPanel.classList.toggle('hidden');
                 });
             }
-
-            // HAPUS block ini karena closeFilterPanelBtn tidak ada
-            // Tutup filter panel - gunakan tombol "Tutup" yang sudah ada di dalam filterPanel dengan onclick="toggleFilter()"
-            // if (closeFilterPanelBtn) {
-            //     closeFilterPanelBtn.addEventListener('click', function() {
-            //         filterPanel.classList.add('hidden');
-            //     });
-            // }
 
             // Desktop Expandable row
             document.querySelectorAll('.expandable-row').forEach(row => {
@@ -584,19 +565,15 @@
                 });
             });
 
-            // Mobile Expandable Cards
+            // Mobile Expandable Cards - HANYA SATU ICON (chevron)
             document.querySelectorAll('.expandable-row-mobile').forEach(row => {
                 row.addEventListener('click', function(e) {
                     const targetId = this.getAttribute('data-target');
                     const targetContent = document.getElementById(targetId);
-                    const icon = this.querySelector('.expand-icon-mobile');
                     const chevron = this.querySelector('.expand-icon-mobile-chevron');
 
                     if (targetContent) {
                         targetContent.classList.toggle('hidden');
-                        if (icon) {
-                            icon.classList.toggle('rotate-90');
-                        }
                         if (chevron) {
                             chevron.classList.toggle('rotate-90');
                         }

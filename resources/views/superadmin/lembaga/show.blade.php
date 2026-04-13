@@ -6,7 +6,7 @@
     <div class="space-y-4 sm:space-y-6">
         {{-- Flash Messages --}}
         @if (session('success'))
-            <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl flex items-start animate-slide-down">
+            <div class="bg-green-50 text-green-800 px-4 py-3 rounded-xl flex items-start animate-slide-down">
                 <svg class="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -17,7 +17,7 @@
         @endif
 
         @if (session('error'))
-            <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl flex items-start animate-slide-down">
+            <div class="bg-red-50 text-red-800 px-4 py-3 rounded-xl flex items-start animate-slide-down">
                 <svg class="w-5 h-5 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -28,9 +28,9 @@
         @endif
 
         {{-- Main Card --}}
-        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card border border-gray-100 overflow-hidden animate-slide-up">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-card overflow-hidden animate-slide-up">
             {{-- Header --}}
-            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-white">
+            <div class="px-4 sm:px-6 py-3 sm:py-4 bg-white">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
                         <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Detail Lembaga</h1>
@@ -38,7 +38,7 @@
                     </div>
                     <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
                         <a href="{{ route('lembaga.index') }}"
-                            class="inline-flex items-center px-3 sm:px-4 py-2 border border-gray-300 shadow-sm text-xs sm:text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            class="inline-flex items-center px-3 sm:px-4 py-2 shadow-sm text-xs sm:text-sm font-medium rounded-lg text-gray-700 bg-white hover:transition-colors">
                             <svg class="w-4 h-4 mr-1.5 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -63,7 +63,7 @@
                 @if ($lembaga->foto && count($lembaga->foto) > 0)
                     <div class="mb-6">
                         <h4 class="text-sm font-medium text-gray-900 mb-3">Galeri Lembaga ({{ count($lembaga->foto) }})</h4>
-                        <div class="carousel-container relative bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                        <div class="carousel-container relative rounded-xl overflow-hidden">
                             {{-- Carousel Images --}}
                             <div id="carousel-images" class="relative aspect-video">
                                 @foreach ($lembaga->foto as $index => $foto)
@@ -112,7 +112,7 @@
                 <div class="space-y-4">
                     <h2 class="text-xl sm:text-2xl font-bold text-gray-900">{{ $lembaga->nama }}</h2>
                     <div class="flex flex-wrap items-center gap-3">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                             <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
                             </svg>
@@ -123,7 +123,7 @@
                                 Aktif
                             </span>
                         @else
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-800">
                                 Nonaktif
                             </span>
                         @endif
@@ -138,12 +138,31 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {{-- Foto Admin --}}
                         <div class="md:col-span-1">
-                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-4 flex flex-col items-center">
-                                <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-md mb-3">
-                                    <img src="{{ $lembaga->admin_foto_url ?: asset('images/default-avatar.png') }}" 
-                                         alt="Foto Admin {{ $lembaga->admin_nama }}" 
-                                         class="w-full h-full object-cover">
-                                </div>
+                            <div class="rounded-lg p-4 flex flex-col items-center">
+                                @php
+                                    $avatarLetters = ['A', 'B', 'C'];
+                                    $adminIndex = ($lembaga->id ?? 0) % 3;
+                                    $adminAvatarLetter = $avatarLetters[$adminIndex];
+                                    $bgColors = [
+                                        'A' => 'from-blue-400 to-blue-600',
+                                        'B' => 'from-green-400 to-green-600', 
+                                        'C' => 'from-purple-400 to-purple-600'
+                                    ];
+                                    $adminBgColor = $bgColors[$adminAvatarLetter];
+                                    $hasAdminFoto = $lembaga->admin_foto_url && file_exists(public_path($lembaga->admin_foto_url));
+                                @endphp
+                                
+                                @if($hasAdminFoto)
+                                    <div class="w-20 h-20 rounded-full overflow-hidden shadow-md mb-3">
+                                        <img src="{{ $lembaga->admin_foto_url }}" 
+                                             alt="Foto Admin {{ $lembaga->admin_nama }}" 
+                                             class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <div class="w-20 h-20 rounded-full bg-gradient-to-br {{ $adminBgColor }} flex items-center justify-center shadow-md mb-3">
+                                        <span class="text-2xl font-bold text-white">{{ $adminAvatarLetter }}</span>
+                                    </div>
+                                @endif
                                 <h5 class="text-sm font-medium text-gray-900">{{ $lembaga->admin_nama ?? 'Belum Ditentukan' }}</h5>
                                 <p class="text-xs text-gray-500">Admin/Penanggung Jawab</p>
                             </div>
@@ -153,7 +172,7 @@
                         <div class="md:col-span-2">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 @if($lembaga->admin_telepon)
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Telepon Admin</label>
                                     <div class="flex items-center text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +184,7 @@
                                 @endif
 
                                 @if($lembaga->admin_email)
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Email Admin</label>
                                     <div class="flex items-center text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +208,7 @@
                         <div>
                             <div class="space-y-4">
                                 @if($lembaga->tahun_berdiri)
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Tahun Berdiri</label>
                                     <div class="flex items-center text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +223,7 @@
                                 @endif
 
                                 @if($lembaga->pendiri)
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Pendiri</label>
                                     <div class="flex items-center text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +235,7 @@
                                 @endif
 
                                 @if($lembaga->kapasitas_jamaah)
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Kapasitas Jamaah</label>
                                     <div class="flex items-center text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,7 +250,7 @@
 
                         @if($lembaga->sejarah)
                         <div>
-                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-4 h-full">
+                            <div class="rounded-lg p-4 h-full">
                                 <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Sejarah Berdiri</label>
                                 <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{ $lembaga->sejarah }}</p>
                             </div>
@@ -248,7 +267,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <div class="space-y-4">
-                                <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                <div class="rounded-lg p-4">
                                     <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Alamat Lengkap</label>
                                     <div class="flex items-start text-sm text-gray-900">
                                         <svg class="w-4 h-4 mr-2 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -261,7 +280,7 @@
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     @if($lembaga->telepon)
-                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                    <div class="rounded-lg p-4">
                                         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Telepon Lembaga</label>
                                         <div class="flex items-center text-sm text-gray-900">
                                             <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +292,7 @@
                                     @endif
 
                                     @if($lembaga->email)
-                                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                                    <div class="rounded-lg p-4">
                                         <label class="block text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Email Lembaga</label>
                                         <div class="flex items-center text-sm text-gray-900">
                                             <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,7 +307,7 @@
                         </div>
 
                         <div>
-                            <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                            <div class="rounded-lg p-4">
                                 <h5 class="text-sm font-medium text-gray-900 mb-3">Wilayah Administratif</h5>
                                 <div class="space-y-3">
                                     @if($lembaga->provinsi_nama)
@@ -337,7 +356,7 @@
                 @if($lembaga->deskripsi)
                 <div>
                     <h4 class="text-sm sm:text-base font-semibold text-gray-900 mb-4">Deskripsi & Fasilitas</h4>
-                    <div class="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                    <div class="rounded-lg p-4">
                         <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{ $lembaga->deskripsi }}</p>
                     </div>
                 </div>
@@ -345,7 +364,7 @@
                 @endif
 
                 {{-- Timestamps --}}
-                <div class="text-xs text-gray-500 pt-4 border-t border-gray-200">
+                <div class="text-xs text-gray-500 pt-4">
                     <div class="flex flex-col sm:flex-row flex-wrap gap-4">
                         <div class="flex items-center">
                             <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -363,19 +382,10 @@
                 </div>
 
                 {{-- Action Buttons --}}
-                <div class="pt-6 border-t border-gray-200">
+                <div class="pt-6">
                     <div class="flex flex-col sm:flex-row flex-wrap gap-3">
-                        <a href="{{ route('lembaga.edit', $lembaga->uuid) }}"
-                            class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            Edit Lembaga
-                        </a>
-
                         <button type="button" onclick="confirmDelete()"
-                            class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                            class="inline-flex items-center justify-center px-4 py-2.5 bg-red-600 shadow-sm text-sm font-medium rounded-lg text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -391,7 +401,7 @@
     {{-- Delete Modal --}}
     <div id="delete-modal"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="p-6 border border-gray-200 w-full max-w-sm shadow-lg rounded-xl bg-white">
+        <div class="p-6 w-full max-w-sm shadow-lg rounded-xl bg-white">
             <div class="flex justify-center mb-4">
                 <svg class="h-10 w-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -406,7 +416,7 @@
             <p class="text-sm text-gray-500 mb-6 text-center">Tindakan ini tidak dapat dibatalkan.</p>
             <div class="flex justify-center gap-3">
                 <button type="button" onclick="closeDeleteModal()"
-                    class="w-28 rounded-lg border border-gray-300 shadow-sm px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                    class="w-28 rounded-lg shadow-sm px-4 py-2.5 bg-white text-sm font-medium text-gray-700 hover:focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                     Batal
                 </button>
                 <form method="POST" action="{{ route('lembaga.destroy', $lembaga->uuid) }}" class="inline">

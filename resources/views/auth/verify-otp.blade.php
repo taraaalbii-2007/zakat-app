@@ -59,7 +59,7 @@
     }
 
     /* ══════════════════════════════════
-       FORM GROUP (sama dengan login)
+       FORM GROUP
     ══════════════════════════════════ */
     .lg-group { margin-bottom: 1rem; }
 
@@ -140,7 +140,7 @@
     }
 
     /* ══════════════════════════════════
-       BUTTON AKSI (sama dengan btn-masuk)
+       BUTTON AKSI
     ══════════════════════════════════ */
     .btn-masuk {
         display: flex; align-items: center; justify-content: center; gap: .5rem;
@@ -231,7 +231,7 @@
     .flash-box.error   { background: #fff1f2; border-color: #fecdd3; color: #e11d48; }
 
     /* ══════════════════════════════════
-       DIVIDER (sama dengan login)
+       DIVIDER
     ══════════════════════════════════ */
     .or-row {
         display: flex; align-items: center; gap: .75rem;
@@ -244,7 +244,7 @@
     }
 
     /* ══════════════════════════════════
-       TOAST — sama persis dengan app.blade.php
+       TOAST
     ══════════════════════════════════ */
     .otp-toast-container {
         position: fixed;
@@ -310,7 +310,6 @@
     }
     .otp-toast-close:hover { opacity: 0.8; }
 
-    /* Border kiri berwarna — sama seperti app.blade.php */
     .otp-toast.toast-success { border-left: 3px solid #10b981; }
     .otp-toast.toast-error   { border-left: 3px solid #ef4444; }
 
@@ -350,8 +349,8 @@
         <input type="hidden" name="recaptcha_token" id="recaptcha_token">
     @endif
 
-    <input type="hidden" name="email"  value="{{ $email }}">
-    <input type="hidden" name="otp"    id="otpValue">
+    <input type="hidden" name="email" value="{{ $email }}">
+    <input type="hidden" name="otp"   id="otpValue">
 
     {{-- OTP Inputs --}}
     <div class="lg-group">
@@ -373,10 +372,9 @@
         </div>
 
         {{-- Progress Bar --}}
-        <div class="otp-progress-wrap">
+        <div class="otp-progress-wrap" id="progressWrap">
             <div class="otp-progress-bar" id="progressBar" style="width:100%"></div>
         </div>
-
     </div>
 
     {{-- Action Button --}}
@@ -448,108 +446,138 @@
 <script>
 (function () {
     /* ── Konstanta ── */
-    const TIMER_KEY     = 'otp_timer_{{ $email }}';
-    const TOTAL_SEC     = 15 * 60;
-    const RESEND_CD     = 1  * 60;
+    const TIMER_KEY  = 'otp_timer_{{ $email }}';
+    const TOTAL_SEC  = 15 * 60;
+    const RESEND_CD  = 60; // 60 detik cooldown setelah resend
 
     /* ── Elemen ── */
-    const otpInputs     = document.querySelectorAll('.otp-input');
-    const otpValue      = document.getElementById('otpValue');
-    const otpForm       = document.getElementById('otpForm');
-    const resendForm    = document.getElementById('resendForm');
-    const actionButton  = document.getElementById('actionButton');
-    const actionText    = document.getElementById('actionText');
-    const actionIcon    = document.getElementById('actionIcon');
-    const loadingSpinner= document.querySelector('.btn-spinner');
-    const progressBar   = document.getElementById('progressBar');
-    const expiredBox    = document.getElementById('expiredBox');
-    const resendMinEl   = document.getElementById('resendMinutes');
-    const resendSecEl   = document.getElementById('resendSeconds');
-    const toastContainer= document.getElementById('otpToastContainer');
+    const otpInputs      = document.querySelectorAll('.otp-input');
+    const otpValue       = document.getElementById('otpValue');
+    const otpForm        = document.getElementById('otpForm');
+    const resendForm     = document.getElementById('resendForm');
+    const actionButton   = document.getElementById('actionButton');
+    const actionText     = document.getElementById('actionText');
+    const actionIcon     = document.getElementById('actionIcon');
+    const progressBar    = document.getElementById('progressBar');
+    const progressWrap   = document.getElementById('progressWrap');
+    const expiredBox     = document.getElementById('expiredBox');
+    const resendMinEl    = document.getElementById('resendMinutes');
+    const resendSecEl    = document.getElementById('resendSeconds');
+    const toastContainer = document.getElementById('otpToastContainer');
 
     /* ── State ── */
-    let mainEnd   = localStorage.getItem(TIMER_KEY);
-    let resendEnd = localStorage.getItem(TIMER_KEY + '_resend');
+    let mainEnd   = null;
+    let resendEnd = null;
     let mode      = 'verify'; // 'verify' | 'resend' | 'cooldown'
+    let mainTimerTimeout  = null;
+    let resendTimerTimeout = null;
 
+    /* ── Bersihkan localStorage jika session berhasil (redirect balik) ── */
     @if(session('success'))
-        mainEnd = null; resendEnd = null;
         localStorage.removeItem(TIMER_KEY);
         localStorage.removeItem(TIMER_KEY + '_resend');
     @endif
 
-    /* ── Init main timer ── */
+    /* ── Init timer utama ── */
+    const savedMain = localStorage.getItem(TIMER_KEY);
+    if (savedMain) {
+        mainEnd = parseInt(savedMain);
+        // Jika sudah lewat, hapus
+        if (Date.now() >= mainEnd) {
+            localStorage.removeItem(TIMER_KEY);
+            mainEnd = null;
+        }
+    }
     if (!mainEnd) {
         mainEnd = Date.now() + TOTAL_SEC * 1000;
         localStorage.setItem(TIMER_KEY, mainEnd);
-    } else {
-        mainEnd = parseInt(mainEnd);
     }
 
-    /* ── Init mode ── */
-    if (resendEnd) {
-        resendEnd = parseInt(resendEnd);
+    /* ── Init resend cooldown ── */
+    const savedResend = localStorage.getItem(TIMER_KEY + '_resend');
+    if (savedResend) {
+        resendEnd = parseInt(savedResend);
         if (Date.now() >= resendEnd) {
+            // Cooldown sudah habis
             localStorage.removeItem(TIMER_KEY + '_resend');
-            setMode('resend');
-        } else {
-            setMode('cooldown');
+            resendEnd = null;
         }
+    }
+
+    /* ── Tentukan mode awal ── */
+    if (resendEnd) {
+        // Masih dalam cooldown setelah resend → tampilkan cooldown,
+        // tapi OTP baru sudah dikirim jadi mainEnd harus valid
+        setMode('cooldown');
     } else if (Date.now() >= mainEnd) {
+        // OTP sudah expired, belum pernah resend atau cooldown sudah habis
         setMode('resend');
     } else {
+        // Normal: OTP aktif
         setMode('verify');
     }
 
-    /* ── Set mode UI ── */
+    /* ══════════════════════════════════
+       SET MODE — satu fungsi terpusat
+    ══════════════════════════════════ */
     function setMode(m) {
         mode = m;
+
+        // Hentikan semua timer sebelumnya
+        clearTimeout(mainTimerTimeout);
+        clearTimeout(resendTimerTimeout);
+
         if (m === 'verify') {
-            actionButton.disabled = false;
+            // Tampilkan tombol verify + progress bar
             actionButton.style.display = '';
+            actionButton.disabled = false;
+            actionButton.classList.remove('loading');
             expiredBox.classList.remove('show');
+            progressWrap.style.display = '';
             setActionIcon('check');
-            actionText.innerHTML = 'Verifikasi OTP (<span id="timerDisplay">15:00</span>)';
-            progressBar.parentElement.style.display = '';
-            updateMainTimer();
+            actionText.innerHTML = 'Verifikasi OTP (<span id="timerDisplay">--:--</span>)';
+            tickMainTimer();
+
         } else if (m === 'resend') {
-            actionButton.disabled = false;
+            // Tampilkan tombol kirim ulang
             actionButton.style.display = '';
+            actionButton.disabled = false;
+            actionButton.classList.remove('loading');
             expiredBox.classList.remove('show');
+            progressWrap.style.display = 'none';
+            progressBar.style.width = '0%';
             setActionIcon('refresh');
             actionText.textContent = 'Kirim Ulang Kode OTP';
-            progressBar.style.width = '0%';
-            progressBar.parentElement.style.display = 'none';
+
         } else if (m === 'cooldown') {
+            // Sembunyikan tombol, tampilkan expired box + countdown
             actionButton.style.display = 'none';
             expiredBox.classList.add('show');
-            progressBar.parentElement.style.display = 'none';
-            updateResendTimer();
+            progressWrap.style.display = 'none';
+            tickResendTimer();
         }
     }
 
     function setActionIcon(type) {
         if (type === 'check') {
-            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+            actionIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>`;
         } else {
-            actionIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
+            actionIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>`;
         }
     }
 
-    /* ── Timer utama ── */
-    function updateMainTimer() {
+    /* ══════════════════════════════════
+       TIMER UTAMA (countdown OTP)
+    ══════════════════════════════════ */
+    function tickMainTimer() {
         const remaining = Math.max(0, Math.floor((mainEnd - Date.now()) / 1000));
-
-        if (remaining <= 0) {
-            localStorage.removeItem(TIMER_KEY);
-            setMode('resend');
-            return;
-        }
-
-        const m = Math.floor(remaining / 60);
-        const s = remaining % 60;
         const el = document.getElementById('timerDisplay');
-        if (el) el.textContent = pad(m) + ':' + pad(s);
+
+        if (el) {
+            el.textContent = pad(Math.floor(remaining / 60)) + ':' + pad(remaining % 60);
+        }
 
         const pct = (remaining / TOTAL_SEC) * 100;
         progressBar.style.width = pct + '%';
@@ -562,22 +590,39 @@
             progressBar.style.background = 'linear-gradient(90deg,#22c55e,#16a34a)';
         }
 
-        setTimeout(updateMainTimer, 1000);
-    }
-
-    /* ── Timer cooldown resend ── */
-    function updateResendTimer() {
-        const remaining = Math.max(0, Math.floor((resendEnd - Date.now()) / 1000));
-
         if (remaining <= 0) {
-            localStorage.removeItem(TIMER_KEY + '_resend');
+            localStorage.removeItem(TIMER_KEY);
+            // Jika tidak ada cooldown aktif, langsung ke mode resend
             setMode('resend');
             return;
         }
 
+        mainTimerTimeout = setTimeout(tickMainTimer, 1000);
+    }
+
+    /* ══════════════════════════════════
+       TIMER COOLDOWN RESEND
+    ══════════════════════════════════ */
+    function tickResendTimer() {
+        const remaining = Math.max(0, Math.floor((resendEnd - Date.now()) / 1000));
+
         resendMinEl.textContent = pad(Math.floor(remaining / 60));
         resendSecEl.textContent = pad(remaining % 60);
-        setTimeout(updateResendTimer, 1000);
+
+        if (remaining <= 0) {
+            localStorage.removeItem(TIMER_KEY + '_resend');
+            resendEnd = null;
+            // ✅ FIX: Setelah cooldown habis, cek apakah OTP baru masih aktif
+            // Jika mainEnd masih valid → mode verify, jika tidak → mode resend
+            if (mainEnd && Date.now() < mainEnd) {
+                setMode('verify');
+            } else {
+                setMode('resend');
+            }
+            return;
+        }
+
+        resendTimerTimeout = setTimeout(tickResendTimer, 1000);
     }
 
     function pad(n) { return n.toString().padStart(2, '0'); }
@@ -588,10 +633,13 @@
     function initOTPInputs() {
         otpInputs.forEach((input, i) => {
             input.addEventListener('input', e => {
-                if (!/^\d$/.test(e.target.value)) { e.target.value = ''; return; }
+                const val = e.target.value.replace(/\D/g, '');
+                e.target.value = val ? val[0] : '';
+                if (!e.target.value) { e.target.classList.remove('filled'); syncOTP(); return; }
                 e.target.classList.add('filled');
                 if (i < otpInputs.length - 1) otpInputs[i + 1].focus();
                 syncOTP();
+                // Auto-submit hanya jika mode verify dan semua digit terisi
                 if (getOTP().length === 6 && mode === 'verify') {
                     setTimeout(handleAction, 300);
                 }
@@ -604,9 +652,11 @@
                         otpInputs[i - 1].classList.remove('filled');
                         otpInputs[i - 1].focus();
                     } else {
+                        e.target.value = '';
                         e.target.classList.remove('filled');
                     }
                     syncOTP();
+                    e.preventDefault();
                 }
                 if (e.key === 'ArrowRight' && i < otpInputs.length - 1) otpInputs[i + 1].focus();
                 if (e.key === 'ArrowLeft'  && i > 0)                    otpInputs[i - 1].focus();
@@ -615,15 +665,18 @@
             input.addEventListener('paste', e => {
                 e.preventDefault();
                 const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
-                digits.split('').forEach((d, idx) => {
-                    if (otpInputs[idx]) {
-                        otpInputs[idx].value = d;
-                        otpInputs[idx].classList.add('filled');
-                    }
+                // Isi semua input dari awal
+                otpInputs.forEach((inp, idx) => {
+                    inp.value = digits[idx] || '';
+                    inp.classList.toggle('filled', !!digits[idx]);
                 });
                 syncOTP();
-                otpInputs[Math.min(digits.length - 1, 5)].focus();
-                if (digits.length === 6 && mode === 'verify') setTimeout(handleAction, 300);
+                const focusIdx = Math.min(digits.length, 5);
+                otpInputs[focusIdx].focus();
+                // Auto-submit hanya jika mode verify
+                if (digits.length === 6 && mode === 'verify') {
+                    setTimeout(handleAction, 300);
+                }
             });
         });
     }
@@ -648,7 +701,7 @@
             return;
         }
 
-        setLoading(true, 'Memverifikasi...');
+        setLoadingState(true, 'Memverifikasi...');
 
         try {
             @if($recaptchaSiteKey)
@@ -657,81 +710,108 @@
             @endif
             otpForm.submit();
         } catch {
-            setLoading(false);
+            setLoadingState(false);
             toast('error', 'Gagal verifikasi reCAPTCHA. Silakan coba lagi.');
         }
     }
 
     async function doResend() {
-        setLoading(true, 'Mengirim ulang...');
+        setLoadingState(true, 'Mengirim ulang...');
 
         try {
             @if($recaptchaSiteKey)
+            // ✅ FIX: Gunakan ID yang benar sesuai input di resendForm
             const token = await grecaptcha.execute('{{ $recaptchaSiteKey }}', { action: 'resend_otp' });
             document.getElementById('resend_recaptcha_token').value = token;
             @endif
 
             const fd = new FormData(resendForm);
             const res = await fetch("{{ route('resend-otp') }}", {
-                method: 'POST', body: fd,
-                headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' }
+                method: 'POST',
+                body: fd,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    Accept: 'application/json'
+                }
             });
             const data = await res.json();
 
             if (data.success) {
-                resendEnd = Date.now() + RESEND_CD * 1000;
-                localStorage.setItem(TIMER_KEY + '_resend', resendEnd);
+                // ✅ FIX: Reset mainEnd agar OTP baru punya waktu penuh 15 menit
                 mainEnd = Date.now() + TOTAL_SEC * 1000;
                 localStorage.setItem(TIMER_KEY, mainEnd);
 
-                otpInputs.forEach(inp => { inp.value = ''; inp.classList.remove('filled', 'err'); });
-                syncOTP();
-                otpInputs[0].focus();
+                // Set cooldown 60 detik
+                resendEnd = Date.now() + RESEND_CD * 1000;
+                localStorage.setItem(TIMER_KEY + '_resend', resendEnd);
 
-                setLoading(false);
+                // Bersihkan input OTP
+                otpInputs.forEach(inp => {
+                    inp.value = '';
+                    inp.classList.remove('filled', 'err');
+                });
+                syncOTP();
+
+                // ✅ FIX: Set ke cooldown dulu (bukan resend)
+                // Setelah cooldown habis, tickResendTimer akan ke mode 'verify'
+                setLoadingState(false);
                 setMode('cooldown');
                 toast('success', data.message || 'OTP baru telah dikirim ke email Anda!');
+
             } else {
-                setLoading(false);
+                setLoadingState(false);
+                // Tetap di mode resend agar bisa coba lagi
                 setMode('resend');
                 toast('error', data.message || 'Gagal mengirim ulang OTP');
             }
-        } catch {
-            setLoading(false);
+        } catch (err) {
+            setLoadingState(false);
             setMode('resend');
             toast('error', 'Terjadi kesalahan. Silakan coba lagi.');
         }
     }
 
-    /* ── Loading state ── */
-    function setLoading(on, text) {
+    /* ── Loading state — tidak memanggil setMode agar tidak reset timer ── */
+    function setLoadingState(on, text) {
+        const spinner = actionButton.querySelector('.btn-spinner');
+        const label   = actionButton.querySelector('.btn-label');
+
         actionButton.disabled = on;
-        loadingSpinner.style.display = on ? 'block' : 'none';
-        actionIcon.style.display     = on ? 'none'  : '';
-        if (on) actionText.textContent = text;
-        else setMode(mode);
+        if (on) {
+            spinner.style.display = 'block';
+            label.style.display   = 'none';
+            // Tampilkan teks loading di luar btn-label agar spinner muncul
+            actionButton.dataset.loadingText = text || 'Memproses...';
+        } else {
+            spinner.style.display = 'none';
+            label.style.display   = '';
+        }
     }
 
-    /* ── Toast — sama persis dengan app.blade.php ── */
+    /* ── Toast ── */
     function toast(type, msg) {
         const el = document.createElement('div');
         el.className = `otp-toast toast-${type}`;
 
         const icons = {
-            success: `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>`,
-            error:   `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>`,
+            success: `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>`,
+            error:   `<svg class="otp-toast-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                      </svg>`,
         };
 
         el.innerHTML = `
             ${icons[type] || icons.error}
             <div class="otp-toast-body">${msg}</div>
-            <svg class="otp-toast-close" fill="currentColor" viewBox="0 0 20 20" onclick="this.parentElement.remove()">
+            <svg class="otp-toast-close" fill="currentColor" viewBox="0 0 20 20"
+                 onclick="this.parentElement.remove()">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
             </svg>
         `;
 
         toastContainer.appendChild(el);
-
         setTimeout(() => {
             el.classList.add('otp-toast-exit');
             setTimeout(() => { if (el.parentElement) el.remove(); }, 250);

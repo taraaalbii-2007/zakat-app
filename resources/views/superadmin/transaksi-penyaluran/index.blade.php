@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
- <!-- Header - DIPERBAIKI -->
+            <!-- Header -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <!-- Tombol Filter - DIPERBAIKI -->
+                        <!-- Tombol Filter -->
                         <button type="button" id="filterButton"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
                             {{ request()->hasAny(['q', 'status', 'lembaga_id', 'metode_penyaluran', 'start_date', 'end_date']) ? 'bg-green-50' : '' }}">
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <!-- Statistik Bar - DIPERBAIKI -->
+            <!-- Statistik Bar -->
             <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
@@ -64,7 +64,7 @@
                 </div>
             </div>
 
-            <!-- Filter Panel - DIPERBAIKI -->
+            <!-- Filter Panel -->
             <div id="filterPanel" class="{{ request()->hasAny(['q', 'status', 'lembaga_id', 'metode_penyaluran', 'start_date', 'end_date']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
                 <form method="GET" action="{{ route('superadmin.transaksi-penyaluran.index') }}" id="filter-form">
                     <div class="space-y-3">
@@ -155,7 +155,7 @@
                 </form>
             </div>
 
-            <!-- Active Filter Tags - DIPERBAIKI -->
+            <!-- Active Filter Tags -->
             @if(request()->hasAny(['q', 'status', 'lembaga_id', 'metode_penyaluran', 'start_date', 'end_date']))
                 <div class="px-5 py-2.5 border-b border-gray-100">
                     <div class="flex flex-wrap items-center gap-2">
@@ -191,7 +191,6 @@
                 </div>
             @endif
 
-
             @if ($lembagas->count() > 0)
                 <!-- DESKTOP TABLE -->
                 <div class="hidden md:block overflow-x-auto">
@@ -203,7 +202,7 @@
                                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 hidden lg:table-cell">ALAMAT</th>
                                 <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500">TOTAL TRANSAKSI</th>
                                 <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 hidden lg:table-cell">TOTAL NOMINAL</th>
-                              </tr>
+                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($lembagas as $lembaga)
@@ -243,7 +242,7 @@
                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                         </svg>
-                                      </td>
+                                    </td>
                                     <td class="px-6 py-4">
                                         <div>
                                             <span class="text-sm font-medium text-gray-800 group-hover:text-green-700">
@@ -251,21 +250,21 @@
                                             </span>
                                             <div class="text-xs text-gray-400 mt-0.5">Klik untuk lihat transaksi</div>
                                         </div>
-                                      </td>
+                                    </td>
                                     <td class="px-6 py-4 hidden lg:table-cell">
                                         <span class="text-sm text-gray-600">{{ Str::limit($lembaga->alamat ?? '-', 50) }}</span>
-                                      </td>
+                                    </td>
                                     <td class="px-6 py-4 text-center">
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
                                             {{ count($penyaluranArray) }} Transaksi
                                         </span>
-                                      </td>
+                                    </td>
                                     <td class="px-6 py-4 text-center hidden lg:table-cell">
                                         <span class="text-sm font-semibold text-gray-700">
                                             Rp {{ number_format($totalNominalLembaga, 0, ',', '.') }}
                                         </span>
-                                      </td>
-                                  </tr>
+                                    </td>
+                                </tr>
 
                                 <!-- Expandable Row dengan Pagination -->
                                 <tr id="detail-{{ $lembaga->id }}" class="hidden border-b border-gray-100">
@@ -305,14 +304,14 @@
                                                 </script>
                                             @endif
                                         </div>
-                                      </td>
-                                  </tr>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                <!-- MOBILE VIEW -->
+                <!-- ==================== MOBILE CARD VIEW (DIPERBAIKI) ==================== -->
                 <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($lembagas as $lembaga)
                         @php
@@ -343,19 +342,19 @@
                         @endphp
                         
                         <div class="p-4">
-                            <div class="expandable-row-mobile cursor-pointer" data-target="detail-mobile-{{ $lembaga->id }}">
+                            <!-- Header Card (klik untuk expand) - HANYA SATU ICON -->
+                            <div class="expandable-row-mobile cursor-pointer" 
+                                data-target="detail-mobile-{{ $lembaga->id }}">
                                 <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile" 
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="mb-1">
                                             <span class="text-xs text-gray-400">Lembaga</span>
                                         </div>
-                                        <h3 class="text-sm font-semibold text-gray-800">{{ $lembaga->nama }}</h3>
-                                        <div class="mt-2 flex items-center gap-2 flex-wrap">
-                                            <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full">
+                                        <h3 class="text-sm font-semibold text-gray-800 break-words pr-2">
+                                            {{ $lembaga->nama }}
+                                        </h3>
+                                        <div class="flex flex-wrap items-center gap-2 mt-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-100">
                                                 {{ count($penyaluranArray) }} Transaksi
                                             </span>
                                             <span class="text-xs font-semibold text-gray-600">
@@ -363,22 +362,26 @@
                                             </span>
                                         </div>
                                     </div>
+
+                                    <!-- HANYA SATU CHEVRON (tidak ada icon lain) -->
                                     <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron" 
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </div>
                             </div>
+
+                            <!-- Mobile Expandable Detail -->
                             <div id="detail-mobile-{{ $lembaga->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
                                 <div class="space-y-3">
                                     @if ($lembaga->alamat)
                                         <div>
-                                            <h4 class="text-xs font-semibold text-gray-500">Alamat</h4>
+                                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Alamat</h4>
                                             <p class="text-sm text-gray-600">{{ $lembaga->alamat }}</p>
                                         </div>
                                     @endif
                                     <div>
-                                        <h4 class="text-xs font-semibold text-gray-500 mb-2">Daftar Transaksi Penyaluran</h4>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daftar Transaksi Penyaluran</h4>
                                         @if (empty($penyaluranArray))
                                             <p class="text-sm text-gray-400 italic">Belum ada data transaksi penyaluran</p>
                                         @else
@@ -461,7 +464,7 @@ function renderDesktopPenyaluran(lembagaId, slice, start, end, total) {
                     <td class="px-4 py-3">
                         <div class="text-sm font-medium text-gray-900">${escapeHtml(t.no_transaksi)}</div>
                         <div class="text-xs text-gray-400">${escapeHtml(t.tanggal)}</div>
-                      </td>
+                     </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -469,19 +472,19 @@ function renderDesktopPenyaluran(lembagaId, slice, start, end, total) {
                             </div>
                             <div class="text-sm font-medium text-gray-900">${escapeHtml(t.mustahik_nama)}</div>
                         </div>
-                       </td>
+                     </td>
                     <td class="px-4 py-3 hidden sm:table-cell">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">${escapeHtml(t.metode)}</span>
-                       </td>
+                     </td>
                     <td class="px-4 py-3 text-right">
                         <span class="text-sm font-semibold text-gray-800">${jumlahFormatted}</span>
-                       </td>
+                     </td>
                     <td class="px-4 py-3 text-center">
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${t.status_bg}">
                             <span class="w-1.5 h-1.5 rounded-full ${t.status_dot} mr-1"></span>${escapeHtml(t.status_label)}
                         </span>
-                       </td>
-                  </tr>`;
+                     </td>
+                 </tr>`;
             }).join('');
         }
     }
@@ -596,20 +599,6 @@ function toggleFilter() {
     }
 }
 
-function closeFilterPanel() {
-    const filterPanel = document.getElementById('filterPanel');
-    if (filterPanel) {
-        filterPanel.classList.add('hidden');
-    }
-}
-
-function openFilterPanel() {
-    const filterPanel = document.getElementById('filterPanel');
-    if (filterPanel) {
-        filterPanel.classList.remove('hidden');
-    }
-}
-
 function removeFilter(filterName) {
     const url = new URL(window.location.href);
     url.searchParams.delete(filterName);
@@ -630,14 +619,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Filter Panel Toggle
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    const closeFilterPanelBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
-        filterButton.addEventListener('click', openFilterPanel);
-    }
-    
-    if (closeFilterPanelBtn && filterPanel) {
-        closeFilterPanelBtn.addEventListener('click', closeFilterPanel);
+        filterButton.addEventListener('click', toggleFilter);
     }
 
     // Desktop expandable rows
@@ -661,18 +645,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mobile expandable rows
+    // Mobile expandable rows - HANYA SATU ICON (chevron)
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
             const targetId = this.getAttribute('data-target');
             const targetContent = document.getElementById(targetId);
-            const icon = this.querySelector('.expand-icon-mobile');
             const chevron = this.querySelector('.expand-icon-mobile-chevron');
             if (targetContent) {
                 const isHidden = targetContent.classList.contains('hidden');
                 targetContent.classList.toggle('hidden');
-                if (icon) icon.classList.toggle('rotate-90');
                 if (chevron) chevron.classList.toggle('rotate-90');
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-mobile-', ''));
@@ -686,11 +668,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ==================== EXPORT KE GLOBAL SCOPE ====================
-// Pastikan fungsi-fungsi ini tersedia secara global untuk onclick
 window.renderPenyaluranPage = renderPenyaluranPage;
 window.toggleFilter = toggleFilter;
-window.closeFilterPanel = closeFilterPanel;
-window.openFilterPanel = openFilterPanel;
 window.removeFilter = removeFilter;
 </script>
 @endpush

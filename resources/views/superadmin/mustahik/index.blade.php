@@ -7,7 +7,7 @@
         <!-- Container utama -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 
-           <!-- Header - DIPERBAIKI -->
+           <!-- Header -->
             <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-2">
-                        <!-- Tombol Filter - DIPERBAIKI -->
+                        <!-- Tombol Filter -->
                         <button type="button" id="filterButton"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all
                             {{ request()->hasAny(['q', 'status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']) ? 'bg-green-50' : '' }}">
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <!-- Statistik Bar - DIPERBAIKI -->
+            <!-- Statistik Bar -->
             <div class="px-5 py-3 bg-gradient-to-r from-green-50/20 to-transparent border-b border-gray-100">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <!-- Filter Panel - DIPERBAIKI -->
+            <!-- Filter Panel -->
             <div id="filterPanel" class="{{ request()->hasAny(['q', 'status_verifikasi', 'is_active', 'lembaga_id', 'kategori_id']) ? '' : 'hidden' }} px-5 py-3 border-b border-gray-100 bg-green-50/30">
                 <form method="GET" action="{{ route('superadmin.mustahik.index') }}" id="filter-form">
                     <div class="space-y-3">
@@ -118,7 +118,7 @@
                 </form>
             </div>
 
-            <!-- Active Filter Tags - DIPERBAIKI -->
+            <!-- Active Filter Tags -->
             @if(request()->hasAny(['q', 'status_verifikasi', 'is_active', 'lembaga_id']))
                 <div class="px-5 py-2.5 border-b border-gray-100">
                     <div class="flex flex-wrap items-center gap-2">
@@ -254,43 +254,47 @@
                     </table>
                 </div>
 
-                <!-- MOBILE VIEW -->
+                <!-- ==================== MOBILE CARD VIEW (DIPERBAIKI) ==================== -->
                 <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($lembagas as $lembaga)
                         <div class="p-4">
-                            <div class="expandable-row-mobile cursor-pointer" data-target="detail-mobile-{{ $lembaga->id }}">
+                            <!-- Header Card (klik untuk expand) - HANYA SATU ICON -->
+                            <div class="expandable-row-mobile cursor-pointer" 
+                                data-target="detail-mobile-{{ $lembaga->id }}">
                                 <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile" 
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="mb-1">
                                             <span class="text-xs text-gray-400">Lembaga</span>
                                         </div>
-                                        <h3 class="text-sm font-semibold text-gray-800">{{ $lembaga->nama }}</h3>
-                                        <div class="mt-2">
-                                            <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs rounded-full">
+                                        <h3 class="text-sm font-semibold text-gray-800 break-words pr-2">
+                                            {{ $lembaga->nama }}
+                                        </h3>
+                                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-100">
                                                 {{ $lembaga->mustahiks->count() }} Mustahik
                                             </span>
                                         </div>
                                     </div>
+
+                                    <!-- HANYA SATU CHEVRON (tidak ada icon lain) -->
                                     <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 expand-icon-mobile-chevron" 
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </div>
                             </div>
+
+                            <!-- Mobile Expandable Detail -->
                             <div id="detail-mobile-{{ $lembaga->id }}" class="hidden mt-3 pt-3 border-t border-gray-100">
                                 <div class="space-y-3">
                                     @if ($lembaga->alamat)
                                         <div>
-                                            <h4 class="text-xs font-semibold text-gray-500">Alamat</h4>
+                                            <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Alamat</h4>
                                             <p class="text-sm text-gray-600">{{ $lembaga->alamat }}</p>
                                         </div>
                                     @endif
                                     <div>
-                                        <h4 class="text-xs font-semibold text-gray-500 mb-2">Daftar Mustahik</h4>
+                                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Daftar Mustahik</h4>
                                         @if ($lembaga->mustahiks->isEmpty())
                                             <p class="text-sm text-gray-400 italic">Belum ada data mustahik</p>
                                         @else
@@ -364,7 +368,7 @@ function renderMustahikPage(lembagaId, page) {
                     <td class="px-4 py-3">
                         <div class="text-sm font-medium text-gray-900">${escapeHtml(m.no_registrasi)}</div>
                         <div class="text-xs text-gray-400">${escapeHtml(m.tanggal)}</div>
-                     </td>
+                      </td>
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -375,10 +379,10 @@ function renderMustahikPage(lembagaId, page) {
                                 ${m.nik ? `<div class="text-xs text-gray-400">NIK: ${escapeHtml(m.nik)}</div>` : ''}
                             </div>
                         </div>
-                     </td>
+                      </td>
                     <td class="px-4 py-3 hidden sm:table-cell">
                         <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">${escapeHtml(m.kategori)}</span>
-                     </td>
+                      </td>
                     <td class="px-4 py-3">
                         <div class="space-y-1">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${v.bg}">
@@ -386,8 +390,8 @@ function renderMustahikPage(lembagaId, page) {
                             </span>
                             ${m.is_active ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 ml-1">Aktif</span>' : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500 ml-1">Nonaktif</span>'}
                         </div>
-                     </td>
-                 </tr>`;
+                      </td>
+                  </tr>`;
             }).join('');
         }
     }
@@ -504,17 +508,10 @@ function escapeHtml(str) {
 document.addEventListener('DOMContentLoaded', function() {
     const filterButton = document.getElementById('filterButton');
     const filterPanel = document.getElementById('filterPanel');
-    // HAPUS baris ini - elemen 'closeFilterPanelBtn' tidak ada di HTML
-    // const closeBtn = document.getElementById('closeFilterPanelBtn');
     
     if (filterButton && filterPanel) {
         filterButton.addEventListener('click', () => filterPanel.classList.toggle('hidden'));
     }
-    
-    // HAPUS block ini karena closeBtn tidak ada
-    // if (closeBtn && filterPanel) {
-    //     closeBtn.addEventListener('click', () => filterPanel.classList.add('hidden'));
-    // }
 
     // Desktop expandable
     document.querySelectorAll('.expandable-row').forEach(row => {
@@ -537,18 +534,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Mobile expandable
+    // Mobile expandable - HANYA SATU ICON (chevron)
     document.querySelectorAll('.expandable-row-mobile').forEach(row => {
         row.addEventListener('click', function(e) {
             if (e.target.closest('a') || e.target.closest('button')) return;
             const targetId = this.getAttribute('data-target');
             const targetContent = document.getElementById(targetId);
-            const icon = this.querySelector('.expand-icon-mobile');
             const chevron = this.querySelector('.expand-icon-mobile-chevron');
             if (targetContent) {
                 const isHidden = targetContent.classList.contains('hidden');
                 targetContent.classList.toggle('hidden');
-                if (icon) icon.classList.toggle('rotate-90');
                 if (chevron) chevron.classList.toggle('rotate-90');
                 if (isHidden) {
                     const lembagaId = parseInt(targetId.replace('detail-mobile-', ''));
@@ -579,7 +574,6 @@ function removeFilter(filterName) {
     window.location.href = url.toString();
 }
 
-// Tambahkan fungsi toggleFilter untuk tombol "Tutup" di filter panel
 function toggleFilter() {
     const filterPanel = document.getElementById('filterPanel');
     if (filterPanel) {
