@@ -71,34 +71,6 @@
                         <span class="text-sm font-semibold text-gray-800">{{ number_format($stats['total']) }}</span>
                         <span class="text-sm text-gray-500">Transaksi</span>
                     </div>
-
-                    <!-- Stats Ringkasan Desktop -->
-                    <div class="hidden md:flex items-center gap-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span class="text-xs text-gray-500">Dikonfirmasi:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ number_format($stats['total_verified']) }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-amber-500"></div>
-                            <span class="text-xs text-gray-500">Menunggu:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ number_format($stats['menunggu_konfirmasi']) }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                            <span class="text-xs text-gray-500">Ditolak:</span>
-                            <span class="text-xs font-semibold text-gray-700">{{ number_format($stats['total_ditolak'] ?? 0) }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span class="text-xs text-gray-500">Total Nominal:</span>
-                            <span class="text-xs font-semibold text-gray-700">Rp
-                                {{ number_format($stats['total_nominal'], 0, ',', '.') }}</span>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -223,7 +195,7 @@
 
             @if ($transaksis->count() > 0)
 
-                {{-- ── DESKTOP VIEW ── (seperti index) --}}
+                {{-- ── DESKTOP VIEW ── --}}
                 <div class="hidden md:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -238,8 +210,7 @@
                                 @php
                                     $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
                                     $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
-                                    
-                                    // Deteksi nama jiwa
+
                                     $hasNamaJiwa = false;
                                     $namaJiwaList = [];
                                     if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
@@ -457,13 +428,13 @@
                     </table>
                 </div>
 
-                {{-- ── MOBILE VIEW ── (seperti index) --}}
+                {{-- ── MOBILE VIEW ── --}}
                 <div class="md:hidden divide-y divide-gray-100">
                     @foreach ($transaksis as $trx)
                         @php
                             $needsKonfirmasi = $trx->konfirmasi_status === 'menunggu_konfirmasi';
                             $buktiUrl = $trx->bukti_transfer ? Storage::url($trx->bukti_transfer) : '';
-                            
+
                             $hasNamaJiwa = false;
                             $namaJiwaList = [];
                             if (!empty($trx->dataZakatFitrah['nama_jiwa'])) {
@@ -601,34 +572,67 @@
         </div>
     </div>
 
-    {{-- ── Modal: Konfirmasi Pembayaran (Responsive dengan scroll) ── --}}
+    {{-- ══════════════════════════════════════════════
+         Modal: Konfirmasi Pembayaran — FULLY RESPONSIVE
+         • Mobile  : bottom-sheet (muncul dari bawah)
+         • Desktop : center dialog
+    ══════════════════════════════════════════════ --}}
     <div id="konfirmasi-modal"
-        class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[10000] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="p-6 flex flex-col h-full">
-                <div class="flex justify-center mb-4">
-                    <div class="w-14 h-14 bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl flex items-center justify-center shadow-inner">
-                        <svg class="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2 text-center">Konfirmasi Pembayaran</h3>
-                <p class="text-sm text-gray-500 mb-4 text-center">
-                    Konfirmasi pembayaran dari
-                    "<span id="modal-konfirmasi-nama" class="font-semibold text-gray-700"></span>"
-                    via <span id="modal-konfirmasi-metode" class="font-semibold text-amber-700"></span>
-                </p>
+        class="fixed inset-0 z-[10000] hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title">
 
-                {{-- Scrollable content area --}}
-                <div class="flex-1 overflow-y-auto">
-                    <div id="modal-bukti-container" class="hidden mb-4">
+        {{-- Backdrop --}}
+        <div id="konfirmasi-backdrop"
+            class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+        {{-- Sheet wrapper — bottom on mobile, centered on sm+ --}}
+        <div class="relative flex min-h-full items-end justify-center sm:items-center sm:p-4">
+
+            <div id="konfirmasi-sheet"
+                class="relative w-full sm:max-w-md bg-white
+                       rounded-t-2xl sm:rounded-2xl
+                       shadow-2xl
+                       flex flex-col
+                       max-h-[90dvh] sm:max-h-[85vh]
+                       translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0
+                       transition-all duration-300 ease-out">
+
+                {{-- ── Drag handle (mobile only) ── --}}
+                <div class="flex justify-center pt-3 pb-1 sm:hidden flex-shrink-0">
+                    <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+                </div>
+
+                {{-- ── Header ── --}}
+                <div class="flex-shrink-0 px-5 pt-3 pb-0 sm:px-6 sm:pt-6">
+                    <div class="flex justify-center mb-3">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl flex items-center justify-center shadow-inner">
+                            <svg class="w-6 h-6 sm:w-7 sm:h-7 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 id="modal-title" class="text-base sm:text-lg font-semibold text-gray-900 text-center">
+                        Konfirmasi Pembayaran
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-500 mt-1 text-center">
+                        Dari "<span id="modal-konfirmasi-nama" class="font-semibold text-gray-700"></span>"
+                        via <span id="modal-konfirmasi-metode" class="font-semibold text-amber-700"></span>
+                    </p>
+                </div>
+
+                {{-- ── Scrollable body ── --}}
+                <div class="flex-1 overflow-y-auto overscroll-contain px-5 sm:px-6 py-4 space-y-4">
+
+                    {{-- Bukti ada --}}
+                    <div id="modal-bukti-container" class="hidden">
                         <label class="block text-xs font-medium text-gray-700 mb-1.5">Bukti Pembayaran</label>
                         <a id="modal-bukti-link" href="#" target="_blank"
                             class="block relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50 cursor-zoom-in">
                             <img id="modal-bukti-img" src="" alt="Bukti Pembayaran"
-                                class="w-full object-contain rounded-xl max-h-48">
+                                class="w-full object-contain rounded-xl max-h-40 sm:max-h-52">
                             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                                 <span class="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -640,10 +644,12 @@
                             </div>
                         </a>
                     </div>
-                    <div id="modal-bukti-empty" class="hidden mb-4">
-                        <div class="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+
+                    {{-- Bukti tidak ada --}}
+                    <div id="modal-bukti-empty" class="hidden">
+                        <div class="flex items-center justify-center h-20 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
                             <div class="text-center">
-                                <svg class="w-8 h-8 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-7 h-7 text-gray-300 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -652,164 +658,194 @@
                         </div>
                     </div>
 
-                    <div class="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                    {{-- Warning --}}
+                    <div class="flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+                        <span class="text-base leading-none mt-0.5">⚠️</span>
                         <p class="text-xs text-amber-700">
-                            <span class="font-semibold">⚠️ Pastikan</span> dana sudah masuk ke rekening/QRIS masjid sebelum mengkonfirmasi.
+                            <span class="font-semibold">Pastikan</span> dana sudah masuk ke rekening/QRIS masjid sebelum mengkonfirmasi.
                         </p>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-xs font-medium text-gray-700 mb-1.5">Catatan (opsional)</label>
-                        <input type="text" id="konfirmasi-catatan" placeholder="Misal: Dana sudah masuk pukul 10.30"
-                            class="block w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all">
+                    {{-- Catatan --}}
+                    <div>
+                        <label for="konfirmasi-catatan" class="block text-xs font-medium text-gray-700 mb-1.5">
+                            Catatan <span class="text-gray-400 font-normal">(opsional)</span>
+                        </label>
+                        <input type="text" id="konfirmasi-catatan"
+                            placeholder="Misal: Dana sudah masuk pukul 10.30"
+                            class="block w-full px-3 py-2 text-sm border border-gray-200 rounded-lg
+                                   focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500
+                                   transition-all placeholder:text-gray-400">
                     </div>
+
                 </div>
 
-                <form method="POST" id="konfirmasi-form" class="mt-4">
-                    @csrf
-                    <input type="hidden" name="catatan_konfirmasi" id="konfirmasi-catatan-hidden">
-                    <div class="flex gap-3">
-                        <button type="button" onclick="closeModal('konfirmasi-modal')"
-                            class="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">
-                            Batal
-                        </button>
-                        <button type="submit"
-                            class="flex-1 px-4 py-2 bg-amber-600 hover:bg-amber-700 rounded-xl text-sm font-medium text-white transition-all">
-                            Konfirmasi
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                {{-- ── Footer / Actions — always visible ── --}}
+                <div class="flex-shrink-0 px-5 sm:px-6 pt-3 pb-5 sm:pb-6 border-t border-gray-100 bg-white">
+                    <form method="POST" id="konfirmasi-form">
+                        @csrf
+                        <input type="hidden" name="catatan_konfirmasi" id="konfirmasi-catatan-hidden">
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeKonfirmasiModal()"
+                                class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700
+                                       hover:bg-gray-50 active:bg-gray-100 transition-all">
+                                Batal
+                            </button>
+                            <button type="submit"
+                                class="flex-1 px-4 py-2.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800
+                                       rounded-xl text-sm font-medium text-white transition-all shadow-sm shadow-amber-200">
+                                Konfirmasi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>{{-- /sheet --}}
+        </div>{{-- /wrapper --}}
+    </div>{{-- /modal --}}
 
     <style>
-        .rotate-90 {
-            transform: rotate(90deg);
-        }
-        .rotate-180 {
-            transform: rotate(180deg);
-        }
+        .rotate-90  { transform: rotate(90deg); }
+        .rotate-180 { transform: rotate(180deg); }
     </style>
 @endsection
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Dropdown Import/Export
-        const dropdownToggle = document.getElementById('dropdownToggleBtn');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const dropdownIcon = document.getElementById('dropdownIcon');
+document.addEventListener('DOMContentLoaded', function () {
 
-        if (dropdownToggle && dropdownMenu) {
-            dropdownToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('hidden');
-                if (dropdownIcon) {
-                    dropdownIcon.classList.toggle('rotate-180');
-                }
-            });
+    /* ── Filter button ── */
+    document.getElementById('filterButton')?.addEventListener('click', toggleFilter);
 
-            document.addEventListener('click', function(e) {
-                if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.add('hidden');
-                    if (dropdownIcon) {
-                        dropdownIcon.classList.remove('rotate-180');
-                    }
-                }
-            });
-        }
-
-        // Filter button
-        const filterBtn = document.getElementById('filterButton');
-        if (filterBtn) {
-            filterBtn.addEventListener('click', toggleFilter);
-        }
-
-        // Desktop expandable rows
-        document.querySelectorAll('.expandable-row').forEach(function(row) {
-            row.addEventListener('click', function(e) {
-                if (e.target.closest('a, button')) return;
-                var target = document.getElementById(this.dataset.target);
-                var icon = this.querySelector('.expand-icon');
-                if (target && icon) {
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-90');
-                }
-            });
-        });
-
-        // Mobile expandable cards
-        document.querySelectorAll('.expandable-row-mobile').forEach(function(row) {
-            row.addEventListener('click', function(e) {
-                if (e.target.closest('a, button')) return;
-                var target = document.getElementById(this.dataset.target);
-                var icon = this.querySelector('.expand-icon-mobile');
-                if (target && icon) {
-                    target.classList.toggle('hidden');
-                    icon.classList.toggle('rotate-180');
-                }
-            });
-        });
-
-        // Konfirmasi form submit
-        document.getElementById('konfirmasi-form')?.addEventListener('submit', function() {
-            document.getElementById('konfirmasi-catatan-hidden').value =
-                document.getElementById('konfirmasi-catatan').value;
+    /* ── Desktop expandable rows ── */
+    document.querySelectorAll('.expandable-row').forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('a, button')) return;
+            var target = document.getElementById(this.dataset.target);
+            var icon   = this.querySelector('.expand-icon');
+            if (target && icon) {
+                target.classList.toggle('hidden');
+                icon.classList.toggle('rotate-90');
+            }
         });
     });
 
-    function toggleFilter() {
-        const panel = document.getElementById('filter-panel');
-        if (panel) panel.classList.toggle('hidden');
+    /* ── Mobile expandable cards ── */
+    document.querySelectorAll('.expandable-row-mobile').forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('a, button')) return;
+            var target = document.getElementById(this.dataset.target);
+            var icon   = this.querySelector('.expand-icon-mobile');
+            if (target && icon) {
+                target.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
+        });
+    });
+
+    /* ── Konfirmasi form submit ── */
+    document.getElementById('konfirmasi-form')?.addEventListener('submit', function () {
+        document.getElementById('konfirmasi-catatan-hidden').value =
+            document.getElementById('konfirmasi-catatan').value;
+    });
+
+    /* ── Close on backdrop click ── */
+    document.getElementById('konfirmasi-backdrop')?.addEventListener('click', closeKonfirmasiModal);
+
+    /* ── Close on Escape ── */
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeKonfirmasiModal();
+    });
+});
+
+/* ─────────────────────────────────────────────
+   toggleFilter
+───────────────────────────────────────────── */
+function toggleFilter() {
+    document.getElementById('filter-panel')?.classList.toggle('hidden');
+}
+
+/* ─────────────────────────────────────────────
+   removeFilter
+───────────────────────────────────────────── */
+function removeFilter(filterName) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete(filterName);
+    url.searchParams.set('page', '1');
+    window.location.href = url.toString();
+}
+
+/* ─────────────────────────────────────────────
+   openKonfirmasiModal
+───────────────────────────────────────────── */
+function openKonfirmasiModal(uuid, nama, metode, buktiUrl) {
+    /* populate content */
+    document.getElementById('modal-konfirmasi-nama').textContent    = nama;
+    document.getElementById('modal-konfirmasi-metode').textContent  = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
+    document.getElementById('konfirmasi-form').action               = '/transaksi-daring/' + uuid + '/konfirmasi-pembayaran';
+    document.getElementById('konfirmasi-catatan').value             = '';
+
+    const buktiContainer = document.getElementById('modal-bukti-container');
+    const buktiEmpty     = document.getElementById('modal-bukti-empty');
+    const buktiImg       = document.getElementById('modal-bukti-img');
+    const buktiLink      = document.getElementById('modal-bukti-link');
+
+    if (buktiUrl && buktiUrl.trim() !== '') {
+        buktiImg.src      = buktiUrl;
+        buktiLink.href    = buktiUrl;
+        buktiContainer.classList.remove('hidden');
+        buktiEmpty.classList.add('hidden');
+    } else {
+        buktiContainer.classList.add('hidden');
+        buktiEmpty.classList.remove('hidden');
     }
 
-    function removeFilter(filterName) {
-        const url = new URL(window.location.href);
-        url.searchParams.delete(filterName);
-        url.searchParams.set('page', '1');
-        window.location.href = url.toString();
-    }
+    /* show modal */
+    const modal    = document.getElementById('konfirmasi-modal');
+    const backdrop = document.getElementById('konfirmasi-backdrop');
+    const sheet    = document.getElementById('konfirmasi-sheet');
 
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    /* animate in (next tick so transition fires) */
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            backdrop.classList.remove('opacity-0');
+            backdrop.classList.add('opacity-100');
+
+            /* mobile: slide up; desktop: scale + fade in */
+            sheet.classList.remove('translate-y-full', 'sm:scale-95', 'sm:opacity-0');
+            sheet.classList.add('translate-y-0', 'sm:scale-100', 'sm:opacity-100');
+        });
+    });
+}
+
+/* ─────────────────────────────────────────────
+   closeKonfirmasiModal
+───────────────────────────────────────────── */
+function closeKonfirmasiModal() {
+    const modal    = document.getElementById('konfirmasi-modal');
+    const backdrop = document.getElementById('konfirmasi-backdrop');
+    const sheet    = document.getElementById('konfirmasi-sheet');
+
+    /* animate out */
+    backdrop.classList.remove('opacity-100');
+    backdrop.classList.add('opacity-0');
+
+    sheet.classList.remove('translate-y-0', 'sm:scale-100', 'sm:opacity-100');
+    sheet.classList.add('translate-y-full', 'sm:scale-95', 'sm:opacity-0');
+
+    /* hide after transition ends */
+    setTimeout(function () {
+        modal.classList.add('hidden');
         document.body.style.overflow = '';
-    }
+    }, 300);
+}
 
-    function openKonfirmasiModal(uuid, nama, metode, buktiUrl) {
-        document.getElementById('modal-konfirmasi-nama').textContent = nama;
-        const metodeText = metode === 'qris' ? 'QRIS' : 'Transfer Bank';
-        document.getElementById('modal-konfirmasi-metode').textContent = metodeText;
-        document.getElementById('konfirmasi-form').action = '/transaksi-daring/' + uuid + '/konfirmasi-pembayaran';
-        document.getElementById('konfirmasi-catatan').value = '';
-
-        const buktiContainer = document.getElementById('modal-bukti-container');
-        const buktiEmpty = document.getElementById('modal-bukti-empty');
-        const buktiImg = document.getElementById('modal-bukti-img');
-        const buktiLink = document.getElementById('modal-bukti-link');
-
-        if (buktiUrl && buktiUrl.trim() !== '') {
-            buktiImg.src = buktiUrl;
-            buktiLink.href = buktiUrl;
-            buktiContainer.classList.remove('hidden');
-            buktiEmpty.classList.add('hidden');
-        } else {
-            buktiContainer.classList.add('hidden');
-            buktiEmpty.classList.remove('hidden');
-        }
-
-        document.getElementById('konfirmasi-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal('konfirmasi-modal');
-        }
-    });
-
-    document.getElementById('konfirmasi-modal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeModal('konfirmasi-modal');
-    });
+/* backward-compat alias jika ada kode lain yang masih pakai closeModal() */
+function closeModal(id) {
+    if (id === 'konfirmasi-modal') closeKonfirmasiModal();
+}
 </script>
 @endpush

@@ -20,31 +20,6 @@
 @section('content')
     <div class="space-y-6">
 
-        {{-- ── Alert: Informasi Penting ── --}}
-        @if (($stats['total_fidyah'] ?? 0) > 0)
-            <div class="flex items-center gap-3 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl">
-                <div class="flex-shrink-0 w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-amber-800">
-                        Terdapat {{ number_format($stats['total_fidyah']) }} transaksi fidyah
-                    </p>
-                    <p class="text-xs text-amber-600 mt-0.5">Pastikan data fidyah terisi dengan lengkap</p>
-                </div>
-                <a href="{{ route('transaksi-datang-langsung.index', ['fidyah_tipe' => 'mentah']) }}"
-                    class="flex-shrink-0 inline-flex items-center px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium rounded-lg transition-all">
-                    Lihat Fidyah
-                    <svg class="w-3.5 h-3.5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
-        @endif
-
         {{-- ── Main Card ── --}}
         <div class="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden transition-all duration-300">
 

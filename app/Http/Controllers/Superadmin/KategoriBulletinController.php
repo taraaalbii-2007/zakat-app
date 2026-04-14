@@ -102,22 +102,22 @@ class KategoriBulletinController extends Controller
     // ============================================
     // DESTROY
     // ============================================
-   public function destroy(KategoriBulletin $kategoriBulletin)
-{
-    // Cek termasuk yang sudah soft delete
-    $totalBulletin = $kategoriBulletin->bulletins()->withTrashed()->count();
-    
-    if ($totalBulletin > 0) {
+    public function destroy(KategoriBulletin $kategoriBulletin)
+    {
+        // Cek termasuk yang sudah soft delete
+        $totalBulletin = $kategoriBulletin->bulletins()->withTrashed()->count();
+
+        if ($totalBulletin > 0) {
+            return redirect()
+                ->route('superadmin.kategori-bulletin.index')
+                ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh ' . $totalBulletin . ' bulletin (termasuk yang sudah dihapus sementara).');
+        }
+
+        $nama = $kategoriBulletin->nama_kategori;
+        $kategoriBulletin->delete();
+
         return redirect()
             ->route('superadmin.kategori-bulletin.index')
-            ->with('error', 'Kategori tidak dapat dihapus karena masih digunakan oleh ' . $totalBulletin . ' bulletin (termasuk yang sudah dihapus sementara).');
+            ->with('success', 'Kategori "' . $nama . '" berhasil dihapus.');
     }
-
-    $nama = $kategoriBulletin->nama_kategori;
-    $kategoriBulletin->delete();
-
-    return redirect()
-        ->route('superadmin.kategori-bulletin.index')
-        ->with('success', 'Kategori "' . $nama . '" berhasil dihapus.');
-}
 }
