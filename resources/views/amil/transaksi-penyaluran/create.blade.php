@@ -16,13 +16,13 @@
                     <p class="text-xs sm:text-sm text-gray-500 mt-1">Isi data mustahik dan detail penyaluran zakat</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('transaksi-penyaluran.index') }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-all">
+                    <a href="{{ route('transaksi-penyaluran.index') }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-white hover:bg-primary-50 transition-all">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
                         Kembali
                     </a>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-gray-700">
                         {{ $lembaga->nama }}
                     </span>
                 </div>
@@ -102,7 +102,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">1</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-700 text-white text-xs mr-2">1</span>
                         Pilih Mustahik
                     </h3>
 
@@ -156,7 +156,7 @@
                             @enderror
                         </div>
 
-                        <div id="mustahikInfoBox" class="hidden bg-gray-50 border border-gray-200 rounded-xl p-3">
+                        <div id="mustahikInfoBox" class="hidden bg-primary-50 border border-gray-200 rounded-xl p-3">
                             <p class="text-xs font-semibold text-gray-700 mb-1">Info Mustahik</p>
                             <div class="text-xs text-gray-600 space-y-0.5">
                                 <p id="mustahikInfoTelepon"></p>
@@ -171,7 +171,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">2</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-700 text-white text-xs mr-2">2</span>
                         Detail Penyaluran
                     </h3>
 
@@ -254,7 +254,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">3</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-700 text-white text-xs mr-2">3</span>
                         Metode & Nominal Penyaluran
                     </h3>
 
@@ -267,9 +267,9 @@
                             </label>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 {{-- Tunai --}}
-<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'tunai' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'tunai' ? 'border-gray-700 bg-primary-50' : 'border-gray-200 bg-white hover:bg-primary-50 hover:border-gray-300' }}">
     <input type="radio" name="metode_penyaluran" value="tunai" class="hidden metode-radio" {{ old('metode_penyaluran', 'tunai') == 'tunai' ? 'checked' : '' }}>
-    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
@@ -282,9 +282,9 @@
 </label>
 
 {{-- Transfer --}}
-<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'transfer' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'transfer' ? 'border-gray-700 bg-primary-50' : 'border-gray-200 bg-white hover:bg-primary-50 hover:border-gray-300' }}">
     <input type="radio" name="metode_penyaluran" value="transfer" class="hidden metode-radio" {{ old('metode_penyaluran') == 'transfer' ? 'checked' : '' }}>
-    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4m-9 4v10" />
         </svg>
@@ -297,9 +297,9 @@
 </label>
 
 {{-- Barang --}}
-<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'barang' ? 'border-gray-700 bg-gray-50' : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300' }}">
+<label class="metode-penyaluran-card relative flex flex-col items-center p-4 rounded-xl border cursor-pointer transition-all {{ old('metode_penyaluran') == 'barang' ? 'border-gray-700 bg-primary-50' : 'border-gray-200 bg-white hover:bg-primary-50 hover:border-gray-300' }}">
     <input type="radio" name="metode_penyaluran" value="barang" class="hidden metode-radio" {{ old('metode_penyaluran') == 'barang' ? 'checked' : '' }}>
-    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+    <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
         </svg>
@@ -321,7 +321,7 @@
                         {{-- INFO BARANG — tampil saat metode barang dipilih --}}
                         @if(count($ringkasanBarang) > 0)
                         <div id="infoBarangSection" class="{{ old('metode_penyaluran') === 'barang' ? '' : 'hidden' }}">
-                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <div class="bg-primary-50 border border-gray-200 rounded-xl p-4">
                                 <p class="text-xs font-semibold text-gray-700 mb-3 flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
@@ -370,7 +370,7 @@
 
                         {{-- Detail Barang (khusus metode barang) --}}
                         <div id="barangSection" class="{{ old('metode_penyaluran') === 'barang' ? '' : 'hidden' }} space-y-4">
-                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <div class="bg-primary-50 border border-gray-200 rounded-xl p-4">
                                 <div class="flex items-start gap-3">
                                     <svg class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -417,7 +417,7 @@
                      =========================== --}}
                 <div>
                     <h3 class="text-sm sm:text-base font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">
-                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gray-700 text-white text-xs mr-2">4</span>
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-700 text-white text-xs mr-2">4</span>
                         Dokumentasi & Catatan
                         <span class="text-xs text-gray-400 font-normal ml-2">(opsional)</span>
                     </h3>
@@ -437,7 +437,7 @@
                                     </div>
                                 </div>
                                 <input type="file" name="foto_bukti" id="foto_bukti_input" accept="image/jpeg,image/png,image/jpg" class="hidden" onchange="previewFoto(this, 'fotoBuktiPreview')">
-                                <label for="foto_bukti_input" class="inline-flex items-center justify-center w-full px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+                                <label for="foto_bukti_input" class="inline-flex items-center justify-center w-full px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-primary-50 cursor-pointer transition-colors">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
                                     </svg>
@@ -454,10 +454,10 @@
                             </label>
 
                             {{-- Tab switcher --}}
-                            <div class="flex rounded-xl border border-gray-200 overflow-hidden mb-3 bg-gray-50">
+                            <div class="flex rounded-xl border border-gray-200 overflow-hidden mb-3 bg-primary-50">
                                 <button type="button" id="tabDraw"
                                     onclick="switchTTTab('draw')"
-                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all bg-gray-700 text-white">
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all bg-primary-700 text-white">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                     </svg>
@@ -489,7 +489,7 @@
 
                                 {{-- Badge status draw --}}
                                 <div id="ttDrawBadge" class="hidden">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-100 text-gray-700 border border-gray-200">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -500,14 +500,14 @@
                                 {{-- Tombol aksi draw --}}
                                 <div class="flex gap-2">
                                     <button type="button" onclick="clearCanvas()"
-                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-600 bg-white hover:bg-gray-50 transition-colors">
+                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-600 bg-white hover:bg-primary-50 transition-colors">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
                                         Hapus
                                     </button>
                                     <button type="button" onclick="saveCanvas()"
-                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-gray-700 text-white text-xs font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 bg-primary-700 text-white text-xs font-medium rounded-lg hover:bg-primary-800 transition-colors">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -520,7 +520,7 @@
                             {{-- ── TAB: UPLOAD ── --}}
                             <div id="panelUpload" class="hidden space-y-3">
                                 <div id="tandaTanganPreview"
-                                    class="h-36 w-full rounded-xl flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative bg-gray-50">
+                                    class="h-36 w-full rounded-xl flex items-center justify-center overflow-hidden border-2 border-dashed border-gray-300 relative bg-primary-50">
                                     <div id="ttPlaceholder" class="text-center">
                                         <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -538,7 +538,7 @@
                                 </div>
 
                                 <div id="ttStatusBadge" class="hidden">
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-primary-100 text-gray-700 border border-gray-200">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                         </svg>
@@ -566,7 +566,7 @@
                                     onchange="handleTandaTanganUpload(this)">
 
                                 <div class="flex gap-2">
-                                    <label for="tanda_tangan_input" class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+                                    <label for="tanda_tangan_input" class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-primary-50 cursor-pointer transition-colors">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
                                         </svg>
@@ -589,7 +589,7 @@
                         <div class="sm:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Foto Dokumentasi (bisa lebih dari 1)</label>
                             <input type="file" name="foto_dokumentasi[]" id="foto_dokumentasi_input" accept="image/jpeg,image/png,image/jpg" class="hidden" multiple onchange="previewMultipleFoto(this)">
-                            <label for="foto_dokumentasi_input" class="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+                            <label for="foto_dokumentasi_input" class="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-primary-50 cursor-pointer transition-colors">
                                 <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4-4 4m4-4v12" />
                                 </svg>
@@ -610,7 +610,7 @@
                 </div>
 
                 {{-- INFO BOX: Draft --}}
-                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <div class="bg-primary-50 border border-gray-200 rounded-xl p-4">
                     <div class="flex items-start gap-3">
                         <svg class="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -630,11 +630,11 @@
             {{-- Submit --}}
             <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 mt-8 pt-6 border-t border-gray-200">
                 <a href="{{ route('transaksi-penyaluran.index') }}"
-                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all">
+                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-primary-50 transition-all">
                     Batal
                 </a>
                 <button type="submit" id="submitBtn"
-                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-xl transition-all">
+                    class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 bg-primary-700 hover:bg-primary-800 text-white text-sm font-medium rounded-xl transition-all">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -709,9 +709,9 @@ function switchTTTab(tab) {
     const tabUpload = document.getElementById('tabUpload');
 
     tabDraw.className   = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
-        + (isDraw  ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-700');
+        + (isDraw  ? 'bg-primary-700 text-white' : 'text-gray-500 hover:text-gray-700');
     tabUpload.className = 'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all '
-        + (!isDraw ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-gray-700');
+        + (!isDraw ? 'bg-primary-700 text-white' : 'text-gray-500 hover:text-gray-700');
 
     // Jika pindah ke draw, bersihkan nilai upload dan sebaliknya
     if (isDraw) {
@@ -950,7 +950,7 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
             const checked = card.querySelector('input').checked;
             card.classList.toggle('border-gray-700',  checked);
-            card.classList.toggle('bg-gray-50',   checked);
+            card.classList.toggle('bg-primary-50',   checked);
             card.classList.toggle('border-gray-200', !checked);
             card.classList.toggle('bg-white',        !checked);
         });
@@ -982,7 +982,7 @@ document.querySelectorAll('.metode-radio').forEach(radio => {
         document.querySelectorAll('.metode-penyaluran-card').forEach(card => {
             const c = card.querySelector('input').checked;
             card.classList.toggle('border-gray-700',  c);
-            card.classList.toggle('bg-gray-50',   c);
+            card.classList.toggle('bg-primary-50',   c);
             card.classList.toggle('border-gray-200', !c);
             card.classList.toggle('bg-white',        !c);
         });

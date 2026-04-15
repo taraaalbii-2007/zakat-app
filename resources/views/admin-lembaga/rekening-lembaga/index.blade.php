@@ -1,5 +1,3 @@
-{{-- resources/views/admin-masjid/rekening-lembaga/index.blade.php --}}
-
 @extends('layouts.app')
 
 @section('title', 'Rekening Lembaga')
@@ -22,8 +20,7 @@
                         <button type="button" id="filterButton"
                             class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white border border-green-500 hover:bg-green-50 text-green-600 text-sm font-medium rounded-lg transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
                             Filter & Cari
                         </button>
@@ -54,33 +51,26 @@
                     <!-- Active Filters Tags -->
                     <div class="flex flex-wrap items-center gap-2">
                         @if (request('q'))
-                            <div
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                                 "{{ request('q') }}"
-                                <button onclick="removeFilter('q')"
-                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                                <button onclick="removeFilter('q')" class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
                             </div>
                         @endif
 
                         @if (request('is_active') !== null)
-                            <div
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 Status: {{ request('is_active') == '1' ? 'Aktif' : 'Nonaktif' }}
-                                <button onclick="removeFilter('is_active')"
-                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                                <button onclick="removeFilter('is_active')" class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
                             </div>
                         @endif
 
                         @if (request('is_primary') !== null)
-                            <div
-                                class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs rounded-lg border border-green-200">
                                 {{ request('is_primary') == '1' ? 'Rekening Utama' : 'Rekening Biasa' }}
-                                <button onclick="removeFilter('is_primary')"
-                                    class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
+                                <button onclick="removeFilter('is_primary')" class="hover:text-green-900 transition-colors ml-1 text-lg leading-none">×</button>
                             </div>
                         @endif
                     </div>
@@ -95,15 +85,12 @@
                     @endif
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Search Field -->
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Cari Rekening</label>
                             <input type="text" name="q" value="{{ request('q') }}"
                                 placeholder="Cari nama bank, nomor rekening, pemilik..."
                                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all bg-white">
                         </div>
-
-                        <!-- Filter Status Aktif -->
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
                             <select name="is_active"
@@ -113,8 +100,6 @@
                                 <option value="0" {{ request('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
                             </select>
                         </div>
-
-                        <!-- Filter Rekening Utama -->
                         <div>
                             <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Rekening</label>
                             <select name="is_primary"
@@ -126,21 +111,11 @@
                         </div>
                     </div>
 
-                    <!-- Tombol di ujung kanan -->
                     <div class="flex justify-end gap-2 mt-4">
-                        <button type="submit"
-                            class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
-                            Terapkan
-                        </button>
-                        <button type="button" id="closeFilterPanelBtn"
-                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">
-                            Tutup
-                        </button>
+                        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">Terapkan</button>
+                        <button type="button" id="closeFilterPanelBtn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-all">Tutup</button>
                         @if (request('q') || request('is_active') !== null || request('is_primary') !== null)
-                            <a href="{{ route('rekening-lembaga.index') }}"
-                                class="px-4 py-2 text-gray-500 hover:text-red-600 text-sm font-medium transition-colors">
-                                Reset
-                            </a>
+                            <a href="{{ route('rekening-lembaga.index') }}" class="px-4 py-2 text-gray-500 hover:text-red-600 text-sm font-medium transition-colors">Reset</a>
                         @endif
                     </div>
                 </form>
@@ -157,16 +132,16 @@
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">NAMA PEMILIK</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">KETERANGAN</th>
                                 <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">STATUS</th>
-                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-24">AKSI</th>
+                                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">AKSI</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @foreach ($rekeningLembagas as $index => $item)
                                 @php
-                                    $canEdit = $item->actions['can_edit'] ?? false;
-                                    $canDelete = $item->actions['can_delete'] ?? false;
-                                    $canSetPrimary = $item->actions['can_set_primary'] ?? false;
-                                    $canToggleActive = $item->actions['can_toggle_active'] ?? false;
+                                    $canEdit = true;
+                                    $canDelete = true;
+                                    $canSetPrimary = true;
+                                    $canToggleActive = true;
                                     
                                     $statusColor = $item->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500';
                                     $statusLabel = $item->is_active ? 'Aktif' : 'Nonaktif';
@@ -203,35 +178,6 @@
                                     </td>
                                     <td class="px-6 py-3 text-center">
                                         <div class="flex items-center justify-center gap-1.5">
-                                            <!-- Ikon Detail -->
-                                            <div class="relative group/tooltip">
-                                                <a href="{{ route('rekening-lembaga.show', $item->uuid) }}"
-                                                    class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                    </svg>
-                                                </a>
-                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                    Detail
-                                                </div>
-                                            </div>
-
-                                            <!-- Ikon Edit -->
-                                            @if ($canEdit)
-                                                <div class="relative group/tooltip">
-                                                    <a href="{{ route('rekening-lembaga.edit', $item->uuid) }}"
-                                                        class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </a>
-                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                        Edit
-                                                    </div>
-                                                </div>
-                                            @endif
-
                                             <!-- Ikon Set Primary -->
                                             @if ($canSetPrimary && !$item->is_primary)
                                                 <div class="relative group/tooltip">
@@ -261,12 +207,28 @@
                                                             @if ($item->is_active)
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                                             @else
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" dM9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                             @endif
                                                         </svg>
                                                     </button>
                                                     <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
                                                         {{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <!-- Ikon Edit -->
+                                            @if ($canEdit)
+                                                <div class="relative group/tooltip">
+                                                    <a href="{{ route('rekening-lembaga.edit', $item->uuid) }}"
+                                                        class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all duration-200">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </a>
+                                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                        Edit
                                                     </div>
                                                 </div>
                                             @endif
@@ -289,7 +251,7 @@
                                             @endif
                                         </div>
                                      </td>
-                                </tr>
+                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -299,10 +261,10 @@
                 <div class="block md:hidden divide-y divide-gray-100">
                     @foreach ($rekeningLembagas as $index => $item)
                         @php
-                            $canEdit = $item->actions['can_edit'] ?? false;
-                            $canDelete = $item->actions['can_delete'] ?? false;
-                            $canSetPrimary = $item->actions['can_set_primary'] ?? false;
-                            $canToggleActive = $item->actions['can_toggle_active'] ?? false;
+                            $canEdit = true;
+                            $canDelete = true;
+                            $canSetPrimary = true;
+                            $canToggleActive = true;
                             
                             $statusColor = $item->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500';
                             $statusLabel = $item->is_active ? 'Aktif' : 'Nonaktif';
@@ -348,35 +310,6 @@
                                 </div>
 
                                 <div class="flex items-center gap-1 flex-shrink-0">
-                                    <!-- Detail -->
-                                    <div class="relative group/tooltip">
-                                        <a href="{{ route('rekening-lembaga.show', $item->uuid) }}"
-                                            class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        </a>
-                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                            Detail
-                                        </div>
-                                    </div>
-
-                                    <!-- Edit -->
-                                    @if ($canEdit)
-                                        <div class="relative group/tooltip">
-                                            <a href="{{ route('rekening-lembaga.edit', $item->uuid) }}"
-                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                            </a>
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
-                                                Edit
-                                            </div>
-                                        </div>
-                                    @endif
-
                                     <!-- Set Primary -->
                                     @if ($canSetPrimary && !$item->is_primary)
                                         <div class="relative group/tooltip">
@@ -406,12 +339,28 @@
                                                     @if ($item->is_active)
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                                                     @else
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                     @endif
                                                 </svg>
                                             </button>
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
                                                 {{ $item->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <!-- Edit -->
+                                    @if ($canEdit)
+                                        <div class="relative group/tooltip">
+                                            <a href="{{ route('rekening-lembaga.edit', $item->uuid) }}"
+                                                class="flex items-center justify-center p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </a>
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-0.5 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 pointer-events-none z-10">
+                                                Edit
                                             </div>
                                         </div>
                                     @endif
@@ -457,15 +406,11 @@
 
                     @if (request('q') || request('is_active') !== null || request('is_primary') !== null)
                         <p class="text-sm text-gray-500 mb-2">Tidak ada hasil untuk filter yang dipilih</p>
-                        <a href="{{ route('rekening-lembaga.index') }}"
-                            class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
-                            Reset semua filter
-                        </a>
+                        <a href="{{ route('rekening-lembaga.index') }}" class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">Reset semua filter</a>
                     @else
                         <p class="text-sm text-gray-500 mb-2">Belum ada rekening lembaga</p>
                         @if ($permissions['canCreate'])
-                            <a href="{{ route('rekening-lembaga.create') }}"
-                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
+                            <a href="{{ route('rekening-lembaga.create') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-all">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -495,17 +440,11 @@
                     Tindakan ini tidak dapat dibatalkan.
                 </p>
                 <div class="flex gap-3">
-                    <button type="button" id="cancel-delete-btn"
-                        class="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200">
-                        Batal
-                    </button>
+                    <button type="button" id="cancel-delete-btn" class="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200">Batal</button>
                     <form id="delete-form" method="POST" class="flex-1">
                         @csrf
                         @method('DELETE')
-                        <button type="submit"
-                            class="w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">
-                            Hapus
-                        </button>
+                        <button type="submit" class="w-full px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-xl text-sm font-medium text-white transition-all duration-200 shadow-md hover:shadow-lg active:scale-95">Hapus</button>
                     </form>
                 </div>
             </div>
@@ -528,15 +467,10 @@
             // Toggle filter panel
             if (filterButton && filterPanel) {
                 filterButton.addEventListener('click', function() {
-                    if (filterPanel.classList.contains('hidden')) {
-                        filterPanel.classList.remove('hidden');
-                    } else {
-                        filterPanel.classList.add('hidden');
-                    }
+                    filterPanel.classList.toggle('hidden');
                 });
             }
 
-            // Tutup filter panel
             if (closeFilterPanelBtn) {
                 closeFilterPanelBtn.addEventListener('click', function() {
                     filterPanel.classList.add('hidden');
@@ -555,14 +489,12 @@
                 });
             });
 
-            // Cancel delete
             if (cancelDeleteBtn) {
                 cancelDeleteBtn.addEventListener('click', function() {
                     deleteModal.classList.add('hidden');
                 });
             }
 
-            // Close modal when clicking outside
             deleteModal.addEventListener('click', function(e) {
                 if (e.target === deleteModal) {
                     deleteModal.classList.add('hidden');

@@ -12,6 +12,8 @@ class RekeningLembaga extends Model
 
     protected $table = 'rekening_lembaga';
 
+    protected $appends = ['actions'];
+
     protected $fillable = [
         'uuid',
         'lembaga_id',
